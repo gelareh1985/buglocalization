@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_7TIOwJuTEeq5ZsZHZYetyA" name="root model">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_dAs8oJuUEeq5ZsZHZYetyA">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Model" xmi:id="_7TIOwZuTEeq5ZsZHZYetyA" name="org.sidiff.bug.localization.examples.musicplayer">
+    <packagedElement xmi:type="uml:Package" xmi:id="_7TIOwpuTEeq5ZsZHZYetyA" name="Common java data types">
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOw5uTEeq5ZsZHZYetyA" name="int"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOxJuTEeq5ZsZHZYetyA" name="long"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOxZuTEeq5ZsZHZYetyA" name="float"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOxpuTEeq5ZsZHZYetyA" name="double"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOx5uTEeq5ZsZHZYetyA" name="boolean"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOyJuTEeq5ZsZHZYetyA" name="void"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOyZuTEeq5ZsZHZYetyA" name="char"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOypuTEeq5ZsZHZYetyA" name="short"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7TIOy5uTEeq5ZsZHZYetyA" name="byte"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_7TIOzJuTEeq5ZsZHZYetyA" name="Project data types">
+      <packagedElement xmi:type="uml:Class" xmi:id="_7TIOzZuTEeq5ZsZHZYetyA" name="java.util.List&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>">
+        <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIOzpuTEeq5ZsZHZYetyA" name="List__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@42c6d6b9 (name: java.util.List&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>, proxy: false)" client="_7TIOzZuTEeq5ZsZHZYetyA" supplier="_7TIPs5uTEeq5ZsZHZYetyA" contract="_7TIPs5uTEeq5ZsZHZYetyA"/>
+        <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIOz5uTEeq5ZsZHZYetyA" name="MusicTitle__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@42c6d6b9 (name: java.util.List&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>, proxy: false)" client="_7TIOzZuTEeq5ZsZHZYetyA" supplier="_7TIPh5uTEeq5ZsZHZYetyA" contract="_7TIPh5uTEeq5ZsZHZYetyA"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_7TIO0JuTEeq5ZsZHZYetyA" name="java.util.List&lt;java.lang.String>">
+        <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIO0ZuTEeq5ZsZHZYetyA" name="List__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@c57bc96 (name: java.util.List&lt;java.lang.String>, proxy: false)" client="_7TIO0JuTEeq5ZsZHZYetyA" supplier="_7TIPs5uTEeq5ZsZHZYetyA" contract="_7TIPs5uTEeq5ZsZHZYetyA"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_7TIO0puTEeq5ZsZHZYetyA" name="java.util.LinkedList&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_7TIO05uTEeq5ZsZHZYetyA" name="java.util.List&lt;java.io.File>">
+        <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIO1JuTEeq5ZsZHZYetyA" name="List__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@7abb1cf0 (name: java.util.List&lt;java.io.File>, proxy: false)" client="_7TIO05uTEeq5ZsZHZYetyA" supplier="_7TIPs5uTEeq5ZsZHZYetyA" contract="_7TIPs5uTEeq5ZsZHZYetyA"/>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_7TIO1ZuTEeq5ZsZHZYetyA" name="org">
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TIO1puTEeq5ZsZHZYetyA" name="sidiff">
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TIO15uTEeq5ZsZHZYetyA" name="bug">
+          <packagedElement xmi:type="uml:Package" xmi:id="_7TIO2JuTEeq5ZsZHZYetyA" name="localization">
+            <packagedElement xmi:type="uml:Package" xmi:id="_7TIO2ZuTEeq5ZsZHZYetyA" name="examples">
+              <packagedElement xmi:type="uml:Package" xmi:id="_7TIO2puTEeq5ZsZHZYetyA" name="musicplayer">
+                <packagedElement xmi:type="uml:Interface" xmi:id="_7TIO25uTEeq5ZsZHZYetyA" name="Player" visibility="public">
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO3JuTEeq5ZsZHZYetyA" name="appendToPlaylist" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO3ZuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO3puTEeq5ZsZHZYetyA" name="title" type="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO35uTEeq5ZsZHZYetyA" name="removeFromPlaylist" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO4JuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO4ZuTEeq5ZsZHZYetyA" name="title" type="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO4puTEeq5ZsZHZYetyA" name="getPlaylist" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO45uTEeq5ZsZHZYetyA" type="_7TIOzZuTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO5JuTEeq5ZsZHZYetyA" name="getCurrentTitle" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO5ZuTEeq5ZsZHZYetyA" type="_7TIPh5uTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO5puTEeq5ZsZHZYetyA" name="play" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO55uTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO6JuTEeq5ZsZHZYetyA" name="titleInPlaylist" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO6ZuTEeq5ZsZHZYetyA" name="isPlaying" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO6puTEeq5ZsZHZYetyA" type="_7TIOx5uTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO65uTEeq5ZsZHZYetyA" name="pause" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO7JuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO7ZuTEeq5ZsZHZYetyA" name="stop" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO7puTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                </packagedElement>
+                <packagedElement xmi:type="uml:Package" xmi:id="_7TIO75uTEeq5ZsZHZYetyA" name="impl">
+                  <packagedElement xmi:type="uml:Class" xmi:id="_7TIO8JuTEeq5ZsZHZYetyA" name="PlayerImpl" visibility="public">
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIO8ZuTEeq5ZsZHZYetyA" name="playlist" visibility="private" type="_7TIOzZuTEeq5ZsZHZYetyA"/>
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIO8puTEeq5ZsZHZYetyA" name="currentTitle" visibility="private" type="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIO85uTEeq5ZsZHZYetyA" name="clip" visibility="private" type="_7TI2eJuTEeq5ZsZHZYetyA"/>
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIO9JuTEeq5ZsZHZYetyA" name="pause" visibility="private" type="_7TIOx5uTEeq5ZsZHZYetyA"/>
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIO9ZuTEeq5ZsZHZYetyA" name="position" visibility="private" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+                    <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIO9puTEeq5ZsZHZYetyA" name="Player__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@4a9c3ef6 (name: PlayerImpl, proxy: false)" client="_7TIO8JuTEeq5ZsZHZYetyA" supplier="_7TIO25uTEeq5ZsZHZYetyA" contract="_7TIO25uTEeq5ZsZHZYetyA"/>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO95uTEeq5ZsZHZYetyA" name="PlayerImpl" visibility="public">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO-JuTEeq5ZsZHZYetyA" type="_7TIO8JuTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO-ZuTEeq5ZsZHZYetyA" name="appendToPlaylist" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIO-puTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : appendToPlaylist__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO-5uTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO_JuTEeq5ZsZHZYetyA" name="title" type="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIO_ZuTEeq5ZsZHZYetyA" name="removeFromPlaylist" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIO_puTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : removeFromPlaylist__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIO_5uTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPAJuTEeq5ZsZHZYetyA" name="title" type="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPAZuTEeq5ZsZHZYetyA" name="getPlaylist" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPApuTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : getPlaylist__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPA5uTEeq5ZsZHZYetyA" type="_7TIOzZuTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPBJuTEeq5ZsZHZYetyA" name="getCurrentTitle" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPBZuTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : getCurrentTitle__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPBpuTEeq5ZsZHZYetyA" type="_7TIPh5uTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPB5uTEeq5ZsZHZYetyA" name="play" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPCJuTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : play__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPCZuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPCpuTEeq5ZsZHZYetyA" name="titleInPlaylist" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPC5uTEeq5ZsZHZYetyA" name="getTitleFromPlaylist" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPDJuTEeq5ZsZHZYetyA" type="_7TIPh5uTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPDZuTEeq5ZsZHZYetyA" name="titleInPlaylist" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPDpuTEeq5ZsZHZYetyA" name="startPlayback" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPD5uTEeq5ZsZHZYetyA" type="_7TIOx5uTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPEJuTEeq5ZsZHZYetyA" name="isPlaying" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPEZuTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : isPlaying__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPEpuTEeq5ZsZHZYetyA" type="_7TIOx5uTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPE5uTEeq5ZsZHZYetyA" name="pause" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPFJuTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : pause__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPFZuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPFpuTEeq5ZsZHZYetyA" name="stop" visibility="public">
+                      <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPF5uTEeq5ZsZHZYetyA">
+                        <body>@OverridejAnnot.refImmediateComposite().name : stop__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                      </ownedComment>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPGJuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPGZuTEeq5ZsZHZYetyA" name="stopPlayback" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPGpuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                  </packagedElement>
+                  <packagedElement xmi:type="uml:Package" xmi:id="_7TIPG5uTEeq5ZsZHZYetyA" name="format">
+                    <packagedElement xmi:type="uml:Class" xmi:id="_7TIPHJuTEeq5ZsZHZYetyA" name="MIDIMusicTitle" visibility="public">
+                      <generalization xmi:type="uml:Generalization" xmi:id="_7TIPHZuTEeq5ZsZHZYetyA" general="_7TIPNZuTEeq5ZsZHZYetyA"/>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPHpuTEeq5ZsZHZYetyA" name="MIDIMusicTitle" visibility="public">
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPH5uTEeq5ZsZHZYetyA" type="_7TIPHJuTEeq5ZsZHZYetyA" direction="return"/>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPIJuTEeq5ZsZHZYetyA" name="path" type="_7TI11puTEeq5ZsZHZYetyA"/>
+                      </ownedOperation>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPIZuTEeq5ZsZHZYetyA" name="getFileExtension" visibility="public">
+                        <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPIpuTEeq5ZsZHZYetyA">
+                          <body>@OverridejAnnot.refImmediateComposite().name : getFileExtension__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                        </ownedComment>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPI5uTEeq5ZsZHZYetyA" type="_7TI11puTEeq5ZsZHZYetyA" direction="return"/>
+                      </ownedOperation>
+                    </packagedElement>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPJJuTEeq5ZsZHZYetyA" name="File_OF_MusicFile.java" supplier="_7TI2DZuTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPJZuTEeq5ZsZHZYetyA" name="IOException_OF_MusicFile.java" supplier="_7TI2C5uTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPJpuTEeq5ZsZHZYetyA" name="Arrays_OF_MusicFile.java" supplier="_7TIPrJuTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPJ5uTEeq5ZsZHZYetyA" name="Collections_OF_MusicFile.java" supplier="_7TIPr5uTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPKJuTEeq5ZsZHZYetyA" name="List_OF_MusicFile.java" supplier="_7TIPs5uTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPKZuTEeq5ZsZHZYetyA" name="AudioInputStream_OF_MusicFile.java" supplier="_7TI2a5uTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPKpuTEeq5ZsZHZYetyA" name="AudioSystem_OF_MusicFile.java" supplier="_7TI2b5uTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPK5uTEeq5ZsZHZYetyA" name="UnsupportedAudioFileException_OF_MusicFile.java" supplier="_7TI2dpuTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPLJuTEeq5ZsZHZYetyA" name="MusicTitle_OF_MusicFile.java" supplier="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                    <packagedElement xmi:type="uml:Class" xmi:id="_7TIPLZuTEeq5ZsZHZYetyA" name="WaveMusicTitle" visibility="public">
+                      <generalization xmi:type="uml:Generalization" xmi:id="_7TIPLpuTEeq5ZsZHZYetyA" general="_7TIPNZuTEeq5ZsZHZYetyA"/>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPL5uTEeq5ZsZHZYetyA" name="WaveMusicTitle" visibility="public">
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPMJuTEeq5ZsZHZYetyA" type="_7TIPLZuTEeq5ZsZHZYetyA" direction="return"/>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPMZuTEeq5ZsZHZYetyA" name="path" type="_7TI11puTEeq5ZsZHZYetyA"/>
+                      </ownedOperation>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPMpuTEeq5ZsZHZYetyA" name="getFileExtension" visibility="public">
+                        <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPM5uTEeq5ZsZHZYetyA">
+                          <body>@OverridejAnnot.refImmediateComposite().name : getFileExtension__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                        </ownedComment>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPNJuTEeq5ZsZHZYetyA" type="_7TI11puTEeq5ZsZHZYetyA" direction="return"/>
+                      </ownedOperation>
+                    </packagedElement>
+                    <packagedElement xmi:type="uml:Class" xmi:id="_7TIPNZuTEeq5ZsZHZYetyA" name="MusicFile" visibility="public" isAbstract="true">
+                      <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIPNpuTEeq5ZsZHZYetyA" name="file" visibility="private" type="_7TI2DZuTEeq5ZsZHZYetyA"/>
+                      <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIPN5uTEeq5ZsZHZYetyA" name="artists" visibility="private" type="_7TIO0JuTEeq5ZsZHZYetyA"/>
+                      <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIPOJuTEeq5ZsZHZYetyA" name="name" visibility="private" type="_7TI11puTEeq5ZsZHZYetyA"/>
+                      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPOZuTEeq5ZsZHZYetyA" name="MusicTitle__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1149b545 (name: MusicFile, proxy: false)" client="_7TIPNZuTEeq5ZsZHZYetyA" supplier="_7TIPh5uTEeq5ZsZHZYetyA" contract="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPOpuTEeq5ZsZHZYetyA" name="MusicFile" visibility="public">
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPO5uTEeq5ZsZHZYetyA" type="_7TIPNZuTEeq5ZsZHZYetyA" direction="return"/>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPPJuTEeq5ZsZHZYetyA" name="path" type="_7TI11puTEeq5ZsZHZYetyA"/>
+                      </ownedOperation>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPPZuTEeq5ZsZHZYetyA" name="getFileExtension" visibility="public">
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPPpuTEeq5ZsZHZYetyA" type="_7TI11puTEeq5ZsZHZYetyA" direction="return"/>
+                      </ownedOperation>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPP5uTEeq5ZsZHZYetyA" name="getName" visibility="public">
+                        <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPQJuTEeq5ZsZHZYetyA">
+                          <body>@OverridejAnnot.refImmediateComposite().name : getName__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                        </ownedComment>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPQZuTEeq5ZsZHZYetyA" type="_7TI11puTEeq5ZsZHZYetyA" direction="return"/>
+                      </ownedOperation>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPQpuTEeq5ZsZHZYetyA" name="getArtists" visibility="public">
+                        <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPQ5uTEeq5ZsZHZYetyA">
+                          <body>@OverridejAnnot.refImmediateComposite().name : getArtists__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                        </ownedComment>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPRJuTEeq5ZsZHZYetyA" type="_7TIO0JuTEeq5ZsZHZYetyA" direction="return"/>
+                      </ownedOperation>
+                      <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPRZuTEeq5ZsZHZYetyA" name="getMusic" visibility="public">
+                        <ownedComment xmi:type="uml:Comment" xmi:id="_7TIPRpuTEeq5ZsZHZYetyA">
+                          <body>@OverridejAnnot.refImmediateComposite().name : getMusic__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration</body>
+                        </ownedComment>
+                        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPR5uTEeq5ZsZHZYetyA" type="_7TI2a5uTEeq5ZsZHZYetyA" direction="return"/>
+                      </ownedOperation>
+                    </packagedElement>
+                  </packagedElement>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPSJuTEeq5ZsZHZYetyA" name="IOException_OF_PlayerImpl.java" supplier="_7TI2C5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPSZuTEeq5ZsZHZYetyA" name="LinkedList_OF_PlayerImpl.java" supplier="_7TIPkZuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPSpuTEeq5ZsZHZYetyA" name="List_OF_PlayerImpl.java" supplier="_7TIPs5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPS5uTEeq5ZsZHZYetyA" name="AudioFormat_OF_PlayerImpl.java" supplier="_7TI2bpuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPTJuTEeq5ZsZHZYetyA" name="AudioInputStream_OF_PlayerImpl.java" supplier="_7TI2a5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPTZuTEeq5ZsZHZYetyA" name="AudioSystem_OF_PlayerImpl.java" supplier="_7TI2b5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPTpuTEeq5ZsZHZYetyA" name="Clip_OF_PlayerImpl.java" supplier="_7TI2eJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPT5uTEeq5ZsZHZYetyA" name="DataLine_OF_PlayerImpl.java" supplier="_7TI2gZuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPUJuTEeq5ZsZHZYetyA" name="LineUnavailableException_OF_PlayerImpl.java" supplier="_7TI2dJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPUZuTEeq5ZsZHZYetyA" name="MusicTitle_OF_PlayerImpl.java" supplier="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPUpuTEeq5ZsZHZYetyA" name="Player_OF_PlayerImpl.java" supplier="_7TIO25uTEeq5ZsZHZYetyA"/>
+                </packagedElement>
+                <packagedElement xmi:type="uml:Package" xmi:id="_7TIPU5uTEeq5ZsZHZYetyA" name="ui">
+                  <packagedElement xmi:type="uml:Class" xmi:id="_7TIPVJuTEeq5ZsZHZYetyA" name="PlayerUserInterface" visibility="public">
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIPVZuTEeq5ZsZHZYetyA" name="frame" visibility="private" type="_7TI2v5uTEeq5ZsZHZYetyA"/>
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIPVpuTEeq5ZsZHZYetyA" name="table" visibility="private" type="_7TI20puTEeq5ZsZHZYetyA"/>
+                    <ownedAttribute xmi:type="uml:Property" xmi:id="_7TIPV5uTEeq5ZsZHZYetyA" name="player" visibility="private" type="_7TIO25uTEeq5ZsZHZYetyA"/>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPWJuTEeq5ZsZHZYetyA" name="main" visibility="public" isStatic="true">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPWZuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPWpuTEeq5ZsZHZYetyA" name="args" type="_7TI2BJuTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPW5uTEeq5ZsZHZYetyA" name="PlayerUserInterface" visibility="public">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPXJuTEeq5ZsZHZYetyA" type="_7TIPVJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPXZuTEeq5ZsZHZYetyA" name="player" type="_7TIO25uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPXpuTEeq5ZsZHZYetyA" name="initialize" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPX5uTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPYJuTEeq5ZsZHZYetyA" name="addPlayListener" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPYZuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPYpuTEeq5ZsZHZYetyA" name="play" type="_7TI2s5uTEeq5ZsZHZYetyA"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPY5uTEeq5ZsZHZYetyA" name="title" type="_7TI2y5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPZJuTEeq5ZsZHZYetyA" name="addStopListener" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPZZuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPZpuTEeq5ZsZHZYetyA" name="stop" type="_7TI2s5uTEeq5ZsZHZYetyA"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPZ5uTEeq5ZsZHZYetyA" name="title" type="_7TI2y5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPaJuTEeq5ZsZHZYetyA" name="getTitle" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPaZuTEeq5ZsZHZYetyA" type="_7TI11puTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPapuTEeq5ZsZHZYetyA" name="title" type="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                    <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPa5uTEeq5ZsZHZYetyA" name="addMusicFileDropListener" visibility="private">
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPbJuTEeq5ZsZHZYetyA" type="_7TIOyJuTEeq5ZsZHZYetyA" direction="return"/>
+                      <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPbZuTEeq5ZsZHZYetyA" name="table" type="_7TI20puTEeq5ZsZHZYetyA"/>
+                    </ownedOperation>
+                  </packagedElement>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPbpuTEeq5ZsZHZYetyA" name="BorderLayout_OF_PlayerUserInterface.java" supplier="_7TI2HJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPb5uTEeq5ZsZHZYetyA" name="EventQueue_OF_PlayerUserInterface.java" supplier="_7TI2RpuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPcJuTEeq5ZsZHZYetyA" name="DataFlavor_OF_PlayerUserInterface.java" supplier="_7TI2IpuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPcZuTEeq5ZsZHZYetyA" name="Transferable_OF_PlayerUserInterface.java" supplier="_7TI2JpuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPcpuTEeq5ZsZHZYetyA" name="DropTarget_OF_PlayerUserInterface.java" supplier="_7TI2K5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPc5uTEeq5ZsZHZYetyA" name="DropTargetDragEvent_OF_PlayerUserInterface.java" supplier="_7TI2MpuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPdJuTEeq5ZsZHZYetyA" name="DropTargetDropEvent_OF_PlayerUserInterface.java" supplier="_7TI2NpuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPdZuTEeq5ZsZHZYetyA" name="DropTargetEvent_OF_PlayerUserInterface.java" supplier="_7TI2NJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPdpuTEeq5ZsZHZYetyA" name="DropTargetListener_OF_PlayerUserInterface.java" supplier="_7TI2P5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPd5uTEeq5ZsZHZYetyA" name="File_OF_PlayerUserInterface.java" supplier="_7TI2DZuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPeJuTEeq5ZsZHZYetyA" name="Box_OF_PlayerUserInterface.java" supplier="_7TI2kJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPeZuTEeq5ZsZHZYetyA" name="JButton_OF_PlayerUserInterface.java" supplier="_7TI2s5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPepuTEeq5ZsZHZYetyA" name="JFrame_OF_PlayerUserInterface.java" supplier="_7TI2v5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPe5uTEeq5ZsZHZYetyA" name="JLabel_OF_PlayerUserInterface.java" supplier="_7TI2y5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPfJuTEeq5ZsZHZYetyA" name="JTable_OF_PlayerUserInterface.java" supplier="_7TI20puTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPfZuTEeq5ZsZHZYetyA" name="ListSelectionModel_OF_PlayerUserInterface.java" supplier="_7TI255uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPfpuTEeq5ZsZHZYetyA" name="DefaultTableModel_OF_PlayerUserInterface.java" supplier="_7TI2oJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPf5uTEeq5ZsZHZYetyA" name="MusicTitle_OF_PlayerUserInterface.java" supplier="_7TIPh5uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPgJuTEeq5ZsZHZYetyA" name="Player_OF_PlayerUserInterface.java" supplier="_7TIO25uTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPgZuTEeq5ZsZHZYetyA" name="PlayerImpl_OF_PlayerUserInterface.java" supplier="_7TIO8JuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPgpuTEeq5ZsZHZYetyA" name="MIDIMusicTitle_OF_PlayerUserInterface.java" supplier="_7TIPHJuTEeq5ZsZHZYetyA"/>
+                  <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPg5uTEeq5ZsZHZYetyA" name="WaveMusicTitle_OF_PlayerUserInterface.java" supplier="_7TIPLZuTEeq5ZsZHZYetyA"/>
+                </packagedElement>
+                <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPhJuTEeq5ZsZHZYetyA" name="List_OF_Player.java" supplier="_7TIPs5uTEeq5ZsZHZYetyA"/>
+                <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPhZuTEeq5ZsZHZYetyA" name="List_OF_MusicTitle.java" supplier="_7TIPs5uTEeq5ZsZHZYetyA"/>
+                <packagedElement xmi:type="uml:Dependency" xmi:id="_7TIPhpuTEeq5ZsZHZYetyA" name="AudioInputStream_OF_MusicTitle.java" supplier="_7TI2a5uTEeq5ZsZHZYetyA"/>
+                <packagedElement xmi:type="uml:Interface" xmi:id="_7TIPh5uTEeq5ZsZHZYetyA" name="MusicTitle" visibility="public">
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPiJuTEeq5ZsZHZYetyA" name="getName" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPiZuTEeq5ZsZHZYetyA" type="_7TI11puTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPipuTEeq5ZsZHZYetyA" name="getArtists" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPi5uTEeq5ZsZHZYetyA" type="_7TIO0JuTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPjJuTEeq5ZsZHZYetyA" name="getMusic" visibility="package">
+                    <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPjZuTEeq5ZsZHZYetyA" type="_7TI2a5uTEeq5ZsZHZYetyA" direction="return"/>
+                  </ownedOperation>
+                </packagedElement>
+              </packagedElement>
+            </packagedElement>
+          </packagedElement>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Model" xmi:id="_7TIPjpuTEeq5ZsZHZYetyA" name="externals">
+    <packagedElement xmi:type="uml:Package" xmi:id="_7TIPj5uTEeq5ZsZHZYetyA" name="java">
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TIPkJuTEeq5ZsZHZYetyA" name="util">
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPkZuTEeq5ZsZHZYetyA" name="LinkedList" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPkpuTEeq5ZsZHZYetyA" parameter="_7TIPk5uTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPk5uTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPm5uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TIPlJuTEeq5ZsZHZYetyA" general="_7TIPnJuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPlZuTEeq5ZsZHZYetyA" name="List__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3264bd6 (name: LinkedList, proxy: true)" client="_7TIPkZuTEeq5ZsZHZYetyA" supplier="_7TIPs5uTEeq5ZsZHZYetyA" contract="_7TIPs5uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPlpuTEeq5ZsZHZYetyA" name="Deque__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3264bd6 (name: LinkedList, proxy: true)" client="_7TIPkZuTEeq5ZsZHZYetyA" supplier="_7TIPxJuTEeq5ZsZHZYetyA" contract="_7TIPxJuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPl5uTEeq5ZsZHZYetyA" name="Cloneable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3264bd6 (name: LinkedList, proxy: true)" client="_7TIPkZuTEeq5ZsZHZYetyA" supplier="_7TI2ApuTEeq5ZsZHZYetyA" contract="_7TI2ApuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPmJuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3264bd6 (name: LinkedList, proxy: true)" client="_7TIPkZuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPmZuTEeq5ZsZHZYetyA" name="LinkedList" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPmpuTEeq5ZsZHZYetyA" type="_7TIPkZuTEeq5ZsZHZYetyA" direction="return"/>
+          </ownedOperation>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPm5uTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPnJuTEeq5ZsZHZYetyA" name="AbstractSequentialList" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPnZuTEeq5ZsZHZYetyA" parameter="_7TIPnpuTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPnpuTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPoJuTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TIPn5uTEeq5ZsZHZYetyA" general="_7TIPoZuTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPoJuTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPoZuTEeq5ZsZHZYetyA" name="AbstractList" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPopuTEeq5ZsZHZYetyA" parameter="_7TIPo5uTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPo5uTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPppuTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TIPpJuTEeq5ZsZHZYetyA" general="_7TIPp5uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPpZuTEeq5ZsZHZYetyA" name="List__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@a3db66d (name: AbstractList, proxy: true)" client="_7TIPoZuTEeq5ZsZHZYetyA" supplier="_7TIPs5uTEeq5ZsZHZYetyA" contract="_7TIPs5uTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPppuTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPp5uTEeq5ZsZHZYetyA" name="AbstractCollection" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPqJuTEeq5ZsZHZYetyA" parameter="_7TIPqZuTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPqZuTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPq5uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPqpuTEeq5ZsZHZYetyA" name="Collection__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1cc50f01 (name: AbstractCollection, proxy: true)" client="_7TIPp5uTEeq5ZsZHZYetyA" supplier="_7TIPv5uTEeq5ZsZHZYetyA" contract="_7TIPv5uTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPq5uTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPrJuTEeq5ZsZHZYetyA" name="Arrays" visibility="package">
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPrZuTEeq5ZsZHZYetyA" name="asList" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPrpuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2BpuTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPr5uTEeq5ZsZHZYetyA" name="Collections" visibility="package">
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPsJuTEeq5ZsZHZYetyA" name="emptyList" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TIPsZuTEeq5ZsZHZYetyA" name="EventObject" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TIPspuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@60bbdc2b (name: EventObject, proxy: true)" client="_7TIPsZuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TIPs5uTEeq5ZsZHZYetyA" name="List" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPtJuTEeq5ZsZHZYetyA" parameter="_7TIPtZuTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPtZuTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPt5uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TIPtpuTEeq5ZsZHZYetyA" general="_7TIPv5uTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPt5uTEeq5ZsZHZYetyA" name="E"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPuJuTEeq5ZsZHZYetyA" name="add" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPuZuTEeq5ZsZHZYetyA" name="arg0" type="_7TI175uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPupuTEeq5ZsZHZYetyA" name="remove" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPu5uTEeq5ZsZHZYetyA" name="arg0" type="_7TI175uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPvJuTEeq5ZsZHZYetyA" name="size" visibility="package"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TIPvZuTEeq5ZsZHZYetyA" name="get" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TIPvpuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TIPv5uTEeq5ZsZHZYetyA" name="Collection" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPwJuTEeq5ZsZHZYetyA" parameter="_7TIPwZuTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPwZuTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPw5uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TIPwpuTEeq5ZsZHZYetyA" general="_7TI1-JuTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPw5uTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TIPxJuTEeq5ZsZHZYetyA" name="Deque" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TIPxZuTEeq5ZsZHZYetyA" parameter="_7TIPxpuTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TIPxpuTEeq5ZsZHZYetyA" constrainingClassifier="_7TIPyJuTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TIPx5uTEeq5ZsZHZYetyA" general="_7TIPyZuTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TIPyJuTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TIPyZuTEeq5ZsZHZYetyA" name="Queue" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TI10JuTEeq5ZsZHZYetyA" parameter="_7TI10ZuTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TI10ZuTEeq5ZsZHZYetyA" constrainingClassifier="_7TI105uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI10puTEeq5ZsZHZYetyA" general="_7TIPv5uTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TI105uTEeq5ZsZHZYetyA" name="E"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI11JuTEeq5ZsZHZYetyA" name="EventListener" visibility="package"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TI11ZuTEeq5ZsZHZYetyA" name="lang">
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI11puTEeq5ZsZHZYetyA" name="String" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI115uTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1fc23ce7 (name: String, proxy: true)" client="_7TI11puTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI12JuTEeq5ZsZHZYetyA" name="Comparable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1fc23ce7 (name: String, proxy: true)" client="_7TI11puTEeq5ZsZHZYetyA" supplier="_7TI1_ZuTEeq5ZsZHZYetyA" contract="_7TI1_ZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI12ZuTEeq5ZsZHZYetyA" name="CharSequence__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1fc23ce7 (name: String, proxy: true)" client="_7TI11puTEeq5ZsZHZYetyA" supplier="_7TI2AZuTEeq5ZsZHZYetyA" contract="_7TI2AZuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI12puTEeq5ZsZHZYetyA" name="toLowerCase" visibility="package"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI125uTEeq5ZsZHZYetyA" name="endsWith" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI13JuTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI13ZuTEeq5ZsZHZYetyA" name="split" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI13puTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI135uTEeq5ZsZHZYetyA" name="arg1" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI14JuTEeq5ZsZHZYetyA" name="split" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI14ZuTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI14puTEeq5ZsZHZYetyA" name="join" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI145uTEeq5ZsZHZYetyA" name="arg0" type="_7TI2AZuTEeq5ZsZHZYetyA"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI15JuTEeq5ZsZHZYetyA" name="arg1" type="_7TI1-JuTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI15ZuTEeq5ZsZHZYetyA" name="reflect">
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI15puTEeq5ZsZHZYetyA" name="GenericDeclaration" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI155uTEeq5ZsZHZYetyA" general="_7TI16JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI16JuTEeq5ZsZHZYetyA" name="AnnotatedElement" visibility="package"/>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI16ZuTEeq5ZsZHZYetyA" name="Type" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI16puTEeq5ZsZHZYetyA" name="Exception" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI165uTEeq5ZsZHZYetyA" general="_7TI17JuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI17JuTEeq5ZsZHZYetyA" name="Throwable" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI17ZuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@741f3def (name: Throwable, proxy: true)" client="_7TI17JuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI17puTEeq5ZsZHZYetyA" name="printStackTrace" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI175uTEeq5ZsZHZYetyA" name="Object" visibility="package"/>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI18JuTEeq5ZsZHZYetyA" name="Class" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TI18ZuTEeq5ZsZHZYetyA" parameter="_7TI18puTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TI18puTEeq5ZsZHZYetyA" constrainingClassifier="_7TI195uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI185uTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3ad843f (name: Class, proxy: true)" client="_7TI18JuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI19JuTEeq5ZsZHZYetyA" name="GenericDeclaration__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3ad843f (name: Class, proxy: true)" client="_7TI18JuTEeq5ZsZHZYetyA" supplier="_7TI15puTEeq5ZsZHZYetyA" contract="_7TI15puTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI19ZuTEeq5ZsZHZYetyA" name="Type__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3ad843f (name: Class, proxy: true)" client="_7TI18JuTEeq5ZsZHZYetyA" supplier="_7TI16ZuTEeq5ZsZHZYetyA" contract="_7TI16ZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI19puTEeq5ZsZHZYetyA" name="AnnotatedElement__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3ad843f (name: Class, proxy: true)" client="_7TI18JuTEeq5ZsZHZYetyA" supplier="_7TI16JuTEeq5ZsZHZYetyA" contract="_7TI16JuTEeq5ZsZHZYetyA"/>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TI195uTEeq5ZsZHZYetyA" name="T"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI1-JuTEeq5ZsZHZYetyA" name="Iterable" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TI1-ZuTEeq5ZsZHZYetyA" parameter="_7TI1-puTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TI1-puTEeq5ZsZHZYetyA" constrainingClassifier="_7TI1-5uTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TI1-5uTEeq5ZsZHZYetyA" name="T"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI1_JuTEeq5ZsZHZYetyA" name="AutoCloseable" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI1_ZuTEeq5ZsZHZYetyA" name="Comparable" visibility="package">
+          <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_7TI1_puTEeq5ZsZHZYetyA" parameter="_7TI1_5uTEeq5ZsZHZYetyA">
+            <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_7TI1_5uTEeq5ZsZHZYetyA" constrainingClassifier="_7TI2AJuTEeq5ZsZHZYetyA"/>
+          </ownedTemplateSignature>
+          <nestedClassifier xmi:type="uml:Class" xmi:id="_7TI2AJuTEeq5ZsZHZYetyA" name="T"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2AZuTEeq5ZsZHZYetyA" name="CharSequence" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2ApuTEeq5ZsZHZYetyA" name="Cloneable" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2A5uTEeq5ZsZHZYetyA" name="Runnable" visibility="package"/>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2BJuTEeq5ZsZHZYetyA" name="String[]">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI2BZuTEeq5ZsZHZYetyA" name="type" type="_7TI11puTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2BpuTEeq5ZsZHZYetyA" name="Object[]">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI2B5uTEeq5ZsZHZYetyA" name="type" type="_7TI175uTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TI2CJuTEeq5ZsZHZYetyA" name="io">
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2CZuTEeq5ZsZHZYetyA" name="InputStream" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2CpuTEeq5ZsZHZYetyA" name="Closeable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@50277227 (name: InputStream, proxy: true)" client="_7TI2CZuTEeq5ZsZHZYetyA" supplier="_7TI2FpuTEeq5ZsZHZYetyA" contract="_7TI2FpuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2C5uTEeq5ZsZHZYetyA" name="IOException" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2DJuTEeq5ZsZHZYetyA" general="_7TI16puTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2DZuTEeq5ZsZHZYetyA" name="File" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2DpuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@21e74a1e (name: File, proxy: true)" client="_7TI2DZuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2D5uTEeq5ZsZHZYetyA" name="Comparable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@21e74a1e (name: File, proxy: true)" client="_7TI2DZuTEeq5ZsZHZYetyA" supplier="_7TI1_ZuTEeq5ZsZHZYetyA" contract="_7TI1_ZuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2EJuTEeq5ZsZHZYetyA" name="File" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2EZuTEeq5ZsZHZYetyA" type="_7TI2DZuTEeq5ZsZHZYetyA" direction="return"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2EpuTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2E5uTEeq5ZsZHZYetyA" name="getName" visibility="package"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2FJuTEeq5ZsZHZYetyA" name="exists" visibility="package"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2FZuTEeq5ZsZHZYetyA" name="getAbsolutePath" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2FpuTEeq5ZsZHZYetyA" name="Closeable" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2F5uTEeq5ZsZHZYetyA" general="_7TI1_JuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2GJuTEeq5ZsZHZYetyA" name="Serializable" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2GZuTEeq5ZsZHZYetyA" name="Externalizable" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2GpuTEeq5ZsZHZYetyA" general="_7TI2GJuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TI2G5uTEeq5ZsZHZYetyA" name="awt">
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2HJuTEeq5ZsZHZYetyA" name="BorderLayout" visibility="package">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI2HZuTEeq5ZsZHZYetyA" name="SOUTH" visibility="package"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI2HpuTEeq5ZsZHZYetyA" name="CENTER" visibility="package"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2H5uTEeq5ZsZHZYetyA" name="LayoutManager2__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@141f821b (name: BorderLayout, proxy: true)" client="_7TI2HJuTEeq5ZsZHZYetyA" supplier="_7TI2Y5uTEeq5ZsZHZYetyA" contract="_7TI2Y5uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2IJuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@141f821b (name: BorderLayout, proxy: true)" client="_7TI2HJuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2IZuTEeq5ZsZHZYetyA" name="datatransfer">
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2IpuTEeq5ZsZHZYetyA" name="DataFlavor" visibility="package">
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2I5uTEeq5ZsZHZYetyA" name="Externalizable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@331f6646 (name: DataFlavor, proxy: true)" client="_7TI2IpuTEeq5ZsZHZYetyA" supplier="_7TI2GZuTEeq5ZsZHZYetyA" contract="_7TI2GZuTEeq5ZsZHZYetyA"/>
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2JJuTEeq5ZsZHZYetyA" name="Cloneable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@331f6646 (name: DataFlavor, proxy: true)" client="_7TI2IpuTEeq5ZsZHZYetyA" supplier="_7TI2ApuTEeq5ZsZHZYetyA" contract="_7TI2ApuTEeq5ZsZHZYetyA"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2JZuTEeq5ZsZHZYetyA" name="isFlavorJavaFileListType" visibility="package"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2JpuTEeq5ZsZHZYetyA" name="Transferable" visibility="package">
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2J5uTEeq5ZsZHZYetyA" name="getTransferDataFlavors" visibility="package"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2KJuTEeq5ZsZHZYetyA" name="getTransferData" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2KZuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2IpuTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2KpuTEeq5ZsZHZYetyA" name="dnd">
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2K5uTEeq5ZsZHZYetyA" name="DropTarget" visibility="package">
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2LJuTEeq5ZsZHZYetyA" name="DropTargetListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7520ebd (name: DropTarget, proxy: true)" client="_7TI2K5uTEeq5ZsZHZYetyA" supplier="_7TI2P5uTEeq5ZsZHZYetyA" contract="_7TI2P5uTEeq5ZsZHZYetyA"/>
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2LZuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7520ebd (name: DropTarget, proxy: true)" client="_7TI2K5uTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2LpuTEeq5ZsZHZYetyA" name="DropTarget" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2L5uTEeq5ZsZHZYetyA" type="_7TI2K5uTEeq5ZsZHZYetyA" direction="return"/>
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2MJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2UJuTEeq5ZsZHZYetyA"/>
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2MZuTEeq5ZsZHZYetyA" name="arg1" type="_7TI2P5uTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2MpuTEeq5ZsZHZYetyA" name="DropTargetDragEvent" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2M5uTEeq5ZsZHZYetyA" general="_7TI2NJuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2NJuTEeq5ZsZHZYetyA" name="DropTargetEvent" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2NZuTEeq5ZsZHZYetyA" general="_7TIPsZuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2NpuTEeq5ZsZHZYetyA" name="DropTargetDropEvent" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2N5uTEeq5ZsZHZYetyA" general="_7TI2NJuTEeq5ZsZHZYetyA"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2OJuTEeq5ZsZHZYetyA" name="getTransferable" visibility="package"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2OZuTEeq5ZsZHZYetyA" name="acceptDrop" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2OpuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2O5uTEeq5ZsZHZYetyA" name="getDropAction" visibility="package"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2PJuTEeq5ZsZHZYetyA" name="dropComplete" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2PZuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOx5uTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2PpuTEeq5ZsZHZYetyA" name="rejectDrop" visibility="package"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2P5uTEeq5ZsZHZYetyA" name="DropTargetListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2QJuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2QZuTEeq5ZsZHZYetyA" name="image">
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2QpuTEeq5ZsZHZYetyA" name="ImageObserver" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2Q5uTEeq5ZsZHZYetyA" name="event">
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2RJuTEeq5ZsZHZYetyA" name="ActionListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2RZuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2RpuTEeq5ZsZHZYetyA" name="EventQueue" visibility="package">
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2R5uTEeq5ZsZHZYetyA" name="invokeLater" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2SJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2A5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2SZuTEeq5ZsZHZYetyA" name="Container" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2SpuTEeq5ZsZHZYetyA" general="_7TI2UJuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2S5uTEeq5ZsZHZYetyA" name="add" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2TJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2UJuTEeq5ZsZHZYetyA"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2TZuTEeq5ZsZHZYetyA" name="arg1" type="_7TI175uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2TpuTEeq5ZsZHZYetyA" name="add" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2T5uTEeq5ZsZHZYetyA" name="arg0" type="_7TI2UJuTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2UJuTEeq5ZsZHZYetyA" name="Component" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2UZuTEeq5ZsZHZYetyA" name="ImageObserver__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@73037d38 (name: Component, proxy: true)" client="_7TI2UJuTEeq5ZsZHZYetyA" supplier="_7TI2QpuTEeq5ZsZHZYetyA" contract="_7TI2QpuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2UpuTEeq5ZsZHZYetyA" name="MenuContainer__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@73037d38 (name: Component, proxy: true)" client="_7TI2UJuTEeq5ZsZHZYetyA" supplier="_7TI2ZpuTEeq5ZsZHZYetyA" contract="_7TI2ZpuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2U5uTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@73037d38 (name: Component, proxy: true)" client="_7TI2UJuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2VJuTEeq5ZsZHZYetyA" name="Frame" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2VZuTEeq5ZsZHZYetyA" general="_7TI2WZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2VpuTEeq5ZsZHZYetyA" name="MenuContainer__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@4b147e17 (name: Frame, proxy: true)" client="_7TI2VJuTEeq5ZsZHZYetyA" supplier="_7TI2ZpuTEeq5ZsZHZYetyA" contract="_7TI2ZpuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2V5uTEeq5ZsZHZYetyA" name="setTitle" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2WJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2WZuTEeq5ZsZHZYetyA" name="Window" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2WpuTEeq5ZsZHZYetyA" general="_7TI2SZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2W5uTEeq5ZsZHZYetyA" name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@239630f0 (name: Window, proxy: true)" client="_7TI2WZuTEeq5ZsZHZYetyA" supplier="_7TI26puTEeq5ZsZHZYetyA" contract="_7TI26puTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2XJuTEeq5ZsZHZYetyA" name="setVisible" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2XZuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOx5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2XpuTEeq5ZsZHZYetyA" name="setBounds" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2X5uTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2YJuTEeq5ZsZHZYetyA" name="arg1" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2YZuTEeq5ZsZHZYetyA" name="arg2" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2YpuTEeq5ZsZHZYetyA" name="arg3" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2Y5uTEeq5ZsZHZYetyA" name="LayoutManager2" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2ZJuTEeq5ZsZHZYetyA" general="_7TI2ZZuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2ZZuTEeq5ZsZHZYetyA" name="LayoutManager" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2ZpuTEeq5ZsZHZYetyA" name="MenuContainer" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2Z5uTEeq5ZsZHZYetyA" name="ItemSelectable" visibility="package"/>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_7TI2aJuTEeq5ZsZHZYetyA" name="javax">
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TI2aZuTEeq5ZsZHZYetyA" name="sound">
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2apuTEeq5ZsZHZYetyA" name="sampled">
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2a5uTEeq5ZsZHZYetyA" name="AudioInputStream" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2bJuTEeq5ZsZHZYetyA" general="_7TI2CZuTEeq5ZsZHZYetyA"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2bZuTEeq5ZsZHZYetyA" name="getFormat" visibility="package"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2bpuTEeq5ZsZHZYetyA" name="AudioFormat" visibility="package"/>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2b5uTEeq5ZsZHZYetyA" name="AudioSystem" visibility="package">
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2cJuTEeq5ZsZHZYetyA" name="getLine" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2cZuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2jZuTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2cpuTEeq5ZsZHZYetyA" name="getAudioInputStream" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2c5uTEeq5ZsZHZYetyA" name="arg0" type="_7TI2DZuTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2dJuTEeq5ZsZHZYetyA" name="LineUnavailableException" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2dZuTEeq5ZsZHZYetyA" general="_7TI16puTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2dpuTEeq5ZsZHZYetyA" name="UnsupportedAudioFileException" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2d5uTEeq5ZsZHZYetyA" general="_7TI16puTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2eJuTEeq5ZsZHZYetyA" name="Clip" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2eZuTEeq5ZsZHZYetyA" general="_7TI2gZuTEeq5ZsZHZYetyA"/>
+            <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI2epuTEeq5ZsZHZYetyA" name="LOOP_CONTINUOUSLY" visibility="package"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2e5uTEeq5ZsZHZYetyA" name="open" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2fJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2a5uTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2fZuTEeq5ZsZHZYetyA" name="setFramePosition" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2fpuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2f5uTEeq5ZsZHZYetyA" name="loop" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2gJuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2gZuTEeq5ZsZHZYetyA" name="DataLine" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2gpuTEeq5ZsZHZYetyA" general="_7TI2i5uTEeq5ZsZHZYetyA"/>
+            <nestedClassifier xmi:type="uml:Class" xmi:id="_7TI2g5uTEeq5ZsZHZYetyA" name="Info" visibility="package">
+              <generalization xmi:type="uml:Generalization" xmi:id="_7TI2hJuTEeq5ZsZHZYetyA" general="_7TI2jZuTEeq5ZsZHZYetyA"/>
+              <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2hZuTEeq5ZsZHZYetyA" name="Info" visibility="package">
+                <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2hpuTEeq5ZsZHZYetyA" type="_7TI2g5uTEeq5ZsZHZYetyA" direction="return"/>
+                <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2h5uTEeq5ZsZHZYetyA" name="arg0" type="_7TI18JuTEeq5ZsZHZYetyA"/>
+                <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2iJuTEeq5ZsZHZYetyA" name="arg1" type="_7TI2bpuTEeq5ZsZHZYetyA"/>
+              </ownedOperation>
+            </nestedClassifier>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2iZuTEeq5ZsZHZYetyA" name="stop" visibility="package"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2ipuTEeq5ZsZHZYetyA" name="getFramePosition" visibility="package"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2i5uTEeq5ZsZHZYetyA" name="Line" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2jJuTEeq5ZsZHZYetyA" general="_7TI1_JuTEeq5ZsZHZYetyA"/>
+            <nestedClassifier xmi:type="uml:Class" xmi:id="_7TI2jZuTEeq5ZsZHZYetyA" name="Info" visibility="package"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2jpuTEeq5ZsZHZYetyA" name="close" visibility="package"/>
+          </packagedElement>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TI2j5uTEeq5ZsZHZYetyA" name="swing">
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2kJuTEeq5ZsZHZYetyA" name="Box" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2kZuTEeq5ZsZHZYetyA" general="_7TI2rZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2kpuTEeq5ZsZHZYetyA" name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@29c01450 (name: Box, proxy: true)" client="_7TI2kJuTEeq5ZsZHZYetyA" supplier="_7TI26puTEeq5ZsZHZYetyA" contract="_7TI26puTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2k5uTEeq5ZsZHZYetyA" name="createHorizontalBox" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2lJuTEeq5ZsZHZYetyA" name="event">
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2lZuTEeq5ZsZHZYetyA" name="TableModelListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2lpuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2l5uTEeq5ZsZHZYetyA" name="TableColumnModelListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2mJuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2mZuTEeq5ZsZHZYetyA" name="ListSelectionListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2mpuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2m5uTEeq5ZsZHZYetyA" name="CellEditorListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2nJuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2nZuTEeq5ZsZHZYetyA" name="RowSorterListener" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2npuTEeq5ZsZHZYetyA" general="_7TI11JuTEeq5ZsZHZYetyA"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_7TI2n5uTEeq5ZsZHZYetyA" name="table">
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2oJuTEeq5ZsZHZYetyA" name="DefaultTableModel" visibility="package">
+            <generalization xmi:type="uml:Generalization" xmi:id="_7TI2oZuTEeq5ZsZHZYetyA" general="_7TI2p5uTEeq5ZsZHZYetyA"/>
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2opuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@23a97cb8 (name: DefaultTableModel, proxy: true)" client="_7TI2oJuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2o5uTEeq5ZsZHZYetyA" name="setColumnIdentifiers" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2pJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2BpuTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2pZuTEeq5ZsZHZYetyA" name="addRow" visibility="package">
+              <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2ppuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2BpuTEeq5ZsZHZYetyA"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_7TI2p5uTEeq5ZsZHZYetyA" name="AbstractTableModel" visibility="package">
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2qJuTEeq5ZsZHZYetyA" name="TableModel__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@2ea47ef5 (name: AbstractTableModel, proxy: true)" client="_7TI2p5uTEeq5ZsZHZYetyA" supplier="_7TI2q5uTEeq5ZsZHZYetyA" contract="_7TI2q5uTEeq5ZsZHZYetyA"/>
+            <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2qZuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@2ea47ef5 (name: AbstractTableModel, proxy: true)" client="_7TI2p5uTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2qpuTEeq5ZsZHZYetyA" name="fireTableDataChanged" visibility="package"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_7TI2q5uTEeq5ZsZHZYetyA" name="TableModel" visibility="package">
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2rJuTEeq5ZsZHZYetyA" name="getRowCount" visibility="package"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2rZuTEeq5ZsZHZYetyA" name="JComponent" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2rpuTEeq5ZsZHZYetyA" general="_7TI2SZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2r5uTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@44e1e127 (name: JComponent, proxy: true)" client="_7TI2rZuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2sJuTEeq5ZsZHZYetyA" name="HasGetTransferHandler__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@44e1e127 (name: JComponent, proxy: true)" client="_7TI2rZuTEeq5ZsZHZYetyA" supplier="_7TI24puTEeq5ZsZHZYetyA" contract="_7TI24puTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2sZuTEeq5ZsZHZYetyA" name="TransferHandler" visibility="package">
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2spuTEeq5ZsZHZYetyA" name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@736bb927 (name: TransferHandler, proxy: true)" client="_7TI2sZuTEeq5ZsZHZYetyA" supplier="_7TI2GJuTEeq5ZsZHZYetyA" contract="_7TI2GJuTEeq5ZsZHZYetyA"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2s5uTEeq5ZsZHZYetyA" name="JButton" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2tJuTEeq5ZsZHZYetyA" general="_7TI2uZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2tZuTEeq5ZsZHZYetyA" name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@255d3d18 (name: JButton, proxy: true)" client="_7TI2s5uTEeq5ZsZHZYetyA" supplier="_7TI26puTEeq5ZsZHZYetyA" contract="_7TI26puTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2tpuTEeq5ZsZHZYetyA" name="JButton" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2t5uTEeq5ZsZHZYetyA" type="_7TI2s5uTEeq5ZsZHZYetyA" direction="return"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2uJuTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2uZuTEeq5ZsZHZYetyA" name="AbstractButton" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2upuTEeq5ZsZHZYetyA" general="_7TI2rZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2u5uTEeq5ZsZHZYetyA" name="ItemSelectable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6efe184d (name: AbstractButton, proxy: true)" client="_7TI2uZuTEeq5ZsZHZYetyA" supplier="_7TI2Z5uTEeq5ZsZHZYetyA" contract="_7TI2Z5uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2vJuTEeq5ZsZHZYetyA" name="SwingConstants__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6efe184d (name: AbstractButton, proxy: true)" client="_7TI2uZuTEeq5ZsZHZYetyA" supplier="_7TI245uTEeq5ZsZHZYetyA" contract="_7TI245uTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2vZuTEeq5ZsZHZYetyA" name="addActionListener" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2vpuTEeq5ZsZHZYetyA" name="arg0" type="_7TI2RJuTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2v5uTEeq5ZsZHZYetyA" name="JFrame" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2wJuTEeq5ZsZHZYetyA" general="_7TI2VJuTEeq5ZsZHZYetyA"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI2wZuTEeq5ZsZHZYetyA" name="EXIT_ON_CLOSE" visibility="package"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2wpuTEeq5ZsZHZYetyA" name="WindowConstants__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7a8c50de (name: JFrame, proxy: true)" client="_7TI2v5uTEeq5ZsZHZYetyA" supplier="_7TI25JuTEeq5ZsZHZYetyA" contract="_7TI25JuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2w5uTEeq5ZsZHZYetyA" name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7a8c50de (name: JFrame, proxy: true)" client="_7TI2v5uTEeq5ZsZHZYetyA" supplier="_7TI26puTEeq5ZsZHZYetyA" contract="_7TI26puTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2xJuTEeq5ZsZHZYetyA" name="RootPaneContainer__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7a8c50de (name: JFrame, proxy: true)" client="_7TI2v5uTEeq5ZsZHZYetyA" supplier="_7TI25ZuTEeq5ZsZHZYetyA" contract="_7TI25ZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2xZuTEeq5ZsZHZYetyA" name="HasGetTransferHandler__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7a8c50de (name: JFrame, proxy: true)" client="_7TI2v5uTEeq5ZsZHZYetyA" supplier="_7TI24puTEeq5ZsZHZYetyA" contract="_7TI24puTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2xpuTEeq5ZsZHZYetyA" name="JFrame" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2x5uTEeq5ZsZHZYetyA" type="_7TI2v5uTEeq5ZsZHZYetyA" direction="return"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2yJuTEeq5ZsZHZYetyA" name="setDefaultCloseOperation" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI2yZuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2ypuTEeq5ZsZHZYetyA" name="getContentPane" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI2y5uTEeq5ZsZHZYetyA" name="JLabel" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI2zJuTEeq5ZsZHZYetyA" general="_7TI2rZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2zZuTEeq5ZsZHZYetyA" name="SwingConstants__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@79450d21 (name: JLabel, proxy: true)" client="_7TI2y5uTEeq5ZsZHZYetyA" supplier="_7TI245uTEeq5ZsZHZYetyA" contract="_7TI245uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI2zpuTEeq5ZsZHZYetyA" name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@79450d21 (name: JLabel, proxy: true)" client="_7TI2y5uTEeq5ZsZHZYetyA" supplier="_7TI26puTEeq5ZsZHZYetyA" contract="_7TI26puTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI2z5uTEeq5ZsZHZYetyA" name="JLabel" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI20JuTEeq5ZsZHZYetyA" type="_7TI2y5uTEeq5ZsZHZYetyA" direction="return"/>
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI20ZuTEeq5ZsZHZYetyA" name="arg0" type="_7TI11puTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_7TI20puTEeq5ZsZHZYetyA" name="JTable" visibility="package">
+          <generalization xmi:type="uml:Generalization" xmi:id="_7TI205uTEeq5ZsZHZYetyA" general="_7TI2rZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI21JuTEeq5ZsZHZYetyA" name="TableModelListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI2lZuTEeq5ZsZHZYetyA" contract="_7TI2lZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI21ZuTEeq5ZsZHZYetyA" name="Scrollable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI25puTEeq5ZsZHZYetyA" contract="_7TI25puTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI21puTEeq5ZsZHZYetyA" name="TableColumnModelListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI2l5uTEeq5ZsZHZYetyA" contract="_7TI2l5uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI215uTEeq5ZsZHZYetyA" name="ListSelectionListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI2mZuTEeq5ZsZHZYetyA" contract="_7TI2mZuTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI22JuTEeq5ZsZHZYetyA" name="CellEditorListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI2m5uTEeq5ZsZHZYetyA" contract="_7TI2m5uTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI22ZuTEeq5ZsZHZYetyA" name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI26puTEeq5ZsZHZYetyA" contract="_7TI26puTEeq5ZsZHZYetyA"/>
+          <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_7TI22puTEeq5ZsZHZYetyA" name="RowSorterListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@61d7a877 (name: JTable, proxy: true)" client="_7TI20puTEeq5ZsZHZYetyA" supplier="_7TI2nZuTEeq5ZsZHZYetyA" contract="_7TI2nZuTEeq5ZsZHZYetyA"/>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI225uTEeq5ZsZHZYetyA" name="JTable" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI23JuTEeq5ZsZHZYetyA" type="_7TI20puTEeq5ZsZHZYetyA" direction="return"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI23ZuTEeq5ZsZHZYetyA" name="setSelectionMode" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI23puTEeq5ZsZHZYetyA" name="arg0" type="_7TIOw5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI235uTEeq5ZsZHZYetyA" name="setShowHorizontalLines" visibility="package">
+            <ownedParameter xmi:type="uml:Parameter" xmi:id="_7TI24JuTEeq5ZsZHZYetyA" name="arg0" type="_7TIOx5uTEeq5ZsZHZYetyA"/>
+          </ownedOperation>
+          <ownedOperation xmi:type="uml:Operation" xmi:id="_7TI24ZuTEeq5ZsZHZYetyA" name="getModel" visibility="package"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI24puTEeq5ZsZHZYetyA" name="HasGetTransferHandler" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI245uTEeq5ZsZHZYetyA" name="SwingConstants" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI25JuTEeq5ZsZHZYetyA" name="WindowConstants" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI25ZuTEeq5ZsZHZYetyA" name="RootPaneContainer" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI25puTEeq5ZsZHZYetyA" name="Scrollable" visibility="package"/>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI255uTEeq5ZsZHZYetyA" name="ListSelectionModel" visibility="package">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_7TI26JuTEeq5ZsZHZYetyA" name="SINGLE_SELECTION" visibility="package"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="_7TI26ZuTEeq5ZsZHZYetyA" name="accessibility">
+        <packagedElement xmi:type="uml:Interface" xmi:id="_7TI26puTEeq5ZsZHZYetyA" name="Accessible" visibility="package"/>
+      </packagedElement>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Model" xmi:id="_7TI265uTEeq5ZsZHZYetyA" name="sourcesReferences">
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI27JuTEeq5ZsZHZYetyA" name="Player.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\Player.java"/>
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI27ZuTEeq5ZsZHZYetyA" name="MusicTitle.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\MusicTitle.java"/>
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI27puTEeq5ZsZHZYetyA" name="PlayerImpl.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\PlayerImpl.java"/>
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI275uTEeq5ZsZHZYetyA" name="MIDIMusicTitle.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\format\MIDIMusicTitle.java"/>
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI28JuTEeq5ZsZHZYetyA" name="WaveMusicTitle.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\format\WaveMusicTitle.java"/>
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI28ZuTEeq5ZsZHZYetyA" name="MusicFile.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\format\MusicFile.java"/>
+    <packagedElement xmi:type="uml:Artifact" xmi:id="_7TI28puTEeq5ZsZHZYetyA" name="PlayerUserInterface.java" fileName="D:\workspaces\revision\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\ui\PlayerUserInterface.java"/>
+  </packagedElement>
+</uml:Model>
