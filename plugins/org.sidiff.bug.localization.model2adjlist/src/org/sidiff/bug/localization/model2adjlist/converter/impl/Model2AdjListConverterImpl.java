@@ -3,31 +3,56 @@ package org.sidiff.bug.localization.model2adjlist.converter.impl;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.sidiff.bug.localization.model2adjlist.converter.Model2AdjListConverter;
-import org.sidiff.bug.localization.model2adjlist.converter.Object2StringMapper;
-import org.sidiff.bug.localization.model2adjlist.format.AdjacencyList;
+import org.sidiff.bug.localization.model2adjlist.converter.ModelElement2NumberConverter;
+import org.sidiff.bug.localization.model2adjlist.format.ModelAdjacencyList;
+import org.sidiff.bug.localization.model2adjlist.format.impl.ModelAdjacencyListImpl;
+import org.sidiff.bug.localization.model2adjlist.trace.ModelElement2NumberMapper;
+import org.sidiff.bug.localization.model2adjlist.trace.Number2ModelElementMapper;
+import org.sidiff.bug.localization.model2adjlist.trace.impl.ModelElement2NumberMapperImpl;
+import org.sidiff.bug.localization.model2adjlist.trace.impl.Number2ModelElementMapperImpl;
 
 public class Model2AdjListConverterImpl implements Model2AdjListConverter {
 
-	private AdjacencyList adjacencyList;
+	private boolean INITIALIZE_MAPPING = true;
 	
-	public Model2AdjListConverterImpl(Object2StringMapper object2StringMapperImpl) {
-		this.adjacencyList = new AdjacencyList(object2StringMapperImpl);
+	private ModelElement2NumberConverter modelElement2Number;
+	
+	public Model2AdjListConverterImpl(ModelElement2NumberConverter modelElement2Number) {
+		this.modelElement2Number = modelElement2Number;
 	}
 	
 	@Override
-	public AdjacencyList convert(TreeIterator<EObject> contents) {
+	public ModelAdjacencyList convert(Iterable<EObject> contents) {
+		ModelElement2NumberMapper modelElement2NumberMapper = new ModelElement2NumberMapperImpl(modelElement2Number);
+		Number2ModelElementMapper number2ModelElementMapper = new Number2ModelElementMapperImpl(); 
 		
-		for (EObject modelElement : (Iterable<EObject>) () -> contents) {
+		// NOTE: Optionally, just initializes the mapping for a continuously numbering of the model elements:
+		if (INITIALIZE_MAPPING) {
+			initialize(contents, modelElement2NumberMapper, number2ModelElementMapper);
+		}
+		
+		ModelAdjacencyList adjacencyList = new ModelAdjacencyListImpl(modelElement2NumberMapper, number2ModelElementMapper);
+		
+		for (EObject modelElement : contents) {
 			Set<EObject> adjacent = getAdjacent(modelElement);
-			adjacencyList.add(modelElement, adjacent, EcoreUtil.getURI(modelElement).fragment().toString());
+			adjacencyList.addModelElement(modelElement, adjacent);
 		}
 		
 		return adjacencyList;
+	}
+
+	private void initialize(
+			Iterable<EObject> contents,
+			ModelElement2NumberMapper modelElement2NumberMapper,
+			Number2ModelElementMapper number2ModelElementMapper) {
+		
+		for (EObject modelElement : contents) {
+			Integer modelElementNumerical = modelElement2NumberMapper.getNumber(modelElement);
+			number2ModelElementMapper.map(modelElementNumerical, modelElement);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,9 +75,5 @@ public class Model2AdjListConverterImpl implements Model2AdjListConverter {
 		}
 		
 		return adjacents;
-	}
-	
-	public AdjacencyList getAdjacencyList() {
-		return adjacencyList;
 	}
 }
