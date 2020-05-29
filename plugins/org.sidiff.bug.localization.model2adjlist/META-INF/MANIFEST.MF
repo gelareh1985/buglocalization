@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Converts a Model to Adjacency List
+Bundle-SymbolicName: org.sidiff.bug.localization.model2adjlist;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.bug.localization.model2adjlist.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.swt,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.sidiff.bug.localization.model2adjlist
+Bundle-ActivationPolicy: lazy
