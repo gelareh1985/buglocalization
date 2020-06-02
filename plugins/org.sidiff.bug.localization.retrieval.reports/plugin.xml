@@ -3,14 +3,14 @@
 <plugin>
    <extension
          id="testdriver"
-         name="Converts a Model to Adjacency List"
+         name="Bug Report Retrival"
          point="org.eclipse.core.runtime.applications">
       <application
             cardinality="singleton-global"
             thread="main"
             visible="true">
          <run
-               class="org.sidiff.bug.localization.model2adjlist.Application">
+               class="org.sidiff.bug.localization.retrieval.reports.Application">
          </run>
       </application>
    </extension>

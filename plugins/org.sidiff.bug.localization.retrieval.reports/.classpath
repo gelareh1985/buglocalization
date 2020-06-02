@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="libraries/gson-2.8.6/gson-2.8.6.jar" sourcepath="libraries/gson-2.8.6/gson-2.8.6-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-lang3-3.10/commons-lang3-3.10.jar" sourcepath="libraries/commons-lang3-3.10/commons-lang3-3.10-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-text-1.8/commons-text-1.8.jar" sourcepath="libraries/commons-text-1.8/commons-text-1.8-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
