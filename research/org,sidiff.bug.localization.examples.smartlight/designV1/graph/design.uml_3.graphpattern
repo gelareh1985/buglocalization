@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graphpattern:Bundle xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graphpattern="http://www.sidiff.org/graphpattern/1.0" xmi:id="_erjjEKTjEeqid6_VPlcZ_g" name="designV1">
+  <patterns xmi:id="_erkxMKTjEeqid6_VPlcZ_g" name="design">
+    <graphs xmi:id="_erkxMaTjEeqid6_VPlcZ_g" name="design">
+      <nodes xmi:id="_erkxRKTjEeqid6_VPlcZ_g" name="Remote" incomings="_erkxaqTjEeqid6_VPlcZ_g _erkxiqTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxRaTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//StructuredClassifier/ownedAttribute"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxRqTjEeqid6_VPlcZ_g" target="_erkxZ6TjEeqid6_VPlcZ_g" opposite="_erkxaqTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Class/ownedOperation"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxR6TjEeqid6_VPlcZ_g" target="_erkxiKTjEeqid6_VPlcZ_g" opposite="_erkxiqTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Class/ownedOperation"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Class"/>
+        <attributes xmi:id="_erkxSKTjEeqid6_VPlcZ_g" value="&quot;Remote&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkxSaTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkxSqTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//RedefinableElement/isLeaf"/>
+        </attributes>
+        <attributes xmi:id="_erkxS6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Classifier/isAbstract"/>
+        </attributes>
+        <attributes xmi:id="_erkxTKTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Classifier/isFinalSpecialization"/>
+        </attributes>
+        <attributes xmi:id="_erkxTaTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Class/isActive"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkxZ6TjEeqid6_VPlcZ_g" name="turnOn" incomings="_erkxRqTjEeqid6_VPlcZ_g _erkxdKTjEeqid6_VPlcZ_g _erkxf6TjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxaKTjEeqid6_VPlcZ_g" target="_erkxcqTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/ownedParameter"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxaaTjEeqid6_VPlcZ_g" target="_erkxfaTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/ownedParameter"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxaqTjEeqid6_VPlcZ_g" target="_erkxRKTjEeqid6_VPlcZ_g" opposite="_erkxRqTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation/class"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation"/>
+        <attributes xmi:id="_erkxa6TjEeqid6_VPlcZ_g" value="&quot;turnOn&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkxbKTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkxbaTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//RedefinableElement/isLeaf"/>
+        </attributes>
+        <attributes xmi:id="_erkxbqTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Feature/isStatic"/>
+        </attributes>
+        <attributes xmi:id="_erkxb6TjEeqid6_VPlcZ_g" value="&quot;sequential&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/concurrency"/>
+        </attributes>
+        <attributes xmi:id="_erkxcKTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/isAbstract"/>
+        </attributes>
+        <attributes xmi:id="_erkxcaTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation/isQuery"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkxcqTjEeqid6_VPlcZ_g" name="light" incomings="_erkxaKTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxc6TjEeqid6_VPlcZ_g" target="_erkx4KTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//TypedElement/type"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxdKTjEeqid6_VPlcZ_g" target="_erkxZ6TjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/operation"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter"/>
+        <attributes xmi:id="_erkxdaTjEeqid6_VPlcZ_g" value="&quot;light&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkxdqTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkxd6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//MultiplicityElement/isOrdered"/>
+        </attributes>
+        <attributes xmi:id="_erkxeKTjEeqid6_VPlcZ_g" value="&quot;true&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//MultiplicityElement/isUnique"/>
+        </attributes>
+        <attributes xmi:id="_erkxeaTjEeqid6_VPlcZ_g" value="&quot;in&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/direction"/>
+        </attributes>
+        <attributes xmi:id="_erkxeqTjEeqid6_VPlcZ_g" value="&quot;create&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/effect"/>
+        </attributes>
+        <attributes xmi:id="_erkxe6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/isException"/>
+        </attributes>
+        <attributes xmi:id="_erkxfKTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/isStream"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkxfaTjEeqid6_VPlcZ_g" name="mode" incomings="_erkxaaTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxfqTjEeqid6_VPlcZ_g" target="_erkyhqTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//TypedElement/type"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxf6TjEeqid6_VPlcZ_g" target="_erkxZ6TjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/operation"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter"/>
+        <attributes xmi:id="_erkxgKTjEeqid6_VPlcZ_g" value="&quot;mode&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkxgaTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkxgqTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//MultiplicityElement/isOrdered"/>
+        </attributes>
+        <attributes xmi:id="_erkxg6TjEeqid6_VPlcZ_g" value="&quot;true&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//MultiplicityElement/isUnique"/>
+        </attributes>
+        <attributes xmi:id="_erkxhKTjEeqid6_VPlcZ_g" value="&quot;in&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/direction"/>
+        </attributes>
+        <attributes xmi:id="_erkxhaTjEeqid6_VPlcZ_g" value="&quot;create&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/effect"/>
+        </attributes>
+        <attributes xmi:id="_erkxhqTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/isException"/>
+        </attributes>
+        <attributes xmi:id="_erkxh6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/isStream"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkxiKTjEeqid6_VPlcZ_g" name="turnOff" incomings="_erkxR6TjEeqid6_VPlcZ_g _erkxlKTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxiaTjEeqid6_VPlcZ_g" target="_erkxkqTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/ownedParameter"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxiqTjEeqid6_VPlcZ_g" target="_erkxRKTjEeqid6_VPlcZ_g" opposite="_erkxR6TjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation/class"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation"/>
+        <attributes xmi:id="_erkxi6TjEeqid6_VPlcZ_g" value="&quot;turnOff&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkxjKTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkxjaTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//RedefinableElement/isLeaf"/>
+        </attributes>
+        <attributes xmi:id="_erkxjqTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Feature/isStatic"/>
+        </attributes>
+        <attributes xmi:id="_erkxj6TjEeqid6_VPlcZ_g" value="&quot;sequential&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/concurrency"/>
+        </attributes>
+        <attributes xmi:id="_erkxkKTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//BehavioralFeature/isAbstract"/>
+        </attributes>
+        <attributes xmi:id="_erkxkaTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation/isQuery"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkxkqTjEeqid6_VPlcZ_g" name="light" incomings="_erkxiaTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxk6TjEeqid6_VPlcZ_g" target="_erkx4KTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//TypedElement/type"/>
+        </outgoings>
+        <outgoings xmi:id="_erkxlKTjEeqid6_VPlcZ_g" target="_erkxiKTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/operation"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter"/>
+        <attributes xmi:id="_erkxlaTjEeqid6_VPlcZ_g" value="&quot;light&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkxlqTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkxl6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//MultiplicityElement/isOrdered"/>
+        </attributes>
+        <attributes xmi:id="_erkxmKTjEeqid6_VPlcZ_g" value="&quot;true&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//MultiplicityElement/isUnique"/>
+        </attributes>
+        <attributes xmi:id="_erkxmaTjEeqid6_VPlcZ_g" value="&quot;in&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/direction"/>
+        </attributes>
+        <attributes xmi:id="_erkxmqTjEeqid6_VPlcZ_g" value="&quot;create&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/effect"/>
+        </attributes>
+        <attributes xmi:id="_erkxm6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/isException"/>
+        </attributes>
+        <attributes xmi:id="_erkxnKTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Parameter/isStream"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkx4KTjEeqid6_VPlcZ_g" name="Light" incomings="_erkxc6TjEeqid6_VPlcZ_g _erkxk6TjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkx4aTjEeqid6_VPlcZ_g">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//StructuredClassifier/ownedAttribute"/>
+        </outgoings>
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Class"/>
+        <attributes xmi:id="_erkx4qTjEeqid6_VPlcZ_g" value="&quot;Light&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkx46TjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkx5KTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//RedefinableElement/isLeaf"/>
+        </attributes>
+        <attributes xmi:id="_erkx5aTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Classifier/isAbstract"/>
+        </attributes>
+        <attributes xmi:id="_erkx5qTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Classifier/isFinalSpecialization"/>
+        </attributes>
+        <attributes xmi:id="_erkx56TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Class/isActive"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_erkyhqTjEeqid6_VPlcZ_g" name="String" incomings="_erkxfqTjEeqid6_VPlcZ_g">
+        <type href="http://www.eclipse.org/uml2/5.0.0/UML#//PrimitiveType"/>
+        <attributes xmi:id="_erkyh6TjEeqid6_VPlcZ_g" value="&quot;String&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/name"/>
+        </attributes>
+        <attributes xmi:id="_erkyiKTjEeqid6_VPlcZ_g" value="&quot;public&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement/visibility"/>
+        </attributes>
+        <attributes xmi:id="_erkyiaTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//RedefinableElement/isLeaf"/>
+        </attributes>
+        <attributes xmi:id="_erkyiqTjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Classifier/isAbstract"/>
+        </attributes>
+        <attributes xmi:id="_erkyi6TjEeqid6_VPlcZ_g" value="&quot;false&quot;">
+          <type href="http://www.eclipse.org/uml2/5.0.0/UML#//Classifier/isFinalSpecialization"/>
+        </attributes>
+      </nodes>
+    </graphs>
+  </patterns>
+</graphpattern:Bundle>
