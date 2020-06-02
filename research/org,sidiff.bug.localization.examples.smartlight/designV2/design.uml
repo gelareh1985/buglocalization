@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_liIMkKTTEeqCh_0g9iF4Xg" name="design">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_lmfIIKTTEeqCh_0g9iF4Xg">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_ieITQKTXEeqCh_0g9iF4Xg" name="Remote">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_PKx90KTYEeqCh_0g9iF4Xg" name="gateway" type="_mSA0kKTXEeqCh_0g9iF4Xg" association="_PKxWwKTYEeqCh_0g9iF4Xg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_PKx90aTYEeqCh_0g9iF4Xg"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_PKx90qTYEeqCh_0g9iF4Xg" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_PRPY4KTdEeqCh_0g9iF4Xg" name="group">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </ownedAttribute>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_8OQM8KTYEeqCh_0g9iF4Xg" name="turnOn">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_GJixYKTZEeqCh_0g9iF4Xg" name="mode">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_9QSRsKTYEeqCh_0g9iF4Xg" name="turnOff"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_mSA0kKTXEeqCh_0g9iF4Xg" name="Gateway">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_oBCTcqTdEeqCh_0g9iF4Xg" name="group" type="_e4wgUKTdEeqCh_0g9iF4Xg" association="_oBBsYKTdEeqCh_0g9iF4Xg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_oBC6gKTdEeqCh_0g9iF4Xg" value="10"/>
+    </ownedAttribute>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_NHNHEKTZEeqCh_0g9iF4Xg" name="control">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_VL3kQKTdEeqCh_0g9iF4Xg" name="group">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_SDdlsKTZEeqCh_0g9iF4Xg" name="mode">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_nNPGsKTXEeqCh_0g9iF4Xg" name="Light">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_QgvZQKTaEeqCh_0g9iF4Xg" name="name">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_sDENMKTXEeqCh_0g9iF4Xg" name="Bulb">
+    <generalization xmi:type="uml:Generalization" xmi:id="_5l1OoKTXEeqCh_0g9iF4Xg" general="_nNPGsKTXEeqCh_0g9iF4Xg"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_asKWUKTYEeqCh_0g9iF4Xg" name="color" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_tbVAoKTXEeqCh_0g9iF4Xg" name="Spot">
+    <generalization xmi:type="uml:Generalization" xmi:id="_7XVogKTXEeqCh_0g9iF4Xg" general="_nNPGsKTXEeqCh_0g9iF4Xg"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_gWHBYKTYEeqCh_0g9iF4Xg" name="brightness" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_M56ucKTYEeqCh_0g9iF4Xg" memberEnd="_M6A1EKTYEeqCh_0g9iF4Xg _M6D4YqTYEeqCh_0g9iF4Xg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_M5_m8KTYEeqCh_0g9iF4Xg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_M6AOAKTYEeqCh_0g9iF4Xg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_M6D4YqTYEeqCh_0g9iF4Xg" name="group" type="_e4wgUKTdEeqCh_0g9iF4Xg" association="_M56ucKTYEeqCh_0g9iF4Xg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_PKxWwKTYEeqCh_0g9iF4Xg" memberEnd="_PKx90KTYEeqCh_0g9iF4Xg _PKx906TYEeqCh_0g9iF4Xg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_PKxWwaTYEeqCh_0g9iF4Xg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_PKxWwqTYEeqCh_0g9iF4Xg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_PKx906TYEeqCh_0g9iF4Xg" name="remotes" type="_ieITQKTXEeqCh_0g9iF4Xg" association="_PKxWwKTYEeqCh_0g9iF4Xg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_upumEKTaEeqCh_0g9iF4Xg"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_urNMwKTaEeqCh_0g9iF4Xg" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_e4wgUKTdEeqCh_0g9iF4Xg" name="Group">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_M6A1EKTYEeqCh_0g9iF4Xg" name="lights" type="_nNPGsKTXEeqCh_0g9iF4Xg" aggregation="composite" association="_M56ucKTYEeqCh_0g9iF4Xg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_M6D4YKTYEeqCh_0g9iF4Xg"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_M6D4YaTYEeqCh_0g9iF4Xg" value="*"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_oBBsYKTdEeqCh_0g9iF4Xg" memberEnd="_oBCTcqTdEeqCh_0g9iF4Xg _oBC6gaTdEeqCh_0g9iF4Xg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_oBCTcKTdEeqCh_0g9iF4Xg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_oBCTcaTdEeqCh_0g9iF4Xg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_oBC6gaTdEeqCh_0g9iF4Xg" name="gateway" type="_mSA0kKTXEeqCh_0g9iF4Xg" association="_oBBsYKTdEeqCh_0g9iF4Xg"/>
+  </packagedElement>
+  <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_Ydv-AKTYEeqCh_0g9iF4Xg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_YdxMIKTYEeqCh_0g9iF4Xg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="pathmap://PAPYRUS_ACTIONLANGUAGE_PROFILE/ActionLanguage-Profile.profile.uml#_Kv8EIKFXEeS_KNX0nfvIVQ"/>
+    </eAnnotations>
+    <appliedProfile xmi:type="uml:Profile" href="pathmap://PAPYRUS_ACTIONLANGUAGE_PROFILE/ActionLanguage-Profile.profile.uml#ActionLanguage"/>
+  </profileApplication>
+</uml:Model>
