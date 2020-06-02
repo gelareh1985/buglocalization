@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graphpattern:Bundle xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graphpattern="http://www.sidiff.org/graphpattern/1.0" xmi:id="_erjjEKTjEeqid6_VPlcZ_g" name="designV1">
+  <patterns xmi:id="_erkxMKTjEeqid6_VPlcZ_g" name="design">
+    <graphs xmi:id="_erkxMaTjEeqid6_VPlcZ_g" name="design">
+      <nodes xmi:id="_erkxRKTjEeqid6_VPlcZ_g" name="1" incomings="_erkxaqTjEeqid6_VPlcZ_g _erkxiqTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxRqTjEeqid6_VPlcZ_g" target="_erkxZ6TjEeqid6_VPlcZ_g" opposite="_erkxaqTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxR6TjEeqid6_VPlcZ_g" target="_erkxiKTjEeqid6_VPlcZ_g" opposite="_erkxiqTjEeqid6_VPlcZ_g"/>
+      </nodes>
+      <nodes xmi:id="_erkxZ6TjEeqid6_VPlcZ_g" name="5" incomings="_erkxRqTjEeqid6_VPlcZ_g _erkxdKTjEeqid6_VPlcZ_g _erkxf6TjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxaKTjEeqid6_VPlcZ_g" target="_erkxcqTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxaaTjEeqid6_VPlcZ_g" target="_erkxfaTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxaqTjEeqid6_VPlcZ_g" target="_erkxRKTjEeqid6_VPlcZ_g" opposite="_erkxRqTjEeqid6_VPlcZ_g"/>
+      </nodes>
+      <nodes xmi:id="_erkxcqTjEeqid6_VPlcZ_g" name="8" incomings="_erkxaKTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxc6TjEeqid6_VPlcZ_g" target="_erkx4KTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxdKTjEeqid6_VPlcZ_g" target="_erkxZ6TjEeqid6_VPlcZ_g"/>
+      </nodes>
+      <nodes xmi:id="_erkxfaTjEeqid6_VPlcZ_g" name="6" incomings="_erkxaaTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxfqTjEeqid6_VPlcZ_g" target="_erkyhqTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxf6TjEeqid6_VPlcZ_g" target="_erkxZ6TjEeqid6_VPlcZ_g"/>
+      </nodes>
+      <nodes xmi:id="_erkxiKTjEeqid6_VPlcZ_g" name="2" incomings="_erkxR6TjEeqid6_VPlcZ_g _erkxlKTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxiaTjEeqid6_VPlcZ_g" target="_erkxkqTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxiqTjEeqid6_VPlcZ_g" target="_erkxRKTjEeqid6_VPlcZ_g" opposite="_erkxR6TjEeqid6_VPlcZ_g"/>
+      </nodes>
+      <nodes xmi:id="_erkxkqTjEeqid6_VPlcZ_g" name="3" incomings="_erkxiaTjEeqid6_VPlcZ_g">
+        <outgoings xmi:id="_erkxk6TjEeqid6_VPlcZ_g" target="_erkx4KTjEeqid6_VPlcZ_g"/>
+        <outgoings xmi:id="_erkxlKTjEeqid6_VPlcZ_g" target="_erkxiKTjEeqid6_VPlcZ_g"/>
+      </nodes>
+      <nodes xmi:id="_erkx4KTjEeqid6_VPlcZ_g" name="4" incomings="_erkxc6TjEeqid6_VPlcZ_g _erkxk6TjEeqid6_VPlcZ_g"/>
+      <nodes xmi:id="_erkyhqTjEeqid6_VPlcZ_g" name="7" incomings="_erkxfqTjEeqid6_VPlcZ_g"/>
+    </graphs>
+  </patterns>
+</graphpattern:Bundle>

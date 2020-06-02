@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:graphpattern="http://www.sidiff.org/graphpattern/1.0" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/style/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description/style">
+  <viewpoint:DAnalysis uid="_YDScUKToEeqid6_VPlcZ_g" selectedViews="_YDyLkKToEeqid6_VPlcZ_g" version="14.3.0.201909031200">
+    <semanticResources>design.uml_3.graphpattern</semanticResources>
+    <ownedViews xmi:type="viewpoint:DView" uid="_YDyLkKToEeqid6_VPlcZ_g">
+      <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']"/>
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_YQ-6EKToEeqid6_VPlcZ_g" name="design" repPath="#_YQo70KToEeqid6_VPlcZ_g" changeId="50bbbec0-4330-4bdd-9546-038fb8f34bd5">
+        <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']"/>
+        <target xmi:type="graphpattern:GraphPattern" href="design.uml_3.graphpattern#_erkxMaTjEeqid6_VPlcZ_g"/>
+      </ownedRepresentationDescriptors>
+    </ownedViews>
+  </viewpoint:DAnalysis>
+  <diagram:DSemanticDiagram uid="_YQo70KToEeqid6_VPlcZ_g">
+    <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_YQ4zcKToEeqid6_VPlcZ_g" source="DANNOTATION_CUSTOMIZATION_KEY">
+      <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_YQ4zcaToEeqid6_VPlcZ_g"/>
+    </ownedAnnotationEntries>
+    <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_YRHc8KToEeqid6_VPlcZ_g" source="GMF_DIAGRAMS">
+      <data xmi:type="notation:Diagram" xmi:id="_YRHc8aToEeqid6_VPlcZ_g" type="Sirius" element="_YQo70KToEeqid6_VPlcZ_g" measurementUnit="Pixel">
+        <children xmi:type="notation:Node" xmi:id="_YRIEA6ToEeqid6_VPlcZ_g" type="2003" element="_YQqxBKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRIEBqToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRIEB6ToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRIECKToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRIECaToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRIEBKToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRIEBaToEeqid6_VPlcZ_g" x="-30" y="65" width="118"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YRIrFKToEeqid6_VPlcZ_g" type="2003" element="_YQqxEKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRIrF6ToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRIrGKToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRIrGaToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRIrGqToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRIrFaToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRIrFqToEeqid6_VPlcZ_g" x="90" y="545" width="78"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YRIrG6ToEeqid6_VPlcZ_g" type="2003" element="_YQqxE6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRIrHqToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRIrH6ToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRIrIKToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRIrIaToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRIrHKToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRIrHaToEeqid6_VPlcZ_g" x="355" y="630" width="93"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YRIrIqToEeqid6_VPlcZ_g" type="2003" element="_YQqxFqToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRJSIKToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRJSIaToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRJSIqToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRJSI6ToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRIrI6ToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRIrJKToEeqid6_VPlcZ_g" x="365" y="445" width="83"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YRJSJKToEeqid6_VPlcZ_g" type="2003" element="_YQqxGaToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRJSJ6ToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRJSKKToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRJSKaToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRJSKqToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRJSJaToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRJSJqToEeqid6_VPlcZ_g" x="90" y="247" width="78"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YRJSK6ToEeqid6_VPlcZ_g" type="2003" element="_YQqxHKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRJSLqToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRJSL6ToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRJSMKToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRJSMaToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRJSLKToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRJSLaToEeqid6_VPlcZ_g" x="365" y="247" width="83"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YRKgUqToEeqid6_VPlcZ_g" type="2003" element="_YQrYE6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRKgVaToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YRLHUKToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YRLHUaToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YRLHUqToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YRKgU6ToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRKgVKToEeqid6_VPlcZ_g" x="595" y="247" width="83"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_YROxuqToEeqid6_VPlcZ_g" type="2003" element="_YQr_J6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YROxvaToEeqid6_VPlcZ_g" type="5007"/>
+          <children xmi:type="notation:Node" xmi:id="_YROxvqToEeqid6_VPlcZ_g" type="7004">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_YROxv6ToEeqid6_VPlcZ_g"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_YROxwKToEeqid6_VPlcZ_g"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_YROxu6ToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YROxvKToEeqid6_VPlcZ_g" x="600" y="445" width="78"/>
+        </children>
+        <styles xmi:type="notation:DiagramStyle" xmi:id="_YRHc8qToEeqid6_VPlcZ_g"/>
+        <edges xmi:type="notation:Edge" xmi:id="_YRZw2KToEeqid6_VPlcZ_g" type="4001" element="_YQ1JIaToEeqid6_VPlcZ_g" source="_YRIrG6ToEeqid6_VPlcZ_g" target="_YRKgUqToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRZw3KToEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRZw3aToEeqid6_VPlcZ_g" x="-23" y="-228"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRZw3qToEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRZw36ToEeqid6_VPlcZ_g" x="-61" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRZw4KToEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRZw4aToEeqid6_VPlcZ_g" x="112" y="-17"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_YRZw2aToEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_YRZw2qToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YRZw26ToEeqid6_VPlcZ_g" points="[53, 9, -166, 353]$[385, 9, 166, 353]$[385, -364, 166, -20]$[260, -364, 41, -20]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRZw4qToEeqid6_VPlcZ_g" id="(0.7764190696521523,0.0)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRZw46ToEeqid6_VPlcZ_g" id="(0.7483274708600594,1.0)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_YRZw5KToEeqid6_VPlcZ_g" type="4001" element="_YQ1JKKToEeqid6_VPlcZ_g" source="_YRIrG6ToEeqid6_VPlcZ_g" target="_YRIrFKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRaX4KToEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRaX4aToEeqid6_VPlcZ_g" x="12" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRaX4qToEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRaX46ToEeqid6_VPlcZ_g" x="5" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRaX5KToEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRaX5aToEeqid6_VPlcZ_g" x="28" y="19"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_YRZw5aToEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_YRZw5qToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YRZw56ToEeqid6_VPlcZ_g" points="[-70, -28, 245, 96]$[-290, -28, 25, 96]$[-290, -85, 25, 39]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRaX5qToEeqid6_VPlcZ_g" id="(0.7764190696521523,1.0)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRaX56ToEeqid6_VPlcZ_g" id="(0.2713520327765522,0.0)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_YRaX6KToEeqid6_VPlcZ_g" type="4001" element="_YQ1JL6ToEeqid6_VPlcZ_g" source="_YRIrIqToEeqid6_VPlcZ_g" target="_YROxuqToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRaX7KToEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRaX7aToEeqid6_VPlcZ_g" x="10" y="-8"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRaX7qToEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRaX76ToEeqid6_VPlcZ_g" x="19" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRaX8KToEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRaX8aToEeqid6_VPlcZ_g" x="-19" y="13"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_YRaX6aToEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_YRaX6qToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YRaX66ToEeqid6_VPlcZ_g" points="[55, 24, -183, -15]$[175, 24, -63, -15]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRaX8qToEeqid6_VPlcZ_g" id="(0.7488164856585909,0.0)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRaX86ToEeqid6_VPlcZ_g" id="(0.7317700676271685,1.0)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_YRaX9KToEeqid6_VPlcZ_g" type="4001" element="_YQ1JNqToEeqid6_VPlcZ_g" source="_YRIrIqToEeqid6_VPlcZ_g" target="_YRIrFKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRa-8KToEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRa-8aToEeqid6_VPlcZ_g" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRa-8qToEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRa-86ToEeqid6_VPlcZ_g" x="-6" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRa-9KToEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRa-9aToEeqid6_VPlcZ_g" x="27" y="13"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_YRaX9aToEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_YRaX9qToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YRaX96ToEeqid6_VPlcZ_g" points="[-60, 10, 255, -129]$[-298, 10, 17, -129]$[-298, 100, 17, -39]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRa-9qToEeqid6_VPlcZ_g" id="(0.7488164856585909,0.0)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRa-96ToEeqid6_VPlcZ_g" id="(0.2713520327765522,1.0)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_YRa--KToEeqid6_VPlcZ_g" type="4001" element="_YQ1JPaToEeqid6_VPlcZ_g" source="_YRJSK6ToEeqid6_VPlcZ_g" target="_YRKgUqToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRa-_KToEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRa-_aToEeqid6_VPlcZ_g" x="9" y="-4"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRa-_qToEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRa-_6ToEeqid6_VPlcZ_g" x="4" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRa_AKToEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRa_AaToEeqid6_VPlcZ_g" x="-14" y="14"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_YRa--aToEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_YRa--qToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YRa--6ToEeqid6_VPlcZ_g" points="[53, 19, -166, -20]$[178, 19, -41, -20]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRbmAKToEeqid6_VPlcZ_g" id="(0.7488164856585909,0.0)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRbmAaToEeqid6_VPlcZ_g" id="(0.7483274708600594,1.0)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_YRbmAqToEeqid6_VPlcZ_g" type="4001" element="_YQ1JRKToEeqid6_VPlcZ_g" source="_YRJSK6ToEeqid6_VPlcZ_g" target="_YRJSJKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_YRbmBqToEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRbmB6ToEeqid6_VPlcZ_g" x="-30" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRbmCKToEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRbmCaToEeqid6_VPlcZ_g" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_YRbmCqToEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_YRbmC6ToEeqid6_VPlcZ_g" x="9" y="-14"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_YRbmA6ToEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_YRbmBKToEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YRbmBaToEeqid6_VPlcZ_g" points="[-52, -12, 231, 27]$[-200, -12, 83, 27]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRbmDKToEeqid6_VPlcZ_g" id="(0.7488164856585909,1.0)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_YRbmDaToEeqid6_VPlcZ_g" id="(0.2713520327765522,0.0)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_6820gKTuEeqid6_VPlcZ_g" type="4001" element="_6739KKTuEeqid6_VPlcZ_g" source="_YRIEA6ToEeqid6_VPlcZ_g" target="_YRIrFKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_683bkKTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_683bkaTuEeqid6_VPlcZ_g" x="-8"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_683bkqTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_683bk6TuEeqid6_VPlcZ_g" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_683blKTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_683blaTuEeqid6_VPlcZ_g" x="66" y="-17"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_6820gaTuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_6820gqTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_6820g6TuEeqid6_VPlcZ_g" points="[5, 20, -115, -460]$[5, 476, -115, -4]$[100, 476, -20, -4]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_684CoKTuEeqid6_VPlcZ_g" id="(0.17672413793103448,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_684CoaTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_684CoqTuEeqid6_VPlcZ_g" type="4001" element="_6739L6TuEeqid6_VPlcZ_g" source="_YRIEA6ToEeqid6_VPlcZ_g" target="_YRJSJKToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_684CpqTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_684Cp6TuEeqid6_VPlcZ_g" x="-51"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_684CqKTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_684CqaTuEeqid6_VPlcZ_g" x="6" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_684CqqTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_684Cq6TuEeqid6_VPlcZ_g" x="14" y="-19"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_684Co6TuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_684CpKTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_684CpaTuEeqid6_VPlcZ_g" points="[65, 20, -55, -162]$[65, 183, -55, 1]$[100, 183, -20, 1]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_684psKTuEeqid6_VPlcZ_g" id="(0.17672413793103448,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_684psaTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_684psqTuEeqid6_VPlcZ_g" type="4001" element="_674kJqTuEeqid6_VPlcZ_g" source="_YRIrFKToEeqid6_VPlcZ_g" target="_YRIrG6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_684ptqTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_684pt6TuEeqid6_VPlcZ_g" x="73" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_684puKTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_684puaTuEeqid6_VPlcZ_g" x="39" y="-54"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_684puqTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_684pu6TuEeqid6_VPlcZ_g" x="29" y="16"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_684ps6TuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_684ptKTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_684ptaTuEeqid6_VPlcZ_g" points="[10, 20, -305, -65]$[10, 96, -305, 11]$[245, 96, -70, 11]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_684pvKTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_684pvaTuEeqid6_VPlcZ_g" id="(0.7747252747252747,0.5)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_684pvqTuEeqid6_VPlcZ_g" type="4001" element="_674kLaTuEeqid6_VPlcZ_g" source="_YRIrFKToEeqid6_VPlcZ_g" target="_YRIrIqToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_685QwKTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_685QwaTuEeqid6_VPlcZ_g" x="-8" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_68530KTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_68530aTuEeqid6_VPlcZ_g" x="26" y="32"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_68530qTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_685306TuEeqid6_VPlcZ_g" x="24" y="12"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_684pv6TuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_684pwKTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_684pwaTuEeqid6_VPlcZ_g" points="[35, -19, -280, 81]$[35, -100, -280, 0]$[255, -100, -60, 0]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_68531KTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_68531aTuEeqid6_VPlcZ_g" id="(0.7469135802469136,0.5)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_68531qTuEeqid6_VPlcZ_g" type="4001" element="_674kNKTuEeqid6_VPlcZ_g" source="_YRIrFKToEeqid6_VPlcZ_g" target="_YRIEA6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_68532qTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_685326TuEeqid6_VPlcZ_g" x="20"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_68533KTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_68533aTuEeqid6_VPlcZ_g" x="14" y="108"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_686e4KTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_686e4aTuEeqid6_VPlcZ_g" x="72" y="-18"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_685316TuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_68532KTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_68532aTuEeqid6_VPlcZ_g" points="[-20, 6, 100, 486]$[-130, 6, -10, 486]$[-130, -460, -10, 20]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_686e4qTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_686e46TuEeqid6_VPlcZ_g" id="(0.17672413793103448,0.5)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_686e5KTuEeqid6_VPlcZ_g" type="4001" element="_674kO6TuEeqid6_VPlcZ_g" source="_YRJSJKToEeqid6_VPlcZ_g" target="_YRJSK6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_686e6KTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_686e6aTuEeqid6_VPlcZ_g" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_686e6qTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_686e66TuEeqid6_VPlcZ_g" y="10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_686e7KTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_686e7aTuEeqid6_VPlcZ_g" x="9" y="-11"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_686e5aTuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_686e5qTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_686e56TuEeqid6_VPlcZ_g" points="[0, 0, -315, 0]$[315, 0, 0, 0]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_686e7qTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_686e76TuEeqid6_VPlcZ_g" id="(0.7469135802469136,0.5)"/>
+        </edges>
+        <edges xmi:type="notation:Edge" xmi:id="_686e8KTuEeqid6_VPlcZ_g" type="4001" element="_674kQqTuEeqid6_VPlcZ_g" source="_YRJSJKToEeqid6_VPlcZ_g" target="_YRIEA6ToEeqid6_VPlcZ_g">
+          <children xmi:type="notation:Node" xmi:id="_687F8KTuEeqid6_VPlcZ_g" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_687F8aTuEeqid6_VPlcZ_g" x="-9"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_687F8qTuEeqid6_VPlcZ_g" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_687F86TuEeqid6_VPlcZ_g" x="6" y="-10"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="_687F9KTuEeqid6_VPlcZ_g" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_687F9aTuEeqid6_VPlcZ_g" x="19" y="-18"/>
+          </children>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_686e8aTuEeqid6_VPlcZ_g" routing="Rectilinear"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_686e8qTuEeqid6_VPlcZ_g" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_686e86TuEeqid6_VPlcZ_g" points="[-20, 9, 100, 191]$[-70, 9, 50, 191]$[-70, -162, 50, 20]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_687F9qTuEeqid6_VPlcZ_g" id="(0.26973684210526316,0.5)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_687F96TuEeqid6_VPlcZ_g" id="(0.17672413793103448,0.5)"/>
+        </edges>
+      </data>
+    </ownedAnnotationEntries>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQqxBKToEeqid6_VPlcZ_g" name="1 : ?" outgoingEdges="_6739KKTuEeqid6_VPlcZ_g _6739L6TuEeqid6_VPlcZ_g" incomingEdges="_674kNKTuEeqid6_VPlcZ_g _674kQqTuEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxRKTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxRKTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQqxBaToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQqxEKToEeqid6_VPlcZ_g" name="5 : ?" outgoingEdges="_674kJqTuEeqid6_VPlcZ_g _674kLaTuEeqid6_VPlcZ_g _674kNKTuEeqid6_VPlcZ_g" incomingEdges="_YQ1JKKToEeqid6_VPlcZ_g _YQ1JNqToEeqid6_VPlcZ_g _6739KKTuEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxZ6TjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxZ6TjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQqxEaToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQqxE6ToEeqid6_VPlcZ_g" name="8 : ?" outgoingEdges="_YQ1JIaToEeqid6_VPlcZ_g _YQ1JKKToEeqid6_VPlcZ_g" incomingEdges="_674kJqTuEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxcqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxcqTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQqxFKToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQqxFqToEeqid6_VPlcZ_g" name="6 : ?" outgoingEdges="_YQ1JL6ToEeqid6_VPlcZ_g _YQ1JNqToEeqid6_VPlcZ_g" incomingEdges="_674kLaTuEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxfaTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxfaTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQqxF6ToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQqxGaToEeqid6_VPlcZ_g" name="2 : ?" outgoingEdges="_674kO6TuEeqid6_VPlcZ_g _674kQqTuEeqid6_VPlcZ_g" incomingEdges="_YQ1JRKToEeqid6_VPlcZ_g _6739L6TuEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxiKTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxiKTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQqxGqToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQqxHKToEeqid6_VPlcZ_g" name="3 : ?" outgoingEdges="_YQ1JPaToEeqid6_VPlcZ_g _YQ1JRKToEeqid6_VPlcZ_g" incomingEdges="_674kO6TuEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxkqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkxkqTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQqxHaToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQrYE6ToEeqid6_VPlcZ_g" name="4 : ?" incomingEdges="_YQ1JIaToEeqid6_VPlcZ_g _YQ1JPaToEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkx4KTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkx4KTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQrYFKToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_YQr_J6ToEeqid6_VPlcZ_g" name="7 : ?" incomingEdges="_YQ1JL6ToEeqid6_VPlcZ_g">
+      <target xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkyhqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:NodePattern" href="design.uml_3.graphpattern#_erkyhqTjEeqid6_VPlcZ_g"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_YQr_KKToEeqid6_VPlcZ_g" borderSize="1" borderSizeComputationExpression="1" backgroundStyle="Liquid" foregroundColor="253,211,149">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@containerMappings[name='graphpattern.nodepattern']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_YQ1JIaToEeqid6_VPlcZ_g" sourceNode="_YQqxE6ToEeqid6_VPlcZ_g" targetNode="_YQrYE6ToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxc6TjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxc6TjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_YQ1JIqToEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_YQ1JJKToEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_YQ1JI6ToEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_YQ1JKKToEeqid6_VPlcZ_g" sourceNode="_YQqxE6ToEeqid6_VPlcZ_g" targetNode="_YQqxEKToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxdKTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxdKTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_YQ1JKaToEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_YQ1JK6ToEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_YQ1JKqToEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_YQ1JL6ToEeqid6_VPlcZ_g" sourceNode="_YQqxFqToEeqid6_VPlcZ_g" targetNode="_YQr_J6ToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxfqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxfqTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_YQ1JMKToEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_YQ1JMqToEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_YQ1JMaToEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_YQ1JNqToEeqid6_VPlcZ_g" sourceNode="_YQqxFqToEeqid6_VPlcZ_g" targetNode="_YQqxEKToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxf6TjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxf6TjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_YQ1JN6ToEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_YQ1JOaToEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_YQ1JOKToEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_YQ1JPaToEeqid6_VPlcZ_g" sourceNode="_YQqxHKToEeqid6_VPlcZ_g" targetNode="_YQrYE6ToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxk6TjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxk6TjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_YQ1JPqToEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_YQ1JQKToEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_YQ1JP6ToEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_YQ1JRKToEeqid6_VPlcZ_g" sourceNode="_YQqxHKToEeqid6_VPlcZ_g" targetNode="_YQqxGaToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxlKTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxlKTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_YQ1JRaToEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_YQ1JR6ToEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_YQ1JRqToEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_6739KKTuEeqid6_VPlcZ_g" sourceNode="_YQqxBKToEeqid6_VPlcZ_g" targetNode="_YQqxEKToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxRqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxRqTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_6739KaTuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_6739K6TuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_6739KqTuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_6739L6TuEeqid6_VPlcZ_g" sourceNode="_YQqxBKToEeqid6_VPlcZ_g" targetNode="_YQqxGaToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxR6TjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxR6TjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_674kIKTuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_674kIqTuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_674kIaTuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_674kJqTuEeqid6_VPlcZ_g" sourceNode="_YQqxEKToEeqid6_VPlcZ_g" targetNode="_YQqxE6ToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxaKTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxaKTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_674kJ6TuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_674kKaTuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_674kKKTuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_674kLaTuEeqid6_VPlcZ_g" sourceNode="_YQqxEKToEeqid6_VPlcZ_g" targetNode="_YQqxFqToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxaaTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxaaTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_674kLqTuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_674kMKTuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_674kL6TuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_674kNKTuEeqid6_VPlcZ_g" sourceNode="_YQqxEKToEeqid6_VPlcZ_g" targetNode="_YQqxBKToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxaqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxaqTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_674kNaTuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_674kN6TuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_674kNqTuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_674kO6TuEeqid6_VPlcZ_g" sourceNode="_YQqxGaToEeqid6_VPlcZ_g" targetNode="_YQqxHKToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxiaTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxiaTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_674kPKTuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_674kPqTuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_674kPaTuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_674kQqTuEeqid6_VPlcZ_g" sourceNode="_YQqxGaToEeqid6_VPlcZ_g" targetNode="_YQqxBKToEeqid6_VPlcZ_g" endLabel="?">
+      <target xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxiqTjEeqid6_VPlcZ_g"/>
+      <semanticElements xmi:type="graphpattern:EdgePattern" href="design.uml_3.graphpattern#_erkxiqTjEeqid6_VPlcZ_g"/>
+      <ownedStyle xmi:type="diagram:EdgeStyle" uid="_674kQ6TuEeqid6_VPlcZ_g" routingStyle="manhattan" strokeColor="0,0,0">
+        <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']/@style"/>
+        <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_674kRaTuEeqid6_VPlcZ_g" showIcon="false"/>
+        <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_674kRKTuEeqid6_VPlcZ_g"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer/@edgeMappings[name='graphpattern.edgepattern.directed']"/>
+    </ownedDiagramElements>
+    <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']"/>
+    <filterVariableHistory xmi:type="diagram:FilterVariableHistory" uid="_YQo70aToEeqid6_VPlcZ_g"/>
+    <activatedLayers xmi:type="description_1:Layer" href="platform:/plugin/org.sidiff.graphpattern.design/description/graphpattern.odesign#//@ownedViewpoints[name='graphpattern']/@ownedRepresentations[name='graphpattern.diagram']/@defaultLayer"/>
+    <target xmi:type="graphpattern:GraphPattern" href="design.uml_3.graphpattern#_erkxMaTjEeqid6_VPlcZ_g"/>
+  </diagram:DSemanticDiagram>
+</xmi:XMI>
