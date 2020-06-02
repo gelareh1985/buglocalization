@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: History Retrival
+Bundle-SymbolicName: org.sidiff.bug.localization.retrieval.history;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.bug.localization.retrieval.history.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jgit,
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.sidiff.bug.localization.retrival.history
+Bundle-ActivationPolicy: lazy
