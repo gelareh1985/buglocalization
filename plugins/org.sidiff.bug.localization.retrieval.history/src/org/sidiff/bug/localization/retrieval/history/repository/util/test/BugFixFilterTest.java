@@ -1,8 +1,8 @@
-package org.sidiff.bug.localization.retrieval.history.model.util.test;
+package org.sidiff.bug.localization.retrieval.history.repository.util.test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.sidiff.bug.localization.retrieval.history.model.util.BugFixVersionFilter;
+import org.sidiff.bug.localization.retrieval.history.repository.util.BugFixVersionFilter;
 
 
 public class BugFixFilterTest {

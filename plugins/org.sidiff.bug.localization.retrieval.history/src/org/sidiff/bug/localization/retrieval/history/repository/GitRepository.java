@@ -1,8 +1,8 @@
-package org.sidiff.bug.localization.retrieval.history.git;
+package org.sidiff.bug.localization.retrieval.history.repository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.logging.Level;
 
 import org.eclipse.jgit.api.Git;
@@ -15,9 +15,9 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.sidiff.bug.localization.retrieval.history.Activator;
 import org.sidiff.bug.localization.retrieval.history.model.History;
 import org.sidiff.bug.localization.retrieval.history.model.Version;
-import org.sidiff.bug.localization.retrieval.history.model.util.VersionFilter;
+import org.sidiff.bug.localization.retrieval.history.repository.util.VersionFilter;
 
-public class GitRepository {
+public class GitRepository implements Repository {
 	
 	// https://www.vogella.com/tutorials/JGit/article.html
 	// https://maximilian-boehm.com/en-gb/blog/use-java-library-jgit-to-programmatically-access-your-git-respository-2103371/
@@ -32,6 +32,7 @@ public class GitRepository {
 		return new File(localRepository.getAbsolutePath() + "/.git").exists();
 	}
 	
+	@Override
 	public History getHistory(VersionFilter filter) {
 		History history = new History();
 		
@@ -47,7 +48,7 @@ public class GitRepository {
 				String url = revCommit.getId().getName();
 				String author = revCommit.getAuthorIdent().getName();
 				String commitMessage = revCommit.getFullMessage();
-				Calendar date = new Calendar.Builder().setInstant((long) revCommit.getCommitTime() * 1000).build();
+				Instant date = Instant.ofEpochSecond(revCommit.getCommitTime());
 
 				if (!filter.filter(url, date, author, commitMessage)) {
 					Version version = new Version(url, date, author, commitMessage);

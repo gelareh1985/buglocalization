@@ -1,7 +1,7 @@
-package org.sidiff.bug.localization.retrieval.history.model.util;
+package org.sidiff.bug.localization.retrieval.history.repository.util;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -28,7 +28,7 @@ public class BugFixVersionFilter implements VersionFilter {
 	}
 	
 	@Override
-	public boolean filter(String url, Calendar date, String author, String commitMessage) {
+	public boolean filter(String url, Instant date, String author, String commitMessage) {
 		return !pattern.matcher(commitMessage).find();
 	}
 	

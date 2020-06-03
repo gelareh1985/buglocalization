@@ -1,19 +1,18 @@
 package org.sidiff.bug.localization.retrieval.history.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.Instant;
 
 public class Version {
 
 	private String url;
 	
-	private Calendar date;
+	private Instant date;
 	
 	private String author;
 	
 	private String commitMessage;
 
-	public Version(String url, Calendar date, String author, String commitMessage) {
+	public Version(String url, Instant date, String author, String commitMessage) {
 		this.url = url;
 		this.date = date;
 		this.author = author;
@@ -28,11 +27,11 @@ public class Version {
 		this.url = versionURL;
 	}
 
-	public Calendar getDate() {
+	public Instant getDate() {
 		return date;
 	}
 
-	public void setDate(Calendar date) {
+	public void setDate(Instant date) {
 		this.date = date;
 	}
 
@@ -59,7 +58,7 @@ public class Version {
 		text.append("Version [URL=");
 		text.append(url);
 		text.append(", date=");
-		text.append(SimpleDateFormat.getInstance().format(date.getTime()));
+		text.append(date);
 		text.append(", author=");
 		text.append(author);
 		text.append(", ");

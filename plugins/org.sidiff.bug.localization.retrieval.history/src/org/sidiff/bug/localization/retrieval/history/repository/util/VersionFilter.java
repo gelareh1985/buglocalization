@@ -1,13 +1,13 @@
-package org.sidiff.bug.localization.retrieval.history.model.util;
+package org.sidiff.bug.localization.retrieval.history.repository.util;
 
-import java.util.Calendar;
+import java.time.Instant;
 
 public interface VersionFilter {
 
 	public static final VersionFilter FILTER_NOTHING = new VersionFilter() {
 		
 		@Override
-		public boolean filter(String url, Calendar date, String author, String commitMessage) {
+		public boolean filter(String url, Instant date, String author, String commitMessage) {
 			return false;
 		}
 	};
@@ -16,6 +16,6 @@ public interface VersionFilter {
 	 * @return <code>true</code> if the version should be filtered;
 	 *         <code>false</code> otherwise.
 	 */
-	boolean filter(String url, Calendar date, String author, String commitMessage);
+	boolean filter(String url, Instant date, String author, String commitMessage);
 
 }
