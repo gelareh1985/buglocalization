@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.retrieval.history.model;
 
 import java.time.Instant;
+import org.sidiff.bug.localization.retrieval.reports.model.BugReport;
 
 public class Version {
 
@@ -11,6 +12,8 @@ public class Version {
 	private String author;
 	
 	private String commitMessage;
+	
+	private BugReport bugReport;
 
 	public Version(String url, Instant date, String author, String commitMessage) {
 		this.url = url;
@@ -51,6 +54,14 @@ public class Version {
 		this.commitMessage = commitMessage;
 	}
 
+	public BugReport getBugReport() {
+		return bugReport;
+	}
+
+	public void setBugReport(BugReport bugReport) {
+		this.bugReport = bugReport;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder text = new StringBuilder();
@@ -59,21 +70,21 @@ public class Version {
 		text.append(url);
 		text.append(", date=");
 		text.append(date);
+		text.append(", (has)bugReport:");
+		text.append(bugReport != null ? "YES" : "NO");
 		text.append(", author=");
 		text.append(author);
-		text.append(", ");
 		
 		if (text.length() >= 150) {
-			text.setLength(145);
-			text.append("..., ");
+			text.setLength(147);
+			text.append("...");
 		} else {
 			text.setLength(150);
 		}
 		
-		text.append("commitMessage=");
+		text.append(", commitMessage=");
 		text.append(commitMessage.replace("\n", "").replace("\r", ""));
 		text.append("]");
-		
 		
 		return text.toString();
 	}

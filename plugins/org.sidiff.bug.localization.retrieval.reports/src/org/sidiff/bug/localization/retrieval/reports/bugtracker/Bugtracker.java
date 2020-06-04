@@ -11,6 +11,6 @@ public interface Bugtracker {
 	 * @return The bug report and additional information, e.g., comments on the bug.
 	 * @throws NoSuchElementException If the report for the bug ID can't be found.
 	 */
-	BugReport getReport(int bugID) throws NoSuchElementException;
+	BugReport getBugReport(int bugID) throws NoSuchElementException;
 
 }

@@ -2,10 +2,16 @@ package org.sidiff.bug.localization.retrieval.history.repository.util.test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.sidiff.bug.localization.retrieval.history.repository.util.BugFixMatcher;
 import org.sidiff.bug.localization.retrieval.history.repository.util.BugFixVersionFilter;
 
 
 public class BugFixFilterTest {
+	
+	@Test
+	public void testNoBugNumber() {
+		assertFalse(isNotFiltered("563546 Regression test 563546 for failure"));
+	}
 
 	// bug: "bug.*?\\d"
 	
@@ -58,7 +64,7 @@ public class BugFixFilterTest {
 	// helper:
 	
 	public boolean isNotFiltered(String message) {
-		BugFixVersionFilter bugFixFilterTest = new BugFixVersionFilter();
+		BugFixVersionFilter bugFixFilterTest = new BugFixVersionFilter(new BugFixMatcher());
 		return !bugFixFilterTest.filter("", null, "", message);
 	}
 }

@@ -20,7 +20,7 @@ public class Application implements IApplication {
 		// Bug JSON:
 		System.out.println("\n#################### JSON Bug Report ####################\n");
 		
-		JsonElement jsonElementBug = bugtracker.getBug(bugID);
+		JsonElement jsonElementBug = bugtracker.getBugJSON(bugID);
 
 		System.out.println(JsonUtil.print(jsonElementBug));
 		System.out.println();
@@ -28,14 +28,14 @@ public class Application implements IApplication {
 		// Comment JSON:
 		System.out.println("\n#################### JSON Bug Report Comments ####################\n");
 		
-		JsonElement jsonElementComments = bugtracker.getComments(bugID);
+		JsonElement jsonElementComments = bugtracker.getCommentsJSON(bugID);
 		
 		System.out.println(JsonUtil.print(jsonElementComments));
 		
 		// Bug Report:
 		System.out.println("\n#################### Java Bug Report ####################\n");
 		
-		BugReport bugReport = bugtracker.getReport(bugID);
+		BugReport bugReport = bugtracker.getBugReport(bugID);
 		System.out.println(bugReport);
 		
 		System.out.println("\n#################### Java Bug Report Comments ####################\n");

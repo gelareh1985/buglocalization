@@ -1,65 +1,25 @@
 package org.sidiff.bug.localization.retrieval.history.repository.util;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class BugFixVersionFilter implements VersionFilter {
 
-	private List<String> patterns;
-	
-	private Pattern pattern;
-	
-	private boolean caseSensitive = false;
-	
-	public BugFixVersionFilter() {
-		this.patterns = Arrays.asList(new String[] {".*?bug.*?\\d", ".*?fix.*?\\d", ".*?\\d.*?bug.*?", ".*?\\d.*?fix.*?"});
-		compilePatterns();
+	private BugFixMatcher matcher;
+
+	public BugFixVersionFilter(BugFixMatcher matcher) {
+		this.matcher = matcher;
 	}
 
-	private void compilePatterns() {
-		if (caseSensitive) {
-			this.pattern = Pattern.compile("(" + String.join(")|(", patterns) + ")");
-		} else {
-			this.pattern = Pattern.compile("(" + String.join(")|(", patterns) + ")", Pattern.CASE_INSENSITIVE);
-		}
-	}
-	
 	@Override
 	public boolean filter(String url, Instant date, String author, String commitMessage) {
-		return !pattern.matcher(commitMessage).find();
+		return !matcher.containesBugID(commitMessage);
 	}
-	
-	public List<String> getPatterns() {
-		return Collections.unmodifiableList(patterns);
+
+	public BugFixMatcher getMatcher() {
+		return matcher;
 	}
-	
-	public boolean removePattern(String pattern) {
-		if (patterns.remove(pattern)) {
-			compilePatterns();
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean addPattern(String pattern) {
-		if (!pattern.contains(pattern)) {
-			compilePatterns();
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isCaseSensitive() {
-		return caseSensitive;
-	}
-	
-	public void setCaseSensitive(boolean caseSensitive) {
-		if (this.caseSensitive != caseSensitive) {
-			this.caseSensitive = caseSensitive;
-			compilePatterns();			
-		}
+
+	public void setMatcher(BugFixMatcher matcher) {
+		this.matcher = matcher;
 	}
 }

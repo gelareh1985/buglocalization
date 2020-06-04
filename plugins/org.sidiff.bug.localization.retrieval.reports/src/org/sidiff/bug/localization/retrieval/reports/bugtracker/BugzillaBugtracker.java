@@ -32,7 +32,7 @@ public class BugzillaBugtracker implements Bugtracker {
 	}
 	
 	@Override
-	public BugReport getReport(int bugID) throws NoSuchElementException {
+	public BugReport getBugReport(int bugID) throws NoSuchElementException {
 		BugReport report = requestBugReport(bugID);
 		requestBugReportComments(bugID, report);
 		return report;
@@ -64,7 +64,7 @@ public class BugzillaBugtracker implements Bugtracker {
 
 	private void requestBugReportComments(int bugID, BugReport report) {
 		try {
-			JsonElement commentsJson = getComments(bugID);
+			JsonElement commentsJson = getCommentsJSON(bugID);
 			JsonElement bugsJson = commentsJson.getAsJsonObject().get("bugs");
 			
 			if (bugsJson != null) {
@@ -85,12 +85,12 @@ public class BugzillaBugtracker implements Bugtracker {
 		}
 	}
 
-	public JsonElement getBug(int bugID) throws IOException {
+	public JsonElement getBugJSON(int bugID) throws IOException {
 		String responseBug = requestBug(bugID);
 		return JsonUtil.parse(responseBug);
 	}
 
-	public JsonElement getComments(int bugID) throws IOException {
+	public JsonElement getCommentsJSON(int bugID) throws IOException {
 		String responseComments = requestComments(bugID);
 		return JsonUtil.parse(responseComments);
 	}
