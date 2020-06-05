@@ -3,10 +3,12 @@ package org.sidiff.bug.localization.retrieval.history.repository;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
@@ -41,7 +43,8 @@ public class GitRepository implements Repository {
 			return history;
 		} 
 
-		try (Git git = new Git(new FileRepositoryBuilder().findGitDir(localRepository).build())) {
+		try (Git git = openGitRepository()) {
+			history.setIdentification(git.getRepository().getFullBranch());
 			LogCommand logCommand = git.log().add(git.getRepository().resolve(Constants.HEAD));
 
 			for (RevCommit revCommit : logCommand.call()) {
@@ -74,5 +77,60 @@ public class GitRepository implements Repository {
 			Activator.getLogger().log(Level.SEVERE, "Exception occurred while cloning repository", e);
 		    e.printStackTrace();
 		}
+	}
+	
+	public void unlock() {
+		File lockFile = new File(localRepository.getAbsoluteFile() + "/.git/index.lock");
+		
+		if (lockFile.exists()) {
+			lockFile.delete();
+		}
+	}
+	
+	public boolean checkout(History history, Version version) {
+		
+		try (Git git = openGitRepository()) {
+			
+			// Unlock repository (if necessary):
+			unlock();
+			
+			// Clean up current branch (if necessary):
+			git.reset().setMode(ResetType.HARD).call();
+			git.clean().setCleanDirectories(true).call();
+			
+			// Switch to requested branch (if necessary):
+			git.checkout().setCreateBranch(false).setName(history.getIdentification())
+					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
+
+			// Check out specific version:
+			git.reset().setRef(version.getIdentification()).call();
+			
+			// Clean up current version (if necessary):
+			git.reset().setRef(version.getIdentification()).setMode(ResetType.HARD).call();
+			git.clean().setCleanDirectories(true).call();
+			
+			if (version.getIdentification().equals(getCurrentVersionID(git))) {
+				return true;
+			}
+		} catch (IOException | GitAPIException e) {
+			e.printStackTrace();
+		}
+		
+		Activator.getLogger().log(Level.SEVERE, "Could not check out version=" + version + ", History=" + history);
+		return false;
+	}
+	
+	private String getCurrentVersionID(Git git) throws GitAPIException, IOException  {
+		Iterator<RevCommit> revIterator = git.log().add(git.getRepository().resolve(Constants.HEAD)).call().iterator();
+		
+		if (revIterator.hasNext()) {
+			return revIterator.next().getId().getName();
+		}
+		
+		return null;
+	}
+	
+	private Git openGitRepository() throws IOException {
+		return new Git(new FileRepositoryBuilder().findGitDir(localRepository).build());
 	}
 }

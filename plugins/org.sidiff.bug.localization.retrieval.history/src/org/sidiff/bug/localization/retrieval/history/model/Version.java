@@ -5,7 +5,7 @@ import org.sidiff.bug.localization.retrieval.reports.model.BugReport;
 
 public class Version {
 
-	private String url;
+	private String identification;
 	
 	private Instant date;
 	
@@ -16,18 +16,18 @@ public class Version {
 	private BugReport bugReport;
 
 	public Version(String url, Instant date, String author, String commitMessage) {
-		this.url = url;
+		this.identification = url;
 		this.date = date;
 		this.author = author;
 		this.commitMessage = commitMessage;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getIdentification() {
+		return identification;
 	}
 
-	public void setUrl(String versionURL) {
-		this.url = versionURL;
+	public void setIdentification(String versionURL) {
+		this.identification = versionURL;
 	}
 
 	public Instant getDate() {
@@ -67,7 +67,7 @@ public class Version {
 		StringBuilder text = new StringBuilder();
 		
 		text.append("Version [URL=");
-		text.append(url);
+		text.append(identification);
 		text.append(", date=");
 		text.append(date);
 		text.append(", (has)bugReport:");

@@ -75,7 +75,7 @@ public class Application implements IApplication {
 		}
 		
 		// NOTE: If too many requests are made at once, some of them will not be answered by the server!
-		ExecutorService executorService = Executors.newFixedThreadPool(5);
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.invokeAll(requestReportTasks);
 		executorService.shutdown();
 
