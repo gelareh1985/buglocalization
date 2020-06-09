@@ -20,7 +20,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.gmt.modisco.infra.common.core.logging.MoDiscoLogger;
 import org.eclipse.m2m.atl.core.ATLCoreException;
 import org.eclipse.m2m.atl.core.IInjector;
 import org.eclipse.m2m.atl.core.IModel;
@@ -33,7 +32,7 @@ import org.eclipse.m2m.atl.core.launch.ILauncher;
 import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
 import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
-import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
+import org.eclipse.uml2.uml.resource.UMLResource;
 
 public class Java2UMLDiscoverer extends AbstractModelDiscoverer<IFile>{
 
@@ -80,19 +79,16 @@ public class Java2UMLDiscoverer extends AbstractModelDiscoverer<IFile>{
 			transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options,
 				Java2UMLDiscoverer.class.getResource("/resources/java2UML.asm").openStream());
 						
-			Resource umlOutput = UMLResourceFactoryImpl.INSTANCE.createResource(getTargetURI());
+			Resource umlOutput = UMLResource.Factory.INSTANCE.createResource(getTargetURI());
 			EMFModel umlEMFModel = (EMFModel) umlModel;
 			umlOutput.getContents().addAll(umlEMFModel.getResource().getContents());
 			this.setTargetModel(umlOutput);				
 			
 		} catch (IOException e) {
-			MoDiscoLogger.logError(e, e.getMessage(), Activator.getDefault());
 			e.printStackTrace();
 		} catch (ATLCoreException e) {
-			MoDiscoLogger.logError(e, e.getMessage(), Activator.getDefault());
 			e.printStackTrace();
 		}
-
 
 	}
 
