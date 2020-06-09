@@ -62,7 +62,7 @@ public class Application implements IApplication {
 			}
 		}
 		
-		umlResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + "class.uml", true));
+		umlResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".class.uml", true));
 		umlResource.save(Collections.emptyMap());
 		
 		// Java Model To UML Model:
@@ -83,7 +83,7 @@ public class Application implements IApplication {
 			}
 		}
 		
-		umlActivityResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + "activity.uml", true));
+		umlActivityResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".activity.uml", true));
 		umlActivityResource.save(Collections.emptyMap());
 		
 		return IApplication.EXIT_OK;
