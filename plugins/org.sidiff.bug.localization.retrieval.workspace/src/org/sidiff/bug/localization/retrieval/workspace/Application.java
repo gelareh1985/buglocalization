@@ -1,9 +1,12 @@
 package org.sidiff.bug.localization.retrieval.workspace;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.sidiff.bug.localization.retrieval.workspace.builder.TestProjectFilter;
+import org.sidiff.bug.localization.retrieval.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.retrieval.workspace.model.Workspace;
 
 public class Application implements IApplication {
@@ -14,11 +17,11 @@ public class Application implements IApplication {
 		String repositoryURL = "https://git.eclipse.org/r/jdt/eclipse.jdt.core.git";
 		String repositoryName = repositoryURL.substring(repositoryURL.lastIndexOf("/") + 1,
 				repositoryURL.lastIndexOf("."));
-		File localRepository = new File(System.getProperty("user.home") + "/git/" + repositoryName);
+		Path localRepository = Paths.get(System.getProperty("user.home") + "/git/" + repositoryName);
 		
-		Workspace workspace = new Workspace();
+		Workspace workspace = new Workspace(localRepository);
 		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace);
-		workspaceBuilder.findProjects(localRepository);
+		workspaceBuilder.findProjects(localRepository, new TestProjectFilter());
 		
 		System.out.println(workspace);
 		

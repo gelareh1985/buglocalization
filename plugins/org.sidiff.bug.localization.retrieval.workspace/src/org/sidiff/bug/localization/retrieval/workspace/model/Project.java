@@ -1,13 +1,19 @@
 package org.sidiff.bug.localization.retrieval.workspace.model;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class Project {
-	
+
+	/**
+	 * Name of the project.
+	 */
 	private String name;
-	
-	private File folder;
-	
+
+	/**
+	 * Folder containing the project relative to the workspace folder.
+	 */
+	private Path folder;
+
 	public Project() {
 	}
 
@@ -19,12 +25,16 @@ public class Project {
 		this.name = name;
 	}
 
-	public File getFolder() {
+	public Path getFolder() {
 		return folder;
 	}
 
-	public void setFolder(File folder) {
+	public void setFolder(Path folder) {
 		this.folder = folder;
+	}
+
+	public void setFolder(Workspace workspace, Path folder) {
+		this.folder = workspace.getFolder().relativize(folder);
 	}
 
 	@Override
