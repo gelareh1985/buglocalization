@@ -24,5 +24,6 @@
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.m2m.atl.adt.builder.atlNature</nature>
 	</natures>
 </projectDescription>
