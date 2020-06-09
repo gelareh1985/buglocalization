@@ -27,9 +27,8 @@ public class Application implements IApplication {
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("org.sidiff.bug.localization.examples.musicplayer");
 		
-		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
-		
 		// Discover Java:
+		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
 		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject ();
 		javaDiscoverer.discoverElement(project, new NullProgressMonitor());
 		
@@ -46,6 +45,9 @@ public class Application implements IApplication {
 		}
 		
 		// Java Model To UML Model:
+		// https://github.com/artist-project/ARTIST.git
+		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
+		// - /eu.artist.migration.mdt.javaee.java.umlclass/src/eu/artist/migration/mdt/javaee/java/umlclass/Java2UMLDiscoverer.java
 		Java2UMLDiscoverer umlDiscoverer = new Java2UMLDiscoverer();
 		umlDiscoverer.discoverElement(uriToIFile(javaResource.getURI()), new NullProgressMonitor());
 		
