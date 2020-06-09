@@ -10,6 +10,7 @@ Require-Bundle: eu.artist.migration.mdt.javaee.java.umlclass,
  org.eclipse.modisco.infra.discovery.core,
  org.eclipse.modisco.java,
  org.eclipse.modisco.java.discoverer,
- org.eclipse.uml2.uml
+ org.eclipse.uml2.uml,
+ eu.artist.migration.mdt.javaee.java.umlactivity
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval.model
 Bundle-ActivationPolicy: lazy

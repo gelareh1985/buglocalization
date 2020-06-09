@@ -15,9 +15,11 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.modisco.java.CompilationUnit;
 import org.eclipse.modisco.java.Model;
 import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Package;
 
+import eu.artist.migration.mdt.javaee.java.umlactivity.Java2UMLActivityDiscovererFull;
 import eu.artist.migration.mdt.javaee.java.umlclass.Java2UMLDiscoverer;
 
 public class Application implements IApplication {
@@ -59,6 +61,30 @@ public class Application implements IApplication {
 				System.out.println(umlElement);
 			}
 		}
+		
+		umlResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + "class.uml", true));
+		umlResource.save(Collections.emptyMap());
+		
+		// Java Model To UML Model:
+		// https://github.com/artist-project/ARTIST.git
+		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
+		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscoverer.java
+		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscovererFull.java
+//		Java2UMLActivityDiscoverer umlActivityDiscoverer = new Java2UMLActivityDiscoverer();
+		Java2UMLActivityDiscovererFull umlActivityDiscoverer = new Java2UMLActivityDiscovererFull();
+		umlActivityDiscoverer.discoverElement(uriToIFile(javaResource.getURI()), new NullProgressMonitor());
+		
+		Resource umlActivityResource = umlActivityDiscoverer.getTargetModel();
+		Package umlActivityModel = (Package) umlActivityResource.getContents().get(0);
+		
+		for (EObject umlElement : (Iterable<EObject>) () -> umlActivityModel.eAllContents()) {
+			if (umlElement instanceof Activity) {
+				System.out.println(umlElement);
+			}
+		}
+		
+		umlActivityResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + "activity.uml", true));
+		umlActivityResource.save(Collections.emptyMap());
 		
 		return IApplication.EXIT_OK;
 	}
