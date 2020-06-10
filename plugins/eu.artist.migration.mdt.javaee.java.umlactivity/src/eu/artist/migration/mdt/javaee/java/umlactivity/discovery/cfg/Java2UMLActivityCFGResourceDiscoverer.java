@@ -13,21 +13,21 @@
 *********************************************************************************/
 package eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.ecore.resource.Resource;
 
-import eu.artist.migration.mdt.javaee.java.uml.provider.Java2UMLByFileProvider;
+import eu.artist.migration.mdt.javaee.java.uml.provider.Java2UMLByResourceProvider;
 import eu.artist.migration.mdt.javaee.java.uml.util.Java2UMLUtil;
 
-public class Java2UMLActivityCFGFileDiscoverer extends Java2UMLActivityCFGBasicDiscoverer<IFile> {
+public class Java2UMLActivityCFGResourceDiscoverer extends Java2UMLActivityCFGBasicDiscoverer<Resource> {
 	
-	public static String ID = "eu.artist.migration.mdt.javaee.java.umlactivity.cfg.file";
-
-	public Java2UMLActivityCFGFileDiscoverer() {
-		super(new Java2UMLByFileProvider("activity.cfg"));
+	public static String ID = "eu.artist.migration.mdt.javaee.java.umlactivity.cfg.resource";
+	
+	public Java2UMLActivityCFGResourceDiscoverer() {
+		super(new Java2UMLByResourceProvider("activity.cfg"));
 	}
 
 	@Override
-	public boolean isApplicableTo(IFile source) {
+	public boolean isApplicableTo(Resource source) {
 		return Java2UMLUtil.isJavaModel(source);
 	}
 

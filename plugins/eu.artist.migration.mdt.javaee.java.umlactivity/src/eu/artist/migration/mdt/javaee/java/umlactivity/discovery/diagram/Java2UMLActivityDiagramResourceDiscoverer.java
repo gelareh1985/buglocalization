@@ -11,23 +11,23 @@
 *		 	 Matthieu Allon (matthieu.allon at gmail.com)
 * Initially developed in the context of ARTIST EU project www.artist-project.eu
 *********************************************************************************/
-package eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg;
+package eu.artist.migration.mdt.javaee.java.umlactivity.discovery.diagram;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.ecore.resource.Resource;
 
-import eu.artist.migration.mdt.javaee.java.uml.provider.Java2UMLByFileProvider;
+import eu.artist.migration.mdt.javaee.java.uml.provider.Java2UMLByResourceProvider;
 import eu.artist.migration.mdt.javaee.java.uml.util.Java2UMLUtil;
 
-public class Java2UMLActivityCFGFileDiscoverer extends Java2UMLActivityCFGBasicDiscoverer<IFile> {
-	
-	public static String ID = "eu.artist.migration.mdt.javaee.java.umlactivity.cfg.file";
+public class Java2UMLActivityDiagramResourceDiscoverer extends Java2UMLActivityDiagramBasicDiscoverer<Resource> {
 
-	public Java2UMLActivityCFGFileDiscoverer() {
-		super(new Java2UMLByFileProvider("activity.cfg"));
+	public static String ID = "eu.artist.migration.mdt.javaee.java.umlactivity.resource";
+
+	public Java2UMLActivityDiagramResourceDiscoverer() {
+		super(new Java2UMLByResourceProvider("activity"));
 	}
 
 	@Override
-	public boolean isApplicableTo(IFile source) {
+	public boolean isApplicableTo(Resource source) {
 		return Java2UMLUtil.isJavaModel(source);
 	}
 

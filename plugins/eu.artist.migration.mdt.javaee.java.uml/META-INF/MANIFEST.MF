@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Uml
+Bundle-SymbolicName: eu.artist.migration.mdt.javaee.java.uml;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: eu.artist.migration.mdt.javaee.java.uml
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: eu.artist.migration.mdt.javaee.java.uml.discovery,
+ eu.artist.migration.mdt.javaee.java.uml.provider,
+ eu.artist.migration.mdt.javaee.java.uml.util
+Require-Bundle: org.eclipse.core.resources;visibility:=reexport,
+ org.eclipse.m2m.atl.core;visibility:=reexport,
+ org.eclipse.m2m.atl.core.emf;visibility:=reexport,
+ org.eclipse.modisco.infra.discovery.core;visibility:=reexport

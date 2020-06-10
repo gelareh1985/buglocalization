@@ -10,86 +10,24 @@
 *	authors: Guillaume Doux (guillaume.doux at inria.fr) 
 *		 	 Matthieu Allon (matthieu.allon at gmail.com)
 * Initially developed in the context of ARTIST EU project www.artist-project.eu
-*********************************************************************************/ 
-package eu.artist.migration.mdt.javaee.java.umlclass;
-
-import java.io.IOException;
-import java.util.HashMap;
+*********************************************************************************/
+package eu.artist.migration.mdt.javaee.java.umlclass.discovery;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.m2m.atl.core.ATLCoreException;
-import org.eclipse.m2m.atl.core.IInjector;
-import org.eclipse.m2m.atl.core.IModel;
-import org.eclipse.m2m.atl.core.IReferenceModel;
-import org.eclipse.m2m.atl.core.ModelFactory;
-import org.eclipse.m2m.atl.core.emf.EMFInjector;
-import org.eclipse.m2m.atl.core.emf.EMFModel;
-import org.eclipse.m2m.atl.core.emf.EMFModelFactory;
-import org.eclipse.m2m.atl.core.launch.ILauncher;
-import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
-import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
-import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
-import org.eclipse.uml2.uml.resource.UMLResource;
 
-public class Java2UMLDiscoverer extends AbstractModelDiscoverer<IFile>{
+import eu.artist.migration.mdt.javaee.java.uml.provider.Java2UMLByFileProvider;
+import eu.artist.migration.mdt.javaee.java.uml.util.Java2UMLUtil;
 
-	public static String ID="eu.artist.migration.mdt.javaee.java.umlclass";
+public class Java2UMLFileDiscoverer extends Java2UMLBasicDiscoverer<IFile> {
 
-	public static final String UML_MM_URI = "http://www.eclipse.org/uml2/4.0.0/UML"; //$NON-NLS-1$
-	public static final String JAVA_MM_URI = "http://www.eclipse.org/MoDisco/Java/0.2.incubation/java"; //$NON-NLS-1$
+	public static String ID = "eu.artist.migration.mdt.javaee.java.umlclass.file";
+	
+	public Java2UMLFileDiscoverer() {
+		super(new Java2UMLByFileProvider("class"));
+	}
 
 	@Override
 	public boolean isApplicableTo(IFile source) {
-		if (!source.exists()) {
-			return false;
-		}
-		return source.getName().endsWith("xmi");
+		return Java2UMLUtil.isJavaModel(source);
 	}
-
-	@Override
-	protected void basicDiscoverElement(IFile source, IProgressMonitor monitor)
-			throws DiscoveryException {
-		String uri = source.getLocationURI().toString();
-		String outputUri = uri.replaceFirst(".xmi", ".class.uml");
-		if (this.getTargetURI()==null){
-			this.setTargetURI(URI.createURI(outputUri));
-		}
-		try {
-			ILauncher transformationLauncher = new EMFVMLauncher();
-			ModelFactory modelFactory = new EMFModelFactory();
-			IInjector injector = new EMFInjector();
-			IReferenceModel umlMetamodel = modelFactory.newReferenceModel();
-			injector.inject(umlMetamodel, Java2UMLDiscoverer.UML_MM_URI);
-			IReferenceModel javaMetamodel = modelFactory.newReferenceModel();
-			injector.inject(javaMetamodel, Java2UMLDiscoverer.JAVA_MM_URI);
-			
-			IModel javaModel = modelFactory.newModel(javaMetamodel);
-			injector.inject(javaModel, uri);
-			IModel umlModel = modelFactory.newModel(umlMetamodel);
-			
-			transformationLauncher.initialize(new HashMap<String,Object>());
-			transformationLauncher.addInModel(javaModel, "IN", "JAVA");
-			transformationLauncher.addOutModel(umlModel, "OUT", "UML");
-			transformationLauncher.addLibrary("java2UMLHelpers", Java2UMLDiscoverer.class.getResource("/resources/java2UMLHelpers.asm").openStream());
-			
-			HashMap<String, Object> options = new HashMap<String, Object>();
-			transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options,
-				Java2UMLDiscoverer.class.getResource("/resources/java2UML.asm").openStream());
-						
-			Resource umlOutput = UMLResource.Factory.INSTANCE.createResource(getTargetURI());
-			EMFModel umlEMFModel = (EMFModel) umlModel;
-			umlOutput.getContents().addAll(umlEMFModel.getResource().getContents());
-			this.setTargetModel(umlOutput);				
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ATLCoreException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 }

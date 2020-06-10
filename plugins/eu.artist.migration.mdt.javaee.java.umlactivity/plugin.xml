@@ -4,23 +4,31 @@
    <extension
          point="org.eclipse.modisco.infra.discovery.core.discoverer">
       <discoverer
-            class="eu.artist.migration.mdt.javaee.java.umlactivity.Java2UMLActivityDiscoverer"
-            id="eu.artist.migration.mdt.javaee.java.umlactivity.cfg">
+            class="eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg.Java2UMLActivityCFGFileDiscoverer"
+            id="eu.artist.migration.mdt.javaee.java.umlactivity.cfg.file">
       </discoverer>
       <discoverer
-            class="eu.artist.migration.mdt.javaee.java.umlactivity.Java2UMLActivityDiscovererFull"
-            id="eu.artist.migration.mdt.javaee.java.umlactivity">
+            class="eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg.Java2UMLActivityCFGResourceDiscoverer"
+            id="eu.artist.migration.mdt.javaee.java.umlactivity.cfg.resource">
+      </discoverer>
+      <discoverer
+            class="eu.artist.migration.mdt.javaee.java.umlactivity.discovery.diagram.Java2UMLActivityDiagramFileDiscoverer"
+            id="eu.artist.migration.mdt.javaee.java.umlactivity.file">
+      </discoverer>
+      <discoverer
+            class="eu.artist.migration.mdt.javaee.java.umlactivity.discovery.diagram.Java2UMLActivityDiagramResourceDiscoverer"
+            id="eu.artist.migration.mdt.javaee.java.umlactivity.resource">
       </discoverer>
    </extension>
    <extension
          point="org.eclipse.modisco.infra.discovery.ui.discoverer">
       <discoverer
-            discovererID="eu.artist.migration.mdt.javaee.java.umlactivity.cfg"
+            discovererID="eu.artist.migration.mdt.javaee.java.umlactivity.cfg.file"
             icon="icons/artist.png"
             label="Java2UMLDiscoverer - Activity Diagram - Control Flow Graph">
       </discoverer>
       <discoverer
-            discovererID="eu.artist.migration.mdt.javaee.java.umlactivity"
+            discovererID="eu.artist.migration.mdt.javaee.java.umlactivity.file"
             icon="icons/artist.png"
             label="Java2UMLDiscoverer - Activity Diagram">
       </discoverer>

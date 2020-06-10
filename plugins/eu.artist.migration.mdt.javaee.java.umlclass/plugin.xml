@@ -4,14 +4,18 @@
    <extension
          point="org.eclipse.modisco.infra.discovery.core.discoverer">
       <discoverer
-            class="eu.artist.migration.mdt.javaee.java.umlclass.Java2UMLDiscoverer"
-            id="eu.artist.migration.mdt.javaee.java.umlclass">
+            class="eu.artist.migration.mdt.javaee.java.umlclass.discovery.Java2UMLFileDiscoverer"
+            id="eu.artist.migration.mdt.javaee.java.umlclass.file">
+      </discoverer>
+      <discoverer
+            class="eu.artist.migration.mdt.javaee.java.umlclass.discovery.Java2UMLResourceDiscoverer"
+            id="eu.artist.migration.mdt.javaee.java.umlclass.resource">
       </discoverer>
    </extension>
    <extension
          point="org.eclipse.modisco.infra.discovery.ui.discoverer">
       <discoverer
-            discovererID="eu.artist.migration.mdt.javaee.java.umlclass"
+            discovererID="eu.artist.migration.mdt.javaee.java.umlclass.file"
             icon="icons/artist.png"
             label="Java2UMLDiscoverer - Class Diagram">
       </discoverer>
