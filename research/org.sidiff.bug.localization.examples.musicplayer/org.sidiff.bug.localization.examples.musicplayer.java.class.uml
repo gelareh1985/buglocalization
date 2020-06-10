@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="ASCII"?>
+<uml:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" name="root model">
+  <packagedElement xsi:type="uml:Model" name="org.sidiff.bug.localization.examples.musicplayer">
+    <packagedElement xsi:type="uml:Package" name="Common java data types">
+      <packagedElement xsi:type="uml:PrimitiveType" name="int"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="long"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="float"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="double"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="boolean"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="void"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="char"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="short"/>
+      <packagedElement xsi:type="uml:PrimitiveType" name="byte"/>
+    </packagedElement>
+    <packagedElement xsi:type="uml:Package" name="Project data types">
+      <packagedElement xsi:type="uml:Class" name="java.util.List&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>">
+        <interfaceRealization name="List__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@48cf8414 (name: java.util.List&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>, proxy: false)" client="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Corg.sidiff.bug.localization.examples.musicplayer.MusicTitle%3E" supplier="//externals/java/util/List" contract="//externals/java/util/List"/>
+        <interfaceRealization name="MusicTitle__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@48cf8414 (name: java.util.List&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>, proxy: false)" client="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Corg.sidiff.bug.localization.examples.musicplayer.MusicTitle%3E" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle" contract="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Class" name="java.util.List&lt;java.lang.String>">
+        <interfaceRealization name="List__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@27dbaa33 (name: java.util.List&lt;java.lang.String>, proxy: false)" client="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Cjava.lang.String%3E" supplier="//externals/java/util/List" contract="//externals/java/util/List"/>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Class" name="java.util.LinkedList&lt;org.sidiff.bug.localization.examples.musicplayer.MusicTitle>"/>
+      <packagedElement xsi:type="uml:Class" name="java.util.List&lt;java.io.File>">
+        <interfaceRealization name="List__org.eclipse.modisco.java.emf.impl.ParameterizedTypeImpl@3b021664 (name: java.util.List&lt;java.io.File>, proxy: false)" client="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Cjava.io.File%3E" supplier="//externals/java/util/List" contract="//externals/java/util/List"/>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xsi:type="uml:Package" name="org">
+      <packagedElement xsi:type="uml:Package" name="sidiff">
+        <packagedElement xsi:type="uml:Package" name="bug">
+          <packagedElement xsi:type="uml:Package" name="localization">
+            <packagedElement xsi:type="uml:Package" name="examples">
+              <packagedElement xsi:type="uml:Package" name="musicplayer">
+                <packagedElement xsi:type="uml:Interface" name="Player" visibility="public">
+                  <ownedOperation name="appendToPlaylist" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    <ownedParameter name="title" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                  </ownedOperation>
+                  <ownedOperation name="removeFromPlaylist" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    <ownedParameter name="title" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                  </ownedOperation>
+                  <ownedOperation name="getPlaylist" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Corg.sidiff.bug.localization.examples.musicplayer.MusicTitle%3E" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation name="getCurrentTitle" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation name="play" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    <ownedParameter name="titleInPlaylist" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+                  </ownedOperation>
+                  <ownedOperation name="isPlaying" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation name="pause" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation name="stop" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                  </ownedOperation>
+                </packagedElement>
+                <packagedElement xsi:type="uml:Package" name="impl">
+                  <packagedElement xsi:type="uml:Class" name="PlayerImpl" visibility="public">
+                    <ownedAttribute name="playlist" visibility="private" type="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Corg.sidiff.bug.localization.examples.musicplayer.MusicTitle%3E"/>
+                    <ownedAttribute name="currentTitle" visibility="private" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                    <ownedAttribute name="clip" visibility="private" type="//externals/javax/sound/sampled/Clip"/>
+                    <ownedAttribute name="pause" visibility="private" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean"/>
+                    <ownedAttribute name="position" visibility="private" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+                    <interfaceRealization name="Player__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@187e5235 (name: PlayerImpl, proxy: false)" client="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/PlayerImpl" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/Player" contract="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/Player"/>
+                    <ownedOperation name="PlayerImpl" visibility="public">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/PlayerImpl" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="appendToPlaylist" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : appendToPlaylist__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="title" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                    </ownedOperation>
+                    <ownedOperation name="removeFromPlaylist" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : removeFromPlaylist__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="title" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                    </ownedOperation>
+                    <ownedOperation name="getPlaylist" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getPlaylist__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Corg.sidiff.bug.localization.examples.musicplayer.MusicTitle%3E" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="getCurrentTitle" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getCurrentTitle__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="play" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : play__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="titleInPlaylist" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+                    </ownedOperation>
+                    <ownedOperation name="getTitleFromPlaylist" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle" direction="return"/>
+                      <ownedParameter name="titleInPlaylist" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+                    </ownedOperation>
+                    <ownedOperation name="startPlayback" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="isPlaying" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : isPlaying__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="pause" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : pause__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="stop" visibility="public">
+                      <ownedComment body="@OverridejAnnot.refImmediateComposite().name : stop__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="stopPlayback" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    </ownedOperation>
+                  </packagedElement>
+                  <packagedElement xsi:type="uml:Package" name="format">
+                    <packagedElement xsi:type="uml:Class" name="MIDIMusicTitle" visibility="public">
+                      <generalization general="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/MusicFile"/>
+                      <ownedOperation name="MIDIMusicTitle" visibility="public">
+                        <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/MIDIMusicTitle" direction="return"/>
+                        <ownedParameter name="path" type="//externals/java/lang/String"/>
+                      </ownedOperation>
+                      <ownedOperation name="getFileExtension" visibility="public">
+                        <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getFileExtension__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                        <ownedParameter type="//externals/java/lang/String" direction="return"/>
+                      </ownedOperation>
+                    </packagedElement>
+                    <packagedElement xsi:type="uml:Dependency" name="File_OF_MusicFile.java" supplier="//externals/java/io/File"/>
+                    <packagedElement xsi:type="uml:Dependency" name="IOException_OF_MusicFile.java" supplier="//externals/java/io/IOException"/>
+                    <packagedElement xsi:type="uml:Dependency" name="Arrays_OF_MusicFile.java" supplier="//externals/java/util/Arrays"/>
+                    <packagedElement xsi:type="uml:Dependency" name="Collections_OF_MusicFile.java" supplier="//externals/java/util/Collections"/>
+                    <packagedElement xsi:type="uml:Dependency" name="List_OF_MusicFile.java" supplier="//externals/java/util/List"/>
+                    <packagedElement xsi:type="uml:Dependency" name="AudioInputStream_OF_MusicFile.java" supplier="//externals/javax/sound/sampled/AudioInputStream"/>
+                    <packagedElement xsi:type="uml:Dependency" name="AudioSystem_OF_MusicFile.java" supplier="//externals/javax/sound/sampled/AudioSystem"/>
+                    <packagedElement xsi:type="uml:Dependency" name="UnsupportedAudioFileException_OF_MusicFile.java" supplier="//externals/javax/sound/sampled/UnsupportedAudioFileException"/>
+                    <packagedElement xsi:type="uml:Dependency" name="MusicTitle_OF_MusicFile.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                    <packagedElement xsi:type="uml:Class" name="WaveMusicTitle" visibility="public">
+                      <generalization general="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/MusicFile"/>
+                      <ownedOperation name="WaveMusicTitle" visibility="public">
+                        <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/WaveMusicTitle" direction="return"/>
+                        <ownedParameter name="path" type="//externals/java/lang/String"/>
+                      </ownedOperation>
+                      <ownedOperation name="getFileExtension" visibility="public">
+                        <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getFileExtension__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                        <ownedParameter type="//externals/java/lang/String" direction="return"/>
+                      </ownedOperation>
+                    </packagedElement>
+                    <packagedElement xsi:type="uml:Class" name="MusicFile" visibility="public" isAbstract="true">
+                      <ownedAttribute name="file" visibility="private" type="//externals/java/io/File"/>
+                      <ownedAttribute name="artists" visibility="private" type="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Cjava.lang.String%3E"/>
+                      <ownedAttribute name="name" visibility="private" type="//externals/java/lang/String"/>
+                      <interfaceRealization name="MusicTitle__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@44fdce3c (name: MusicFile, proxy: false)" client="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/MusicFile" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle" contract="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                      <ownedOperation name="MusicFile" visibility="public">
+                        <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/MusicFile" direction="return"/>
+                        <ownedParameter name="path" type="//externals/java/lang/String"/>
+                      </ownedOperation>
+                      <ownedOperation name="getFileExtension" visibility="public">
+                        <ownedParameter type="//externals/java/lang/String" direction="return"/>
+                      </ownedOperation>
+                      <ownedOperation name="getName" visibility="public">
+                        <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getName__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                        <ownedParameter type="//externals/java/lang/String" direction="return"/>
+                      </ownedOperation>
+                      <ownedOperation name="getArtists" visibility="public">
+                        <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getArtists__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                        <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Cjava.lang.String%3E" direction="return"/>
+                      </ownedOperation>
+                      <ownedOperation name="getMusic" visibility="public">
+                        <ownedComment body="@OverridejAnnot.refImmediateComposite().name : getMusic__jAnnot.refImmediateComposite() : JAVA!MethodDeclaration"/>
+                        <ownedParameter type="//externals/javax/sound/sampled/AudioInputStream" direction="return"/>
+                      </ownedOperation>
+                    </packagedElement>
+                  </packagedElement>
+                  <packagedElement xsi:type="uml:Dependency" name="IOException_OF_PlayerImpl.java" supplier="//externals/java/io/IOException"/>
+                  <packagedElement xsi:type="uml:Dependency" name="LinkedList_OF_PlayerImpl.java" supplier="//externals/java/util/LinkedList"/>
+                  <packagedElement xsi:type="uml:Dependency" name="List_OF_PlayerImpl.java" supplier="//externals/java/util/List"/>
+                  <packagedElement xsi:type="uml:Dependency" name="AudioFormat_OF_PlayerImpl.java" supplier="//externals/javax/sound/sampled/AudioFormat"/>
+                  <packagedElement xsi:type="uml:Dependency" name="AudioInputStream_OF_PlayerImpl.java" supplier="//externals/javax/sound/sampled/AudioInputStream"/>
+                  <packagedElement xsi:type="uml:Dependency" name="AudioSystem_OF_PlayerImpl.java" supplier="//externals/javax/sound/sampled/AudioSystem"/>
+                  <packagedElement xsi:type="uml:Dependency" name="Clip_OF_PlayerImpl.java" supplier="//externals/javax/sound/sampled/Clip"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DataLine_OF_PlayerImpl.java" supplier="//externals/javax/sound/sampled/DataLine"/>
+                  <packagedElement xsi:type="uml:Dependency" name="LineUnavailableException_OF_PlayerImpl.java" supplier="//externals/javax/sound/sampled/LineUnavailableException"/>
+                  <packagedElement xsi:type="uml:Dependency" name="MusicTitle_OF_PlayerImpl.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                  <packagedElement xsi:type="uml:Dependency" name="Player_OF_PlayerImpl.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/Player"/>
+                </packagedElement>
+                <packagedElement xsi:type="uml:Package" name="ui">
+                  <packagedElement xsi:type="uml:Class" name="PlayerUserInterface" visibility="public">
+                    <ownedAttribute name="frame" visibility="private" type="//externals/javax/swing/JFrame"/>
+                    <ownedAttribute name="table" visibility="private" type="//externals/javax/swing/JTable"/>
+                    <ownedAttribute name="player" visibility="private" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/Player"/>
+                    <ownedOperation name="main" visibility="public" isStatic="true">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="args" type="//externals/java/lang/String%5B%5D"/>
+                    </ownedOperation>
+                    <ownedOperation name="PlayerUserInterface" visibility="public">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/ui/PlayerUserInterface" direction="return"/>
+                      <ownedParameter name="player" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/Player"/>
+                    </ownedOperation>
+                    <ownedOperation name="initialize" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                    </ownedOperation>
+                    <ownedOperation name="addPlayListener" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="play" type="//externals/javax/swing/JButton"/>
+                      <ownedParameter name="title" type="//externals/javax/swing/JLabel"/>
+                    </ownedOperation>
+                    <ownedOperation name="addStopListener" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="stop" type="//externals/javax/swing/JButton"/>
+                      <ownedParameter name="title" type="//externals/javax/swing/JLabel"/>
+                    </ownedOperation>
+                    <ownedOperation name="getTitle" visibility="private">
+                      <ownedParameter type="//externals/java/lang/String" direction="return"/>
+                      <ownedParameter name="title" type="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                    </ownedOperation>
+                    <ownedOperation name="addMusicFileDropListener" visibility="private">
+                      <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/void" direction="return"/>
+                      <ownedParameter name="table" type="//externals/javax/swing/JTable"/>
+                    </ownedOperation>
+                  </packagedElement>
+                  <packagedElement xsi:type="uml:Dependency" name="BorderLayout_OF_PlayerUserInterface.java" supplier="//externals/java/awt/BorderLayout"/>
+                  <packagedElement xsi:type="uml:Dependency" name="EventQueue_OF_PlayerUserInterface.java" supplier="//externals/java/awt/EventQueue"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DataFlavor_OF_PlayerUserInterface.java" supplier="//externals/java/awt/datatransfer/DataFlavor"/>
+                  <packagedElement xsi:type="uml:Dependency" name="Transferable_OF_PlayerUserInterface.java" supplier="//externals/java/awt/datatransfer/Transferable"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DropTarget_OF_PlayerUserInterface.java" supplier="//externals/java/awt/dnd/DropTarget"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DropTargetDragEvent_OF_PlayerUserInterface.java" supplier="//externals/java/awt/dnd/DropTargetDragEvent"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DropTargetDropEvent_OF_PlayerUserInterface.java" supplier="//externals/java/awt/dnd/DropTargetDropEvent"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DropTargetEvent_OF_PlayerUserInterface.java" supplier="//externals/java/awt/dnd/DropTargetEvent"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DropTargetListener_OF_PlayerUserInterface.java" supplier="//externals/java/awt/dnd/DropTargetListener"/>
+                  <packagedElement xsi:type="uml:Dependency" name="File_OF_PlayerUserInterface.java" supplier="//externals/java/io/File"/>
+                  <packagedElement xsi:type="uml:Dependency" name="Box_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/Box"/>
+                  <packagedElement xsi:type="uml:Dependency" name="JButton_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/JButton"/>
+                  <packagedElement xsi:type="uml:Dependency" name="JFrame_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/JFrame"/>
+                  <packagedElement xsi:type="uml:Dependency" name="JLabel_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/JLabel"/>
+                  <packagedElement xsi:type="uml:Dependency" name="JTable_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/JTable"/>
+                  <packagedElement xsi:type="uml:Dependency" name="ListSelectionModel_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/ListSelectionModel"/>
+                  <packagedElement xsi:type="uml:Dependency" name="DefaultTableModel_OF_PlayerUserInterface.java" supplier="//externals/javax/swing/table/DefaultTableModel"/>
+                  <packagedElement xsi:type="uml:Dependency" name="MusicTitle_OF_PlayerUserInterface.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/MusicTitle"/>
+                  <packagedElement xsi:type="uml:Dependency" name="Player_OF_PlayerUserInterface.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/Player"/>
+                  <packagedElement xsi:type="uml:Dependency" name="PlayerImpl_OF_PlayerUserInterface.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/PlayerImpl"/>
+                  <packagedElement xsi:type="uml:Dependency" name="MIDIMusicTitle_OF_PlayerUserInterface.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/MIDIMusicTitle"/>
+                  <packagedElement xsi:type="uml:Dependency" name="WaveMusicTitle_OF_PlayerUserInterface.java" supplier="//org.sidiff.bug.localization.examples.musicplayer/org/sidiff/bug/localization/examples/musicplayer/impl/format/WaveMusicTitle"/>
+                </packagedElement>
+                <packagedElement xsi:type="uml:Dependency" name="List_OF_Player.java" supplier="//externals/java/util/List"/>
+                <packagedElement xsi:type="uml:Dependency" name="List_OF_MusicTitle.java" supplier="//externals/java/util/List"/>
+                <packagedElement xsi:type="uml:Dependency" name="AudioInputStream_OF_MusicTitle.java" supplier="//externals/javax/sound/sampled/AudioInputStream"/>
+                <packagedElement xsi:type="uml:Interface" name="MusicTitle" visibility="public">
+                  <ownedOperation name="getName" visibility="package">
+                    <ownedParameter type="//externals/java/lang/String" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation name="getArtists" visibility="package">
+                    <ownedParameter type="//org.sidiff.bug.localization.examples.musicplayer/Project%20data%20types/java.util.List%3Cjava.lang.String%3E" direction="return"/>
+                  </ownedOperation>
+                  <ownedOperation name="getMusic" visibility="package">
+                    <ownedParameter type="//externals/javax/sound/sampled/AudioInputStream" direction="return"/>
+                  </ownedOperation>
+                </packagedElement>
+              </packagedElement>
+            </packagedElement>
+          </packagedElement>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xsi:type="uml:Model" name="externals">
+    <packagedElement xsi:type="uml:Package" name="java">
+      <packagedElement xsi:type="uml:Package" name="util">
+        <packagedElement xsi:type="uml:Class" name="LinkedList" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/LinkedList/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/LinkedList/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/util/AbstractSequentialList"/>
+          <interfaceRealization name="List__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@793cef95 (name: LinkedList, proxy: true)" client="//externals/java/util/LinkedList" supplier="//externals/java/util/List" contract="//externals/java/util/List"/>
+          <interfaceRealization name="Deque__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@793cef95 (name: LinkedList, proxy: true)" client="//externals/java/util/LinkedList" supplier="//externals/java/util/Deque" contract="//externals/java/util/Deque"/>
+          <interfaceRealization name="Cloneable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@793cef95 (name: LinkedList, proxy: true)" client="//externals/java/util/LinkedList" supplier="//externals/java/lang/Cloneable" contract="//externals/java/lang/Cloneable"/>
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@793cef95 (name: LinkedList, proxy: true)" client="//externals/java/util/LinkedList" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+          <ownedOperation name="LinkedList" visibility="package">
+            <ownedParameter type="//externals/java/util/LinkedList" direction="return"/>
+          </ownedOperation>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="AbstractSequentialList" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/AbstractSequentialList/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/AbstractSequentialList/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/util/AbstractList"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="AbstractList" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/AbstractList/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/AbstractList/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/util/AbstractCollection"/>
+          <interfaceRealization name="List__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@67c21bf (name: AbstractList, proxy: true)" client="//externals/java/util/AbstractList" supplier="//externals/java/util/List" contract="//externals/java/util/List"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="AbstractCollection" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/AbstractCollection/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/AbstractCollection/E"/>
+          </ownedTemplateSignature>
+          <interfaceRealization name="Collection__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@67afe909 (name: AbstractCollection, proxy: true)" client="//externals/java/util/AbstractCollection" supplier="//externals/java/util/Collection" contract="//externals/java/util/Collection"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Arrays" visibility="package">
+          <ownedOperation name="asList" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/Object%5B%5D"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Collections" visibility="package">
+          <ownedOperation name="emptyList" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="EventObject" visibility="package">
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@16e195cf (name: EventObject, proxy: true)" client="//externals/java/util/EventObject" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="List" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/List/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/List/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/util/Collection"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+          <ownedOperation name="add" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/Object"/>
+          </ownedOperation>
+          <ownedOperation name="remove" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/Object"/>
+          </ownedOperation>
+          <ownedOperation name="size" visibility="package"/>
+          <ownedOperation name="get" visibility="package">
+            <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="Collection" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/Collection/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/Collection/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/lang/Iterable"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="Deque" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/Deque/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/Deque/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/util/Queue"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="Queue" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/util/Queue/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/util/Queue/E"/>
+          </ownedTemplateSignature>
+          <generalization general="//externals/java/util/Collection"/>
+          <nestedClassifier xsi:type="uml:Class" name="E"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="EventListener" visibility="package"/>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Package" name="lang">
+        <packagedElement xsi:type="uml:Class" name="String" visibility="package">
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@77c23d90 (name: String, proxy: true)" client="//externals/java/lang/String" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+          <interfaceRealization name="Comparable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@77c23d90 (name: String, proxy: true)" client="//externals/java/lang/String" supplier="//externals/java/lang/Comparable" contract="//externals/java/lang/Comparable"/>
+          <interfaceRealization name="CharSequence__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@77c23d90 (name: String, proxy: true)" client="//externals/java/lang/String" supplier="//externals/java/lang/CharSequence" contract="//externals/java/lang/CharSequence"/>
+          <ownedOperation name="toLowerCase" visibility="package"/>
+          <ownedOperation name="endsWith" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+          </ownedOperation>
+          <ownedOperation name="split" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+            <ownedParameter name="arg1" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+          </ownedOperation>
+          <ownedOperation name="split" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+          </ownedOperation>
+          <ownedOperation name="join" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/CharSequence"/>
+            <ownedParameter name="arg1" type="//externals/java/lang/Iterable"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="reflect">
+          <packagedElement xsi:type="uml:Interface" name="GenericDeclaration" visibility="package">
+            <generalization general="//externals/java/lang/reflect/AnnotatedElement"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="AnnotatedElement" visibility="package"/>
+          <packagedElement xsi:type="uml:Interface" name="Type" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Exception" visibility="package">
+          <generalization general="//externals/java/lang/Throwable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Throwable" visibility="package">
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6133e20b (name: Throwable, proxy: true)" client="//externals/java/lang/Throwable" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+          <ownedOperation name="printStackTrace" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Object" visibility="package"/>
+        <packagedElement xsi:type="uml:Class" name="Class" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/lang/Class/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/lang/Class/T"/>
+          </ownedTemplateSignature>
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@43deba42 (name: Class, proxy: true)" client="//externals/java/lang/Class" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+          <interfaceRealization name="GenericDeclaration__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@43deba42 (name: Class, proxy: true)" client="//externals/java/lang/Class" supplier="//externals/java/lang/reflect/GenericDeclaration" contract="//externals/java/lang/reflect/GenericDeclaration"/>
+          <interfaceRealization name="Type__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@43deba42 (name: Class, proxy: true)" client="//externals/java/lang/Class" supplier="//externals/java/lang/reflect/Type" contract="//externals/java/lang/reflect/Type"/>
+          <interfaceRealization name="AnnotatedElement__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@43deba42 (name: Class, proxy: true)" client="//externals/java/lang/Class" supplier="//externals/java/lang/reflect/AnnotatedElement" contract="//externals/java/lang/reflect/AnnotatedElement"/>
+          <nestedClassifier xsi:type="uml:Class" name="T"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="Iterable" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/lang/Iterable/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/lang/Iterable/T"/>
+          </ownedTemplateSignature>
+          <nestedClassifier xsi:type="uml:Class" name="T"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="AutoCloseable" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="Comparable" visibility="package">
+          <ownedTemplateSignature xsi:type="uml:RedefinableTemplateSignature" parameter="//externals/java/lang/Comparable/@ownedTemplateSignature/@ownedParameter.0">
+            <ownedParameter xsi:type="uml:ClassifierTemplateParameter" constrainingClassifier="//externals/java/lang/Comparable/T"/>
+          </ownedTemplateSignature>
+          <nestedClassifier xsi:type="uml:Class" name="T"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="CharSequence" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="Cloneable" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="Runnable" visibility="package"/>
+        <packagedElement xsi:type="uml:Class" name="String[]">
+          <ownedAttribute name="type" type="//externals/java/lang/String"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Object[]">
+          <ownedAttribute name="type" type="//externals/java/lang/Object"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Package" name="io">
+        <packagedElement xsi:type="uml:Class" name="InputStream" visibility="package">
+          <interfaceRealization name="Closeable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@5eeee124 (name: InputStream, proxy: true)" client="//externals/java/io/InputStream" supplier="//externals/java/io/Closeable" contract="//externals/java/io/Closeable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="IOException" visibility="package">
+          <generalization general="//externals/java/lang/Exception"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="File" visibility="package">
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@67b5e613 (name: File, proxy: true)" client="//externals/java/io/File" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+          <interfaceRealization name="Comparable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@67b5e613 (name: File, proxy: true)" client="//externals/java/io/File" supplier="//externals/java/lang/Comparable" contract="//externals/java/lang/Comparable"/>
+          <ownedOperation name="File" visibility="package">
+            <ownedParameter type="//externals/java/io/File" direction="return"/>
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+          </ownedOperation>
+          <ownedOperation name="getName" visibility="package"/>
+          <ownedOperation name="exists" visibility="package"/>
+          <ownedOperation name="getAbsolutePath" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="Closeable" visibility="package">
+          <generalization general="//externals/java/lang/AutoCloseable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="Serializable" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="Externalizable" visibility="package">
+          <generalization general="//externals/java/io/Serializable"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Package" name="awt">
+        <packagedElement xsi:type="uml:Class" name="BorderLayout" visibility="package">
+          <ownedAttribute name="SOUTH" visibility="package"/>
+          <ownedAttribute name="CENTER" visibility="package"/>
+          <interfaceRealization name="LayoutManager2__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3095d401 (name: BorderLayout, proxy: true)" client="//externals/java/awt/BorderLayout" supplier="//externals/java/awt/LayoutManager2" contract="//externals/java/awt/LayoutManager2"/>
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@3095d401 (name: BorderLayout, proxy: true)" client="//externals/java/awt/BorderLayout" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="datatransfer">
+          <packagedElement xsi:type="uml:Class" name="DataFlavor" visibility="package">
+            <interfaceRealization name="Externalizable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@4abbe41c (name: DataFlavor, proxy: true)" client="//externals/java/awt/datatransfer/DataFlavor" supplier="//externals/java/io/Externalizable" contract="//externals/java/io/Externalizable"/>
+            <interfaceRealization name="Cloneable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@4abbe41c (name: DataFlavor, proxy: true)" client="//externals/java/awt/datatransfer/DataFlavor" supplier="//externals/java/lang/Cloneable" contract="//externals/java/lang/Cloneable"/>
+            <ownedOperation name="isFlavorJavaFileListType" visibility="package"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="Transferable" visibility="package">
+            <ownedOperation name="getTransferDataFlavors" visibility="package"/>
+            <ownedOperation name="getTransferData" visibility="package">
+              <ownedParameter name="arg0" type="//externals/java/awt/datatransfer/DataFlavor"/>
+            </ownedOperation>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="dnd">
+          <packagedElement xsi:type="uml:Class" name="DropTarget" visibility="package">
+            <interfaceRealization name="DropTargetListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6d7b2319 (name: DropTarget, proxy: true)" client="//externals/java/awt/dnd/DropTarget" supplier="//externals/java/awt/dnd/DropTargetListener" contract="//externals/java/awt/dnd/DropTargetListener"/>
+            <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6d7b2319 (name: DropTarget, proxy: true)" client="//externals/java/awt/dnd/DropTarget" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+            <ownedOperation name="DropTarget" visibility="package">
+              <ownedParameter type="//externals/java/awt/dnd/DropTarget" direction="return"/>
+              <ownedParameter name="arg0" type="//externals/java/awt/Component"/>
+              <ownedParameter name="arg1" type="//externals/java/awt/dnd/DropTargetListener"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="DropTargetDragEvent" visibility="package">
+            <generalization general="//externals/java/awt/dnd/DropTargetEvent"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="DropTargetEvent" visibility="package">
+            <generalization general="//externals/java/util/EventObject"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="DropTargetDropEvent" visibility="package">
+            <generalization general="//externals/java/awt/dnd/DropTargetEvent"/>
+            <ownedOperation name="getTransferable" visibility="package"/>
+            <ownedOperation name="acceptDrop" visibility="package">
+              <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+            </ownedOperation>
+            <ownedOperation name="getDropAction" visibility="package"/>
+            <ownedOperation name="dropComplete" visibility="package">
+              <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean"/>
+            </ownedOperation>
+            <ownedOperation name="rejectDrop" visibility="package"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="DropTargetListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="image">
+          <packagedElement xsi:type="uml:Interface" name="ImageObserver" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="event">
+          <packagedElement xsi:type="uml:Interface" name="ActionListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="EventQueue" visibility="package">
+          <ownedOperation name="invokeLater" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/Runnable"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Container" visibility="package">
+          <generalization general="//externals/java/awt/Component"/>
+          <ownedOperation name="add" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/awt/Component"/>
+            <ownedParameter name="arg1" type="//externals/java/lang/Object"/>
+          </ownedOperation>
+          <ownedOperation name="add" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/awt/Component"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Component" visibility="package">
+          <interfaceRealization name="ImageObserver__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@b94703b (name: Component, proxy: true)" client="//externals/java/awt/Component" supplier="//externals/java/awt/image/ImageObserver" contract="//externals/java/awt/image/ImageObserver"/>
+          <interfaceRealization name="MenuContainer__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@b94703b (name: Component, proxy: true)" client="//externals/java/awt/Component" supplier="//externals/java/awt/MenuContainer" contract="//externals/java/awt/MenuContainer"/>
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@b94703b (name: Component, proxy: true)" client="//externals/java/awt/Component" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Frame" visibility="package">
+          <generalization general="//externals/java/awt/Window"/>
+          <interfaceRealization name="MenuContainer__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@720a1fd0 (name: Frame, proxy: true)" client="//externals/java/awt/Frame" supplier="//externals/java/awt/MenuContainer" contract="//externals/java/awt/MenuContainer"/>
+          <ownedOperation name="setTitle" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="Window" visibility="package">
+          <generalization general="//externals/java/awt/Container"/>
+          <interfaceRealization name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@5ab7ac02 (name: Window, proxy: true)" client="//externals/java/awt/Window" supplier="//externals/javax/accessibility/Accessible" contract="//externals/javax/accessibility/Accessible"/>
+          <ownedOperation name="setVisible" visibility="package">
+            <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean"/>
+          </ownedOperation>
+          <ownedOperation name="setBounds" visibility="package">
+            <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+            <ownedParameter name="arg1" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+            <ownedParameter name="arg2" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+            <ownedParameter name="arg3" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="LayoutManager2" visibility="package">
+          <generalization general="//externals/java/awt/LayoutManager"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="LayoutManager" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="MenuContainer" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="ItemSelectable" visibility="package"/>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xsi:type="uml:Package" name="javax">
+      <packagedElement xsi:type="uml:Package" name="sound">
+        <packagedElement xsi:type="uml:Package" name="sampled">
+          <packagedElement xsi:type="uml:Class" name="AudioInputStream" visibility="package">
+            <generalization general="//externals/java/io/InputStream"/>
+            <ownedOperation name="getFormat" visibility="package"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="AudioFormat" visibility="package"/>
+          <packagedElement xsi:type="uml:Class" name="AudioSystem" visibility="package">
+            <ownedOperation name="getLine" visibility="package">
+              <ownedParameter name="arg0" type="//externals/javax/sound/sampled/Line/Info"/>
+            </ownedOperation>
+            <ownedOperation name="getAudioInputStream" visibility="package">
+              <ownedParameter name="arg0" type="//externals/java/io/File"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="LineUnavailableException" visibility="package">
+            <generalization general="//externals/java/lang/Exception"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="UnsupportedAudioFileException" visibility="package">
+            <generalization general="//externals/java/lang/Exception"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="Clip" visibility="package">
+            <generalization general="//externals/javax/sound/sampled/DataLine"/>
+            <ownedAttribute name="LOOP_CONTINUOUSLY" visibility="package"/>
+            <ownedOperation name="open" visibility="package">
+              <ownedParameter name="arg0" type="//externals/javax/sound/sampled/AudioInputStream"/>
+            </ownedOperation>
+            <ownedOperation name="setFramePosition" visibility="package">
+              <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+            </ownedOperation>
+            <ownedOperation name="loop" visibility="package">
+              <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="DataLine" visibility="package">
+            <generalization general="//externals/javax/sound/sampled/Line"/>
+            <nestedClassifier xsi:type="uml:Class" name="Info" visibility="package">
+              <generalization general="//externals/javax/sound/sampled/Line/Info"/>
+              <ownedOperation name="Info" visibility="package">
+                <ownedParameter type="//externals/javax/sound/sampled/DataLine/Info" direction="return"/>
+                <ownedParameter name="arg0" type="//externals/java/lang/Class"/>
+                <ownedParameter name="arg1" type="//externals/javax/sound/sampled/AudioFormat"/>
+              </ownedOperation>
+            </nestedClassifier>
+            <ownedOperation name="stop" visibility="package"/>
+            <ownedOperation name="getFramePosition" visibility="package"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="Line" visibility="package">
+            <generalization general="//externals/java/lang/AutoCloseable"/>
+            <nestedClassifier xsi:type="uml:Class" name="Info" visibility="package"/>
+            <ownedOperation name="close" visibility="package"/>
+          </packagedElement>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Package" name="swing">
+        <packagedElement xsi:type="uml:Class" name="Box" visibility="package">
+          <generalization general="//externals/javax/swing/JComponent"/>
+          <interfaceRealization name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@619c3546 (name: Box, proxy: true)" client="//externals/javax/swing/Box" supplier="//externals/javax/accessibility/Accessible" contract="//externals/javax/accessibility/Accessible"/>
+          <ownedOperation name="createHorizontalBox" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="event">
+          <packagedElement xsi:type="uml:Interface" name="TableModelListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="TableColumnModelListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="ListSelectionListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="CellEditorListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="RowSorterListener" visibility="package">
+            <generalization general="//externals/java/util/EventListener"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Package" name="table">
+          <packagedElement xsi:type="uml:Class" name="DefaultTableModel" visibility="package">
+            <generalization general="//externals/javax/swing/table/AbstractTableModel"/>
+            <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1b475663 (name: DefaultTableModel, proxy: true)" client="//externals/javax/swing/table/DefaultTableModel" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+            <ownedOperation name="setColumnIdentifiers" visibility="package">
+              <ownedParameter name="arg0" type="//externals/java/lang/Object%5B%5D"/>
+            </ownedOperation>
+            <ownedOperation name="addRow" visibility="package">
+              <ownedParameter name="arg0" type="//externals/java/lang/Object%5B%5D"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Class" name="AbstractTableModel" visibility="package">
+            <interfaceRealization name="TableModel__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1669931a (name: AbstractTableModel, proxy: true)" client="//externals/javax/swing/table/AbstractTableModel" supplier="//externals/javax/swing/table/TableModel" contract="//externals/javax/swing/table/TableModel"/>
+            <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1669931a (name: AbstractTableModel, proxy: true)" client="//externals/javax/swing/table/AbstractTableModel" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+            <ownedOperation name="fireTableDataChanged" visibility="package"/>
+          </packagedElement>
+          <packagedElement xsi:type="uml:Interface" name="TableModel" visibility="package">
+            <ownedOperation name="getRowCount" visibility="package"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="JComponent" visibility="package">
+          <generalization general="//externals/java/awt/Container"/>
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@29090809 (name: JComponent, proxy: true)" client="//externals/javax/swing/JComponent" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+          <interfaceRealization name="HasGetTransferHandler__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@29090809 (name: JComponent, proxy: true)" client="//externals/javax/swing/JComponent" supplier="//externals/javax/swing/HasGetTransferHandler" contract="//externals/javax/swing/HasGetTransferHandler"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="TransferHandler" visibility="package">
+          <interfaceRealization name="Serializable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@30cafd13 (name: TransferHandler, proxy: true)" client="//externals/javax/swing/TransferHandler" supplier="//externals/java/io/Serializable" contract="//externals/java/io/Serializable"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="JButton" visibility="package">
+          <generalization general="//externals/javax/swing/AbstractButton"/>
+          <interfaceRealization name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@1d944fc0 (name: JButton, proxy: true)" client="//externals/javax/swing/JButton" supplier="//externals/javax/accessibility/Accessible" contract="//externals/javax/accessibility/Accessible"/>
+          <ownedOperation name="JButton" visibility="package">
+            <ownedParameter type="//externals/javax/swing/JButton" direction="return"/>
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="AbstractButton" visibility="package">
+          <generalization general="//externals/javax/swing/JComponent"/>
+          <interfaceRealization name="ItemSelectable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7c3c453b (name: AbstractButton, proxy: true)" client="//externals/javax/swing/AbstractButton" supplier="//externals/java/awt/ItemSelectable" contract="//externals/java/awt/ItemSelectable"/>
+          <interfaceRealization name="SwingConstants__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@7c3c453b (name: AbstractButton, proxy: true)" client="//externals/javax/swing/AbstractButton" supplier="//externals/javax/swing/SwingConstants" contract="//externals/javax/swing/SwingConstants"/>
+          <ownedOperation name="addActionListener" visibility="package">
+            <ownedParameter name="arg0" type="//externals/java/awt/event/ActionListener"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="JFrame" visibility="package">
+          <generalization general="//externals/java/awt/Frame"/>
+          <ownedAttribute name="EXIT_ON_CLOSE" visibility="package"/>
+          <interfaceRealization name="WindowConstants__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@15ac02d5 (name: JFrame, proxy: true)" client="//externals/javax/swing/JFrame" supplier="//externals/javax/swing/WindowConstants" contract="//externals/javax/swing/WindowConstants"/>
+          <interfaceRealization name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@15ac02d5 (name: JFrame, proxy: true)" client="//externals/javax/swing/JFrame" supplier="//externals/javax/accessibility/Accessible" contract="//externals/javax/accessibility/Accessible"/>
+          <interfaceRealization name="RootPaneContainer__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@15ac02d5 (name: JFrame, proxy: true)" client="//externals/javax/swing/JFrame" supplier="//externals/javax/swing/RootPaneContainer" contract="//externals/javax/swing/RootPaneContainer"/>
+          <interfaceRealization name="HasGetTransferHandler__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@15ac02d5 (name: JFrame, proxy: true)" client="//externals/javax/swing/JFrame" supplier="//externals/javax/swing/HasGetTransferHandler" contract="//externals/javax/swing/HasGetTransferHandler"/>
+          <ownedOperation name="JFrame" visibility="package">
+            <ownedParameter type="//externals/javax/swing/JFrame" direction="return"/>
+          </ownedOperation>
+          <ownedOperation name="setDefaultCloseOperation" visibility="package">
+            <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+          </ownedOperation>
+          <ownedOperation name="getContentPane" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="JLabel" visibility="package">
+          <generalization general="//externals/javax/swing/JComponent"/>
+          <interfaceRealization name="SwingConstants__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6736f40f (name: JLabel, proxy: true)" client="//externals/javax/swing/JLabel" supplier="//externals/javax/swing/SwingConstants" contract="//externals/javax/swing/SwingConstants"/>
+          <interfaceRealization name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@6736f40f (name: JLabel, proxy: true)" client="//externals/javax/swing/JLabel" supplier="//externals/javax/accessibility/Accessible" contract="//externals/javax/accessibility/Accessible"/>
+          <ownedOperation name="JLabel" visibility="package">
+            <ownedParameter type="//externals/javax/swing/JLabel" direction="return"/>
+            <ownedParameter name="arg0" type="//externals/java/lang/String"/>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Class" name="JTable" visibility="package">
+          <generalization general="//externals/javax/swing/JComponent"/>
+          <interfaceRealization name="TableModelListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/swing/event/TableModelListener" contract="//externals/javax/swing/event/TableModelListener"/>
+          <interfaceRealization name="Scrollable__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/swing/Scrollable" contract="//externals/javax/swing/Scrollable"/>
+          <interfaceRealization name="TableColumnModelListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/swing/event/TableColumnModelListener" contract="//externals/javax/swing/event/TableColumnModelListener"/>
+          <interfaceRealization name="ListSelectionListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/swing/event/ListSelectionListener" contract="//externals/javax/swing/event/ListSelectionListener"/>
+          <interfaceRealization name="CellEditorListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/swing/event/CellEditorListener" contract="//externals/javax/swing/event/CellEditorListener"/>
+          <interfaceRealization name="Accessible__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/accessibility/Accessible" contract="//externals/javax/accessibility/Accessible"/>
+          <interfaceRealization name="RowSorterListener__org.eclipse.modisco.java.emf.impl.ClassDeclarationImpl@12f9f896 (name: JTable, proxy: true)" client="//externals/javax/swing/JTable" supplier="//externals/javax/swing/event/RowSorterListener" contract="//externals/javax/swing/event/RowSorterListener"/>
+          <ownedOperation name="JTable" visibility="package">
+            <ownedParameter type="//externals/javax/swing/JTable" direction="return"/>
+          </ownedOperation>
+          <ownedOperation name="setSelectionMode" visibility="package">
+            <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/int"/>
+          </ownedOperation>
+          <ownedOperation name="setShowHorizontalLines" visibility="package">
+            <ownedParameter name="arg0" type="//org.sidiff.bug.localization.examples.musicplayer/Common%20java%20data%20types/boolean"/>
+          </ownedOperation>
+          <ownedOperation name="getModel" visibility="package"/>
+        </packagedElement>
+        <packagedElement xsi:type="uml:Interface" name="HasGetTransferHandler" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="SwingConstants" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="WindowConstants" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="RootPaneContainer" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="Scrollable" visibility="package"/>
+        <packagedElement xsi:type="uml:Interface" name="ListSelectionModel" visibility="package">
+          <ownedAttribute name="SINGLE_SELECTION" visibility="package"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xsi:type="uml:Package" name="accessibility">
+        <packagedElement xsi:type="uml:Interface" name="Accessible" visibility="package"/>
+      </packagedElement>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xsi:type="uml:Model" name="sourcesReferences">
+    <packagedElement xsi:type="uml:Artifact" name="Player.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\Player.java"/>
+    <packagedElement xsi:type="uml:Artifact" name="MusicTitle.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\MusicTitle.java"/>
+    <packagedElement xsi:type="uml:Artifact" name="PlayerImpl.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\PlayerImpl.java"/>
+    <packagedElement xsi:type="uml:Artifact" name="MIDIMusicTitle.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\format\MIDIMusicTitle.java"/>
+    <packagedElement xsi:type="uml:Artifact" name="WaveMusicTitle.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\format\WaveMusicTitle.java"/>
+    <packagedElement xsi:type="uml:Artifact" name="MusicFile.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\impl\format\MusicFile.java"/>
+    <packagedElement xsi:type="uml:Artifact" name="PlayerUserInterface.java" fileName="C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.examples.musicplayer\src\org\sidiff\bug\localization\examples\musicplayer\ui\PlayerUserInterface.java"/>
+  </packagedElement>
+</uml:Model>

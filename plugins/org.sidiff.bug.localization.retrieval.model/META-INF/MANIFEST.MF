@@ -1,16 +1,20 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Model Retrieval
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.sidiff.bug.localization.retrieval.model;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.sidiff.bug.localization.retrieval.model.multiview,
+ org.sidiff.bug.localization.retrieval.model.multiview.impl,
+ org.sidiff.bug.localization.retrieval.model.multiview.util
 Bundle-Activator: org.sidiff.bug.localization.retrieval.model.Activator
-Require-Bundle: eu.artist.migration.mdt.javaee.java.umlclass,
- org.eclipse.core.resources,
- org.eclipse.core.runtime,
- org.eclipse.modisco.infra.discovery.core,
- org.eclipse.modisco.java,
+Require-Bundle: eu.artist.migration.mdt.javaee.java.umlactivity,
+ eu.artist.migration.mdt.javaee.java.umlclass,
  org.eclipse.modisco.java.discoverer,
  org.eclipse.uml2.uml,
- eu.artist.migration.mdt.javaee.java.umlactivity
-Automatic-Module-Name: org.sidiff.bug.localization.retrieval.model
+ org.sidiff.bug.localization.common.utilities
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.sidiff.bug.localization.retrieval.model

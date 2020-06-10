@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<multiview:SystemModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:multiview="http://www.sidiff.org/multiview/system/model/1.0">
+  <views name="Java AST" description="Java EMF-based AST" kind="java">
+    <model href="org.sidiff.bug.localization.examples.musicplayer.java.xmi#/"/>
+  </views>
+  <views name="UML Class Diagram" description="Classes" kind="class">
+    <model href="org.sidiff.bug.localization.examples.musicplayer.java.class.uml#/"/>
+  </views>
+  <views name="UML Activity Diagram" description="Operation Control Flow Graph" kind="cfg.activity">
+    <model href="org.sidiff.bug.localization.examples.musicplayer.java.activity.cfg.uml#/"/>
+  </views>
+</multiview:SystemModel>

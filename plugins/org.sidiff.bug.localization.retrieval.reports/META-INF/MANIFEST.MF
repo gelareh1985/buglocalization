@@ -4,13 +4,10 @@ Bundle-Name: Bug Report Retrieval
 Bundle-SymbolicName: org.sidiff.bug.localization.retrieval.reports;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.sidiff.bug.localization.retrieval.reports.Activator
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.sidiff.bug.localization.common.utilities
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval.reports
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- libraries/commons-text-1.8/commons-text-1.8.jar,
- libraries/commons-lang3-3.10/commons-lang3-3.10.jar,
- libraries/gson-2.8.6/gson-2.8.6.jar
 Export-Package: org.sidiff.bug.localization.retrieval.reports.bugtracker,
  org.sidiff.bug.localization.retrieval.reports.model

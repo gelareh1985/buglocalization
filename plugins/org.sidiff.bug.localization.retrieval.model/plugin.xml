@@ -14,4 +14,12 @@
       </application>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated multiview -->
+      <package
+            uri="http://www.sidiff.org/multiview/system/model/1.0"
+            class="org.sidiff.bug.localization.retrieval.model.multiview.MultiviewPackage"
+            genModel="model/multiview.genmodel"/>
+   </extension>
+
 </plugin>

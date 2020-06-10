@@ -12,15 +12,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.modisco.java.CompilationUnit;
-import org.eclipse.modisco.java.Model;
-import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Package;
-
-import eu.artist.migration.mdt.javaee.java.umlactivity.Java2UMLActivityDiscovererFull;
-import eu.artist.migration.mdt.javaee.java.umlclass.Java2UMLDiscoverer;
+import org.sidiff.bug.localization.retrieval.model.discovery.JavaProject2MultiViewModelDiscoverer;
+import org.sidiff.bug.localization.retrieval.model.multiview.SystemModel;
+import org.sidiff.bug.localization.retrieval.model.multiview.View;
+import org.sidiff.bug.localization.retrieval.model.util.MultiViewModelStorage;
 
 public class Application implements IApplication {
 
@@ -28,63 +25,26 @@ public class Application implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("org.sidiff.bug.localization.examples.musicplayer");
+		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer();
+		multiViewModelDiscoverer.discoverElement(project, new NullProgressMonitor());
 		
-		// Discover Java:
-		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
-		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject ();
-		javaDiscoverer.discoverElement(project, new NullProgressMonitor());
+		Resource umlResource = multiViewModelDiscoverer.getTargetModel();
+		SystemModel multiViewSystemModel = (SystemModel) umlResource.getContents().get(0);
 		
-		Resource javaResource = javaDiscoverer.getTargetModel();
-		Model javaModel = (Model) javaResource.getContents().get(0);
-		
-		// Save Java Model:
-		javaResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".xmi", true));
-		javaResource.save(Collections.emptyMap());
-		
-		// Print the list of Java classes in the model:
-		for (CompilationUnit compilationUnit : javaModel.getCompilationUnits()) {
-		    System.out.println(compilationUnit.getName());
-		}
-		
-		// Java Model To UML Model:
-		// https://github.com/artist-project/ARTIST.git
-		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
-		// - /eu.artist.migration.mdt.javaee.java.umlclass/src/eu/artist/migration/mdt/javaee/java/umlclass/Java2UMLDiscoverer.java
-		Java2UMLDiscoverer umlDiscoverer = new Java2UMLDiscoverer();
-		umlDiscoverer.discoverElement(uriToIFile(javaResource.getURI()), new NullProgressMonitor());
-		
-		Resource umlResource = umlDiscoverer.getTargetModel();
-		Package umlModel = (Package) umlResource.getContents().get(0);
-		
-		for (EObject umlElement : (Iterable<EObject>) () -> umlModel.eAllContents()) {
-			if (umlElement instanceof Class) {
-				System.out.println(umlElement);
+		for (View view : multiViewSystemModel.getViews()) {
+			for (EObject modelElement : (Iterable<EObject>) () -> view.getModel().eAllContents()) {
+				if (modelElement instanceof Class) {
+					System.out.println(modelElement);
+				} else if (modelElement instanceof Activity) {
+					System.out.println(modelElement);
+				}
 			}
 		}
+
+		MultiViewModelStorage.saveAll(multiViewSystemModel, Collections.emptyMap());
 		
-		umlResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".class.uml", true));
-		umlResource.save(Collections.emptyMap());
-		
-		// Java Model To UML Model:
-		// https://github.com/artist-project/ARTIST.git
-		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
-		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscoverer.java
-		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscovererFull.java
-//		Java2UMLActivityDiscoverer umlActivityDiscoverer = new Java2UMLActivityDiscoverer();
-		Java2UMLActivityDiscovererFull umlActivityDiscoverer = new Java2UMLActivityDiscovererFull();
-		umlActivityDiscoverer.discoverElement(uriToIFile(javaResource.getURI()), new NullProgressMonitor());
-		
-		Resource umlActivityResource = umlActivityDiscoverer.getTargetModel();
-		Package umlActivityModel = (Package) umlActivityResource.getContents().get(0);
-		
-		for (EObject umlElement : (Iterable<EObject>) () -> umlActivityModel.eAllContents()) {
-			if (umlElement instanceof Activity) {
-				System.out.println(umlElement);
-			}
-		}
-		
-		umlActivityResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".activity.uml", true));
-		umlActivityResource.save(Collections.emptyMap());
+//		umlResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".multiview", true));
+//		umlResource.save(Collections.emptyMap());
 		
 		return IApplication.EXIT_OK;
 	}

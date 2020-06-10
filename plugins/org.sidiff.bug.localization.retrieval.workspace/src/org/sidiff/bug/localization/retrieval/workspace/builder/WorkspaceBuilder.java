@@ -1,5 +1,9 @@
 package org.sidiff.bug.localization.retrieval.workspace.builder;
 
+import static org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil.isPlugInProject;
+import static org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil.isProjectFile;
+import static org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil.loadProject;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,17 +11,11 @@ import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.ui.wizards.JavaCapabilityConfigurationPage;
-import org.eclipse.pde.internal.core.natures.PDE;
 import org.sidiff.bug.localization.retrieval.workspace.Activator;
 import org.sidiff.bug.localization.retrieval.workspace.model.Project;
 import org.sidiff.bug.localization.retrieval.workspace.model.Workspace;
 
-@SuppressWarnings("restriction")
 public class WorkspaceBuilder {
 
 	private Workspace workspace;
@@ -60,31 +58,5 @@ public class WorkspaceBuilder {
 				}
 			}
 		}
-	}
-
-	private boolean isPlugInProject(IProject project) throws CoreException {
-		try {
-			return PDE.hasPluginNature(project);
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	private IProject loadProject(Path projectFile) throws CoreException {
-		IPath projectPath = new org.eclipse.core.runtime.Path(projectFile.toString());
-		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(projectPath);
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
-		JavaCapabilityConfigurationPage.createProject(project, description.getLocationURI(), null);
-		return project;
-	}
-
-	private boolean isProjectFile(Path file) {
-		if (Files.isRegularFile(file)) {
-			if (file.getFileName().toString().equals(IProjectDescription.DESCRIPTION_FILE_NAME)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
