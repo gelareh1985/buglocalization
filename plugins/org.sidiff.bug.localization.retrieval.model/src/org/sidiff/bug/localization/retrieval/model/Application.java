@@ -43,9 +43,6 @@ public class Application implements IApplication {
 
 		MultiViewModelStorage.saveAll(multiViewSystemModel, Collections.emptyMap());
 		
-//		umlResource.setURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".multiview", true));
-//		umlResource.save(Collections.emptyMap());
-		
 		return IApplication.EXIT_OK;
 	}
 	
