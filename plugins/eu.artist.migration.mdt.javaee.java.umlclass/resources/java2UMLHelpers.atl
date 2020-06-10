@@ -593,20 +593,24 @@ helper context JAVA!MethodDeclaration def: getReturnType : JAVA!NamedElement =
 ---return boolean value for no-abstract] or abstract java method
 helper context JAVA!MethodDeclaration def: isMethodAbstract : Boolean = 
 	if (self.modifier.oclIsUndefined()) then
-		false
+		false  
 	else	
 		self.modifier.inheritance = 'abstract'
 	endif;
 
 ---Get the java method visibility
 helper context JAVA!AbstractMethodDeclaration def: getMethodVisibility : JAVA!VisibilityKind =
-	if (self.modifier.oclIsUndefined()) then 
-		#package
+	if (self.abstractTypeDeclaration->oclIsTypeOf(JAVA!InterfaceDeclaration)) then
+		#public
 	else
-		if (self.modifier.visibility = #none) then
+		if (self.modifier.oclIsUndefined()) then 
 			#package
-		else	
-			self.modifier.visibility
+		else
+			if (self.modifier.visibility = #none) then
+				#package
+			else	
+				self.modifier.visibility
+			endif
 		endif
 	endif;
 
