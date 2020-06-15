@@ -42,7 +42,8 @@ public abstract class Java2UMLActivityDiagramBasicDiscoverer<T> extends Abstract
 				.getResource("/resources/java2UMLActivityHelpers.asm").openStream());
 
 		HashMap<String, Object> options = new HashMap<String, Object>();
-		options.put("allowInterModelReferences", true);
+//		options.put("allowInterModelReferences", true);
+		
 		transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options, Java2UMLActivityDiagramBasicDiscoverer.class
 				.getResource("/resources/JavaMethods2UMLActivityDiagram.asm").openStream());
 	}

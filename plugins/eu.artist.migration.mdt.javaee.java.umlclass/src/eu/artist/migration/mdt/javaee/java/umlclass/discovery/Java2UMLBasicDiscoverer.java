@@ -40,6 +40,8 @@ public abstract class Java2UMLBasicDiscoverer<T> extends AbstractJava2UMLDiscove
 				Java2UMLBasicDiscoverer.class.getResource("/resources/java2UMLHelpers.asm").openStream());
 
 		HashMap<String, Object> options = new HashMap<String, Object>();
+//		options.put("allowInterModelReferences", true);
+		
 		transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options,
 				Java2UMLBasicDiscoverer.class.getResource("/resources/java2UML.asm").openStream());
 	}

@@ -1,3 +1,5 @@
+-- @atlcompiler emftvm
+
 -- @nsURI UML=http://www.eclipse.org/uml2/4.0.0/UML
 -- @nsURI JAVA=http://www.eclipse.org/MoDisco/Java/0.2.incubation/java
 
@@ -293,27 +295,15 @@ helper context JAVA!BodyDeclaration def: isBodyDecFinal : Boolean =
 ---('VisibilityKind' of java ecore used specified 'none' value wich corresponding to 
 ---the value 'package', in uml2 ecore)
 helper context JAVA!AbstractTypeDeclaration def: getAbstractTypeVisibility : JAVA!VisibilityKind =	
-	if (self->oclIsTypeOf(JAVA!InterfaceDeclaration)) then
-		#public
+	if (self.modifier.oclIsUndefined()) then 
+		#package
 	else
-		if (self.modifier.oclIsUndefined()) then 
-			if (self -> isExternalTypeDeclaration()) then
-				#public
-			else
-				#package
-			endif
-		else
-			if (self.modifier.visibility = #none) then
-				#package
-			else	
-				self.modifier.visibility
-			endif
+		if (self.modifier.visibility = #none) then
+			#package
+		else	
+			self.modifier.visibility
 		endif
 	endif;
-
--- MoDisco Workaround: No modifier on external elements 
-helper context JAVA!AbstractTypeDeclaration def: isExternalTypeDeclaration() : Boolean = 
-	self.originalCompilationUnit.oclIsUndefined();
 
 ---return boolean value for no-abstract or abstract java abstractType
 helper context JAVA!AbstractTypeDeclaration def: isAbstractTypeAbstract : Boolean =
@@ -374,15 +364,15 @@ helper context JAVA!ASTNode def : getAnnonymousClass : JAVA!AnonymousClassDeclar
 ---Get the super class (Extends)
 helper context JAVA!ClassDeclaration def: getSuperClass : JAVA!ClassDeclaration =
 	if (self.superClass.oclIsUndefined()) then
-		OclUndefined
+		Sequence{}
 	else	
 		if (self.superClass.type.oclIsTypeOf(JAVA!ClassDeclaration)) then
-			self.superClass.type
+			Sequence{self.superClass.type}
 		else
 			if (self.superClass.type.oclIsTypeOf(JAVA!ParameterizedType)) then
-				let paramType : JAVA!ParameterizedType = self.superClass.type in paramType.type.type
+				Sequence{let paramType : JAVA!ParameterizedType = self.superClass.type in paramType.type.type}
 			else
-				OclUndefined
+				Sequence{}
 			endif	
 		endif	
 	endif;
@@ -423,6 +413,19 @@ helper context JAVA!AnonymousClassDeclaration def: getTypeDeclarationForAnonymou
 	let class : Sequence(JAVA!TypeDeclaration) = self.originalCompilationUnit.types 
 		-> select(compilUnit | compilUnit.name.toLower()+'.java' = self.originalCompilationUnit.name.toLower())
 	in class.at(1);
+
+--***************Interfaces***************
+---Get the java interface visibility
+helper context JAVA!InterfaceDeclaration def: getInterfaceVisibility : JAVA!VisibilityKind =
+	if (self.modifier.oclIsUndefined()) then 
+		#package
+	else
+		if (self.modifier.visibility = #none) then
+			#package
+		else	
+			self.modifier.visibility
+		endif
+	endif;
 
 ---return boolean value for no-abs./abstract java interface
 helper context JAVA!InterfaceDeclaration def: isInterfaceAbstract : Boolean =
@@ -468,21 +471,13 @@ helper context JAVA!FieldDeclaration def: getFieldName : String =
 
 ---Get the java attributes visibility
 helper context JAVA!FieldDeclaration def: getFieldVisibility : JAVA!VisibilityKind =
-	if (self.abstractTypeDeclaration->oclIsTypeOf(JAVA!InterfaceDeclaration)) then
-		#public
+	if (self.modifier.oclIsUndefined()) then 
+		#package
 	else
-		if (self.modifier.oclIsUndefined()) then 
-			if (self.abstractTypeDeclaration -> isExternalTypeDeclaration()) then
-				#public
-			else
-				#package
-			endif
-		else
-			if (self.modifier.visibility = #none) then
-				#package
-			else	
-				self.modifier.visibility
-			endif
+		if (self.modifier.visibility = #none) then
+			#package
+		else	
+			self.modifier.visibility
 		endif
 	endif;
 
@@ -611,11 +606,7 @@ helper context JAVA!AbstractMethodDeclaration def: getMethodVisibility : JAVA!Vi
 		#public
 	else
 		if (self.modifier.oclIsUndefined()) then 
-			if (self.abstractTypeDeclaration -> isExternalTypeDeclaration()) then
-				#public
-			else
-				#package
-			endif
+			#package
 		else
 			if (self.modifier.visibility = #none) then
 				#package
@@ -646,14 +637,15 @@ helper def: getPackageOfPackage(pack : JAVA!Package) : JAVA!Package =
 --***************Types***************
 ---Test if an attribute is a kind of java primitive wrapper
 helper context JAVA!FieldDeclaration def: isJavaPrimitiveWrapper : Boolean =
-	self.getFieldType.name = 'String' 
+	not(self.getFieldType->oclIsUndefined()) and
+	(self.getFieldType.name = 'String' 
 	or self.getFieldType.name = 'Integer'
 	or self.getFieldType.name = 'Long'
 	or self.getFieldType.name = 'Short'
 	or self.getFieldType.name = 'Double'
 	or self.getFieldType.name = 'Float'
 	or self.getFieldType.name = 'Boolean'
-	or self.getFieldType.name = 'Byte';
+	or self.getFieldType.name = 'Byte');
 
 --***************Packages***************
 

@@ -38,7 +38,11 @@ public abstract class Java2UMLActivityCFGBasicDiscoverer<T> extends AbstractJava
 		transformationLauncher.addOutModel(umlModel, "OUT", "UML");
 		transformationLauncher.addLibrary("java2UMLActivityHelpers",
 				Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/java2UMLActivityHelpers.asm").openStream());
-		transformationLauncher.launch(ILauncher.RUN_MODE, monitor, new HashMap<String, Object>(),
+		
+		HashMap<String, Object> options = new HashMap<String, Object>();
+//		options.put("allowInterModelReferences", true);
+		
+		transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options,
 				Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/JavaMethods2UMLActivityDiagram-OnlyCFG.asm").openStream());
 	}
 
