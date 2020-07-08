@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.reports.util;
+package org.sidiff.bug.localization.common.utilities.json.types;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -14,4 +14,5 @@ public class JsonInstantDeserializer implements JsonDeserializer<Instant>  {
 	public Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		return Instant.parse(json.getAsString());
 	}
+	
 }

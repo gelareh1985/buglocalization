@@ -19,7 +19,7 @@ import org.sidiff.bug.localization.dataset.modelview.multiview.SystemModel;
 import org.sidiff.bug.localization.dataset.modelview.multiview.View;
 import org.sidiff.bug.localization.dataset.modelview.util.MultiViewModelStorage;
 
-public class Application implements IApplication {
+public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {

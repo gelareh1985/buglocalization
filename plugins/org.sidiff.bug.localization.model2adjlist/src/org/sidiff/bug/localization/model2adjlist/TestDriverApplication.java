@@ -21,7 +21,7 @@ import org.sidiff.bug.localization.model2adjlist.converter.impl.ModelElement2Num
 import org.sidiff.bug.localization.model2adjlist.format.ModelAdjacencyList;
 import org.sidiff.bug.localization.model2adjlist.util.Model2AdjacencyListUtil;
 
-public class Application implements IApplication {
+public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {

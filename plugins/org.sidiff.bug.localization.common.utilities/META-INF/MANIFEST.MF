@@ -40,6 +40,8 @@ Export-Package: com.google.gson,
  org.apache.commons.text.matcher,
  org.apache.commons.text.similarity,
  org.apache.commons.text.translate,
+ org.sidiff.bug.localization.common.utilities.json,
+ org.sidiff.bug.localization.common.utilities.web,
  org.sidiff.bug.localization.common.utilities.workspace
 Bundle-ClassPath: .,
  libraries/commons-lang3-3.10/commons-lang3-3.10.jar,

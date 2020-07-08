@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 
+import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
+import org.sidiff.bug.localization.common.utilities.web.WebUtil;
 import org.sidiff.bug.localization.dataset.reports.Activator;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.reports.model.BugReportCommentList;
 import org.sidiff.bug.localization.dataset.reports.model.BugReportList;
-import org.sidiff.bug.localization.dataset.reports.util.JsonUtil;
-import org.sidiff.bug.localization.dataset.reports.util.WebUtil;
 
 import com.google.gson.JsonElement;
 

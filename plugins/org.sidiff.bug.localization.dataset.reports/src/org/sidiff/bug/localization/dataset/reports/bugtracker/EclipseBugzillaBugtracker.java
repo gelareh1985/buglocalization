@@ -1,6 +1,6 @@
 package org.sidiff.bug.localization.dataset.reports.bugtracker;
 
-import org.sidiff.bug.localization.dataset.reports.util.WebUtil;
+import org.sidiff.bug.localization.common.utilities.web.WebUtil;
 
 public class EclipseBugzillaBugtracker extends BugzillaBugtracker {
 

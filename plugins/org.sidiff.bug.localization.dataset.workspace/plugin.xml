@@ -9,7 +9,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.sidiff.bug.localization.dataset.workspace.Application">
+               class="org.sidiff.bug.localization.dataset.workspace.TestDriverApplication">
          </run>
       </application>
    </extension>

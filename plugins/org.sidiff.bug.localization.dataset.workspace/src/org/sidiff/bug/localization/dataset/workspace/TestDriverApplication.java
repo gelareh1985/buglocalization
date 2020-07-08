@@ -9,7 +9,7 @@ import org.sidiff.bug.localization.dataset.workspace.builder.TestProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
-public class Application implements IApplication {
+public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {

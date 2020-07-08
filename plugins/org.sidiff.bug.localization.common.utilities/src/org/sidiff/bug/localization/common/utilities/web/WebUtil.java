@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.reports.util;
+package org.sidiff.bug.localization.common.utilities.web;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

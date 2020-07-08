@@ -2,14 +2,14 @@ package org.sidiff.bug.localization.dataset.reports;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
-import org.sidiff.bug.localization.dataset.reports.util.JsonUtil;
 
 import com.google.gson.JsonElement;
 
-public class Application implements IApplication {
+public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {

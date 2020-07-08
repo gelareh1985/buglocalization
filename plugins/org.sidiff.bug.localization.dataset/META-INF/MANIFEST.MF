@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Data Set Acquisition
+Bundle-SymbolicName: org.sidiff.bug.localization.dataset;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.bug.localization.dataset.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.sidiff.bug.localization.common.utilities
+Automatic-Module-Name: org.sidiff.bug.localization.retrieval
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -20,7 +20,7 @@ import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 
-public class Application implements IApplication {
+public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
