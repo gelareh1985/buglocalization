@@ -2,40 +2,74 @@ package org.sidiff.bug.localization.dataset.model;
 
 public class DataSet {
 
-	private String repositoryURL;
+	private String name;
 	
-	private String repositoryName;
+	private String repositoryHost;
+	
+	private String repositoryPath;
+	
+	private String bugtrackerHost;
+	
+	private String bugtrackerProduct;
 	
 	public DataSet() {
 	}
 	
-	public DataSet(String repositoryURL) {
-		this.repositoryURL = repositoryURL;
+	public DataSet(String repositoryHost, String repositoryPath, String bugtrackerHost, String bugtrackerProduct) {
+		this.repositoryHost = repositoryHost;
+		this.repositoryPath = repositoryPath;
+		this.bugtrackerHost = bugtrackerHost;
+		this.bugtrackerProduct = bugtrackerProduct;
 		
 		// cut '.git' from last URL path segment:
-		this.repositoryName = repositoryURL.substring(
-				repositoryURL.lastIndexOf("/") + 1,
-				repositoryURL.lastIndexOf("."));
+		this.name = repositoryPath.substring(
+				repositoryPath.lastIndexOf("/") + 1,
+				repositoryPath.lastIndexOf("."));
 	}
 
-	public String getRepositoryURL() {
-		return repositoryURL;
+	public String getName() {
+		return name;
 	}
 
-	public void setRepositoryURL(String repositoryURL) {
-		this.repositoryURL = repositoryURL;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getRepositoryName() {
-		return repositoryName;
+	public String getRepositoryHost() {
+		return repositoryHost;
 	}
 
-	public void setRepositoryName(String repositoryName) {
-		this.repositoryName = repositoryName;
+	public void setRepositoryHost(String repositoryHost) {
+		this.repositoryHost = repositoryHost;
+	}
+
+	public String getRepositoryPath() {
+		return repositoryPath;
+	}
+
+	public void setRepositoryPath(String repositoryPath) {
+		this.repositoryPath = repositoryPath;
+	}
+
+	public String getBugtrackerHost() {
+		return bugtrackerHost;
+	}
+
+	public void setBugtrackerHost(String bugtrackerHost) {
+		this.bugtrackerHost = bugtrackerHost;
+	}
+
+	public String getBugtrackerProduct() {
+		return bugtrackerProduct;
+	}
+
+	public void setBugtrackerProduct(String bugtrackerProduct) {
+		this.bugtrackerProduct = bugtrackerProduct;
 	}
 
 	@Override
 	public String toString() {
-		return "DataSet [repositoryURL=" + repositoryURL + ", repositoryName=" + repositoryName + "]";
+		return "DataSet [name=" + name + ", repositoryHost=" + repositoryHost + ", repositoryPath=" + repositoryPath
+				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProduct + "]";
 	}
 }
