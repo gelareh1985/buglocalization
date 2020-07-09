@@ -1,6 +1,6 @@
 /**
  */
-package org.sidiff.bug.localization.dataset.modelview.multiview.impl;
+package org.sidiff.bug.localization.dataset.systemmodel.multiview.impl;
 
 import java.util.Collection;
 
@@ -10,9 +10,9 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.sidiff.bug.localization.dataset.modelview.multiview.MultiviewPackage;
-import org.sidiff.bug.localization.dataset.modelview.multiview.SystemModel;
-import org.sidiff.bug.localization.dataset.modelview.multiview.View;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 
 /**
  * <!-- begin-user-doc -->
@@ -22,7 +22,7 @@ import org.sidiff.bug.localization.dataset.modelview.multiview.View;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.sidiff.bug.localization.dataset.modelview.multiview.impl.SystemModelImpl#getViews <em>Views</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.SystemModelImpl#getViews <em>Views</em>}</li>
  * </ul>
  *
  * @generated

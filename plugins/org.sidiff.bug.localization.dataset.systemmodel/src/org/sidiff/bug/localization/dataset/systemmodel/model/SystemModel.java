@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.modelview.model;
+package org.sidiff.bug.localization.dataset.systemmodel.model;
 
 import java.nio.file.Path;
 
@@ -33,5 +33,9 @@ public class SystemModel {
 	public void setModel(Path model) {
 		this.model = model;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SystemModel [name=" + name + ", description=" + description + ", model=" + model + "]";
+	}
 }
