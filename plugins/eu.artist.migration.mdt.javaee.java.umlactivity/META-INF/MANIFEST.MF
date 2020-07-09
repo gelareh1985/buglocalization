@@ -5,8 +5,10 @@ Bundle-SymbolicName: eu.artist.migration.mdt.javaee.java.umlactivity;singleton:=
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: eu.artist.migration.mdt.javaee.java.umlactivity.Activator
 Require-Bundle: eu.artist.migration.mdt.javaee.java.uml;visibility:=reexport,
+ org.eclipse.core.resources,
  org.eclipse.m2m.atl.engine.emfvm,
  org.eclipse.modisco.infra.discovery,
+ org.eclipse.modisco.infra.discovery.core,
  org.eclipse.ui,
  org.eclipse.uml2.uml.resources
 Bundle-ActivationPolicy: lazy

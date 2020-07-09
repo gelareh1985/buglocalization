@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 
 public class MultiViewModelStorage {
 
-	public static void saveAll(SystemModel systemModel, Map<?, ?> options) {
+	public static void saveAll(MultiView systemModel, Map<?, ?> options) {
 		Set<Resource> resources = new HashSet<>();
 		resources.add(systemModel.eResource());
 		

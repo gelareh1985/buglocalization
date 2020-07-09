@@ -26,17 +26,17 @@ import org.eclipse.emf.ecore.EObject;
 public interface View extends DescribableElement {
 	/**
 	 * Returns the value of the '<em><b>System</b></em>' container reference.
-	 * It is bidirectional and its opposite is '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel#getViews <em>Views</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView#getViews <em>Views</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>System</em>' container reference.
-	 * @see #setSystem(SystemModel)
+	 * @see #setSystem(MultiView)
 	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage#getView_System()
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel#getViews
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView#getViews
 	 * @model opposite="views" transient="false"
 	 * @generated
 	 */
-	SystemModel getSystem();
+	MultiView getSystem();
 
 	/**
 	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.View#getSystem <em>System</em>}' container reference.
@@ -46,7 +46,7 @@ public interface View extends DescribableElement {
 	 * @see #getSystem()
 	 * @generated
 	 */
-	void setSystem(SystemModel value);
+	void setSystem(MultiView value);
 
 	/**
 	 * Returns the value of the '<em><b>Document Type</b></em>' attribute.

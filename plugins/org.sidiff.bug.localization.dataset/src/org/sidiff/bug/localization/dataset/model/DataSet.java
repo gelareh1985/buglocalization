@@ -1,5 +1,7 @@
 package org.sidiff.bug.localization.dataset.model;
 
+import org.sidiff.bug.localization.dataset.history.model.History;
+
 public class DataSet {
 
 	private String name;
@@ -11,6 +13,8 @@ public class DataSet {
 	private String bugtrackerHost;
 	
 	private String bugtrackerProduct;
+	
+	private History history;
 	
 	public DataSet() {
 	}
@@ -67,9 +71,18 @@ public class DataSet {
 		this.bugtrackerProduct = bugtrackerProduct;
 	}
 
+	public History getHistory() {
+		return history;
+	}
+
+	public void setHistory(History history) {
+		this.history = history;
+	}
+
 	@Override
 	public String toString() {
 		return "DataSet [name=" + name + ", repositoryHost=" + repositoryHost + ", repositoryPath=" + repositoryPath
-				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProduct + "]";
+				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProduct + ", history="
+				+ history + "]";
 	}
 }

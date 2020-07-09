@@ -9,9 +9,9 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 
 /**
@@ -26,7 +26,7 @@ public class MultiviewPackageImpl extends EPackageImpl implements MultiviewPacka
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass systemModelEClass = null;
+	private EClass multiViewEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -112,8 +112,8 @@ public class MultiviewPackageImpl extends EPackageImpl implements MultiviewPacka
 	 * @generated
 	 */
 	@Override
-	public EClass getSystemModel() {
-		return systemModelEClass;
+	public EClass getMultiView() {
+		return multiViewEClass;
 	}
 
 	/**
@@ -122,8 +122,8 @@ public class MultiviewPackageImpl extends EPackageImpl implements MultiviewPacka
 	 * @generated
 	 */
 	@Override
-	public EReference getSystemModel_Views() {
-		return (EReference)systemModelEClass.getEStructuralFeatures().get(0);
+	public EReference getMultiView_Views() {
+		return (EReference)multiViewEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -235,8 +235,8 @@ public class MultiviewPackageImpl extends EPackageImpl implements MultiviewPacka
 		isCreated = true;
 
 		// Create classes and their features
-		systemModelEClass = createEClass(SYSTEM_MODEL);
-		createEReference(systemModelEClass, SYSTEM_MODEL__VIEWS);
+		multiViewEClass = createEClass(MULTI_VIEW);
+		createEReference(multiViewEClass, MULTI_VIEW__VIEWS);
 
 		viewEClass = createEClass(VIEW);
 		createEReference(viewEClass, VIEW__SYSTEM);
@@ -280,15 +280,15 @@ public class MultiviewPackageImpl extends EPackageImpl implements MultiviewPacka
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
-		systemModelEClass.getESuperTypes().add(this.getDescribableElement());
+		multiViewEClass.getESuperTypes().add(this.getDescribableElement());
 		viewEClass.getESuperTypes().add(this.getDescribableElement());
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(systemModelEClass, SystemModel.class, "SystemModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getSystemModel_Views(), this.getView(), this.getView_System(), "views", null, 0, -1, SystemModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(multiViewEClass, MultiView.class, "MultiView", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getMultiView_Views(), this.getView(), this.getView_System(), "views", null, 0, -1, MultiView.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(viewEClass, View.class, "View", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getView_System(), this.getSystemModel(), this.getSystemModel_Views(), "system", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getView_System(), this.getMultiView(), this.getMultiView_Views(), "system", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getView_DocumentType(), ecorePackage.getEString(), "documentType", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getView_Kind(), ecorePackage.getEString(), "kind", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getView_Model(), theEcorePackage.getEObject(), null, "model", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

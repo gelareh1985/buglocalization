@@ -5,7 +5,7 @@
     <semanticResources>platform:/resource/org.eclipse.emf.ecore/model/Ecore.ecore</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" uid="_-9ux0Kr1Eeq006Kz3lWpmw">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__s494Kr1Eeq006Kz3lWpmw" name=" class diagram" repPath="#__r44UKr1Eeq006Kz3lWpmw" changeId="df14fbcd-1dd1-4775-9399-10278e5d1c6f">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__s494Kr1Eeq006Kz3lWpmw" name=" class diagram" repPath="#__r44UKr1Eeq006Kz3lWpmw" changeId="d4d07aab-0842-477b-955a-77659e97674d">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
         <target xmi:type="ecore:EPackage" href="multiview.ecore#/"/>
       </ownedRepresentationDescriptors>
@@ -215,9 +215,9 @@
         </edges>
       </data>
     </ownedAnnotationEntries>
-    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_BP1XUKr2Eeq006Kz3lWpmw" name="SystemModel" tooltipText="" outgoingEdges="_Mkm3MKr2Eeq006Kz3lWpmw _WhVwoKr3Eeq006Kz3lWpmw" width="12" height="10">
-      <target xmi:type="ecore:EClass" href="multiview.ecore#//SystemModel"/>
-      <semanticElements xmi:type="ecore:EClass" href="multiview.ecore#//SystemModel"/>
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_BP1XUKr2Eeq006Kz3lWpmw" name="MultiView" tooltipText="" outgoingEdges="_Mkm3MKr2Eeq006Kz3lWpmw _WhVwoKr3Eeq006Kz3lWpmw" width="12" height="10">
+      <target xmi:type="ecore:EClass" href="multiview.ecore#//MultiView"/>
+      <semanticElements xmi:type="ecore:EClass" href="multiview.ecore#//MultiView"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
@@ -254,9 +254,9 @@
       </ownedElements>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" uid="_Mkm3MKr2Eeq006Kz3lWpmw" sourceNode="_BP1XUKr2Eeq006Kz3lWpmw" targetNode="_FJr9wKr2Eeq006Kz3lWpmw" beginLabel="[0..1] system" endLabel="[0..*] views">
-      <target xmi:type="ecore:EReference" href="multiview.ecore#//SystemModel/views"/>
+      <target xmi:type="ecore:EReference" href="multiview.ecore#//MultiView/views"/>
       <semanticElements xmi:type="ecore:EReference" href="multiview.ecore#//View/system"/>
-      <semanticElements xmi:type="ecore:EReference" href="multiview.ecore#//SystemModel/views"/>
+      <semanticElements xmi:type="ecore:EReference" href="multiview.ecore#//MultiView/views"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_SOIrg6r2Eeq006Kz3lWpmw" description="_SOIrgKr2Eeq006Kz3lWpmw" sourceArrow="FillDiamond" routingStyle="manhattan" strokeColor="0,0,0">
         <beginLabelStyle xmi:type="diagram:BeginLabelStyle" uid="_SOIrhKr2Eeq006Kz3lWpmw" showIcon="false"/>
         <endLabelStyle xmi:type="diagram:EndLabelStyle" uid="_SOIrhar2Eeq006Kz3lWpmw" showIcon="false"/>
@@ -291,8 +291,8 @@
       </ownedElements>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" uid="_WhVwoKr3Eeq006Kz3lWpmw" sourceNode="_BP1XUKr2Eeq006Kz3lWpmw" targetNode="_JtcnYKr3Eeq006Kz3lWpmw">
-      <target xmi:type="ecore:EClass" href="multiview.ecore#//SystemModel"/>
-      <semanticElements xmi:type="ecore:EClass" href="multiview.ecore#//SystemModel"/>
+      <target xmi:type="ecore:EClass" href="multiview.ecore#//MultiView"/>
+      <semanticElements xmi:type="ecore:EClass" href="multiview.ecore#//MultiView"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_WhW-wKr3Eeq006Kz3lWpmw" targetArrow="InputClosedArrow" routingStyle="manhattan">
         <customFeatures>routingStyle</customFeatures>
         <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@edgeMappings[name='EC%20ESupertypes']/@style"/>

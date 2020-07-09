@@ -10,8 +10,8 @@
   <foreignModel>multiview.ecore</foreignModel>
   <genPackages prefix="Multiview" basePackage="org.sidiff.bug.localization.dataset.systemmodel"
       disposableProviderFactory="true" ecorePackage="multiview.ecore#/">
-    <genClasses ecoreClass="multiview.ecore#//SystemModel">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference multiview.ecore#//SystemModel/views"/>
+    <genClasses ecoreClass="multiview.ecore#//MultiView">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference multiview.ecore#//MultiView/views"/>
     </genClasses>
     <genClasses ecoreClass="multiview.ecore#//View">
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference multiview.ecore#//View/system"/>

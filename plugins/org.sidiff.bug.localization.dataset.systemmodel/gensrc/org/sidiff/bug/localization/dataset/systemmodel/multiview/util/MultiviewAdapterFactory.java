@@ -6,10 +6,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -68,8 +65,8 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 	protected MultiviewSwitch<Adapter> modelSwitch =
 		new MultiviewSwitch<Adapter>() {
 			@Override
-			public Adapter caseSystemModel(SystemModel object) {
-				return createSystemModelAdapter();
+			public Adapter caseMultiView(MultiView object) {
+				return createMultiViewAdapter();
 			}
 			@Override
 			public Adapter caseView(View object) {
@@ -100,16 +97,16 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel <em>System Model</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView <em>Multi View</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView
 	 * @generated
 	 */
-	public Adapter createSystemModelAdapter() {
+	public Adapter createMultiViewAdapter() {
 		return null;
 	}
 

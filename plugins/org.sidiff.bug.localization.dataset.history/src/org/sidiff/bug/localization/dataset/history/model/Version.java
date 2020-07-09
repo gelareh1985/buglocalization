@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset.history.model;
 import java.time.Instant;
 
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
+import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class Version {
 
@@ -15,6 +16,8 @@ public class Version {
 	private String commitMessage;
 	
 	private BugReport bugReport;
+	
+	private Workspace workspace;
 
 	public Version(String url, Instant date, String author, String commitMessage) {
 		this.identification = url;
@@ -63,6 +66,14 @@ public class Version {
 		this.bugReport = bugReport;
 	}
 
+	public Workspace getWorkspace() {
+		return workspace;
+	}
+
+	public void setWorkspace(Workspace workspace) {
+		this.workspace = workspace;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder text = new StringBuilder();
@@ -71,6 +82,8 @@ public class Version {
 		text.append(identification);
 		text.append(", date=");
 		text.append(date);
+		text.append(", workspace(size) = ");
+		text.append(workspace.getProjects().size());
 		text.append(", (has)bugReport:");
 		text.append(bugReport != null ? "YES" : "NO");
 		text.append(", author=");

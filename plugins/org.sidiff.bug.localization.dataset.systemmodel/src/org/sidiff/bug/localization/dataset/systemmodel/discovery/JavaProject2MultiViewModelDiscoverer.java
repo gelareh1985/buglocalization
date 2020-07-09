@@ -13,8 +13,8 @@ import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
 import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 
 import eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg.Java2UMLActivityCFGResourceDiscoverer;
@@ -40,26 +40,26 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 		}
 		
 		// Create Multi-View-Model:
-		SystemModel systemModel = MultiviewFactory.eINSTANCE.createSystemModel();
+		MultiView multiView = MultiviewFactory.eINSTANCE.createMultiView();
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
 		Resource multiViewResource = resourceSet.createResource(getTargetURI());
-		multiViewResource.getContents().add(systemModel);
+		multiViewResource.getContents().add(multiView);
 		
 		// Discover Java:
 		Resource javaResource = javaDiscovery(project, subMonitor.split(30));
 		resourceSet.getResources().add(javaResource);
-		addView(systemModel, javaResource, "Java AST", "Java EMF-based AST", "java");
+		addView(multiView, javaResource, "Java AST", "Java EMF-based AST", "java");
 		
 		// Java Model To UML class diagram:
 		Resource umlClassResource = umlClassDiscovery(javaResource, subMonitor.split(30));
 		resourceSet.getResources().add(umlClassResource);
-		addView(systemModel, umlClassResource, "UML Class Diagram", "Classes", "class");
+		addView(multiView, umlClassResource, "UML Class Diagram", "Classes", "class");
 		
 		// Java Model To UML activity diagram (control flow graph):
 		Resource umlActivityResource = umlActivityControlFlowGraphDiscovery(javaResource, subMonitor.split(30));
 		resourceSet.getResources().add(umlActivityResource);
-		addView(systemModel, umlActivityResource, "UML Activity Diagram", "Operation Control Flow Graph", "cfg.activity");
+		addView(multiView, umlActivityResource, "UML Activity Diagram", "Operation Control Flow Graph", "cfg.activity");
 		
 		setTargetModel(multiViewResource);
 	}
@@ -68,7 +68,7 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 		
 		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
 		
-		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject ();
+		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject();
 		javaDiscoverer.discoverElement(project, monitor);
 		
 		Resource javaResource = javaDiscoverer.getTargetModel();
@@ -107,7 +107,7 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 		return umlActivityResource;
 	}
 
-	private void addView(SystemModel systemModel, Resource umlClassResource, String name, String description, String viewKind) {
+	private void addView(MultiView multiView, Resource umlClassResource, String name, String description, String viewKind) {
 		
 		for (EObject rootElement : umlClassResource.getContents()) {
 			View view = MultiviewFactory.eINSTANCE.createView();
@@ -116,7 +116,7 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 			view.setDescription(description);
 			view.setKind(viewKind);
 			
-			systemModel.getViews().add(view);
+			multiView.getViews().add(view);
 		}
 		
 	}

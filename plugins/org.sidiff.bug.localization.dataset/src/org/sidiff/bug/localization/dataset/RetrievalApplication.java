@@ -8,9 +8,9 @@ import java.nio.file.Paths;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
-import org.sidiff.bug.localization.dataset.acquisition.RetrievalProcess;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.retrieval.RetrievalProcess;
 
 public class RetrievalApplication implements IApplication {
 
@@ -28,7 +28,7 @@ public class RetrievalApplication implements IApplication {
 		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(acquisitionConfigurationPath, RetrievalConfiguration.class);
 		
 		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet);
-		retrievalProcess.process();
+		retrievalProcess.retrieve();
 		
 		return IApplication.EXIT_OK;
 	}

@@ -15,7 +15,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Class;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 import org.sidiff.bug.localization.dataset.systemmodel.util.MultiViewModelStorage;
 
@@ -29,7 +29,7 @@ public class TestDriverApplication implements IApplication {
 		multiViewModelDiscoverer.discoverElement(project, new NullProgressMonitor());
 		
 		Resource umlResource = multiViewModelDiscoverer.getTargetModel();
-		SystemModel multiViewSystemModel = (SystemModel) umlResource.getContents().get(0);
+		MultiView multiViewSystemModel = (MultiView) umlResource.getContents().get(0);
 		
 		for (View view : multiViewSystemModel.getViews()) {
 			for (EObject modelElement : (Iterable<EObject>) () -> view.getModel().eAllContents()) {

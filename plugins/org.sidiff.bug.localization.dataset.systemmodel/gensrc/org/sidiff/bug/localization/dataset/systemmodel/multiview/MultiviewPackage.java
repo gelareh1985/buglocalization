@@ -103,14 +103,14 @@ public interface MultiviewPackage extends EPackage {
 	int DESCRIBABLE_ELEMENT_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.SystemModelImpl <em>System Model</em>}' class.
+	 * The meta object id for the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiViewImpl <em>Multi View</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.SystemModelImpl
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiviewPackageImpl#getSystemModel()
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiViewImpl
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiviewPackageImpl#getMultiView()
 	 * @generated
 	 */
-	int SYSTEM_MODEL = 0;
+	int MULTI_VIEW = 0;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -119,7 +119,7 @@ public interface MultiviewPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL__NAME = DESCRIBABLE_ELEMENT__NAME;
+	int MULTI_VIEW__NAME = DESCRIBABLE_ELEMENT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Description</b></em>' attribute.
@@ -128,7 +128,7 @@ public interface MultiviewPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL__DESCRIPTION = DESCRIBABLE_ELEMENT__DESCRIPTION;
+	int MULTI_VIEW__DESCRIPTION = DESCRIBABLE_ELEMENT__DESCRIPTION;
 
 	/**
 	 * The feature id for the '<em><b>Views</b></em>' containment reference list.
@@ -137,25 +137,25 @@ public interface MultiviewPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL__VIEWS = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 0;
+	int MULTI_VIEW__VIEWS = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The number of structural features of the '<em>System Model</em>' class.
+	 * The number of structural features of the '<em>Multi View</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL_FEATURE_COUNT = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 1;
+	int MULTI_VIEW_FEATURE_COUNT = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
-	 * The number of operations of the '<em>System Model</em>' class.
+	 * The number of operations of the '<em>Multi View</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL_OPERATION_COUNT = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 0;
+	int MULTI_VIEW_OPERATION_COUNT = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.ViewImpl <em>View</em>}' class.
@@ -241,25 +241,25 @@ public interface MultiviewPackage extends EPackage {
 
 
 	/**
-	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel <em>System Model</em>}'.
+	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView <em>Multi View</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>System Model</em>'.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel
+	 * @return the meta object for class '<em>Multi View</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView
 	 * @generated
 	 */
-	EClass getSystemModel();
+	EClass getMultiView();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel#getViews <em>Views</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView#getViews <em>Views</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Views</em>'.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel#getViews()
-	 * @see #getSystemModel()
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView#getViews()
+	 * @see #getMultiView()
 	 * @generated
 	 */
-	EReference getSystemModel_Views();
+	EReference getMultiView_Views();
 
 	/**
 	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.View <em>View</em>}'.
@@ -371,14 +371,14 @@ public interface MultiviewPackage extends EPackage {
 	 */
 	interface Literals {
 		/**
-		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.SystemModelImpl <em>System Model</em>}' class.
+		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiViewImpl <em>Multi View</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.SystemModelImpl
-		 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiviewPackageImpl#getSystemModel()
+		 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiViewImpl
+		 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiviewPackageImpl#getMultiView()
 		 * @generated
 		 */
-		EClass SYSTEM_MODEL = eINSTANCE.getSystemModel();
+		EClass MULTI_VIEW = eINSTANCE.getMultiView();
 
 		/**
 		 * The meta object literal for the '<em><b>Views</b></em>' containment reference list feature.
@@ -386,7 +386,7 @@ public interface MultiviewPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference SYSTEM_MODEL__VIEWS = eINSTANCE.getSystemModel_Views();
+		EReference MULTI_VIEW__VIEWS = eINSTANCE.getMultiView_Views();
 
 		/**
 		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.ViewImpl <em>View</em>}' class.

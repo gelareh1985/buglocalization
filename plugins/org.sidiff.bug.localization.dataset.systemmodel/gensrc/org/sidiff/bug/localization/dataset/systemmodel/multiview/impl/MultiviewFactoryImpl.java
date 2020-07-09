@@ -7,11 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -57,7 +53,7 @@ public class MultiviewFactoryImpl extends EFactoryImpl implements MultiviewFacto
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case MultiviewPackage.SYSTEM_MODEL: return createSystemModel();
+			case MultiviewPackage.MULTI_VIEW: return createMultiView();
 			case MultiviewPackage.VIEW: return createView();
 			case MultiviewPackage.DESCRIBABLE_ELEMENT: return createDescribableElement();
 			default:
@@ -71,9 +67,9 @@ public class MultiviewFactoryImpl extends EFactoryImpl implements MultiviewFacto
 	 * @generated
 	 */
 	@Override
-	public SystemModel createSystemModel() {
-		SystemModelImpl systemModel = new SystemModelImpl();
-		return systemModel;
+	public MultiView createMultiView() {
+		MultiViewImpl multiView = new MultiViewImpl();
+		return multiView;
 	}
 
 	/**

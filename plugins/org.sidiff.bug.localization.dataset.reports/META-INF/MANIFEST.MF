@@ -9,5 +9,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval.reports
 Bundle-ActivationPolicy: lazy
-Export-Package: org.sidiff.bug.localization.dataset.reports.bugtracker,
+Export-Package: org.sidiff.bug.localization.dataset.reports,
+ org.sidiff.bug.localization.dataset.reports.bugtracker,
  org.sidiff.bug.localization.dataset.reports.model

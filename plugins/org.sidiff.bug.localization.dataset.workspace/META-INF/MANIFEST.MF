@@ -8,6 +8,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.jdt.ui,
  org.eclipse.pde.core,
- org.sidiff.bug.localization.common.utilities
+ org.sidiff.bug.localization.common.utilities,
+ org.sidiff.bug.localization.dataset.systemmodel
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval.workspace
 Bundle-ActivationPolicy: lazy
+Export-Package: org.sidiff.bug.localization.dataset.workspace,
+ org.sidiff.bug.localization.dataset.workspace.builder,
+ org.sidiff.bug.localization.dataset.workspace.model

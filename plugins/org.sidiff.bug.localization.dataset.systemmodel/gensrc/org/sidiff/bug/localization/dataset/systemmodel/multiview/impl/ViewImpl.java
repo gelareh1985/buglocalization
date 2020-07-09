@@ -9,8 +9,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 
 /**
@@ -105,9 +105,9 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	 * @generated
 	 */
 	@Override
-	public SystemModel getSystem() {
+	public MultiView getSystem() {
 		if (eContainerFeatureID() != MultiviewPackage.VIEW__SYSTEM) return null;
-		return (SystemModel)eInternalContainer();
+		return (MultiView)eInternalContainer();
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetSystem(SystemModel newSystem, NotificationChain msgs) {
+	public NotificationChain basicSetSystem(MultiView newSystem, NotificationChain msgs) {
 		msgs = eBasicSetContainer((InternalEObject)newSystem, MultiviewPackage.VIEW__SYSTEM, msgs);
 		return msgs;
 	}
@@ -126,7 +126,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	 * @generated
 	 */
 	@Override
-	public void setSystem(SystemModel newSystem) {
+	public void setSystem(MultiView newSystem) {
 		if (newSystem != eInternalContainer() || (eContainerFeatureID() != MultiviewPackage.VIEW__SYSTEM && newSystem != null)) {
 			if (EcoreUtil.isAncestor(this, newSystem))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
@@ -134,7 +134,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			if (eInternalContainer() != null)
 				msgs = eBasicRemoveFromContainer(msgs);
 			if (newSystem != null)
-				msgs = ((InternalEObject)newSystem).eInverseAdd(this, MultiviewPackage.SYSTEM_MODEL__VIEWS, SystemModel.class, msgs);
+				msgs = ((InternalEObject)newSystem).eInverseAdd(this, MultiviewPackage.MULTI_VIEW__VIEWS, MultiView.class, msgs);
 			msgs = basicSetSystem(newSystem, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
@@ -239,7 +239,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			case MultiviewPackage.VIEW__SYSTEM:
 				if (eInternalContainer() != null)
 					msgs = eBasicRemoveFromContainer(msgs);
-				return basicSetSystem((SystemModel)otherEnd, msgs);
+				return basicSetSystem((MultiView)otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -267,7 +267,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
 		switch (eContainerFeatureID()) {
 			case MultiviewPackage.VIEW__SYSTEM:
-				return eInternalContainer().eInverseRemove(this, MultiviewPackage.SYSTEM_MODEL__VIEWS, SystemModel.class, msgs);
+				return eInternalContainer().eInverseRemove(this, MultiviewPackage.MULTI_VIEW__VIEWS, MultiView.class, msgs);
 		}
 		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
@@ -302,7 +302,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case MultiviewPackage.VIEW__SYSTEM:
-				setSystem((SystemModel)newValue);
+				setSystem((MultiView)newValue);
 				return;
 			case MultiviewPackage.VIEW__DOCUMENT_TYPE:
 				setDocumentType((String)newValue);
@@ -326,7 +326,7 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case MultiviewPackage.VIEW__SYSTEM:
-				setSystem((SystemModel)null);
+				setSystem((MultiView)null);
 				return;
 			case MultiviewPackage.VIEW__DOCUMENT_TYPE:
 				setDocumentType(DOCUMENT_TYPE_EDEFAULT);

@@ -22,13 +22,13 @@ public interface MultiviewFactory extends EFactory {
 	MultiviewFactory eINSTANCE = org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.MultiviewFactoryImpl.init();
 
 	/**
-	 * Returns a new object of class '<em>System Model</em>'.
+	 * Returns a new object of class '<em>Multi View</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>System Model</em>'.
+	 * @return a new object of class '<em>Multi View</em>'.
 	 * @generated
 	 */
-	SystemModel createSystemModel();
+	MultiView createMultiView();
 
 	/**
 	 * Returns a new object of class '<em>View</em>'.

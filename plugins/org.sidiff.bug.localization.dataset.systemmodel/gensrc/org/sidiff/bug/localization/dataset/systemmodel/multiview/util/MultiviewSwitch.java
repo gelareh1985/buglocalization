@@ -5,10 +5,7 @@ package org.sidiff.bug.localization.dataset.systemmodel.multiview.util;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
+import org.sidiff.bug.localization.dataset.systemmodel.multiview.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -67,10 +64,10 @@ public class MultiviewSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case MultiviewPackage.SYSTEM_MODEL: {
-				SystemModel systemModel = (SystemModel)theEObject;
-				T result = caseSystemModel(systemModel);
-				if (result == null) result = caseDescribableElement(systemModel);
+			case MultiviewPackage.MULTI_VIEW: {
+				MultiView multiView = (MultiView)theEObject;
+				T result = caseMultiView(multiView);
+				if (result == null) result = caseDescribableElement(multiView);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -92,17 +89,17 @@ public class MultiviewSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>System Model</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Multi View</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>System Model</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Multi View</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseSystemModel(SystemModel object) {
+	public T caseMultiView(MultiView object) {
 		return null;
 	}
 
