@@ -16,7 +16,7 @@ public class RetrievalApplication implements IApplication {
 
 	public static final String ARGUMENT_DATASET = "-dataset";
 	
-	public static final String ARGUMENT_ARQUISITION = "-acquisition";
+	public static final String ARGUMENT_CONFIGURATION = "-configuration";
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
@@ -24,11 +24,18 @@ public class RetrievalApplication implements IApplication {
 		Path dataSetPath = getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		DataSet dataSet = JsonUtil.parse(dataSetPath, DataSet.class);
 		
-		Path acquisitionConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_ARQUISITION);
+		Path acquisitionConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
 		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(acquisitionConfigurationPath, RetrievalConfiguration.class);
 		
 		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet);
-		retrievalProcess.retrieve();
+//		retrievalProcess.retrieve();
+		
+		retrievalProcess.retrieveHistory();
+//		retrievalProcess.retrieveBugReports();
+//		retrievalProcess.removeVersionsWithoutBugReport();
+//		retrievalProcess.retrieveSystemModels();
+		
+		retrievalProcess.saveDataSet(dataSetPath);
 		
 		return IApplication.EXIT_OK;
 	}

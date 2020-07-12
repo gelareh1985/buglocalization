@@ -31,7 +31,7 @@ public class History {
 
 	@Override
 	public String toString() {
-		StringBuilder text = new StringBuilder("History [identification=" + identification + " versions.size=" + versions.size() + "]:\n");
+		StringBuilder text = new StringBuilder("History [identification=" + identification + ", versions.size=" + versions.size() + "]:\n");
 
 		for (Version version : versions) {
 			text.append(version);

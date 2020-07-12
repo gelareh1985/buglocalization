@@ -83,9 +83,9 @@ public class Version {
 		text.append(", date=");
 		text.append(date);
 		text.append(", workspace(size) = ");
-		text.append(workspace.getProjects().size());
+		text.append((workspace != null) ? workspace.getProjects().size() : "n.a.");
 		text.append(", (has)bugReport:");
-		text.append(bugReport != null ? "YES" : "NO");
+		text.append((bugReport != null) ? "YES" : "NO");
 		text.append(", author=");
 		text.append(author);
 		

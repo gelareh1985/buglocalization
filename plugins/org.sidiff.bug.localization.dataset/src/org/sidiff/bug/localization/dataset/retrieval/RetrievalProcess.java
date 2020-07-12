@@ -1,14 +1,10 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -16,21 +12,22 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.report.util.BugReportRequestsExecutor;
+import org.sidiff.bug.localization.dataset.history.report.util.placeholder.BugReportPlaceholder;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.util.BugFixMatcher;
 import org.sidiff.bug.localization.dataset.history.repository.util.BugFixVersionFilter;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
-import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.model.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
-import org.sidiff.bug.localization.dataset.systemmodel.util.MultiViewModelStorage;
 import org.sidiff.bug.localization.dataset.workspace.builder.TestProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
@@ -38,11 +35,11 @@ import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class RetrievalProcess {
 	
-	private RetrievalConfiguration configuration; 
+	protected RetrievalConfiguration configuration; 
 
-	private DataSet dataset;
+	protected DataSet dataset;
 	
-	private GitRepository repository;
+	protected GitRepository repository;
 
 	public RetrievalProcess(RetrievalConfiguration configuration, DataSet dataset) {
 		this.configuration = configuration;
@@ -53,18 +50,18 @@ public class RetrievalProcess {
 		retrieveHistory();
 		retrieveBugReports();
 		removeVersionsWithoutBugReport();
-		
 		retrieveSystemModels();
 	}
-
-	private void retrieveHistory() {
+	
+	public void retrieveHistory() {
 		GitRepository repository = retrieveRepository();
 		retrieveBugFixes(repository);
 	}
 
-	private GitRepository retrieveRepository() {
+	protected GitRepository retrieveRepository() {
 		String repositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
-		this.repository = new GitRepository(configuration.getLocalRepositoryPath().toFile());
+		String localRepositoryPath = configuration.getLocalRepositoryPath().toFile() + "/" + dataset.getName();
+		this.repository = new GitRepository(new File(localRepositoryPath));
 	
 		if (!repository.exists()) {
 			repository.clone(repositoryURL);
@@ -77,7 +74,7 @@ public class RetrievalProcess {
 		return repository;
 	}
 
-	private void retrieveBugFixes(GitRepository repository) {
+	protected void retrieveBugFixes(GitRepository repository) {
 		
 		// Retrieve commits with bug fixes in their comments:
 		BugFixMatcher bugFixMatcher = new BugFixMatcher();
@@ -87,58 +84,26 @@ public class RetrievalProcess {
 		dataset.setHistory(history);
 	}
 
-	private void retrieveBugReports() {
-		History history = dataset.getHistory();
+	public void retrieveBugReports() {
 		BugFixMatcher bugFixMatcher = new BugFixMatcher();
 		BugzillaBugtracker bugtracker = new EclipseBugzillaBugtracker();
+		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(bugtracker, bugFixMatcher);
+		
+		bugReportRequestsExecutor.request(dataset.getHistory().getVersions());
+		bugReportRequestsExecutor.setPlaceholders();
+	}
 
-		List<Callable<Object>> requestReportTasks = new ArrayList<>();
-
-		for (Version version : history.getVersions()) {
-			if (version.getCommitMessage() != null) {
-				int bugID = bugFixMatcher.matchBugID(version.getCommitMessage());
-
-				if (bugID != -1) {
-					requestReportTasks.add(() -> {
-						try {
-							BugReport bugReport = bugtracker.getBugReport(bugID);
-							
-							if (bugReport != null) {
-								version.setBugReport(bugReport);
-							} else {
-								Activator.getLogger().log(Level.SEVERE, "Bug tracker returned <null> for bug ID: " + bugID);
-							}
-						} catch (NoSuchElementException e) {
-							Activator.getLogger().log(Level.WARNING, "Bug ID not found: " + bugID);
-						} catch (Throwable e) {
-							Activator.getLogger().log(Level.SEVERE, "Bug ID request failed: " + bugID, e);
-							e.printStackTrace();
-						}
-						return null;
-					});
-				}
+	public void removeVersionsWithoutBugReport() {
+		for (Iterator<Version> iterator = dataset.getHistory().getVersions().iterator(); iterator.hasNext();) {
+			Version version = iterator.next();
+			
+			if (version.getBugReport() instanceof BugReportPlaceholder) {
+				iterator.remove();
 			}
 		}
-		
-		// NOTE: If too many requests are made at once, some of them will not be answered by the server!
-		ExecutorService executorService = Executors.newFixedThreadPool(1);
-		
-		try {
-			executorService.invokeAll(requestReportTasks);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			executorService.shutdown();
-		}
 	}
 
-	private void removeVersionsWithoutBugReport() {
-		
-		// TODO: remove, mark or retry on report!?
-		
-	}
-
-	private void retrieveSystemModels() {
+	public void retrieveSystemModels() {
 		History history = dataset.getHistory();
 		
 		for (Version version : history.getVersions()) {
@@ -158,7 +123,7 @@ public class RetrievalProcess {
 		}
 	}
 
-	private Workspace retrieveWorkspaceVersion(History history, Version version) {
+	protected Workspace retrieveWorkspaceVersion(History history, Version version) {
 		repository.checkout(history, version);
 		
 		Path projectSearchPath = configuration.getLocalRepositoryPath();
@@ -170,7 +135,7 @@ public class RetrievalProcess {
 		return workspace;
 	}
 
-	private void retrieveSystemModelVersion(Project project) throws DiscoveryException {
+	protected void retrieveSystemModelVersion(Project project) throws DiscoveryException {
 		
 		// Discover the multi-view system model of the project version:
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
@@ -179,8 +144,6 @@ public class RetrievalProcess {
 		
 		Resource umlResource = multiViewModelDiscoverer.getTargetModel();
 		MultiView multiViewSystemModel = (MultiView) umlResource.getContents().get(0);
-
-		MultiViewModelStorage.saveAll(multiViewSystemModel, Collections.emptyMap());
 		
 		// Store system model in data set:
 		SystemModel systemModel = new SystemModel();
@@ -189,5 +152,9 @@ public class RetrievalProcess {
 		systemModel.setModel(Paths.get(multiViewSystemModel.eResource().getURI().toFileString()));
 		
 		project.setSystemModel(systemModel);
+	}
+	
+	public void saveDataSet(Path path) throws IOException {
+		JsonUtil.save(dataset, path);
 	}
 }

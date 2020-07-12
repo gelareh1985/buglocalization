@@ -8,7 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-public class JsonInstantDeserializer implements JsonDeserializer<Instant>  {
+public class JsonInstantDeserializer implements JsonDeserializer<Instant> {
 
 	@Override
 	public Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

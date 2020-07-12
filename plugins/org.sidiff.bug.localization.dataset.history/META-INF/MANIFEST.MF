@@ -14,6 +14,8 @@ Automatic-Module-Name: org.sidiff.bug.localization.retrival.history
 Bundle-ActivationPolicy: lazy
 Export-Package: org.sidiff.bug.localization.dataset.history,
  org.sidiff.bug.localization.dataset.history.model,
+ org.sidiff.bug.localization.dataset.history.report.util,
+ org.sidiff.bug.localization.dataset.history.report.util.placeholder,
  org.sidiff.bug.localization.dataset.history.repository,
  org.sidiff.bug.localization.dataset.history.repository.util,
  org.sidiff.bug.localization.dataset.history.repository.util.test

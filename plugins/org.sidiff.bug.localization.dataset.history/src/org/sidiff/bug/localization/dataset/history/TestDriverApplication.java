@@ -1,24 +1,18 @@
 package org.sidiff.bug.localization.dataset.history;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.report.util.BugReportRequestsExecutor;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.util.BugFixMatcher;
 import org.sidiff.bug.localization.dataset.history.repository.util.BugFixVersionFilter;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
-import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 
 public class TestDriverApplication implements IApplication {
 
@@ -45,39 +39,14 @@ public class TestDriverApplication implements IApplication {
 		// > TEST ON SUB LIST OF VERSIONS <
 		List<Version> retrieveReportsForVersions = history.getVersions().subList(0, 50);
 		BugzillaBugtracker bugtracker = new EclipseBugzillaBugtracker();
-
-		List<Callable<Object>> requestReportTasks = new ArrayList<>();
-
-		for (Version version : retrieveReportsForVersions) {
-			if (version.getCommitMessage() != null) {
-				int bugID = bugFixMatcher.matchBugID(version.getCommitMessage());
-
-				if (bugID != -1) {
-					requestReportTasks.add(() -> {
-						try {
-							BugReport bugReport = bugtracker.getBugReport(bugID);
-							
-							if (bugReport != null) {
-								version.setBugReport(bugReport);
-							} else {
-								Activator.getLogger().log(Level.SEVERE, "Bug tracker returned <null> for bug ID: " + bugID);
-							}
-						} catch (NoSuchElementException e) {
-							Activator.getLogger().log(Level.WARNING, "Bug ID not found: " + bugID);
-						} catch (Throwable e) {
-							Activator.getLogger().log(Level.SEVERE, "Bug ID request failed: " + bugID, e);
-							e.printStackTrace();
-						}
-						return null;
-					});
-				}
-			}
-		}
+		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(bugtracker, bugFixMatcher);
 		
-		// NOTE: If too many requests are made at once, some of them will not be answered by the server!
-		ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.invokeAll(requestReportTasks);
-		executorService.shutdown();
+		System.out.println("Start bug report requests:");
+		bugReportRequestsExecutor.request(retrieveReportsForVersions);
+		
+		System.out.println("No reports found for " + bugReportRequestsExecutor.getNoReports().size() + " bugs");
+		System.out.println("Bug report request failed for " + bugReportRequestsExecutor.getMissingReports().size() + " bugs");
+		System.out.println("Request count: " + bugReportRequestsExecutor.getRequestCounter());
 
 		System.out.println(history);
 
