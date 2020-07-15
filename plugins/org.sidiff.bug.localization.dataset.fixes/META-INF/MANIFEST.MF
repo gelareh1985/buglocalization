@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: History To Report Recovery
+Bundle-SymbolicName: org.sidiff.bug.localization.dataset.fixes;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.bug.localization.dataset.fixes.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.sidiff.bug.localization.dataset.reports,
+ org.sidiff.bug.localization.dataset.history,
+ org.junit;resolution:=optional
+Automatic-Module-Name: org.sidiff.bug.localization.dataset.history.report
+Bundle-ActivationPolicy: lazy
+Export-Package: org.sidiff.bug.localization.dataset.fixes,
+ org.sidiff.bug.localization.dataset.fixes.report.recovery,
+ org.sidiff.bug.localization.dataset.fixes.report.recovery.test,
+ org.sidiff.bug.localization.dataset.fixes.report.request,
+ org.sidiff.bug.localization.dataset.fixes.report.request.filter,
+ org.sidiff.bug.localization.dataset.fixes.report.request.placeholders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

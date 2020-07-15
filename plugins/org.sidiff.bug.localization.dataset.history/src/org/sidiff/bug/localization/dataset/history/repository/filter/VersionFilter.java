@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.history.repository.util;
+package org.sidiff.bug.localization.dataset.history.repository.filter;
 
 import java.time.Instant;
 

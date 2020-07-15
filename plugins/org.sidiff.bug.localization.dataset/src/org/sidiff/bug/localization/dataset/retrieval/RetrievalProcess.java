@@ -15,13 +15,16 @@ import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
+import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugFixMessageIDMatcher;
+import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugFixVersionFilter;
+import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugReportProductMatchingFilter;
+import org.sidiff.bug.localization.dataset.fixes.report.request.BugReportRequestsExecutor;
+import org.sidiff.bug.localization.dataset.fixes.report.request.filter.BugReportFilter;
+import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.BugReportPlaceholder;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
-import org.sidiff.bug.localization.dataset.history.report.util.BugReportRequestsExecutor;
-import org.sidiff.bug.localization.dataset.history.report.util.placeholder.BugReportPlaceholder;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
-import org.sidiff.bug.localization.dataset.history.repository.util.BugFixMatcher;
-import org.sidiff.bug.localization.dataset.history.repository.util.BugFixVersionFilter;
+import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
@@ -49,7 +52,7 @@ public class RetrievalProcess {
 	public void retrieve() {
 		retrieveHistory();
 		retrieveBugReports();
-		removeVersionsWithoutBugReport();
+		cleanUp();
 		retrieveSystemModels();
 	}
 	
@@ -77,23 +80,24 @@ public class RetrievalProcess {
 	protected void retrieveBugFixes(GitRepository repository) {
 		
 		// Retrieve commits with bug fixes in their comments:
-		BugFixMatcher bugFixMatcher = new BugFixMatcher();
-		BugFixVersionFilter bugFixVersionFilter = new BugFixVersionFilter(bugFixMatcher); // VersionFilter.FILTER_NOTHING
+		BugFixMessageIDMatcher bugFixMessageIDMatcher = new BugFixMessageIDMatcher();
+		VersionFilter bugFixVersionFilter = new BugFixVersionFilter(bugFixMessageIDMatcher);
 		
 		History history = repository.getHistory(bugFixVersionFilter);
 		dataset.setHistory(history);
 	}
 
 	public void retrieveBugReports() {
-		BugFixMatcher bugFixMatcher = new BugFixMatcher();
+		BugFixMessageIDMatcher bugFixMessageIDMatcher = new BugFixMessageIDMatcher();
 		BugzillaBugtracker bugtracker = new EclipseBugzillaBugtracker();
-		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(bugtracker, bugFixMatcher);
+		BugReportFilter productMatcher = new BugReportProductMatchingFilter(dataset.getBugtrackerProduct());
 		
+		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(bugtracker, productMatcher, bugFixMessageIDMatcher);
 		bugReportRequestsExecutor.request(dataset.getHistory().getVersions());
 		bugReportRequestsExecutor.setPlaceholders();
 	}
 
-	public void removeVersionsWithoutBugReport() {
+	public void cleanUp() {
 		for (Iterator<Version> iterator = dataset.getHistory().getVersions().iterator(); iterator.hasNext();) {
 			Version version = iterator.next();
 			
@@ -156,5 +160,17 @@ public class RetrievalProcess {
 	
 	public void saveDataSet(Path path) throws IOException {
 		JsonUtil.save(dataset, path);
+	}
+
+	public RetrievalConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	public DataSet getDataset() {
+		return dataset;
+	}
+
+	public GitRepository getRepository() {
+		return repository;
 	}
 }

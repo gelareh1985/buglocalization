@@ -16,7 +16,7 @@ public class RetrievalApplication implements IApplication {
 
 	public static final String ARGUMENT_DATASET = "-dataset";
 	
-	public static final String ARGUMENT_CONFIGURATION = "-configuration";
+	public static final String ARGUMENT_CONFIGURATION = "-retrieval";
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
@@ -30,9 +30,12 @@ public class RetrievalApplication implements IApplication {
 		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet);
 //		retrievalProcess.retrieve();
 		
+		// TEST:
 		retrievalProcess.retrieveHistory();
-//		retrievalProcess.retrieveBugReports();
-//		retrievalProcess.removeVersionsWithoutBugReport();
+		retrievalProcess.getDataset().getHistory().setVersions(
+				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 50));
+		retrievalProcess.retrieveBugReports();
+		retrievalProcess.cleanUp();
 //		retrievalProcess.retrieveSystemModels();
 		
 		retrievalProcess.saveDataSet(dataSetPath);

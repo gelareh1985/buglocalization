@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.history.report.util;
+package org.sidiff.bug.localization.dataset.fixes.report.request;
 
 import java.util.concurrent.Future;
 

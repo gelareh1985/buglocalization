@@ -9,9 +9,8 @@
             thread="main"
             visible="true">
          <run
-               class="org.sidiff.bug.localization.dataset.history.TestDriverApplication">
+               class="org.sidiff.bug.localization.dataset.fixes.TestDriverApplication">
          </run>
       </application>
    </extension>
-
 </plugin>

@@ -2,6 +2,7 @@ package org.sidiff.bug.localization.dataset.workspace;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Level;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -13,6 +14,7 @@ public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
+		Activator.getLogger().setLevel(Level.FINE);
 		
 		String repositoryURL = "https://git.eclipse.org/r/jdt/eclipse.jdt.core.git";
 		String repositoryName = repositoryURL.substring(repositoryURL.lastIndexOf("/") + 1,

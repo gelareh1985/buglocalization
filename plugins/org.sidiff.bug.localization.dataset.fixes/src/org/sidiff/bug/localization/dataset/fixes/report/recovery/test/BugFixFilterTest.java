@@ -1,9 +1,9 @@
-package org.sidiff.bug.localization.dataset.history.repository.util.test;
+package org.sidiff.bug.localization.dataset.fixes.report.recovery.test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.sidiff.bug.localization.dataset.history.repository.util.BugFixMatcher;
-import org.sidiff.bug.localization.dataset.history.repository.util.BugFixVersionFilter;
+import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugFixMessageIDMatcher;
+import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugFixVersionFilter;
 
 
 public class BugFixFilterTest {
@@ -64,7 +64,7 @@ public class BugFixFilterTest {
 	// helper:
 	
 	public boolean isNotFiltered(String message) {
-		BugFixVersionFilter bugFixFilterTest = new BugFixVersionFilter(new BugFixMatcher());
+		BugFixVersionFilter bugFixFilterTest = new BugFixVersionFilter(new BugFixMessageIDMatcher());
 		return !bugFixFilterTest.filter("", null, "", message);
 	}
 }

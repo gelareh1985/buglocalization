@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.history.report.util;
+package org.sidiff.bug.localization.dataset.fixes.report.request;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
@@ -33,10 +33,14 @@ public class BugReportRequest implements Callable<Boolean> {
 				version.setBugReport(bugReport);
 				return true;
 			} else {
-				Activator.getLogger().log(Level.SEVERE, "Bug tracker returned <null> for bug ID: " + bugID);
+				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "Bug tracker returned <null> for bug ID: " + bugID);
+				}
 			}
 		} catch (NoSuchElementException e) {
-			Activator.getLogger().log(Level.WARNING, "Bug ID not found: " + bugID);
+			if (Activator.getLogger().isLoggable(Level.WARNING)) {
+				Activator.getLogger().log(Level.WARNING, "Bug ID not found: " + bugID);
+			}
 		}
 		
 		return false;

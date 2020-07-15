@@ -1,5 +1,7 @@
 package org.sidiff.bug.localization.dataset.reports;
 
+import java.util.logging.Level;
+
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
@@ -13,6 +15,7 @@ public class TestDriverApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
+		Activator.getLogger().setLevel(Level.FINE);
 
 		int bugID = 2000;
 		BugzillaBugtracker bugtracker = new EclipseBugzillaBugtracker();

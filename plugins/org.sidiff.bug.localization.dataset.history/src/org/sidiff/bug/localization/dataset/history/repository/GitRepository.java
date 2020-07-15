@@ -17,7 +17,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
-import org.sidiff.bug.localization.dataset.history.repository.util.VersionFilter;
+import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 
 public class GitRepository implements Repository {
 	

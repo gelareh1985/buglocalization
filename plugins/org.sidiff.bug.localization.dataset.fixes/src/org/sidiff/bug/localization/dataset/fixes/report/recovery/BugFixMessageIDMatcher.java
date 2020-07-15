@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.history.repository.util;
+package org.sidiff.bug.localization.dataset.fixes.report.recovery;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +9,10 @@ import java.util.regex.Pattern;
 
 import org.sidiff.bug.localization.dataset.history.Activator;
 
-public class BugFixMatcher {
+/**
+ * Extracts a bug ID from a commit message.
+ */
+public class BugFixMessageIDMatcher {
 
 	private List<String> patterns;
 	
@@ -19,7 +22,7 @@ public class BugFixMatcher {
 	
 	private boolean caseSensitive = false;
 	
-	public BugFixMatcher() {
+	public BugFixMessageIDMatcher() {
 		this.patterns = new ArrayList<>();
 		this.bugIdGroupNames = new ArrayList<>();
 		

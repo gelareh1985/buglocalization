@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.history.report.util.placeholder;
+package org.sidiff.bug.localization.dataset.fixes.report.request.placeholders;
 
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 
