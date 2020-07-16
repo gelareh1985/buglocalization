@@ -1,14 +1,17 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
@@ -30,6 +33,7 @@ import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBug
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.model.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
+import org.sidiff.bug.localization.dataset.systemmodel.util.MultiViewModelStorage;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
@@ -43,15 +47,18 @@ public class RetrievalProcess {
 
 	protected DataSet dataset;
 	
+	protected Path datasetStorage;
+	
 	protected GitRepository repository;
 	
 	protected String repositoryURL;
 	
 	protected Path localRepositoryPath;
-
-	public RetrievalProcess(RetrievalConfiguration configuration, DataSet dataset) {
+	
+	public RetrievalProcess(RetrievalConfiguration configuration, DataSet dataset, Path datasetStorage) {
 		this.configuration = configuration;
 		this.dataset = dataset;
+		this.datasetStorage = datasetStorage;
 	}
 	
 	public void retrieve() {
@@ -120,12 +127,14 @@ public class RetrievalProcess {
 			
 			for (Project project : workspace.getProjects()) {
 				try {
-					retrieveSystemModelVersion(project);
+					retrieveSystemModelVersion(version, project);
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 						Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
 								+ project.getName() + "' version " + version.getIdentification());
 					}
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -145,7 +154,9 @@ public class RetrievalProcess {
 		return workspace;
 	}
 
-	protected void retrieveSystemModelVersion(Project project) throws DiscoveryException {
+	protected void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException, IOException {
+		
+		System.out.println(version.getDate() + " - " + project.getName());
 		
 		// Discover the multi-view system model of the project version:
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
@@ -156,16 +167,34 @@ public class RetrievalProcess {
 		MultiView multiViewSystemModel = (MultiView) umlResource.getContents().get(0);
 		
 		// Store system model in data set:
+		Path systemModelPath = Files.createDirectories(
+				Paths.get(datasetStorage.getParent().toString(), 
+						getSysteModelFolder(version), 
+						project.getName()));
+		Path systemModelFile = Paths.get(systemModelPath.toString(), 
+				project.getName() + "." + MultiViewModelStorage.MULITVIEW_MODEL_FILE_EXTENSION); 
+		
+		// EMF multi-view model:
+		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
+		umlResource.setURI(mulitviewFile);
+		MultiViewModelStorage.saveAll(multiViewSystemModel, Collections.emptyMap());
+		
+		// data set:
 		SystemModel systemModel = new SystemModel();
 		systemModel.setName(multiViewSystemModel.getName());
 		systemModel.setDescription(multiViewSystemModel.getDescription());
-		systemModel.setModel(Paths.get(multiViewSystemModel.eResource().getURI().toFileString()));
+		systemModel.setModel(systemModelFile);
 		
 		project.setSystemModel(systemModel);
 	}
 	
-	public void saveDataSet(Path path) throws IOException {
-		JsonUtil.save(dataset, path);
+	protected String getSysteModelFolder(Version version) {
+		String versionDate = version.getDate().toString().replace(":", "-");
+		return versionDate + "_" + version.getIdentification();
+	}
+
+	public void saveDataSet() throws IOException {
+		JsonUtil.save(dataset, datasetStorage);
 	}
 
 	public RetrievalConfiguration getConfiguration() {

@@ -29,17 +29,28 @@ public class WorkspaceBuilder {
 
 	public void findProjects(Path folder, ProjectFilter projectFilter) {
 
+		// Search project file:
+		try (Stream<Path> paths = Files.list(folder)) {
+			for (Path containedFile : (Iterable<Path>) () -> paths.iterator()) {
+				if (!Files.isDirectory(containedFile) && isProjectFile(containedFile)) {
+					try {
+						IProject project = loadProject(containedFile);
+						foundProject(containedFile, project, projectFilter);
+						return; // not searching for nested projects
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Search subfolders:
 		try (Stream<Path> paths = Files.list(folder)) {
 			for (Path containedFile : (Iterable<Path>) () -> paths.iterator()) {
 				if (Files.isDirectory(containedFile) && !Files.isHidden(containedFile)) {
 					findProjects(containedFile, projectFilter);
-				} else if (isProjectFile(containedFile)) {
-					try {
-						IProject project = loadProject(containedFile);
-						foundProject(containedFile, project, projectFilter);
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		} catch (IOException e) {

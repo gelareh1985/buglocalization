@@ -27,7 +27,7 @@ public class RetrievalApplication implements IApplication {
 		Path acquisitionConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
 		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(acquisitionConfigurationPath, RetrievalConfiguration.class);
 		
-		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet);
+		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet, dataSetPath);
 //		retrievalProcess.retrieve();
 		
 		// TEST:
@@ -36,9 +36,9 @@ public class RetrievalApplication implements IApplication {
 				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 2));
 		retrievalProcess.retrieveBugReports();
 		retrievalProcess.cleanUp(); // TODO: Split Data Set by Placeholders
-		retrievalProcess.retrieveSystemModels();
+ 		retrievalProcess.retrieveSystemModels();
 		
-		retrievalProcess.saveDataSet(dataSetPath);
+		retrievalProcess.saveDataSet();
 		
 		return IApplication.EXIT_OK;
 	}
