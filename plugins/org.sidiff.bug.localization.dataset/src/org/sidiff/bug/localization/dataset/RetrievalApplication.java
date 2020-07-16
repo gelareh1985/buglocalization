@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,21 +25,10 @@ public class RetrievalApplication implements IApplication {
 		Path dataSetPath = getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		DataSet dataSet = JsonUtil.parse(dataSetPath, DataSet.class);
 		
-		Path acquisitionConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
-		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(acquisitionConfigurationPath, RetrievalConfiguration.class);
+		Path retrievalConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
+		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(retrievalConfigurationPath, RetrievalConfiguration.class);
 		
-		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet, dataSetPath);
-//		retrievalProcess.retrieve();
-		
-		// TEST:
-		retrievalProcess.retrieveHistory();
-		retrievalProcess.getDataset().getHistory().setVersions(
-				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 2));
-		retrievalProcess.retrieveBugReports();
-		retrievalProcess.cleanUp(); // TODO: Split Data Set by Placeholders
- 		retrievalProcess.retrieveSystemModels();
-		
-		retrievalProcess.saveDataSet();
+		start(dataSetPath, dataSet, retrievalConfigurationPath, retrievalConfiguration);
 		
 		return IApplication.EXIT_OK;
 	}
@@ -59,6 +49,12 @@ public class RetrievalApplication implements IApplication {
 		}
 		
 		throw new FileNotFoundException("Program argument '" + argumentName + "' not specified.");
+	}
+	
+	protected void start(Path dataSetPath, DataSet dataSet, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {
+		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet, dataSetPath);
+		retrievalProcess.retrieve();
+		retrievalProcess.saveDataSet();
 	}
 
 	@Override

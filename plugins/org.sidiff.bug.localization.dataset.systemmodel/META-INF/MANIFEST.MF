@@ -9,11 +9,10 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.sidiff.bug.localization.dataset.systemmodel,
  org.sidiff.bug.localization.dataset.systemmodel.discovery,
- org.sidiff.bug.localization.dataset.systemmodel.model,
  org.sidiff.bug.localization.dataset.systemmodel.multiview,
  org.sidiff.bug.localization.dataset.systemmodel.multiview.impl,
  org.sidiff.bug.localization.dataset.systemmodel.multiview.util,
- org.sidiff.bug.localization.dataset.systemmodel.util
+ org.sidiff.bug.localization.dataset.systemmodel.views
 Bundle-Activator: org.sidiff.bug.localization.dataset.systemmodel.Activator
 Require-Bundle: eu.artist.migration.mdt.javaee.java.umlactivity,
  eu.artist.migration.mdt.javaee.java.umlclass,

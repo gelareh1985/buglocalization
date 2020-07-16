@@ -12,7 +12,7 @@ public class JsonPathSerializer implements JsonSerializer<Path>  {
 
 	@Override
 	public JsonElement serialize(Path obj, Type type, JsonSerializationContext context) {
-		return new JsonPrimitive(obj.toString());
+		return new JsonPrimitive(obj.toString().replace("\\", "/"));
 	}
 
 }

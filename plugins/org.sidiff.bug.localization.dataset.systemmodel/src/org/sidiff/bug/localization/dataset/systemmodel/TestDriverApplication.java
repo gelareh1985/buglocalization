@@ -18,7 +18,7 @@ import org.eclipse.uml2.uml.Class;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
-import org.sidiff.bug.localization.dataset.systemmodel.util.MultiViewModelStorage;
+import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
 
 public class TestDriverApplication implements IApplication {
 
@@ -43,7 +43,7 @@ public class TestDriverApplication implements IApplication {
 			}
 		}
 
-		MultiViewModelStorage.saveAll(multiViewSystemModel, Collections.emptyMap());
+		new MultiViewSystemModel(multiViewSystemModel).saveAll(Collections.emptyMap());
 		
 		return IApplication.EXIT_OK;
 	}

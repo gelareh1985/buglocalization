@@ -31,9 +31,8 @@ import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.model.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
-import org.sidiff.bug.localization.dataset.systemmodel.util.MultiViewModelStorage;
+import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
@@ -65,6 +64,7 @@ public class RetrievalProcess {
 		retrieveHistory();
 		retrieveBugReports();
 		cleanUp();
+		retrieveJavaAST();
 		retrieveSystemModels();
 	}
 	
@@ -118,8 +118,8 @@ public class RetrievalProcess {
 			}
 		}
 	}
-
-	public void retrieveSystemModels() {
+	
+	public void retrieveJavaAST() {
 		History history = dataset.getHistory();
 		
 		for (Version version : history.getVersions()) {
@@ -127,10 +127,10 @@ public class RetrievalProcess {
 			
 			for (Project project : workspace.getProjects()) {
 				try {
-					retrieveSystemModelVersion(version, project);
+					retrieveJavaASTVersion(version, project);
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
+						Activator.getLogger().log(Level.SEVERE, "Could not discover Java AST model for '"
 								+ project.getName() + "' version " + version.getIdentification());
 					}
 					e.printStackTrace();
@@ -154,43 +154,70 @@ public class RetrievalProcess {
 		return workspace;
 	}
 
-	protected void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException, IOException {
+	protected void retrieveJavaASTVersion(Version version, Project project) throws DiscoveryException, IOException {
 		
-		System.out.println(version.getDate() + " - " + project.getName());
+		if (Activator.getLogger().isLoggable(Level.FINER)) {
+			Activator.getLogger().log(Level.FINER, "Model Discovery: " + version.getDate() + " - " + project.getName());
+		}
 		
-		// Discover the multi-view system model of the project version:
-		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer();
-		multiViewModelDiscoverer.discoverElement(workspaceProject, new NullProgressMonitor());
-		
-		Resource umlResource = multiViewModelDiscoverer.getTargetModel();
-		MultiView multiViewSystemModel = (MultiView) umlResource.getContents().get(0);
-		
-		// Store system model in data set:
+		// Storage paths:
 		Path systemModelPath = Files.createDirectories(
 				Paths.get(datasetStorage.getParent().toString(), 
 						getSysteModelFolder(version), 
 						project.getName()));
 		Path systemModelFile = Paths.get(systemModelPath.toString(), 
-				project.getName() + "." + MultiViewModelStorage.MULITVIEW_MODEL_FILE_EXTENSION); 
-		
-		// EMF multi-view model:
+				project.getName() + "." + MultiViewSystemModel.MULITVIEW_MODEL_FILE_EXTENSION); 
 		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
-		umlResource.setURI(mulitviewFile);
-		MultiViewModelStorage.saveAll(multiViewSystemModel, Collections.emptyMap());
+		
+		// Discover the Java AST of the project version:
+		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(mulitviewFile);
+		
+		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
+		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer(mulitviewFile);
+		multiViewModelDiscoverer.discoverJavaAST(multiViewSystemModel, workspaceProject, new NullProgressMonitor());
+		
+		// Store system model in data set:
+		multiViewSystemModel.saveAll(Collections.emptyMap());
 		
 		// data set:
-		SystemModel systemModel = new SystemModel();
-		systemModel.setName(multiViewSystemModel.getName());
-		systemModel.setDescription(multiViewSystemModel.getDescription());
-		systemModel.setModel(systemModelFile);
-		
-		project.setSystemModel(systemModel);
+		project.setSystemModel(datasetStorage.getParent().relativize(systemModelFile));
 	}
 	
 	protected String getSysteModelFolder(Version version) {
 		String versionDate = version.getDate().toString().replace(":", "-");
 		return versionDate + "_" + version.getIdentification();
+	}
+
+	public void retrieveSystemModels() {
+		History history = dataset.getHistory();
+		
+		for (Version version : history.getVersions()) {
+			for (Project project : version.getWorkspace().getProjects()) {
+				try {
+					retrieveSystemModelVersion(version, project);
+				} catch (DiscoveryException e) {
+					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+						Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
+								+ project.getName() + "' version " + version.getIdentification());
+					}
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	protected void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException {
+		
+		// Discover the multi-view system model of the project version:
+		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(datasetStorage.getParent().resolve(project.getSystemModel()));
+		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer();
+		
+		Resource javaResource = multiViewSystemModel.getViewByKind(ViewDescriptions.JAVA_AST);
+		multiViewModelDiscoverer.discoverUMLClassDiagram(multiViewSystemModel, javaResource, new NullProgressMonitor());
+//		multiViewModelDiscoverer.discoverUMLOperationControlFlow(multiViewSystemModel, javaResource, new NullProgressMonitor()); // TODO: discover UML Operation Control Flow
+		
+		// Store system model in data set:
+		multiViewSystemModel.saveAll(Collections.emptyMap(), Collections.singleton(javaResource));
 	}
 
 	public void saveDataSet() throws IOException {

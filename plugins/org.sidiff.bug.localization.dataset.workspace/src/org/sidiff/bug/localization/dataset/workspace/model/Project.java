@@ -2,8 +2,6 @@ package org.sidiff.bug.localization.dataset.workspace.model;
 
 import java.nio.file.Path;
 
-import org.sidiff.bug.localization.dataset.systemmodel.model.SystemModel;
-
 public class Project {
 
 	/**
@@ -19,7 +17,7 @@ public class Project {
 	/**
 	 * The system model representing this project. 
 	 */
-	private SystemModel systemModel;
+	private Path systemModel;
 
 	public Project() {
 	}
@@ -44,17 +42,17 @@ public class Project {
 		this.folder = local.relativize(folder);
 	}
 
-	public SystemModel getSystemModel() {
+	public Path getSystemModel() {
 		return systemModel;
 	}
 
-	public void setSystemModel(SystemModel systemModel) {
+	public void setSystemModel(Path systemModel) {
 		this.systemModel = systemModel;
 	}
 
 	@Override
 	public String toString() {
-		return "Project [name=" + name + ", folder=" + folder + ", systemModel(name)=" + systemModel.getName() + "]";
+		return "Project [name=" + name + ", folder=" + folder + ", systemModel=" + systemModel + "]";
 	}
 
 }
