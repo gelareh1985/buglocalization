@@ -1,6 +1,5 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,8 +30,10 @@ import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBug
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.model.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
-import org.sidiff.bug.localization.dataset.workspace.builder.TestProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
+import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
@@ -43,6 +44,10 @@ public class RetrievalProcess {
 	protected DataSet dataset;
 	
 	protected GitRepository repository;
+	
+	protected String repositoryURL;
+	
+	protected Path localRepositoryPath;
 
 	public RetrievalProcess(RetrievalConfiguration configuration, DataSet dataset) {
 		this.configuration = configuration;
@@ -62,9 +67,9 @@ public class RetrievalProcess {
 	}
 
 	protected GitRepository retrieveRepository() {
-		String repositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
-		String localRepositoryPath = configuration.getLocalRepositoryPath().toFile() + "/" + dataset.getName();
-		this.repository = new GitRepository(new File(localRepositoryPath));
+		this.repositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
+		this.localRepositoryPath = Paths.get(configuration.getLocalRepositoryPath().toFile() + "/" + dataset.getName());
+		this.repository = new GitRepository(localRepositoryPath.toFile());
 	
 		if (!repository.exists()) {
 			repository.clone(repositoryURL);
@@ -130,10 +135,11 @@ public class RetrievalProcess {
 	protected Workspace retrieveWorkspaceVersion(History history, Version version) {
 		repository.checkout(history, version);
 		
-		Path projectSearchPath = configuration.getLocalRepositoryPath();
-		Workspace workspace = new Workspace(projectSearchPath);
-		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace);
-		workspaceBuilder.findProjects(projectSearchPath, new TestProjectFilter());
+		Path projectSearchPath = this.localRepositoryPath;
+		Workspace workspace = new Workspace();
+		ProjectFilter projectFilter = new TestProjectFilter(new PDEProjectFilter());
+		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, projectSearchPath);
+		workspaceBuilder.findProjects(projectSearchPath, projectFilter);
 		
 		version.setWorkspace(workspace);
 		return workspace;

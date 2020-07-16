@@ -33,10 +33,10 @@ public class RetrievalApplication implements IApplication {
 		// TEST:
 		retrievalProcess.retrieveHistory();
 		retrievalProcess.getDataset().getHistory().setVersions(
-				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 50));
+				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 2));
 		retrievalProcess.retrieveBugReports();
-		retrievalProcess.cleanUp();
-//		retrievalProcess.retrieveSystemModels();
+		retrievalProcess.cleanUp(); // TODO: Split Data Set by Placeholders
+		retrievalProcess.retrieveSystemModels();
 		
 		retrievalProcess.saveDataSet(dataSetPath);
 		

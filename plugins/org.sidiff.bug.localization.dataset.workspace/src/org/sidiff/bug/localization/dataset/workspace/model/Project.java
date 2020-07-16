@@ -40,8 +40,8 @@ public class Project {
 		this.folder = folder;
 	}
 
-	public void setFolder(Workspace workspace, Path folder) {
-		this.folder = workspace.getFolder().relativize(folder);
+	public void setFolder(Path local, Path folder) {
+		this.folder = local.relativize(folder);
 	}
 
 	public SystemModel getSystemModel() {

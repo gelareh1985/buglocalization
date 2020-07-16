@@ -1,6 +1,5 @@
 package org.sidiff.bug.localization.dataset.workspace.builder;
 
-import static org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil.isPlugInProject;
 import static org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil.isProjectFile;
 import static org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil.loadProject;
 
@@ -13,6 +12,7 @@ import java.util.stream.Stream;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.sidiff.bug.localization.dataset.workspace.Activator;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
@@ -20,8 +20,11 @@ public class WorkspaceBuilder {
 
 	private Workspace workspace;
 	
-	public WorkspaceBuilder(Workspace workspace) {
+	private Path localRepository;
+	
+	public WorkspaceBuilder(Workspace workspace, Path localRepository) {
 		this.workspace = workspace;
+		this.localRepository = localRepository;
 	}
 
 	public void findProjects(Path folder, ProjectFilter projectFilter) {
@@ -45,10 +48,10 @@ public class WorkspaceBuilder {
 	}
 
 	private void foundProject(Path projectFile, IProject project, ProjectFilter projectFilter) throws CoreException {
-		if (isPlugInProject(project)) {
+		if (!projectFilter.filter(project)) {
 			Project pluginProject = new Project();
 			pluginProject.setName(project.getName());
-			pluginProject.setFolder(workspace, projectFile.getParent());
+			pluginProject.setFolder(localRepository, projectFile.getParent());
 
 			if (!projectFilter.filter(pluginProject.getName(), pluginProject.getFolder())) {
 				this.workspace.getProjects().add(pluginProject);

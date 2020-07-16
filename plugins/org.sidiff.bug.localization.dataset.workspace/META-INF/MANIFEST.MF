@@ -14,4 +14,5 @@ Automatic-Module-Name: org.sidiff.bug.localization.retrieval.workspace
 Bundle-ActivationPolicy: lazy
 Export-Package: org.sidiff.bug.localization.dataset.workspace,
  org.sidiff.bug.localization.dataset.workspace.builder,
+ org.sidiff.bug.localization.dataset.workspace.filter,
  org.sidiff.bug.localization.dataset.workspace.model

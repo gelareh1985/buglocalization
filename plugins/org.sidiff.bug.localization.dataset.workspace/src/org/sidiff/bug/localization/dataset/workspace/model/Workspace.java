@@ -1,34 +1,17 @@
 package org.sidiff.bug.localization.dataset.workspace.model;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Workspace {
 
 	/**
-	 * Folder in which all projects are stored physically. In terms of Git this is
-	 * typically the repository path. In terms of SVN this is typically the Eclipse
-	 * workspace itself.
-	 */
-	private Path folder;
-
-	/**
 	 * All project contained in the workspace.
 	 */
 	private List<Project> projects;
 
-	public Workspace(Path folder) {
-		this.folder = folder;
+	public Workspace() {
 		this.projects = new ArrayList<>();
-	}
-
-	public Path getFolder() {
-		return folder;
-	}
-
-	public void setFolder(Path folder) {
-		this.folder = folder;
 	}
 
 	public List<Project> getProjects() {
