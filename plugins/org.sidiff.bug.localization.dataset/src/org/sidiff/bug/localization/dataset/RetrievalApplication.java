@@ -11,9 +11,13 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalFactory;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalFactory;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalFactory;
 
 public class RetrievalApplication implements IApplication {
 
@@ -54,13 +58,23 @@ public class RetrievalApplication implements IApplication {
 	}
 	
 	protected void start(Path dataSetPath, DataSet dataSet, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {
-		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(retrievalConfiguration, dataSet, dataSetPath);
+		String codeRepositoryURL = dataSet.getRepositoryHost() + dataSet.getRepositoryPath();
+		Path codeRepositoryPath = Paths.get(retrievalConfiguration.getLocalRepositoryPath().toString(), dataSet.getName());
+		
+		// Bug fixes:
+		BugFixHistoryRetrievalFactory bugFixHistoryConfig = new BugFixHistoryRetrievalFactory(
+				codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataSet.getBugtrackerProduct());
+		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
 		bugFixHistory.retrieve();
 		
-		JavaModelRetrieval javaModel = new JavaModelRetrieval(bugFixHistory.getDatasetPath(), bugFixHistory.getCodeRepositoryPath());
+		// Java model:
+		JavaModelRetrievalFactory javaModelFactory = new JavaModelRetrievalFactory(bugFixHistory.getCodeRepositoryPath());
+		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());
 		javaModel.retrieve();
 		
-		SystemModelRetrieval systemModel = new SystemModelRetrieval(bugFixHistory.getCodeRepositoryPath());
+		// System model:
+		SystemModelRetrievalFactory systemModelFactory = new SystemModelRetrievalFactory();
+		SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, bugFixHistory.getCodeRepositoryPath());
 		systemModel.retrieve();
 	}
 

@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.logging.Level;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
@@ -13,12 +12,13 @@ import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 public class SystemModelRetrieval {
+	
+	private SystemModelRetrievalFactory factory;
 
 	private Path codeRepositoryPath;
 	
@@ -26,7 +26,8 @@ public class SystemModelRetrieval {
 	
 	private SystemModelRepository systemModelRepository;
 	
-	public SystemModelRetrieval(Path codeRepositoryPath) {
+	public SystemModelRetrieval(SystemModelRetrievalFactory factory, Path codeRepositoryPath) {
+		this.factory = factory;
 		this.codeRepositoryPath = codeRepositoryPath;
 	}
 
@@ -73,20 +74,18 @@ public class SystemModelRetrieval {
 		}
 		
 		// Discover the multi-view system model of the project version:
-		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(javaModelRepository.getSystemModelFile(project));
-		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer();
+		SystemModel systemModel = new SystemModel(javaModelRepository.getSystemModelFile(project));
 		
-		Resource javaResource = multiViewSystemModel.getViewByKind(ViewDescriptions.JAVA_MODEL);
-		multiViewModelDiscoverer.discoverUMLClassDiagram(multiViewSystemModel, javaResource, new NullProgressMonitor());
-//		multiViewModelDiscoverer.discoverUMLOperationControlFlow(multiViewSystemModel, javaResource, new NullProgressMonitor()); // FIXME: discover UML Operation Control Flow
-		
+		Resource javaModel = systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL);
+		factory.discover(systemModel, javaModel);
+
 		// Remove java model:
-		multiViewSystemModel.removeViewKind(ViewDescriptions.JAVA_MODEL);
+		systemModel.removeViewKind(ViewDescriptions.JAVA_MODEL);
 		
 		// Store system model in data set:
 		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
-		multiViewSystemModel.setURI(URI.createFileURI(systemModelFile.toString()));
-		multiViewSystemModel.saveAll(Collections.emptyMap());
+		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
+		systemModel.saveAll(Collections.emptyMap());
 		
 		// Update data set path:
 		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));

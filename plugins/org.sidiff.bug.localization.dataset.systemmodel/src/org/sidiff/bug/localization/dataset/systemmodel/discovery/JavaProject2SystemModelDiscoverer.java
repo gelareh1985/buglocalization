@@ -10,25 +10,25 @@ import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
 import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
-import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescription;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 
 import eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg.Java2UMLActivityCFGResourceDiscoverer;
 import eu.artist.migration.mdt.javaee.java.umlclass.discovery.Java2UMLResourceDiscoverer;
 
-public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscoverer<IProject> {
+public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<IProject> {
 	
 	private ViewDescription[] views = ViewDescriptions.ALL_VIEWS;
 	
-	public JavaProject2MultiViewModelDiscoverer() {
+	public JavaProject2SystemModelDiscoverer() {
 	}
 	
-	public JavaProject2MultiViewModelDiscoverer(URI targetURI) {
+	public JavaProject2SystemModelDiscoverer(URI targetURI) {
 		setTargetURI(targetURI);
 	}
 	
-	public JavaProject2MultiViewModelDiscoverer(ViewDescription... views) {
+	public JavaProject2SystemModelDiscoverer(ViewDescription... views) {
 		this.views = views;
 	}
 	
@@ -58,23 +58,23 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 			this.setTargetURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".multiview.xmi", true));
 		}
 		
-		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(getTargetURI());
+		SystemModel systemModel = new SystemModel(getTargetURI());
 		
-		Resource javaResource = discoverJavaAST(multiViewSystemModel, project, subMonitor.split(30));
+		Resource javaResource = discoverJavaAST(systemModel, project, subMonitor.split(30));
 		
 		if (containsView(ViewDescriptions.UML_CLASS_DIAGRAM)) {
-			discoverUMLClassDiagram(multiViewSystemModel, javaResource, subMonitor.split(30));
+			discoverUMLClassDiagram(systemModel, javaResource, subMonitor.split(30));
 		}
 		
 		if (containsView(ViewDescriptions.UML_CLASS_OPERATION_CONTROL_FLOW)) {
-			discoverUMLOperationControlFlow(multiViewSystemModel, javaResource, subMonitor.split(30));
+			discoverUMLOperationControlFlow(systemModel, javaResource, subMonitor.split(30));
 		}
 		
-		setTargetModel(multiViewSystemModel.getMultiViewModel().eResource());
+		setTargetModel(systemModel.getMultiViewModel().eResource());
 	}
 	
 
-	public Resource discoverJavaAST(MultiViewSystemModel multiViewSystemModel, IProject project, IProgressMonitor monitor) throws DiscoveryException {
+	public Resource discoverJavaAST(SystemModel systemModel, IProject project, IProgressMonitor monitor) throws DiscoveryException {
 		
 		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
 		
@@ -89,13 +89,13 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 			javaResource.setURI(getTargetURI().trimFileExtension().appendFileExtension("java.xmi"));
 		}
 		
-		multiViewSystemModel.getMultiViewModel().setName(project.getName());
-		multiViewSystemModel.addView(javaResource, ViewDescriptions.JAVA_MODEL);
+		systemModel.getMultiViewModel().setName(project.getName());
+		systemModel.addView(javaResource, ViewDescriptions.JAVA_MODEL);
 		
 		return javaResource;
 	}
 
-	public Resource discoverUMLClassDiagram(MultiViewSystemModel multiViewSystemModel, Resource javaResource, IProgressMonitor monitor) throws DiscoveryException {
+	public Resource discoverUMLClassDiagram(SystemModel systemModel, Resource javaResource, IProgressMonitor monitor) throws DiscoveryException {
 		
 		// https://github.com/artist-project/ARTIST.git
 		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
@@ -106,11 +106,11 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 		
 		Resource umlClassResource = umlDiscoverer.getTargetModel();
 		
-		multiViewSystemModel.addView(umlClassResource, ViewDescriptions.UML_CLASS_DIAGRAM);
+		systemModel.addView(umlClassResource, ViewDescriptions.UML_CLASS_DIAGRAM);
 		return umlClassResource;
 	}
 
-	public Resource discoverUMLOperationControlFlow(MultiViewSystemModel multiViewSystemModel, Resource javaResource, IProgressMonitor monitor) throws DiscoveryException {
+	public Resource discoverUMLOperationControlFlow(SystemModel systemModel, Resource javaResource, IProgressMonitor monitor) throws DiscoveryException {
 		// https://github.com/artist-project/ARTIST.git
 		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
 		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscoverer.java
@@ -121,7 +121,7 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 
 		Resource umlActivityResource = umlActivityDiscoverer.getTargetModel();
 		
-		multiViewSystemModel.addView(umlActivityResource, ViewDescriptions.UML_CLASS_OPERATION_CONTROL_FLOW);
+		systemModel.addView(umlActivityResource, ViewDescriptions.UML_CLASS_OPERATION_CONTROL_FLOW);
 		return umlActivityResource;
 	}
 }

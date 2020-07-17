@@ -6,7 +6,7 @@ import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 /**
  * Verifies that a given bug report corresponds to a specific product.
  */
-public class BugReportProductMatchingFilter implements BugReportFilter{
+public class BugReportProductMatchingFilter implements BugReportFilter {
 	
 	private String product;
 

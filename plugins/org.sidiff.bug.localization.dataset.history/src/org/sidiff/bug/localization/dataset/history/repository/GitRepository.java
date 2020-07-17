@@ -2,6 +2,8 @@ package org.sidiff.bug.localization.dataset.history.repository;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -37,6 +39,11 @@ public class GitRepository implements Repository {
 	
 	public GitRepository(File localRepository) {
 		this.workingDirectory = localRepository;
+	}
+	
+	@Override
+	public Path getWorkingDirectory() {
+		return Paths.get(workingDirectory.getPath());
 	}
 	
 	public boolean exists() {

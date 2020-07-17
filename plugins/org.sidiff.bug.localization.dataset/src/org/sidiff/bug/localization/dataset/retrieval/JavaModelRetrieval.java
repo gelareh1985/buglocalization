@@ -15,21 +15,20 @@ import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
-import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
+import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
-import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
-import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class JavaModelRetrieval {
+	
+	private JavaModelRetrievalFactory factory;
 	
 	private DataSet dataset;
 	
@@ -41,8 +40,8 @@ public class JavaModelRetrieval {
 	
 	private Path javaModelRepositoryPath;
 	
-	public JavaModelRetrieval(Path datasetPath, Path codeRepositoryPath) {
-		this.codeRepositoryPath = codeRepositoryPath;
+	public JavaModelRetrieval(JavaModelRetrievalFactory factory, Path datasetPath) {
+		this.factory = factory;
 		
 		try {
 			this.dataset = JsonUtil.parse(datasetPath, DataSet.class);
@@ -55,7 +54,8 @@ public class JavaModelRetrieval {
 		History history = dataset.getHistory();
 		
 		// Storage:
-		this.codeRepository = new GitRepository(codeRepositoryPath.toFile());
+		this.codeRepository = factory.createCodeRepository();
+		this.codeRepositoryPath = codeRepository.getWorkingDirectory();
 		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
 		this.javaModelRepositoryPath = javaModelRepository.getRepositoryPath();
 		
@@ -69,7 +69,7 @@ public class JavaModelRetrieval {
 					retrieveJavaModelVersion(project);
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover Java AST model for '"
+						Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
 								+ project.getName() + "' version " + version.getIdentification());
 					}
 					e.printStackTrace();
@@ -94,7 +94,7 @@ public class JavaModelRetrieval {
 		codeRepository.checkout(history, version);
 		
 		Workspace workspace = new Workspace();
-		ProjectFilter projectFilter = new TestProjectFilter(new PDEProjectFilter());
+		ProjectFilter projectFilter = factory.createProjectFilter();
 		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, codeRepositoryPath);
 		workspaceBuilder.findProjects(codeRepositoryPath, projectFilter);
 		
@@ -113,14 +113,14 @@ public class JavaModelRetrieval {
 		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
 		
 		// Discover the Java AST of the project version:
-		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(mulitviewFile);
+		SystemModel systemModel = new SystemModel(mulitviewFile);
 		
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer(mulitviewFile);
-		multiViewModelDiscoverer.discoverJavaAST(multiViewSystemModel, workspaceProject, new NullProgressMonitor());
+		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer(mulitviewFile);
+		multiViewModelDiscoverer.discoverJavaAST(systemModel, workspaceProject, new NullProgressMonitor());
 		
 		// Store system model in data set:
-		multiViewSystemModel.saveAll(Collections.emptyMap());
+		systemModel.saveAll(Collections.emptyMap());
 		
 		// Store path in data set:
 		project.setSystemModel(javaModelRepository.getDataSetPath().getParent().relativize(systemModelFile));

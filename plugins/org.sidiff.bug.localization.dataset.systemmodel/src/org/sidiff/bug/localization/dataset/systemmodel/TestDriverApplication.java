@@ -15,10 +15,10 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Class;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
-import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 
 public class TestDriverApplication implements IApplication {
 
@@ -27,7 +27,7 @@ public class TestDriverApplication implements IApplication {
 		Activator.getLogger().setLevel(Level.FINE);
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("org.sidiff.bug.localization.examples.musicplayer");
-		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer();
+		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer();
 		multiViewModelDiscoverer.discoverElement(project, new NullProgressMonitor());
 		
 		Resource umlResource = multiViewModelDiscoverer.getTargetModel();
@@ -43,7 +43,7 @@ public class TestDriverApplication implements IApplication {
 			}
 		}
 
-		new MultiViewSystemModel(multiViewSystemModel).saveAll(Collections.emptyMap());
+		new SystemModel(multiViewSystemModel).saveAll(Collections.emptyMap());
 		
 		return IApplication.EXIT_OK;
 	}

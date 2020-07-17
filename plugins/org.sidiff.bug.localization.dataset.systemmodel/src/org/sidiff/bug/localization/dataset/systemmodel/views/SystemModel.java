@@ -16,29 +16,29 @@ import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
 
-public class MultiViewSystemModel {
+public class SystemModel {
 
 	public static final String MULITVIEW_MODEL_FILE_EXTENSION = "multiview";
 	
 	private MultiView multiView;
 	
-	public MultiViewSystemModel() {
+	public SystemModel() {
 		this.multiView = MultiviewFactory.eINSTANCE.createMultiView();
 		setURI(URI.createURI("")); // dummy
 	}
 	
-	public MultiViewSystemModel(URI uri) {
+	public SystemModel(URI uri) {
 		this.multiView = MultiviewFactory.eINSTANCE.createMultiView();
 		setURI(uri);
 	}
 	
-	public MultiViewSystemModel(Path file) {
+	public SystemModel(Path file) {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		Resource multiViewResource = resourceSet.getResource(URI.createFileURI(file.toString()), true);
 		this.multiView = (MultiView) multiViewResource.getContents().get(0);
 	}
 	
-	public MultiViewSystemModel(MultiView multiView) {
+	public SystemModel(MultiView multiView) {
 		this.multiView = multiView;
 		
 		if ((multiView.eResource() == null) || (multiView.eResource().getResourceSet() == null)) {
