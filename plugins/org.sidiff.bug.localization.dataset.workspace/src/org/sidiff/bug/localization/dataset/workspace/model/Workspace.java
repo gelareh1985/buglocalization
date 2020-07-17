@@ -21,6 +21,15 @@ public class Workspace {
 	public void setProjects(List<Project> projects) {
 		this.projects = projects;
 	}
+	
+	public boolean containsProject(Project otherProject) {
+		for (Project project : projects) {
+			if (project.getName().equals(otherProject.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public String toString() {

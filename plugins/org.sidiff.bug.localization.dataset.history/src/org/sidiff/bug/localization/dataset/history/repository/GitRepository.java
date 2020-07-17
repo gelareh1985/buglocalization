@@ -50,7 +50,7 @@ public class GitRepository implements Repository {
 				Activator.getLogger().log(Level.INFO, "Repository " + repositoryURL + " will be cloned.");
 				return cloneGit();
 			} else {
-				Activator.getLogger().log(Level.INFO, "A new repository " + workingDirectory.getAbsolutePath() + "will be created.");
+				Activator.getLogger().log(Level.INFO, "A new repository " + workingDirectory.getAbsolutePath() + " will be created.");
 				return createGit();
 			}
 		}
@@ -101,10 +101,7 @@ public class GitRepository implements Repository {
 	
 	public Git createGit() {
 		try {
-			Git git = Git.init().setDirectory(workingDirectory).call();
-			git.branchCreate().setName(Constants.MASTER).call();
-			git.checkout().setName(Constants.MASTER).call();
-			return git;
+			return Git.init().setDirectory(workingDirectory).call();
 		} catch (IllegalStateException | GitAPIException e) {
 			e.printStackTrace();
 		}
@@ -166,7 +163,7 @@ public class GitRepository implements Repository {
 	@Override
 	public boolean commit(String authorName, String authorEmail, String message, String username, String password) {
 		try (Git git = openGitRepository()) {
-			git.add().addFilepattern("*").call();
+			git.add().addFilepattern(".").call();
 			git.commit().setAll(true).setAllowEmpty(true)
 			.setAuthor(authorName, authorEmail)
 			.setCommitter(authorName, authorEmail)

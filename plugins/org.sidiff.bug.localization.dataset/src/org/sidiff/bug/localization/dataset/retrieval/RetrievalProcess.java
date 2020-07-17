@@ -1,10 +1,12 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -114,12 +116,19 @@ public class RetrievalProcess {
 	public void retrieveJavaAST() {
 		History history = dataset.getHistory();
 		
+		// Storage:
+		Path javaASTRepositoryPath = Paths.get(localRepositoryPath.toString() + "_" + ViewDescriptions.JAVA_AST.getViewKind());
+		Repository javaASTRepository = new GitRepository(javaASTRepositoryPath.toFile());
+		Version previousVersion = null;
+		
 		for (Version version : history.getVersions()) {
 			Workspace workspace = retrieveWorkspaceVersion(history, version);
 			
 			for (Project project : workspace.getProjects()) {
+				if (project.getName().equals("org.eclipse.jdt.core")) continue; // TODO: TEST
+				
 				try {
-					retrieveJavaASTVersion(version, project);
+					retrieveJavaASTVersion(version, project, javaASTRepositoryPath);
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 						Activator.getLogger().log(Level.SEVERE, "Could not discover Java AST model for '"
@@ -130,35 +139,53 @@ public class RetrievalProcess {
 					e.printStackTrace();
 				}
 			}
+			
+			// Store Java AST model workspace as revision:
+			commitVersion(javaASTRepository, javaASTRepositoryPath, version, previousVersion);
+			previousVersion = version;
 		}
+	}
+
+	protected void commitVersion(Repository javaASTRepository, Path javaASTRepositoryPath, Version currentVersion, Version previousVersion) {
+		
+		// Remove projects that do not exist in the current version:
+		if (previousVersion != null) {
+			for (Project project : previousVersion.getWorkspace().getProjects()) {
+				if (!currentVersion.getWorkspace().containsProject(project)) {
+					try {
+						Path projectPath = javaASTRepositoryPath.resolve(project.getFolder());
+						Files.walk(projectPath).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		// Commit to repository:
+		javaASTRepository.commit(currentVersion.getIdentification(), currentVersion.getDate().toString(), currentVersion.getCommitMessage(), null, null);
 	}
 
 	protected Workspace retrieveWorkspaceVersion(History history, Version version) {
 		repository.checkout(history, version);
 		
-		Path projectSearchPath = this.localRepositoryPath;
 		Workspace workspace = new Workspace();
 		ProjectFilter projectFilter = new TestProjectFilter(new PDEProjectFilter());
-		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, projectSearchPath);
-		workspaceBuilder.findProjects(projectSearchPath, projectFilter);
+		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, localRepositoryPath);
+		workspaceBuilder.findProjects(localRepositoryPath, projectFilter);
 		
 		version.setWorkspace(workspace);
 		return workspace;
 	}
 
-	protected void retrieveJavaASTVersion(Version version, Project project) throws DiscoveryException, IOException {
+	protected void retrieveJavaASTVersion(Version version, Project project, Path workspacePath) throws DiscoveryException, IOException {
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "Model Discovery: " + version.getDate() + " - " + project.getName());
 		}
 		
-		// Storage paths:
-		Path systemModelPath = Files.createDirectories(
-				Paths.get(datasetStorage.getParent().toString(), 
-						getSysteModelFolder(version), 
-						project.getName()));
-		Path systemModelFile = Paths.get(systemModelPath.toString(), 
-				project.getName() + "." + MultiViewSystemModel.MULITVIEW_MODEL_FILE_EXTENSION); 
+		// Storage:
+		Path systemModelFile = getSysteModelFile(project, workspacePath);
 		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
 		
 		// Discover the Java AST of the project version:
@@ -175,9 +202,12 @@ public class RetrievalProcess {
 		project.setSystemModel(datasetStorage.getParent().relativize(systemModelFile));
 	}
 	
-	protected String getSysteModelFolder(Version version) {
-		String versionDate = version.getDate().toString().replace(":", "-");
-		return versionDate + "_" + version.getIdentification();
+	protected Path getSysteModelFile(Project project, Path workspacePath) throws IOException {
+		Path systemModelPath = Files.createDirectories(
+				Paths.get(workspacePath.toString(), project.getName()));
+		Path systemModelFile = Paths.get(systemModelPath.toString(),
+				project.getName() + "." + MultiViewSystemModel.MULITVIEW_MODEL_FILE_EXTENSION);
+		return systemModelFile;
 	}
 
 	public void retrieveSystemModels() {
