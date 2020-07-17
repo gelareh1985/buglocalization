@@ -67,13 +67,13 @@ public class GitRepository implements Repository {
 			LogCommand logCommand = git.log().add(git.getRepository().resolve(Constants.HEAD));
 
 			for (RevCommit revCommit : logCommand.call()) {
-				String url = revCommit.getId().getName();
+				String id = revCommit.getId().getName();
 				String author = revCommit.getAuthorIdent().getName();
 				String commitMessage = revCommit.getFullMessage();
 				Instant date = Instant.ofEpochSecond(revCommit.getCommitTime());
 
-				if (!filter.filter(url, date, author, commitMessage)) {
-					Version version = new Version(url, date, author, commitMessage);
+				if (!filter.filter(id, date, author, commitMessage)) {
+					Version version = new Version(id, date, author, commitMessage);
 					history.getVersions().add(version);
 				}
 			}
@@ -161,22 +161,24 @@ public class GitRepository implements Repository {
 	}
 	
 	@Override
-	public boolean commit(String authorName, String authorEmail, String message, String username, String password) {
+	public String commit(String authorName, String authorEmail, String message, String username, String password) {
 		try (Git git = openGitRepository()) {
 			git.add().addFilepattern(".").call();
-			git.commit().setAll(true).setAllowEmpty(true)
-			.setAuthor(authorName, authorEmail)
-			.setCommitter(authorName, authorEmail)
-			.setMessage(message).call();
+			RevCommit commit = git.commit().setAll(true).setAllowEmpty(true)
+					.setAuthor(authorName, authorEmail)
+					.setCommitter(authorName, authorEmail)
+					.setMessage(message).call();
 
 			if ((repositoryURL != null) && (username != null) && (password != null)) {
 				PushCommand pushCommand = git.push();
 			    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password));
 			    pushCommand.call();
 			}
+			
+			return commit.getId().getName();
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 }

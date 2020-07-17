@@ -15,15 +15,15 @@ public class TestDriverApplication extends RetrievalApplication {
 		
 		retrievalProcess.retrieveHistory();
 		retrievalProcess.getDataset().getHistory().setVersions(
-				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 4));
+				retrievalProcess.getDataset().getHistory().getVersions().subList(0, 2));
 		retrievalProcess.retrieveBugReports();
 		retrievalProcess.cleanUp(); // TODO: Split Data Set by Placeholders
 //		retrievalProcess.saveDataSet(); // TODO: multi view dummy
 		
 		retrievalProcess.retrieveJavaAST();
-		retrievalProcess.saveDataSet(); // TODO: multi view dummy
+//		retrievalProcess.saveDataSet(); // TODO: multi view dummy
 		
-// 		retrievalProcess.retrieveSystemModels();
+ 		retrievalProcess.retrieveSystemModels();
 		
 	}
 	

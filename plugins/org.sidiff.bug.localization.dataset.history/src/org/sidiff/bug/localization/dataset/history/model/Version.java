@@ -9,6 +9,8 @@ public class Version {
 
 	private String identification;
 	
+	private String identificationTrace;
+	
 	private Instant date;
 	
 	private String author;
@@ -30,8 +32,16 @@ public class Version {
 		return identification;
 	}
 
-	public void setIdentification(String versionURL) {
-		this.identification = versionURL;
+	public void setIdentification(String identification) {
+		this.identification = identification;
+	}
+	
+	public String getIdentificationTrace() {
+		return identificationTrace;
+	}
+	
+	public void setIdentificationTrace(String identificationTrace) {
+		this.identificationTrace = identificationTrace;
 	}
 
 	public Instant getDate() {
@@ -78,8 +88,10 @@ public class Version {
 	public String toString() {
 		StringBuilder text = new StringBuilder();
 		
-		text.append("Version [URL=");
+		text.append("Version [ID=");
 		text.append(identification);
+		text.append("Version [ID-Trace=");
+		text.append(identificationTrace);
 		text.append(", date=");
 		text.append(date);
 		text.append(", workspace(size) = ");

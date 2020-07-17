@@ -10,6 +10,6 @@ public interface Repository {
 	
 	boolean checkout(History history, Version version);
 	
-	boolean commit(String authorName, String authorEmail, String message, String username, String password);
+	String commit(String authorName, String authorEmail, String message, String username, String password);
 
 }

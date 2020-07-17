@@ -1,12 +1,9 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -33,6 +30,7 @@ import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilt
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
+import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2MultiViewModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.views.MultiViewSystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
@@ -117,8 +115,7 @@ public class RetrievalProcess {
 		History history = dataset.getHistory();
 		
 		// Storage:
-		Path javaASTRepositoryPath = Paths.get(localRepositoryPath.toString() + "_" + ViewDescriptions.JAVA_AST.getViewKind());
-		Repository javaASTRepository = new GitRepository(javaASTRepositoryPath.toFile());
+		SystemModelRepository javaModelRepository = new SystemModelRepository(localRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
 		Version previousVersion = null;
 		
 		for (Version version : history.getVersions()) {
@@ -128,7 +125,7 @@ public class RetrievalProcess {
 				if (project.getName().equals("org.eclipse.jdt.core")) continue; // TODO: TEST
 				
 				try {
-					retrieveJavaASTVersion(version, project, javaASTRepositoryPath);
+					retrieveJavaASTVersion(project, javaModelRepository.getSystemModelFile(project));
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 						Activator.getLogger().log(Level.SEVERE, "Could not discover Java AST model for '"
@@ -141,29 +138,15 @@ public class RetrievalProcess {
 			}
 			
 			// Store Java AST model workspace as revision:
-			commitVersion(javaASTRepository, javaASTRepositoryPath, version, previousVersion);
-			previousVersion = version;
-		}
-	}
-
-	protected void commitVersion(Repository javaASTRepository, Path javaASTRepositoryPath, Version currentVersion, Version previousVersion) {
-		
-		// Remove projects that do not exist in the current version:
-		if (previousVersion != null) {
-			for (Project project : previousVersion.getWorkspace().getProjects()) {
-				if (!currentVersion.getWorkspace().containsProject(project)) {
-					try {
-						Path projectPath = javaASTRepositoryPath.resolve(project.getFolder());
-						Files.walk(projectPath).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			previousVersion = javaModelRepository.commitVersion(version, previousVersion);
 		}
 		
-		// Commit to repository:
-		javaASTRepository.commit(currentVersion.getIdentification(), currentVersion.getDate().toString(), currentVersion.getCommitMessage(), null, null);
+		// Store data set for Java model:
+		try {
+			javaModelRepository.saveDataSet();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected Workspace retrieveWorkspaceVersion(History history, Version version) {
@@ -178,14 +161,13 @@ public class RetrievalProcess {
 		return workspace;
 	}
 
-	protected void retrieveJavaASTVersion(Version version, Project project, Path workspacePath) throws DiscoveryException, IOException {
+	protected void retrieveJavaASTVersion(Project project, Path systemModelFile) throws DiscoveryException, IOException {
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
-			Activator.getLogger().log(Level.FINER, "Model Discovery: " + version.getDate() + " - " + project.getName());
+			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + project.getName());
 		}
 		
 		// Storage:
-		Path systemModelFile = getSysteModelFile(project, workspacePath);
 		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
 		
 		// Discover the Java AST of the project version:
@@ -202,44 +184,66 @@ public class RetrievalProcess {
 		project.setSystemModel(datasetStorage.getParent().relativize(systemModelFile));
 	}
 	
-	protected Path getSysteModelFile(Project project, Path workspacePath) throws IOException {
-		Path systemModelPath = Files.createDirectories(
-				Paths.get(workspacePath.toString(), project.getName()));
-		Path systemModelFile = Paths.get(systemModelPath.toString(),
-				project.getName() + "." + MultiViewSystemModel.MULITVIEW_MODEL_FILE_EXTENSION);
-		return systemModelFile;
-	}
-
 	public void retrieveSystemModels() {
-		History history = dataset.getHistory();
 		
-		for (Version version : history.getVersions()) {
+		// Storage:
+		SystemModelRepository javaModelRepository = new SystemModelRepository(localRepositoryPath, ViewDescriptions.JAVA_MODEL);
+		DataSet dataset = javaModelRepository.getDataSet();
+		
+		SystemModelRepository umllRepository = new SystemModelRepository(localRepositoryPath, ViewDescriptions.UML_CLASS_DIAGRAM, dataset);
+		Version previousVersion = null;
+		
+		for (Version version : dataset.getHistory().getVersions()) {
 			for (Project project : version.getWorkspace().getProjects()) {
+				if (project.getName().equals("org.eclipse.jdt.core")) continue; // TODO: TEST
+				
 				try {
-					retrieveSystemModelVersion(version, project);
+					retrieveSystemModelVersion(project, 
+							javaModelRepository.getSystemModelFile(project),
+							umllRepository.getSystemModelFile(project));
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 						Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
 								+ project.getName() + "' version " + version.getIdentification());
 					}
 					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
+			
+			// Store Java AST model workspace as revision:
+			previousVersion = umllRepository.commitVersion(version, previousVersion);
+		}
+		
+		// Store data set for UML model:
+		try {
+			umllRepository.saveDataSet();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	protected void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException {
+	protected void retrieveSystemModelVersion(Project project, Path javaSystemModelFile, Path systemModelFile) throws DiscoveryException, IOException {
+		
+		if (Activator.getLogger().isLoggable(Level.FINER)) {
+			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
+		}
 		
 		// Discover the multi-view system model of the project version:
-		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(datasetStorage.getParent().resolve(project.getSystemModel()));
+		MultiViewSystemModel multiViewSystemModel = new MultiViewSystemModel(javaSystemModelFile);
 		JavaProject2MultiViewModelDiscoverer multiViewModelDiscoverer = new JavaProject2MultiViewModelDiscoverer();
 		
-		Resource javaResource = multiViewSystemModel.getViewByKind(ViewDescriptions.JAVA_AST);
+		Resource javaResource = multiViewSystemModel.getViewByKind(ViewDescriptions.JAVA_MODEL);
 		multiViewModelDiscoverer.discoverUMLClassDiagram(multiViewSystemModel, javaResource, new NullProgressMonitor());
-//		multiViewModelDiscoverer.discoverUMLOperationControlFlow(multiViewSystemModel, javaResource, new NullProgressMonitor()); // TODO: discover UML Operation Control Flow
+//		multiViewModelDiscoverer.discoverUMLOperationControlFlow(multiViewSystemModel, javaResource, new NullProgressMonitor()); // FIXME: discover UML Operation Control Flow
+		
+		// Remove java model:
+		multiViewSystemModel.removeViewKind(ViewDescriptions.JAVA_MODEL);
 		
 		// Store system model in data set:
-		multiViewSystemModel.saveAll(Collections.emptyMap(), Collections.singleton(javaResource));
+		multiViewSystemModel.setURI(URI.createFileURI(systemModelFile.toString()));
+		multiViewSystemModel.saveAll(Collections.emptyMap());
 	}
 
 	public void saveDataSet() throws IOException {

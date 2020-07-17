@@ -90,7 +90,7 @@ public class JavaProject2MultiViewModelDiscoverer extends AbstractModelDiscovere
 		}
 		
 		multiViewSystemModel.getMultiViewModel().setName(project.getName());
-		multiViewSystemModel.addView(javaResource, ViewDescriptions.JAVA_AST);
+		multiViewSystemModel.addView(javaResource, ViewDescriptions.JAVA_MODEL);
 		
 		return javaResource;
 	}

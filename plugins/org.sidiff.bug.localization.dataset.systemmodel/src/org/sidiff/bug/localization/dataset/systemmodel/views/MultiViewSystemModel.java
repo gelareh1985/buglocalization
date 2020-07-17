@@ -91,6 +91,18 @@ public class MultiViewSystemModel {
 		
 		return false;
 	}
+	
+	public boolean removeViewKind(ViewDescription viewDescription) {
+		View toBeRemoved = null;
+		
+		for (View view : multiView.getViews()) {
+			if (view.getKind().equals(viewDescription.getViewKind())) {
+				toBeRemoved = view;
+			}
+		}
+		
+		return multiView.getViews().remove(toBeRemoved);
+	}
 
 	public MultiView getMultiViewModel() {
 		return multiView;

@@ -18,4 +18,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.sidiff.bug.localization.dataset,
  org.sidiff.bug.localization.dataset.configuration,
  org.sidiff.bug.localization.dataset.model,
- org.sidiff.bug.localization.dataset.retrieval
+ org.sidiff.bug.localization.dataset.retrieval,
+ org.sidiff.bug.localization.dataset.retrieval.storage
