@@ -31,7 +31,9 @@ public class TestDriverApplication extends RetrievalApplication {
 		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
 		bugFixHistory.retrieveHistory();
 		
-		shrinkHistory(bugFixHistory.getDataset(), 3);
+		{
+			shrinkHistory(bugFixHistory.getDataset(), 3);
+		}
 		
 		bugFixHistory.retrieveBugReports();
 		BugFixHistoryRetrieval.cleanUp(bugFixHistory.getDataset());
@@ -40,9 +42,9 @@ public class TestDriverApplication extends RetrievalApplication {
 		// Java model:
 		JavaModelRetrievalFactory javaModelFactory = new JavaModelRetrievalFactory(bugFixHistory.getCodeRepositoryPath());
 		
-		ProjectFilter parentProjectFilter = javaModelFactory.createProjectFilter();
-		javaModelFactory.setProjectFilter(() -> new ProjectNameFilter(parentProjectFilter, 
-				new HashSet<>(Arrays.asList(new String[] {"org.eclipse.jdt.core"}))));
+		{
+			filterProjects(javaModelFactory, "org.eclipse.jdt.core");
+		}
 		
 		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());
 		javaModel.retrieve();
@@ -51,6 +53,12 @@ public class TestDriverApplication extends RetrievalApplication {
 		SystemModelRetrievalFactory systemModelFactory = new SystemModelRetrievalFactory();
 		SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, bugFixHistory.getCodeRepositoryPath());
 		systemModel.retrieve();
+	}
+
+	private void filterProjects(JavaModelRetrievalFactory javaModelFactory, String... projectNames) {
+		ProjectFilter parentProjectFilter = javaModelFactory.createProjectFilter();
+		javaModelFactory.setProjectFilter(() -> new ProjectNameFilter(
+				parentProjectFilter, new HashSet<>(Arrays.asList(projectNames))));
 	}
 
 	private void shrinkHistory(DataSet dataset, int historySize) {
