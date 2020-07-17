@@ -27,7 +27,7 @@ public class BugFixHistoryRetrievalFactory {
 	/**
 	 * Matches version in of the source code repository that represent bug fixes.
 	 */
-	private Supplier<BugFixVersionFilter> bugFixVersionFilter;
+	private Supplier<BugFixVersionFilter> versionFilter;
 
 	/**
 	 * The bug tracker that corresponds to the source code repository.
@@ -49,7 +49,7 @@ public class BugFixHistoryRetrievalFactory {
 		
 		this.codeRepository = repository;
 		this.bugFixMessageIDMatcher = bugFixMessageIDMatcher;
-		this.bugFixVersionFilter = bugFixVersionFilter;
+		this.versionFilter = bugFixVersionFilter;
 		this.bugtracker = bugtracker;
 		this.bugReportFilter = bugReportFilter;
 	}
@@ -60,7 +60,7 @@ public class BugFixHistoryRetrievalFactory {
 		
 		this.codeRepository = () -> new GitRepository(codeRepositoryURL, codeRepositoryPath.toFile());
 		this.bugFixMessageIDMatcher = () -> new BugFixMessageIDMatcher();
-		this.bugFixVersionFilter = () -> new BugFixVersionFilter(createBugFixMessageIDMatcher());
+		this.versionFilter = () -> new BugFixVersionFilter(createBugFixMessageIDMatcher());
 		this.bugtracker = bugtracker;
 		this.bugReportFilter = () -> new BugReportProductMatchingFilter(bugtrackerProduct);
 	}
@@ -68,20 +68,40 @@ public class BugFixHistoryRetrievalFactory {
 	public Repository createCodeRepository() {
 		return codeRepository.get();
 	}
+	
+	public void setCodeRepository(Supplier<Repository> codeRepository) {
+		this.codeRepository = codeRepository;
+	}
 
 	public BugFixMessageIDMatcher createBugFixMessageIDMatcher() {
 		return bugFixMessageIDMatcher.get();
 	}
+	
+	public void setBugFixMessageIDMatcher(Supplier<BugFixMessageIDMatcher> bugFixMessageIDMatcher) {
+		this.bugFixMessageIDMatcher = bugFixMessageIDMatcher;
+	}
 
 	public VersionFilter createVersionFilter() {
-		return bugFixVersionFilter.get();
+		return versionFilter.get();
+	}
+	
+	public void setVersionFilter(Supplier<BugFixVersionFilter> versionFilter) {
+		this.versionFilter = versionFilter;
 	}
 
 	public Bugtracker createBugtracker() {
 		return bugtracker.get();
 	}
+	
+	public void setBugtracker(Supplier<Bugtracker> bugtracker) {
+		this.bugtracker = bugtracker;
+	}
 
 	public BugReportFilter createBugReportFilter() {
 		return bugReportFilter.get();
+	}
+	
+	public void setBugReportFilter(Supplier<BugReportFilter> bugReportFilter) {
+		this.bugReportFilter = bugReportFilter;
 	}
 }

@@ -11,7 +11,7 @@ public class SystemModelRetrievalFactory {
 	/**
 	 * The discovery transformations from the Java model to the system model.
 	 */
-	private SystemModelDiscoverer[] javaModelToSystemModel;
+	private SystemModelDiscoverer[] systemModelDiscoverer;
 	
 	@FunctionalInterface
 	public interface SystemModelDiscoverer {
@@ -19,7 +19,7 @@ public class SystemModelRetrievalFactory {
 	}
 	
 	public SystemModelRetrievalFactory(SystemModelDiscoverer[] javaModelToSystemModel) {
-		this.javaModelToSystemModel = javaModelToSystemModel;
+		this.systemModelDiscoverer = javaModelToSystemModel;
 	}
 	
 	public SystemModelRetrievalFactory() {
@@ -35,12 +35,16 @@ public class SystemModelRetrievalFactory {
 			multiViewModelDiscoverer.discoverUMLOperationControlFlow(systemModel, javaResource, new NullProgressMonitor());
 		};
 		
-		javaModelToSystemModel = new SystemModelDiscoverer[] {umlClasses};
+		systemModelDiscoverer = new SystemModelDiscoverer[] {umlClasses};
 	}
 
 	public void discover(SystemModel systemModel, Resource javaModel) throws DiscoveryException {
-		for (SystemModelDiscoverer systemModelDiscovery : javaModelToSystemModel) {
+		for (SystemModelDiscoverer systemModelDiscovery : systemModelDiscoverer) {
 			systemModelDiscovery.discover(systemModel, javaModel);
 		}
+	}
+	
+	public void setSystemModelDiscoverer(SystemModelDiscoverer[] systemModelDiscoverer) {
+		this.systemModelDiscoverer = systemModelDiscoverer;
 	}
 }

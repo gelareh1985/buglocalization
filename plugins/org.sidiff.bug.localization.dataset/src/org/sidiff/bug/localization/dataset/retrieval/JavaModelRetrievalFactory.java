@@ -39,8 +39,15 @@ public class JavaModelRetrievalFactory {
 		return codeRepository.get();
 	}
 	
+	public void setCodeRepository(Supplier<Repository> codeRepository) {
+		this.codeRepository = codeRepository;
+	}
+	
 	public ProjectFilter createProjectFilter() {
 		return projectFilter.get();
 	}
 
+	public void setProjectFilter(Supplier<ProjectFilter> projectFilter) {
+		this.projectFilter = projectFilter;
+	}
 }

@@ -3,6 +3,8 @@ package org.sidiff.bug.localization.dataset;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.model.DataSet;
@@ -13,6 +15,8 @@ import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalFactory;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalFactory;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
 
 public class TestDriverApplication extends RetrievalApplication {
 
@@ -35,6 +39,11 @@ public class TestDriverApplication extends RetrievalApplication {
 		
 		// Java model:
 		JavaModelRetrievalFactory javaModelFactory = new JavaModelRetrievalFactory(bugFixHistory.getCodeRepositoryPath());
+		
+		ProjectFilter parentProjectFilter = javaModelFactory.createProjectFilter();
+		javaModelFactory.setProjectFilter(() -> new ProjectNameFilter(parentProjectFilter, 
+				new HashSet<>(Arrays.asList(new String[] {"org.eclipse.jdt.core"}))));
+		
 		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());
 		javaModel.retrieve();
 		
