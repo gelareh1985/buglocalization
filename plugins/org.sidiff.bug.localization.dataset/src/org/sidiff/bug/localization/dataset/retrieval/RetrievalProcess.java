@@ -26,6 +26,7 @@ import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.Bug
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
+import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
@@ -48,7 +49,7 @@ public class RetrievalProcess {
 	
 	protected Path datasetStorage;
 	
-	protected GitRepository repository;
+	protected Repository repository;
 	
 	protected String repositoryURL;
 	
@@ -69,27 +70,18 @@ public class RetrievalProcess {
 	}
 	
 	public void retrieveHistory() {
-		GitRepository repository = retrieveRepository();
-		retrieveBugFixes(repository);
+		retrieveRepository();
+		retrieveBugFixes();
 	}
 
-	protected GitRepository retrieveRepository() {
+	protected Repository retrieveRepository() {
 		this.repositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
 		this.localRepositoryPath = Paths.get(configuration.getLocalRepositoryPath().toFile() + "/" + dataset.getName());
-		this.repository = new GitRepository(localRepositoryPath.toFile());
-	
-		if (!repository.exists()) {
-			repository.clone(repositoryURL);
-		} else {
-			if (Activator.getLogger().isLoggable(Level.WARNING)) {
-				Activator.getLogger().log(Level.WARNING, "A repository already exists in "
-						+ configuration.getLocalRepositoryPath() + " for " + repositoryURL);
-			}
-		}
+		this.repository = new GitRepository(repositoryURL, localRepositoryPath.toFile());
 		return repository;
 	}
 
-	protected void retrieveBugFixes(GitRepository repository) {
+	protected void retrieveBugFixes() {
 		
 		// Retrieve commits with bug fixes in their comments:
 		BugFixMessageIDMatcher bugFixMessageIDMatcher = new BugFixMessageIDMatcher();
@@ -232,7 +224,7 @@ public class RetrievalProcess {
 		return dataset;
 	}
 
-	public GitRepository getRepository() {
+	public Repository getRepository() {
 		return repository;
 	}
 }

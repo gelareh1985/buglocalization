@@ -33,11 +33,7 @@ public class TestDriverApplication implements IApplication {
 				repositoryURL.lastIndexOf("."));
 		File localRepository = new File(System.getProperty("user.home") + "/git/" + repositoryName);
 
-		GitRepository repository = new GitRepository(localRepository);
-
-		if (!repository.exists()) {
-			repository.clone(repositoryURL);
-		}
+		GitRepository repository = new GitRepository(repositoryURL, localRepository);
 
 		// Retrieve commits with bug fixes:
 		BugFixMessageIDMatcher bugFixMatcher = new BugFixMessageIDMatcher();

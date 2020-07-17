@@ -8,12 +8,14 @@ import java.util.logging.Level;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
@@ -24,25 +26,42 @@ public class GitRepository implements Repository {
 	// https://www.vogella.com/tutorials/JGit/article.html
 	// https://maximilian-boehm.com/en-gb/blog/use-java-library-jgit-to-programmatically-access-your-git-respository-2103371/
 	
-	private File localRepository;
+	private String repositoryURL;
+	
+	private File workingDirectory;
+	
+	public GitRepository(String repositoryURL, File workingDirectory) {
+		this.repositoryURL = repositoryURL;
+		this.workingDirectory = workingDirectory;
+	}
 	
 	public GitRepository(File localRepository) {
-		this.localRepository = localRepository;
+		this.workingDirectory = localRepository;
 	}
 	
 	public boolean exists() {
-		return new File(localRepository.getAbsolutePath() + "/.git").exists();
+		return new File(workingDirectory.getAbsolutePath() + "/.git").exists();
+	}
+	
+	private Git openGitRepository() throws IOException {
+		
+		if(!exists()) {
+			if(repositoryURL != null) {
+				Activator.getLogger().log(Level.INFO, "Repository " + repositoryURL + " will be cloned.");
+				return cloneGit();
+			} else {
+				Activator.getLogger().log(Level.INFO, "A new repository " + workingDirectory.getAbsolutePath() + "will be created.");
+				return createGit();
+			}
+		}
+		
+		return new Git(new FileRepositoryBuilder().findGitDir(workingDirectory).build());
 	}
 	
 	@Override
 	public History getHistory(VersionFilter filter) {
 		History history = new History();
 		
-		if(!localRepository.exists()) {
-			Activator.getLogger().log(Level.SEVERE, "Repository " + localRepository.getAbsolutePath() + " doesn't exist.");
-			return history;
-		} 
-
 		try (Git git = openGitRepository()) {
 			history.setIdentification(git.getRepository().getFullBranch());
 			LogCommand logCommand = git.log().add(git.getRepository().resolve(Constants.HEAD));
@@ -66,27 +85,33 @@ public class GitRepository implements Repository {
         return history;
 	}
 
-	public void clone(String repositoryURL) {
+	public Git cloneGit() {
 		try {
-			Activator.getLogger().log(Level.INFO, "Cloning " + repositoryURL + " into " + localRepository);
-			
-			Git.cloneRepository().setURI(repositoryURL).setDirectory(localRepository).call();
-		    
+			Activator.getLogger().log(Level.INFO, "Cloning " + repositoryURL + " into " + workingDirectory);
+			Git git = Git.cloneRepository().setURI(repositoryURL).setDirectory(workingDirectory).call();
 		    Activator.getLogger().log(Level.INFO, "Completed Cloning");
+		    return git;
 		} catch (GitAPIException e) {
 			Activator.getLogger().log(Level.SEVERE, "Exception occurred while cloning repository", e);
 		    e.printStackTrace();
 		}
-	}
-	
-	public void unlock() {
-		File lockFile = new File(localRepository.getAbsoluteFile() + "/.git/index.lock");
 		
-		if (lockFile.exists()) {
-			lockFile.delete();
-		}
+		return null;
 	}
 	
+	public Git createGit() {
+		try {
+			Git git = Git.init().setDirectory(workingDirectory).call();
+			git.branchCreate().setName(Constants.MASTER).call();
+			git.checkout().setName(Constants.MASTER).call();
+			return git;
+		} catch (IllegalStateException | GitAPIException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
 	public boolean checkout(History history, Version version) {
 		
 		try (Git git = openGitRepository()) {
@@ -120,6 +145,14 @@ public class GitRepository implements Repository {
 		return false;
 	}
 	
+	public void unlock() {
+		File lockFile = new File(workingDirectory.getAbsoluteFile() + "/.git/index.lock");
+		
+		if (lockFile.exists()) {
+			lockFile.delete();
+		}
+	}
+
 	private String getCurrentVersionID(Git git) throws GitAPIException, IOException  {
 		Iterator<RevCommit> revIterator = git.log().add(git.getRepository().resolve(Constants.HEAD)).call().iterator();
 		
@@ -130,7 +163,23 @@ public class GitRepository implements Repository {
 		return null;
 	}
 	
-	private Git openGitRepository() throws IOException {
-		return new Git(new FileRepositoryBuilder().findGitDir(localRepository).build());
+	@Override
+	public boolean commit(String authorName, String authorEmail, String message, String username, String password) {
+		try (Git git = openGitRepository()) {
+			git.add().addFilepattern("*").call();
+			git.commit().setAll(true).setAllowEmpty(true)
+			.setAuthor(authorName, authorEmail)
+			.setCommitter(authorName, authorEmail)
+			.setMessage(message).call();
+
+			if ((repositoryURL != null) && (username != null) && (password != null)) {
+				PushCommand pushCommand = git.push();
+			    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password));
+			    pushCommand.call();
+			}
+		} catch (IOException | GitAPIException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
