@@ -11,7 +11,9 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.model.DataSet;
-import org.sidiff.bug.localization.dataset.retrieval.RetrievalProcess;
+import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 
 public class RetrievalApplication implements IApplication {
 
@@ -52,9 +54,14 @@ public class RetrievalApplication implements IApplication {
 	}
 	
 	protected void start(Path dataSetPath, DataSet dataSet, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {
-		RetrievalProcess retrievalProcess = new RetrievalProcess(retrievalConfiguration, dataSet, dataSetPath);
-		retrievalProcess.retrieve();
-		retrievalProcess.saveDataSet();
+		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(retrievalConfiguration, dataSet, dataSetPath);
+		bugFixHistory.retrieve();
+		
+		JavaModelRetrieval javaModel = new JavaModelRetrieval(bugFixHistory.getDatasetPath(), bugFixHistory.getCodeRepositoryPath());
+		javaModel.retrieve();
+		
+		SystemModelRetrieval systemModel = new SystemModelRetrieval(bugFixHistory.getCodeRepositoryPath());
+		systemModel.retrieve();
 	}
 
 	@Override

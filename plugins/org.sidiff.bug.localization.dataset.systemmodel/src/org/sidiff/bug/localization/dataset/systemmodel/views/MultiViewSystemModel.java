@@ -114,16 +114,16 @@ public class MultiViewSystemModel {
 
 	public void saveAll(Map<?, ?> options, Set<Resource> exclude) {
 		URI baseURI = multiView.eResource().getURI().trimSegments(1);
-		Set<Resource> resources = new HashSet<>();
-		resources.add(multiView.eResource());
+		Set<Resource> viewResources = new HashSet<>();
 		
+		// Save views:
 		for (View view : multiView.getViews()) {
-			resources.add(view.getModel().eResource());
+			viewResources.add(view.getModel().eResource());
 		}
 		
-		resources.removeAll(exclude);
+		viewResources.removeAll(exclude);
 		
-		for (Resource resource : resources) {
+		for (Resource resource : viewResources) {
 			try {
 				String fileName = resource.getURI().segment(resource.getURI().segmentCount() - 1);
 				URI fileURI = baseURI.appendSegment(fileName);
@@ -133,6 +133,13 @@ public class MultiViewSystemModel {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		// Save system model (yiews must be saved first for relative paths):
+		try {
+			multiView.eResource().save(options);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

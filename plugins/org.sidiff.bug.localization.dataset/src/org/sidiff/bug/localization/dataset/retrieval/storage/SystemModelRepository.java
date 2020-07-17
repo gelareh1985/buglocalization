@@ -38,10 +38,6 @@ public class SystemModelRepository {
 		this.repository = new GitRepository(repositoryPath.toFile());
 	}
 	
-	protected Path getModelRepositoryPath(Path originalRepositoryPath, ViewDescription view) {
-		return Paths.get(originalRepositoryPath.toString() + "_" + view.getViewKind());
-	}
-	
 	public DataSet getDataSet() {
 		if (dataset == null) {
 			try {
@@ -55,10 +51,6 @@ public class SystemModelRepository {
 	
 	public void saveDataSet() throws IOException {
 		JsonUtil.save(dataset, getDataSetPath());
-	}
-	
-	protected Path getDataSetPath() {
-		return Paths.get(repositoryPath.toString(), DATA_SET_FILE_NAME);
 	}
 	
 	public void checkout(Version version) {
@@ -95,6 +87,22 @@ public class SystemModelRepository {
 				}
 			}
 		}
+	}
+	
+	/*
+	 * Path conventions:
+	 */
+	
+	public Path getRepositoryPath() {
+		return repositoryPath;
+	}
+	
+	protected Path getModelRepositoryPath(Path originalRepositoryPath, ViewDescription view) {
+		return Paths.get(originalRepositoryPath.toString() + "_" + view.getViewKind());
+	}
+	
+	public Path getDataSetPath() {
+		return Paths.get(repositoryPath.toString(), DATA_SET_FILE_NAME);
 	}
 	
 	public Path getProjectPath(Project project) {
