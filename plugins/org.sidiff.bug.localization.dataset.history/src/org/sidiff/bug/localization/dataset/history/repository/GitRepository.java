@@ -2,10 +2,14 @@ package org.sidiff.bug.localization.dataset.history.repository;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.jgit.api.Git;
@@ -13,14 +17,27 @@ import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.Side;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
+import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
+import org.sidiff.bug.localization.dataset.history.model.changes.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.history.model.changes.LineChange.LineChangeType;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 
 public class GitRepository implements Repository {
@@ -187,5 +204,60 @@ public class GitRepository implements Repository {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Override
+	public List<FileChange> getChanges(Version version) {
+		
+		try (Git git = openGitRepository()) {
+			ObjectId oldHead = git.getRepository().resolve(version.getIdentification() + "~1^{tree}");
+            ObjectId head = git.getRepository().resolve(version.getIdentification() + "^{tree}");
+
+    		try (ObjectReader reader = git.getRepository().newObjectReader()) {
+        		CanonicalTreeParser oldTreeIterator = new CanonicalTreeParser();
+        		oldTreeIterator.reset(reader, oldHead);
+        		CanonicalTreeParser newTreeIterator = new CanonicalTreeParser();
+        		newTreeIterator.reset(reader, head);
+
+        		OutputStream outputStream = DisabledOutputStream.INSTANCE;
+        		
+				try (DiffFormatter formatter = new DiffFormatter(outputStream)) {
+					formatter.setRepository(git.getRepository());
+					List<DiffEntry> diffs = formatter.scan(oldTreeIterator, newTreeIterator);
+					List<FileChange> fileChanges = new ArrayList<>(diffs.size());
+
+					for (DiffEntry entry : diffs) {
+						FileHeader fileHeader = formatter.toFileHeader(entry);
+
+						// changed file:
+						FileChange fileChange = new FileChange();
+						fileChange.setLocation(Paths.get(entry.getPath(Side.OLD)));
+						fileChange.setType(FileChangeType.valueOf(entry.getChangeType().toString()));
+						fileChanges.add(fileChange);
+						
+						// changed lines:
+						for (Edit edit : fileHeader.toEditList()) {
+							LineChange lineChange = new LineChange();
+							lineChange.setType(LineChangeType.valueOf(edit.getType().toString()));
+							
+							lineChange.setBeginA(edit.getBeginA());
+							lineChange.setEndA(edit.getEndA());
+							lineChange.setBeginB(edit.getBeginB());
+							lineChange.setEndB(edit.getEndB());
+							
+							fileChange.getChanges().add(lineChange);
+						}
+					}
+
+					return fileChanges;
+				}
+    		} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (IOException | RevisionSyntaxException e1) {
+			e1.printStackTrace();
+		}
+		
+		return Collections.emptyList();
 	}
 }

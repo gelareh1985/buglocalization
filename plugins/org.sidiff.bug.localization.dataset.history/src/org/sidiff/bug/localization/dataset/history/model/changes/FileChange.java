@@ -1,0 +1,77 @@
+package org.sidiff.bug.localization.dataset.history.model.changes;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileChange {
+
+	/** General type of change a single file-level patch describes. */
+	public enum FileChangeType {
+		
+		/** Add a new file to the project */
+		ADD,
+
+		/** Modify an existing file in the project (content and/or mode) */
+		MODIFY,
+
+		/** Delete an existing file from the project */
+		DELETE,
+
+		/** Rename an existing file to a new location */
+		RENAME,
+
+		/** Copy an existing file to a new location, keeping the original */
+		COPY;
+	}
+	
+	private FileChangeType type;
+	
+	private Path location;
+	
+	private List<LineChange> changes;
+
+	public FileChange() {
+	}
+	
+	public FileChange(FileChangeType fileChangeType, Path file) {
+		this.type = fileChangeType;
+		this.location = file;
+	}
+
+	public FileChangeType getType() {
+		return type;
+	}
+
+	public void setType(FileChangeType fileChangeType) {
+		this.type = fileChangeType;
+	}
+
+	public Path getLocation() {
+		return location;
+	}
+
+	public void setLocation(Path file) {
+		this.location = file;
+	}
+
+	public List<LineChange> getChanges() {
+		
+		if (changes == null) {
+			this.changes = new ArrayList<>();
+		}
+		
+		return changes;
+	}
+
+	public void setChanges(List<LineChange> changes) {
+		this.changes = changes;
+	}
+
+	@Override
+	public String toString() {
+		return "Change [changeType=" + type 
+				+ ", file=" + location 
+				+ ", changes.size=" + ((changes != null) ? changes.size() : 0) + "]";
+	}
+}

@@ -1,7 +1,9 @@
 package org.sidiff.bug.localization.dataset.history.model;
 
 import java.time.Instant;
+import java.util.List;
 
+import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
@@ -16,6 +18,8 @@ public class Version {
 	private String author;
 	
 	private String commitMessage;
+	
+	private List<FileChange> fileChanges;
 	
 	private BugReport bugReport;
 	
@@ -67,6 +71,14 @@ public class Version {
 	public void setCommitMessage(String commitMessage) {
 		this.commitMessage = commitMessage;
 	}
+	
+	public List<FileChange> getChanges() {
+		return fileChanges;
+	}
+	
+	public void setChanges(List<FileChange> fileChanges) {
+		this.fileChanges = fileChanges;
+	}
 
 	public BugReport getBugReport() {
 		return bugReport;
@@ -90,7 +102,7 @@ public class Version {
 		
 		text.append("Version [ID=");
 		text.append(identification);
-		text.append("Version [ID-Trace=");
+		text.append(", ID-Trace=");
 		text.append(identificationTrace);
 		text.append(", date=");
 		text.append(date);
