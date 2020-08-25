@@ -117,7 +117,7 @@ public class JavaModelRetrieval {
 		
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
 		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer(mulitviewFile);
-		multiViewModelDiscoverer.discoverJavaAST(systemModel, workspaceProject, new NullProgressMonitor());
+		multiViewModelDiscoverer.discoverJavaModel(systemModel, workspaceProject, new NullProgressMonitor());
 		
 		// Store system model in data set:
 		systemModel.saveAll(Collections.emptyMap());

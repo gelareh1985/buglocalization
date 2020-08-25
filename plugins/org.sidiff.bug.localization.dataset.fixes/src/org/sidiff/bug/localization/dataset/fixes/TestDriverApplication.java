@@ -14,7 +14,6 @@ import org.sidiff.bug.localization.dataset.fixes.report.request.filter.BugReport
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
-import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.BugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 
@@ -37,7 +36,8 @@ public class TestDriverApplication implements IApplication {
 
 		// Retrieve commits with bug fixes:
 		BugFixMessageIDMatcher bugFixMatcher = new BugFixMessageIDMatcher();
-		VersionFilter bugFixVersionFilter = new BugFixVersionFilter(bugFixMatcher);
+		BugFixVersionFilter bugFixVersionFilter = new BugFixVersionFilter(bugFixMatcher);
+		bugFixVersionFilter.setRetainVersion(false); // bug fixes only
 //		VersionFilter bugFixVersionFilter =  VersionFilter.FILTER_NOTHING;
 		History history = repository.getHistory(bugFixVersionFilter);
 		
@@ -50,7 +50,7 @@ public class TestDriverApplication implements IApplication {
 		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(bugtracker, bugReportFilter, bugFixMatcher);
 		
 		System.out.println("Start bug report requests:");
-		bugReportRequestsExecutor.request(retrieveReportsForVersions);
+		bugReportRequestsExecutor.request(retrieveReportsForVersions.iterator());
 		
 		System.out.println("Bug reports filtered for " + bugReportRequestsExecutor.getFilteredReports().size() + " bug fixes");
 		System.out.println("No bug reports found for " + bugReportRequestsExecutor.getNoReports().size() + " bug fixes");

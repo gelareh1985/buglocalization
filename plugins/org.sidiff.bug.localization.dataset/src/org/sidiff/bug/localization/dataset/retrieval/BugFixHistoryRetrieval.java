@@ -3,12 +3,14 @@ package org.sidiff.bug.localization.dataset.retrieval;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.List;
 
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.fixes.report.request.BugReportRequestsExecutor;
 import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.BugReportPlaceholder;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 
@@ -32,6 +34,7 @@ public class BugFixHistoryRetrieval {
 	
 	public void retrieve() {
 		retrieveHistory();
+		retrieveBugFixChanges();
 		retrieveBugReports();
 		cleanUp(dataset);
 		
@@ -60,10 +63,19 @@ public class BugFixHistoryRetrieval {
 		dataset.setHistory(history);
 	}
 
+	public void retrieveBugFixChanges() {
+		for (Version version : (Iterable<Version>) () -> getBugFixes()) {
+			List<FileChange> fixChanges = codeRepository.getChanges(version);
+			version.setChanges(fixChanges);
+		}
+	}
+
 	public void retrieveBugReports() {
 		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(
-				factory.createBugtracker(), factory.createBugReportFilter(), factory.createBugFixMessageIDMatcher());
-		bugReportRequestsExecutor.request(dataset.getHistory().getVersions());
+				factory.createBugtracker(), 
+				factory.createBugReportFilter(), 
+				factory.createBugFixMessageIDMatcher());
+		bugReportRequestsExecutor.request(getBugFixes());
 		bugReportRequestsExecutor.setPlaceholders();
 	}
 
@@ -91,5 +103,11 @@ public class BugFixHistoryRetrieval {
 	
 	public void saveDataSet() throws IOException {
 		JsonUtil.save(dataset, datasetPath);
+	}
+	
+	private Iterator<Version> getBugFixes() {
+		// visible == commit message contains bug report ID
+		// !visible == version retained as previous revision of a bug fix
+		return dataset.getHistory().getVersions().stream().filter(Version::isVisible).iterator();
 	}
 }

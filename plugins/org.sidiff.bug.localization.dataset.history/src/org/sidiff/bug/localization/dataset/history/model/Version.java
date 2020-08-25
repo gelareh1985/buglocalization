@@ -8,9 +8,17 @@ import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class Version {
+	
+	private boolean visible = true;
 
+	/**
+	 * The identification, e.g., version number of hash value, of the version in the repository.
+	 */
 	private String identification;
 	
+	/**
+	 * A trace to another repository, if this a derived version.
+	 */
 	private String identificationTrace;
 	
 	private Instant date;
@@ -30,6 +38,14 @@ public class Version {
 		this.date = date;
 		this.author = author;
 		this.commitMessage = commitMessage;
+	}
+	
+	public boolean isVisible() {
+		return visible;
+	}
+	
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	public String getIdentification() {
@@ -87,6 +103,10 @@ public class Version {
 	public void setBugReport(BugReport bugReport) {
 		this.bugReport = bugReport;
 	}
+	
+	public boolean hasBugReport() {
+		return bugReport != null;
+	}
 
 	public Workspace getWorkspace() {
 		return workspace;
@@ -108,8 +128,8 @@ public class Version {
 		text.append(date);
 		text.append(", workspace(size) = ");
 		text.append((workspace != null) ? workspace.getProjects().size() : "n.a.");
-		text.append(", (has)bugReport:");
-		text.append((bugReport != null) ? "YES" : "NO");
+		text.append(", hasBugReport:");
+		text.append(hasBugReport() ? "YES" : "NO");
 		text.append(", author=");
 		text.append(author);
 		

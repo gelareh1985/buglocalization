@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.fixes.report.request;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -55,10 +56,12 @@ public class BugReportRequestsExecutor {
 		this.retryCount = retryCount;
 	}
 	
-	public void request(List<Version> versions) {
+	public void request(Iterator<Version> versions) {
 		List<BugReportResponse> requests = new ArrayList<>();
 		
-		this.missingReports = new LinkedList<>(versions);
+		this.missingReports = new LinkedList<>();
+		versions.forEachRemaining(missingReports::add);
+		
 		this.noReports = new ArrayList<>();
 		this.filteredReports = new ArrayList<>();
 		

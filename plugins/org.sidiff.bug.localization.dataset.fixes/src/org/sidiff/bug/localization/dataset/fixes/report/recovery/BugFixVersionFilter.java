@@ -10,6 +10,8 @@ import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilt
 public class BugFixVersionFilter implements VersionFilter {
 
 	private BugFixMessageIDMatcher matcher;
+	
+	private boolean retainVersion = true;
 
 	public BugFixVersionFilter(BugFixMessageIDMatcher matcher) {
 		this.matcher = matcher;
@@ -19,6 +21,11 @@ public class BugFixVersionFilter implements VersionFilter {
 	public boolean filter(String url, Instant date, String author, String commitMessage) {
 		return !matcher.containesBugID(commitMessage);
 	}
+	
+	@Override
+	public boolean retainRevisions() {
+		return retainVersion;
+	}
 
 	public BugFixMessageIDMatcher getMatcher() {
 		return matcher;
@@ -26,5 +33,13 @@ public class BugFixVersionFilter implements VersionFilter {
 
 	public void setMatcher(BugFixMessageIDMatcher matcher) {
 		this.matcher = matcher;
+	}
+	
+	public boolean isRetainVersion() {
+		return retainVersion;
+	}
+	
+	public void setRetainVersion(boolean retainVersion) {
+		this.retainVersion = retainVersion;
 	}
 }

@@ -89,17 +89,24 @@ public class GitRepository implements Repository {
 		try (Git git = openGitRepository()) {
 			history.setIdentification(git.getRepository().getFullBranch());
 			LogCommand logCommand = git.log().add(git.getRepository().resolve(Constants.HEAD));
+			
+			boolean retainNextVersion = false; // retain version after none filtered?
 
 			for (RevCommit revCommit : logCommand.call()) {
 				String id = revCommit.getId().getName();
 				String author = revCommit.getAuthorIdent().getName();
 				String commitMessage = revCommit.getFullMessage();
 				Instant date = Instant.ofEpochSecond(revCommit.getCommitTime());
+				
+				boolean isFilteredVersion = filter.filter(id, date, author, commitMessage);
 
-				if (!filter.filter(id, date, author, commitMessage)) {
+				if (retainNextVersion || !isFilteredVersion) {
 					Version version = new Version(id, date, author, commitMessage);
+					version.setVisible(!isFilteredVersion);
 					history.getVersions().add(version);
 				}
+				
+				retainNextVersion = !isFilteredVersion && filter.retainRevisions();
 			}
         } catch (RevisionSyntaxException | IOException | GitAPIException e) {
         	Activator.getLogger().log(Level.SEVERE, "Exception occurred while reading repository history", e);

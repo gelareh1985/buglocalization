@@ -60,7 +60,7 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 		
 		SystemModel systemModel = new SystemModel(getTargetURI());
 		
-		Resource javaResource = discoverJavaAST(systemModel, project, subMonitor.split(30));
+		Resource javaResource = discoverJavaModel(systemModel, project, subMonitor.split(30));
 		
 		if (containsView(ViewDescriptions.UML_CLASS_DIAGRAM)) {
 			discoverUMLClassDiagram(systemModel, javaResource, subMonitor.split(30));
@@ -74,12 +74,25 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 	}
 	
 
-	public Resource discoverJavaAST(SystemModel systemModel, IProject project, IProgressMonitor monitor) throws DiscoveryException {
+	public Resource discoverJavaModel(SystemModel systemModel, IProject project, IProgressMonitor monitor) throws DiscoveryException {
 		
 		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
 		
 		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject();
+		
+		// TODO: Listen to change locations
+//		javaDiscoverer.addSourceVisitListener(new SourceVisitListener() {
+//			
+//			@Override
+//			public void sourceRegionVisited(String filePath, int startOffset, int endOffset, int startLine, int endLine,
+//					EObject targetNode) {
+//				System.out.println(filePath + " " + startLine + " " + endLine + " " + targetNode);
+//				
+//			}
+//		});
+		
 		javaDiscoverer.discoverElement(project, monitor);
+		
 		
 		Resource javaResource = javaDiscoverer.getTargetModel();
 	
@@ -111,10 +124,12 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 	}
 
 	public Resource discoverUMLOperationControlFlow(SystemModel systemModel, Resource javaResource, IProgressMonitor monitor) throws DiscoveryException {
+		
 		// https://github.com/artist-project/ARTIST.git
 		// - ARTIST/source/Tooling/migration/application-discovery-understanding/MDT/
 		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscoverer.java
 		// - /eu.artist.migration.mdt.javaee.java.umlactivity/src/eu/artist/migration/mdt/javaee/java/umlactivity/Java2UMLActivityDiscovererFull.java
+		
 //		Java2UMLActivityDiagramResourceDiscoverer umlActivityDiscoverer = new Java2UMLActivityDiagramResourceDiscoverer(); // FIXME
 		Java2UMLActivityCFGResourceDiscoverer umlActivityDiscoverer = new Java2UMLActivityCFGResourceDiscoverer();
 		umlActivityDiscoverer.discoverElement(javaResource, monitor);
