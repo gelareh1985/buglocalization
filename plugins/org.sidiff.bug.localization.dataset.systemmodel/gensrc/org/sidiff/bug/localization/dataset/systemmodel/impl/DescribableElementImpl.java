@@ -1,13 +1,16 @@
 /**
  */
-package org.sidiff.bug.localization.dataset.systemmodel.multiview.impl;
+package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage;
+
+import org.sidiff.bug.localization.dataset.systemmodel.DescribableElement;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -17,13 +20,13 @@ import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackag
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.DescribableElementImpl#getName <em>Name</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.impl.DescribableElementImpl#getDescription <em>Description</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.DescribableElementImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.DescribableElementImpl#getDescription <em>Description</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class DescribableElementImpl extends MinimalEObjectImpl.Container implements DescribableElement {
+public abstract class DescribableElementImpl extends MinimalEObjectImpl.Container implements DescribableElement {
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -80,7 +83,7 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return MultiviewPackage.Literals.DESCRIBABLE_ELEMENT;
+		return SystemModelPackage.Literals.DESCRIBABLE_ELEMENT;
 	}
 
 	/**
@@ -103,7 +106,7 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, MultiviewPackage.DESCRIBABLE_ELEMENT__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.DESCRIBABLE_ELEMENT__NAME, oldName, name));
 	}
 
 	/**
@@ -126,7 +129,7 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 		String oldDescription = description;
 		description = newDescription;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, MultiviewPackage.DESCRIBABLE_ELEMENT__DESCRIPTION, oldDescription, description));
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.DESCRIBABLE_ELEMENT__DESCRIPTION, oldDescription, description));
 	}
 
 	/**
@@ -137,9 +140,9 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__NAME:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__NAME:
 				return getName();
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
 				return getDescription();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -153,10 +156,10 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__NAME:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__NAME:
 				setName((String)newValue);
 				return;
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
 				setDescription((String)newValue);
 				return;
 		}
@@ -171,10 +174,10 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__NAME:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__NAME:
 				setName(NAME_EDEFAULT);
 				return;
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
 				setDescription(DESCRIPTION_EDEFAULT);
 				return;
 		}
@@ -189,9 +192,9 @@ public class DescribableElementImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__NAME:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__NAME:
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-			case MultiviewPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
+			case SystemModelPackage.DESCRIBABLE_ELEMENT__DESCRIPTION:
 				return DESCRIPTION_EDEFAULT == null ? description != null : !DESCRIPTION_EDEFAULT.equals(description);
 		}
 		return super.eIsSet(featureID);

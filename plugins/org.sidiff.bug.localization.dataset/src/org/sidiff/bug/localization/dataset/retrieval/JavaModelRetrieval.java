@@ -11,15 +11,16 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
-import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
@@ -44,7 +45,7 @@ public class JavaModelRetrieval {
 		this.factory = factory;
 		
 		try {
-			this.dataset = JsonUtil.parse(datasetPath, DataSet.class);
+			this.dataset = DataSetStorage.load(datasetPath);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -113,7 +114,7 @@ public class JavaModelRetrieval {
 		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
 		
 		// Discover the Java AST of the project version:
-		SystemModel systemModel = new SystemModel(mulitviewFile);
+		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(mulitviewFile);
 		
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
 		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer(mulitviewFile);

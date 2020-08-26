@@ -9,9 +9,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
+import org.eclipse.modisco.kdm.source.extension.discovery.SourceVisitListener;
 import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
-import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescription;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
+import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 
 import eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg.Java2UMLActivityCFGResourceDiscoverer;
@@ -20,6 +22,8 @@ import eu.artist.migration.mdt.javaee.java.umlclass.discovery.Java2UMLResourceDi
 public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<IProject> {
 	
 	private ViewDescription[] views = ViewDescriptions.ALL_VIEWS;
+	
+	private SourceVisitListener javaModelDiscovererListener;
 	
 	public JavaProject2SystemModelDiscoverer() {
 	}
@@ -49,6 +53,14 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 		}
 		return false;
 	}
+	
+	public SourceVisitListener getJavaModelDiscovererListener() {
+		return javaModelDiscovererListener;
+	}
+	
+	public void setJavaModelDiscovererListener(SourceVisitListener javaModelDiscovererListener) {
+		this.javaModelDiscovererListener = javaModelDiscovererListener;
+	}
 
 	@Override
 	protected void basicDiscoverElement(IProject project, IProgressMonitor monitor) throws DiscoveryException {
@@ -58,8 +70,7 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 			this.setTargetURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".multiview.xmi", true));
 		}
 		
-		SystemModel systemModel = new SystemModel(getTargetURI());
-		
+		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(getTargetURI());
 		Resource javaResource = discoverJavaModel(systemModel, project, subMonitor.split(30));
 		
 		if (containsView(ViewDescriptions.UML_CLASS_DIAGRAM)) {
@@ -70,7 +81,7 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 			discoverUMLOperationControlFlow(systemModel, javaResource, subMonitor.split(30));
 		}
 		
-		setTargetModel(systemModel.getMultiViewModel().eResource());
+		setTargetModel(systemModel.eResource());
 	}
 	
 
@@ -80,20 +91,12 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 		
 		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject();
 		
-		// TODO: Listen to change locations
-//		javaDiscoverer.addSourceVisitListener(new SourceVisitListener() {
-//			
-//			@Override
-//			public void sourceRegionVisited(String filePath, int startOffset, int endOffset, int startLine, int endLine,
-//					EObject targetNode) {
-//				System.out.println(filePath + " " + startLine + " " + endLine + " " + targetNode);
-//				
-//			}
-//		});
+		// Listen to change locations:
+		if (javaModelDiscovererListener != null) {
+			javaDiscoverer.addSourceVisitListener(javaModelDiscovererListener);
+		}
 		
 		javaDiscoverer.discoverElement(project, monitor);
-		
-		
 		Resource javaResource = javaDiscoverer.getTargetModel();
 	
 		if (getTargetURI().toString().endsWith(".multiview.xmi")) {
@@ -102,7 +105,7 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 			javaResource.setURI(getTargetURI().trimFileExtension().appendFileExtension("java.xmi"));
 		}
 		
-		systemModel.getMultiViewModel().setName(project.getName());
+		systemModel.setName(project.getName());
 		systemModel.addView(javaResource, ViewDescriptions.JAVA_MODEL);
 		
 		return javaResource;

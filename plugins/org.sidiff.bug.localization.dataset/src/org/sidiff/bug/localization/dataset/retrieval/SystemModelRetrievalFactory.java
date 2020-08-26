@@ -3,8 +3,8 @@ package org.sidiff.bug.localization.dataset.retrieval;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 
 public class SystemModelRetrievalFactory {
 

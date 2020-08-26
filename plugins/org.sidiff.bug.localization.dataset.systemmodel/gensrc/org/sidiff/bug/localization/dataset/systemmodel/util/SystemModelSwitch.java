@@ -1,11 +1,13 @@
 /**
  */
-package org.sidiff.bug.localization.dataset.systemmodel.multiview.util;
+package org.sidiff.bug.localization.dataset.systemmodel.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+
 import org.eclipse.emf.ecore.util.Switch;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.*;
+
+import org.sidiff.bug.localization.dataset.systemmodel.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -17,17 +19,17 @@ import org.sidiff.bug.localization.dataset.systemmodel.multiview.*;
  * until a non-null result is returned,
  * which is the result of the switch.
  * <!-- end-user-doc -->
- * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage
+ * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage
  * @generated
  */
-public class MultiviewSwitch<T> extends Switch<T> {
+public class SystemModelSwitch<T> extends Switch<T> {
 	/**
 	 * The cached model package
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected static MultiviewPackage modelPackage;
+	protected static SystemModelPackage modelPackage;
 
 	/**
 	 * Creates an instance of the switch.
@@ -35,9 +37,9 @@ public class MultiviewSwitch<T> extends Switch<T> {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public MultiviewSwitch() {
+	public SystemModelSwitch() {
 		if (modelPackage == null) {
-			modelPackage = MultiviewPackage.eINSTANCE;
+			modelPackage = SystemModelPackage.eINSTANCE;
 		}
 	}
 
@@ -64,23 +66,36 @@ public class MultiviewSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case MultiviewPackage.MULTI_VIEW: {
-				MultiView multiView = (MultiView)theEObject;
-				T result = caseMultiView(multiView);
-				if (result == null) result = caseDescribableElement(multiView);
+			case SystemModelPackage.SYSTEM_MODEL: {
+				SystemModel systemModel = (SystemModel)theEObject;
+				T result = caseSystemModel(systemModel);
+				if (result == null) result = caseDescribableElement(systemModel);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case MultiviewPackage.VIEW: {
+			case SystemModelPackage.VIEW: {
 				View view = (View)theEObject;
 				T result = caseView(view);
 				if (result == null) result = caseDescribableElement(view);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case MultiviewPackage.DESCRIBABLE_ELEMENT: {
+			case SystemModelPackage.DESCRIBABLE_ELEMENT: {
 				DescribableElement describableElement = (DescribableElement)theEObject;
 				T result = caseDescribableElement(describableElement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.CHANGE: {
+				Change change = (Change)theEObject;
+				T result = caseChange(change);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.VIEW_DESCRIPTION: {
+				ViewDescription viewDescription = (ViewDescription)theEObject;
+				T result = caseViewDescription(viewDescription);
+				if (result == null) result = caseDescribableElement(viewDescription);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -89,17 +104,17 @@ public class MultiviewSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Multi View</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>System Model</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Multi View</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>System Model</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseMultiView(MultiView object) {
+	public T caseSystemModel(SystemModel object) {
 		return null;
 	}
 
@@ -134,6 +149,36 @@ public class MultiviewSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Change</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseChange(Change object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>View Description</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>View Description</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseViewDescription(ViewDescription object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>EObject</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -149,4 +194,4 @@ public class MultiviewSwitch<T> extends Switch<T> {
 		return null;
 	}
 
-} //MultiviewSwitch
+} //SystemModelSwitch

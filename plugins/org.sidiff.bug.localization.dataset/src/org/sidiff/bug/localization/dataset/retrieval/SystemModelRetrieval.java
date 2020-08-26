@@ -12,7 +12,8 @@ import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
-import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
@@ -74,9 +75,9 @@ public class SystemModelRetrieval {
 		}
 		
 		// Discover the multi-view system model of the project version:
-		SystemModel systemModel = new SystemModel(javaModelRepository.getSystemModelFile(project));
+		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
 		
-		Resource javaModel = systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL);
+		Resource javaModel = systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL).getModel().eResource();
 		factory.discover(systemModel, javaModel);
 
 		// Remove java model:

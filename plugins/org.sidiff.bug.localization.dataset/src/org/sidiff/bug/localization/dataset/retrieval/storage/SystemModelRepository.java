@@ -13,8 +13,8 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
-import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescription;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 public class SystemModelRepository {
@@ -120,7 +120,7 @@ public class SystemModelRepository {
 	}
 	
 	public Path getSystemModelFile(Project project) throws IOException {
-		String modelFileName = project.getName() + "." + SystemModel.MULITVIEW_MODEL_FILE_EXTENSION;
+		String modelFileName = project.getName() + "." + SystemModel.FILE_EXTENSION;
 		Path systemModelFile = Paths.get(getProjectPath(project).toString(), modelFileName);
 		return systemModelFile;
 	}

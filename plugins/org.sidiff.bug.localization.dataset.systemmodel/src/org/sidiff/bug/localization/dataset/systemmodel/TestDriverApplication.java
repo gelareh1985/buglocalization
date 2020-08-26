@@ -16,9 +16,6 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Class;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.View;
-import org.sidiff.bug.localization.dataset.systemmodel.views.SystemModel;
 
 public class TestDriverApplication implements IApplication {
 
@@ -30,10 +27,10 @@ public class TestDriverApplication implements IApplication {
 		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer();
 		multiViewModelDiscoverer.discoverElement(project, new NullProgressMonitor());
 		
-		Resource umlResource = multiViewModelDiscoverer.getTargetModel();
-		MultiView multiViewSystemModel = (MultiView) umlResource.getContents().get(0);
+		Resource systemModelResource = multiViewModelDiscoverer.getTargetModel();
+		SystemModel systemModel = (SystemModel) systemModelResource.getContents().get(0);
 		
-		for (View view : multiViewSystemModel.getViews()) {
+		for (View view : systemModel.getViews()) {
 			for (EObject modelElement : (Iterable<EObject>) () -> view.getModel().eAllContents()) {
 				if (modelElement instanceof Class) {
 					System.out.println(modelElement);
@@ -43,7 +40,7 @@ public class TestDriverApplication implements IApplication {
 			}
 		}
 
-		new SystemModel(multiViewSystemModel).saveAll(Collections.emptyMap());
+		systemModel.saveAll(Collections.emptyMap());
 		
 		return IApplication.EXIT_OK;
 	}

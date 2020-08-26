@@ -1,6 +1,6 @@
 /**
  */
-package org.sidiff.bug.localization.dataset.systemmodel.multiview;
+package org.sidiff.bug.localization.dataset.systemmodel;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -13,12 +13,12 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement#getName <em>Name</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement#getDescription <em>Description</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.DescribableElement#getName <em>Name</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.DescribableElement#getDescription <em>Description</em>}</li>
  * </ul>
  *
- * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage#getDescribableElement()
- * @model
+ * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getDescribableElement()
+ * @model abstract="true"
  * @generated
  */
 public interface DescribableElement extends EObject {
@@ -28,14 +28,14 @@ public interface DescribableElement extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage#getDescribableElement_Name()
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getDescribableElement_Name()
 	 * @model
 	 * @generated
 	 */
 	String getName();
 
 	/**
-	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement#getName <em>Name</em>}' attribute.
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.DescribableElement#getName <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Name</em>' attribute.
@@ -50,14 +50,14 @@ public interface DescribableElement extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Description</em>' attribute.
 	 * @see #setDescription(String)
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage#getDescribableElement_Description()
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getDescribableElement_Description()
 	 * @model
 	 * @generated
 	 */
 	String getDescription();
 
 	/**
-	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement#getDescription <em>Description</em>}' attribute.
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.DescribableElement#getDescription <em>Description</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Description</em>' attribute.

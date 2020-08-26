@@ -1,29 +1,32 @@
 /**
  */
-package org.sidiff.bug.localization.dataset.systemmodel.multiview.util;
+package org.sidiff.bug.localization.dataset.systemmodel.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
+
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
+
 import org.eclipse.emf.ecore.EObject;
-import org.sidiff.bug.localization.dataset.systemmodel.multiview.*;
+
+import org.sidiff.bug.localization.dataset.systemmodel.*;
 
 /**
  * <!-- begin-user-doc -->
  * The <b>Adapter Factory</b> for the model.
  * It provides an adapter <code>createXXX</code> method for each class of the model.
  * <!-- end-user-doc -->
- * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiviewPackage
+ * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage
  * @generated
  */
-public class MultiviewAdapterFactory extends AdapterFactoryImpl {
+public class SystemModelAdapterFactory extends AdapterFactoryImpl {
 	/**
 	 * The cached model package.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected static MultiviewPackage modelPackage;
+	protected static SystemModelPackage modelPackage;
 
 	/**
 	 * Creates an instance of the adapter factory.
@@ -31,9 +34,9 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public MultiviewAdapterFactory() {
+	public SystemModelAdapterFactory() {
 		if (modelPackage == null) {
-			modelPackage = MultiviewPackage.eINSTANCE;
+			modelPackage = SystemModelPackage.eINSTANCE;
 		}
 	}
 
@@ -62,11 +65,11 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected MultiviewSwitch<Adapter> modelSwitch =
-		new MultiviewSwitch<Adapter>() {
+	protected SystemModelSwitch<Adapter> modelSwitch =
+		new SystemModelSwitch<Adapter>() {
 			@Override
-			public Adapter caseMultiView(MultiView object) {
-				return createMultiViewAdapter();
+			public Adapter caseSystemModel(SystemModel object) {
+				return createSystemModelAdapter();
 			}
 			@Override
 			public Adapter caseView(View object) {
@@ -75,6 +78,14 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseDescribableElement(DescribableElement object) {
 				return createDescribableElementAdapter();
+			}
+			@Override
+			public Adapter caseChange(Change object) {
+				return createChangeAdapter();
+			}
+			@Override
+			public Adapter caseViewDescription(ViewDescription object) {
+				return createViewDescriptionAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -97,27 +108,27 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView <em>Multi View</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.SystemModel <em>System Model</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.MultiView
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModel
 	 * @generated
 	 */
-	public Adapter createMultiViewAdapter() {
+	public Adapter createSystemModelAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.View <em>View</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.View <em>View</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.View
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.View
 	 * @generated
 	 */
 	public Adapter createViewAdapter() {
@@ -125,16 +136,44 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement <em>Describable Element</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.DescribableElement <em>Describable Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.multiview.DescribableElement
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.DescribableElement
 	 * @generated
 	 */
 	public Adapter createDescribableElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.Change <em>Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.Change
+	 * @generated
+	 */
+	public Adapter createChangeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.ViewDescription <em>View Description</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.ViewDescription
+	 * @generated
+	 */
+	public Adapter createViewDescriptionAdapter() {
 		return null;
 	}
 
@@ -150,4 +189,4 @@ public class MultiviewAdapterFactory extends AdapterFactoryImpl {
 		return null;
 	}
 
-} //MultiviewAdapterFactory
+} //SystemModelAdapterFactory
