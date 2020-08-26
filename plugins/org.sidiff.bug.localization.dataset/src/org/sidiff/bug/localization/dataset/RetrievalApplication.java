@@ -11,6 +11,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalFactory;
@@ -29,7 +30,7 @@ public class RetrievalApplication implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		
 		Path dataSetPath = getPathFromProgramArguments(context, ARGUMENT_DATASET);
-		DataSet dataSet = JsonUtil.parse(dataSetPath, DataSet.class);
+		DataSet dataSet = DataSetStorage.load(dataSetPath);
 		
 		Path retrievalConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
 		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(retrievalConfigurationPath, RetrievalConfiguration.class);

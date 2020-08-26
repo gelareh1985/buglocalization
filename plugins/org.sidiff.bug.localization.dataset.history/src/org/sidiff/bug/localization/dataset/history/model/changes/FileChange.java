@@ -29,7 +29,7 @@ public class FileChange {
 	
 	private Path location;
 	
-	private List<LineChange> changes;
+	private List<LineChange> lines;
 
 	public FileChange() {
 	}
@@ -55,23 +55,23 @@ public class FileChange {
 		this.location = file;
 	}
 
-	public List<LineChange> getChanges() {
+	public List<LineChange> getLines() {
 		
-		if (changes == null) {
-			this.changes = new ArrayList<>();
+		if (lines == null) {
+			this.lines = new ArrayList<>();
 		}
 		
-		return changes;
+		return lines;
 	}
 
-	public void setChanges(List<LineChange> changes) {
-		this.changes = changes;
+	public void setLines(List<LineChange> changes) {
+		this.lines = changes;
 	}
 
 	@Override
 	public String toString() {
 		return "Change [changeType=" + type 
 				+ ", file=" + location 
-				+ ", changes.size=" + ((changes != null) ? changes.size() : 0) + "]";
+				+ ", changes.size=" + ((lines != null) ? lines.size() : 0) + "]";
 	}
 }

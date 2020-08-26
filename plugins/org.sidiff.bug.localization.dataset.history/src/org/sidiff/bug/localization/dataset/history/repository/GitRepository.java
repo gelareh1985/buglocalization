@@ -252,7 +252,7 @@ public class GitRepository implements Repository {
 							lineChange.setBeginB(edit.getBeginB());
 							lineChange.setEndB(edit.getEndB());
 							
-							fileChange.getChanges().add(lineChange);
+							fileChange.getLines().add(lineChange);
 						}
 					}
 

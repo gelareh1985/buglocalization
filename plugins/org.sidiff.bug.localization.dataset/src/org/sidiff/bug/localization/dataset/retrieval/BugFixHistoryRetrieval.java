@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 
-import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.fixes.report.request.BugReportRequestsExecutor;
 import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.BugReportPlaceholder;
 import org.sidiff.bug.localization.dataset.history.model.History;
@@ -13,6 +12,7 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 
 public class BugFixHistoryRetrieval {
 
@@ -102,7 +102,7 @@ public class BugFixHistoryRetrieval {
 	}
 	
 	public void saveDataSet() throws IOException {
-		JsonUtil.save(dataset, datasetPath);
+		DataSetStorage.save(datasetPath, dataset);
 	}
 	
 	private Iterator<Version> getBugFixes() {

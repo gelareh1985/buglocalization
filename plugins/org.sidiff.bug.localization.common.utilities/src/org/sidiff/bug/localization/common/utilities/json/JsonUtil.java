@@ -26,14 +26,19 @@ public class JsonUtil {
 	private static GsonBuilder getBuilderInstance() {
 		
 		if (builderInstance == null) {
-			JsonUtil.builderInstance = new GsonBuilder();
-			builderInstance.setPrettyPrinting();
-			builderInstance.registerTypeAdapter(Instant.class, new JsonInstantDeserializer());
-			builderInstance.registerTypeAdapter(Instant.class, new JsonInstantSerializer());
-			builderInstance.registerTypeAdapter(Path.class, new JsonPathDeserializer());
-			builderInstance.registerTypeAdapter(Path.class, new JsonPathSerializer());
+			JsonUtil.builderInstance = createBuilderInstance();
 		}
 		
+		return builderInstance;
+	}
+	
+	public static GsonBuilder createBuilderInstance()  {
+		GsonBuilder builderInstance = new GsonBuilder();
+		builderInstance.setPrettyPrinting();
+		builderInstance.registerTypeAdapter(Instant.class, new JsonInstantDeserializer());
+		builderInstance.registerTypeAdapter(Instant.class, new JsonInstantSerializer());
+		builderInstance.registerTypeAdapter(Path.class, new JsonPathDeserializer());
+		builderInstance.registerTypeAdapter(Path.class, new JsonPathSerializer());
 		return builderInstance;
 	}
 	
@@ -42,22 +47,38 @@ public class JsonUtil {
 	}
 	
 	public static <T> T parse(String jsonLine, Class<T> type) {
-		return getBuilderInstance().create().fromJson(jsonLine, type);
+		return parse(jsonLine, type, getBuilderInstance());
+	}
+	
+	public static <T> T parse(String jsonLine, Class<T> type, GsonBuilder builder) {
+		return builder.create().fromJson(jsonLine, type);
 	}
 	
 	public static <T> T parse(JsonElement jsonElement, Class<T> type) {
-		return getBuilderInstance().create().fromJson(jsonElement, type);
+		return parse(jsonElement, type, getBuilderInstance());
+	}
+	
+	public static <T> T parse(JsonElement jsonElement, Class<T> type, GsonBuilder builder) {
+		return builder.create().fromJson(jsonElement, type);
 	}
 	
 	public static  <T> T parse(Path dataSetPath, Class<T> type) throws FileNotFoundException {
+		return parse(dataSetPath, type, getBuilderInstance());
+	}
+	
+	public static  <T> T parse(Path dataSetPath, Class<T> type, GsonBuilder builder) throws FileNotFoundException {
 		JsonReader reader = new JsonReader(new FileReader(dataSetPath.toFile()));
-		T data = getBuilderInstance().create().fromJson(reader, type);
+		T data = builder.create().fromJson(reader, type);
 		return data;
 	}
 
 	public static void save(Object object, Path path) throws IOException {
+		save(object, path, getBuilderInstance());
+	}
+	
+	public static void save(Object object, Path path, GsonBuilder builder) throws IOException {
 		try (Writer writer = new FileWriter(path.toFile())) {
-		    Gson gson = getBuilderInstance().create();
+		    Gson gson = builder.create();
 		    gson.toJson(object, writer);
 		}
 	}
