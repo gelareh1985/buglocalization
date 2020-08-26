@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -12,6 +13,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.dataset.Activator;
+import org.sidiff.bug.localization.dataset.changes.ChangeLocationDiscoverer;
+import org.sidiff.bug.localization.dataset.changes.ChangeResolver;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
@@ -60,14 +63,31 @@ public class JavaModelRetrieval {
 		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
 		this.javaModelRepositoryPath = javaModelRepository.getRepositoryPath();
 		
-		Version previousVersion = null;
+		// Iterate from old to new versions:
+		// TODO: Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
+		List<Version> versions = history.getVersions();
 		
-		for (Version version : history.getVersions()) {
+		for (int i = versions.size(); i-- > 0;) {
+			Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
+			Version version = versions.get(i);
+			Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
+			
 			Workspace workspace = retrieveWorkspaceVersion(history, version);
+			ChangeResolver changeResolver = null; 
+					
+			if ((newerVersion != null) && (newerVersion.hasBugReport())) {
+				// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+				// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+				changeResolver = new ChangeResolver(newerVersion.getChanges());
+			}
 			
 			for (Project project : workspace.getProjects()) {
+				if (changeResolver != null) {
+					changeResolver.setProjectName(project.getName());
+				}
+				
 				try {
-					retrieveJavaModelVersion(project);
+					retrieveJavaModelVersion(project, changeResolver);
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 						Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
@@ -80,7 +100,7 @@ public class JavaModelRetrieval {
 			}
 			
 			// Store Java AST model workspace as revision:
-			previousVersion = javaModelRepository.commitVersion(version, previousVersion);
+			javaModelRepository.commitVersion(version, olderVersion);
 		}
 		
 		// Store data set for Java model:
@@ -103,7 +123,7 @@ public class JavaModelRetrieval {
 		return workspace;
 	}
 
-	private void retrieveJavaModelVersion(Project project) throws DiscoveryException, IOException {
+	private void retrieveJavaModelVersion(Project project, ChangeResolver changeResolver) throws DiscoveryException, IOException {
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + project.getName());
@@ -117,8 +137,17 @@ public class JavaModelRetrieval {
 		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(mulitviewFile);
 		
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer(mulitviewFile);
-		multiViewModelDiscoverer.discoverJavaModel(systemModel, workspaceProject, new NullProgressMonitor());
+		JavaProject2SystemModelDiscoverer systemModelDiscoverer = new JavaProject2SystemModelDiscoverer(mulitviewFile);
+		
+		if (changeResolver != null) {
+			// Discover with change locations:
+			ChangeLocationDiscoverer changeLocationDiscoverer = new ChangeLocationDiscoverer(changeResolver);
+			systemModelDiscoverer.setJavaModelDiscovererListener(changeLocationDiscoverer);
+			systemModelDiscoverer.discoverJavaModel(systemModel, workspaceProject, new NullProgressMonitor());
+			systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL).getChanges().addAll(changeLocationDiscoverer.getChanges());
+		} else {
+			systemModelDiscoverer.discoverJavaModel(systemModel, workspaceProject, new NullProgressMonitor());
+		}
 		
 		// Store system model in data set:
 		systemModel.saveAll(Collections.emptyMap());

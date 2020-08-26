@@ -8,11 +8,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 
-import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
@@ -41,7 +41,7 @@ public class SystemModelRepository {
 	public DataSet getDataSet() {
 		if (dataset == null) {
 			try {
-				this.dataset = JsonUtil.parse(getDataSetPath(), DataSet.class);
+				this.dataset = DataSetStorage.load(getDataSetPath());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -50,7 +50,7 @@ public class SystemModelRepository {
 	}
 	
 	public void saveDataSet() throws IOException {
-		JsonUtil.save(dataset, getDataSetPath());
+		DataSetStorage.save(getDataSetPath(), dataset);
 	}
 	
 	public void checkout(Version version) {

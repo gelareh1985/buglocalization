@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.sidiff.bug.localization.dataset.workspace,
  org.eclipse.core.resources,
  org.sidiff.bug.localization.dataset.systemmodel,
- org.sidiff.bug.localization.dataset.fixes
+ org.sidiff.bug.localization.dataset.fixes,
+ org.eclipse.modisco.java
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

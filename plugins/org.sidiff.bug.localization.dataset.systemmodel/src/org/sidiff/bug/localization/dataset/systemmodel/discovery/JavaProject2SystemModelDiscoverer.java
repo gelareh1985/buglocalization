@@ -67,7 +67,7 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 		SubMonitor subMonitor = SubMonitor.convert(monitor);
 		
 		if (getTargetURI() == null) {
-			this.setTargetURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".multiview.xmi", true));
+			this.setTargetURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".systemmodel.xmi", true));
 		}
 		
 		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(getTargetURI());
@@ -98,8 +98,8 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 		
 		javaDiscoverer.discoverElement(project, monitor);
 		Resource javaResource = javaDiscoverer.getTargetModel();
-	
-		if (getTargetURI().toString().endsWith(".multiview.xmi")) {
+		
+		if (getTargetURI().toString().endsWith(".systemmodel.xmi")) {
 			javaResource.setURI(getTargetURI().trimFileExtension().trimFileExtension().appendFileExtension("java.xmi"));
 		} else {
 			javaResource.setURI(getTargetURI().trimFileExtension().appendFileExtension("java.xmi"));
