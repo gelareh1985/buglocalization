@@ -130,6 +130,14 @@ public class ChangeLocationMatcher {
 				Change change = SystemModelFactory.eINSTANCE.createChange();
 				change.setType(FILE_CHANGE_MAP.get(fileChange.getType()));
 				change.setLocation(containerPackage);
+				
+				if (!fileChange.getLines().isEmpty()) {
+					assert (fileChange.getLines().size() == 1);
+					change.setQuantification(fileChange.getLines().get(0).getEndB());
+				} else {
+					change.setQuantification(1);
+				}
+				
 				changeLocations.add(change);
 			} else {
 				if (Activator.getLogger().isLoggable(Level.WARNING)) {

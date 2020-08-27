@@ -34,6 +34,10 @@ public class ChangeLocationMatch {
 
 	private boolean matchLine(EObject location, int line) {
 		
+		if (location == null) {
+			return false;
+		}
+		
 		// Is in range?
 		if ((line >= codeChange.getBeginA()) && (line <= codeChange.getEndA())) {
 			matchingLocations.add(location);
@@ -81,6 +85,7 @@ public class ChangeLocationMatch {
 			Change change = SystemModelFactory.eINSTANCE.createChange();
 			change.setType(ChangeLocationMatcher.LINE_CHANGE_MAP.get(codeChange.getType()));
 			change.setLocation(location);
+			change.setQuantification(1);
 			matchingChanges.add(change);
 		}
 		
