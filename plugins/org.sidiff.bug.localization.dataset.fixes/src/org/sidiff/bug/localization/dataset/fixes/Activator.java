@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.sidiff.bug.localization.common.utilities.logging.LogLevel;
 
 public class Activator implements BundleActivator {
 
@@ -18,6 +19,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.logger = Logger.getLogger(bundleContext.getBundle().getSymbolicName());
+		Activator.logger.setLevel(LogLevel.DEFAULT_LEVEL);
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {

@@ -32,7 +32,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		bugFixHistory.retrieveHistory();
 		
 		{
-			shrinkHistory(bugFixHistory.getDataset(), 4);
+			shrinkHistory(bugFixHistory.getDataset(), 3);
 		}
 		
 		bugFixHistory.retrieveBugFixChanges();
@@ -45,6 +45,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		
 		{
 			filterProjects(javaModelFactory, "org.eclipse.jdt.core");
+			filterProjects(javaModelFactory, "org.eclipse.jdt.apt.core");
 		}
 		
 		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());

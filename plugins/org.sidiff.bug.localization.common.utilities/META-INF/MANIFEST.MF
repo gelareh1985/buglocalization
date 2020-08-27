@@ -41,6 +41,8 @@ Export-Package: com.google.gson,
  org.apache.commons.text.similarity,
  org.apache.commons.text.translate,
  org.sidiff.bug.localization.common.utilities.json,
+ org.sidiff.bug.localization.common.utilities.json.types,
+ org.sidiff.bug.localization.common.utilities.logging,
  org.sidiff.bug.localization.common.utilities.web,
  org.sidiff.bug.localization.common.utilities.workspace
 Bundle-ClassPath: .,

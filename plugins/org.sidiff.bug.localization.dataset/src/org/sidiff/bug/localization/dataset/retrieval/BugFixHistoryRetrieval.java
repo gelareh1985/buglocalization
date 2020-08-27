@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.fixes.report.request.BugReportRequestsExecutor;
 import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.BugReportPlaceholder;
 import org.sidiff.bug.localization.dataset.history.model.History;
@@ -84,6 +86,10 @@ public class BugFixHistoryRetrieval {
 			Version version = iterator.next();
 			
 			if (version.getBugReport() instanceof BugReportPlaceholder) {
+				if (Activator.getLogger().isLoggable(Level.WARNING)) {
+					Activator.getLogger().log(Level.WARNING,
+							"Version with bug report removed (" + version.getBugReport() + "):" + version);
+				}
 				iterator.remove();
 			}
 		}
@@ -102,7 +108,7 @@ public class BugFixHistoryRetrieval {
 	}
 	
 	public void saveDataSet() throws IOException {
-		DataSetStorage.save(datasetPath, dataset);
+		this.datasetPath = DataSetStorage.save(datasetPath, dataset, true);
 	}
 	
 	private Iterator<Version> getBugFixes() {

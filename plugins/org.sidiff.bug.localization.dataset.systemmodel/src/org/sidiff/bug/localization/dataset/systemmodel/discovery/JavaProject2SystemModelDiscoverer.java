@@ -1,8 +1,10 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -66,6 +68,12 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 	protected void basicDiscoverElement(IProject project, IProgressMonitor monitor) throws DiscoveryException {
 		SubMonitor subMonitor = SubMonitor.convert(monitor);
 		
+		try {
+			project.refreshLocal(IResource.DEPTH_INFINITE, subMonitor.split(10));
+		} catch (OperationCanceledException | CoreException e) {
+			e.printStackTrace();
+		}
+		
 		if (getTargetURI() == null) {
 			this.setTargetURI(URI.createPlatformResourceURI(project.getName() + "/" + project.getName() + ".systemmodel.xmi", true));
 		}
@@ -74,11 +82,11 @@ public class JavaProject2SystemModelDiscoverer extends AbstractModelDiscoverer<I
 		Resource javaResource = discoverJavaModel(systemModel, project, subMonitor.split(30));
 		
 		if (containsView(ViewDescriptions.UML_CLASS_DIAGRAM)) {
-			discoverUMLClassDiagram(systemModel, javaResource, subMonitor.split(30));
+			discoverUMLClassDiagram(systemModel, javaResource, subMonitor.split(25));
 		}
 		
 		if (containsView(ViewDescriptions.UML_CLASS_OPERATION_CONTROL_FLOW)) {
-			discoverUMLOperationControlFlow(systemModel, javaResource, subMonitor.split(30));
+			discoverUMLOperationControlFlow(systemModel, javaResource, subMonitor.split(25));
 		}
 		
 		setTargetModel(systemModel.eResource());

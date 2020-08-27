@@ -15,9 +15,9 @@ import java.util.logging.Level;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.PushCommand;
-import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
@@ -35,8 +35,8 @@ import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
 import org.sidiff.bug.localization.dataset.history.model.changes.LineChange.LineChangeType;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 
@@ -148,7 +148,6 @@ public class GitRepository implements Repository {
 			unlock();
 			
 			// Clean up current branch (if necessary):
-			git.reset().setMode(ResetType.HARD).call();
 			git.clean().setCleanDirectories(true).call();
 			
 			// Switch to requested branch (if necessary):
@@ -156,10 +155,9 @@ public class GitRepository implements Repository {
 					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
 
 			// Check out specific version:
-			git.reset().setRef(version.getIdentification()).call();
+			git.checkout().setName(version.getIdentification()).call();
 			
 			// Clean up current version (if necessary):
-			git.reset().setRef(version.getIdentification()).setMode(ResetType.HARD).call();
 			git.clean().setCleanDirectories(true).call();
 			
 			if (version.getIdentification().equals(getCurrentVersionID(git))) {
@@ -238,7 +236,14 @@ public class GitRepository implements Repository {
 
 						// changed file:
 						FileChange fileChange = new FileChange();
-						fileChange.setLocation(Paths.get(entry.getPath(Side.OLD)));
+						
+						if (entry.getChangeType().equals(ChangeType.ADD)) {
+							// Add -> Side.OLD -> dev/null
+							fileChange.setLocation(Paths.get(entry.getPath(Side.NEW)));
+						} else {
+							fileChange.setLocation(Paths.get(entry.getPath(Side.OLD)));
+						}
+						
 						fileChange.setType(FileChangeType.valueOf(entry.getChangeType().toString()));
 						fileChanges.add(fileChange);
 						

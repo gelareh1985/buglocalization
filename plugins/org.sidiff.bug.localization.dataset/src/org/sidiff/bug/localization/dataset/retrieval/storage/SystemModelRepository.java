@@ -50,7 +50,7 @@ public class SystemModelRepository {
 	}
 	
 	public void saveDataSet() throws IOException {
-		DataSetStorage.save(getDataSetPath(), dataset);
+		DataSetStorage.save(getDataSetPath(), dataset, false);
 	}
 	
 	public void checkout(Version version) {
