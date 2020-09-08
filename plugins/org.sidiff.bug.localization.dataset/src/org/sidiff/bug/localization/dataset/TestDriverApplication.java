@@ -10,11 +10,11 @@ import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
-import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalFactory;
+import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
-import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalFactory;
+import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
-import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalFactory;
+import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
 
@@ -26,7 +26,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		Path codeRepositoryPath = Paths.get(retrievalConfiguration.getLocalRepositoryPath().toString(), dataSet.getName());
 		
 		// Bug fixes:
-		BugFixHistoryRetrievalFactory bugFixHistoryConfig = new BugFixHistoryRetrievalFactory(
+		BugFixHistoryRetrievalProvider bugFixHistoryConfig = new BugFixHistoryRetrievalProvider(
 				codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataSet.getBugtrackerProduct());
 		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
 		bugFixHistory.retrieveHistory();
@@ -41,7 +41,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		bugFixHistory.saveDataSet();
 		
 		// Java model:
-		JavaModelRetrievalFactory javaModelFactory = new JavaModelRetrievalFactory(bugFixHistory.getCodeRepositoryPath());
+		JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(bugFixHistory.getCodeRepositoryPath());
 		
 		{
 			filterProjects(javaModelFactory, "org.eclipse.jdt.core");
@@ -53,13 +53,13 @@ public class TestDriverApplication extends RetrievalApplication {
 		javaModel.saveDataSet();
 		
 		// System model:
-		SystemModelRetrievalFactory systemModelFactory = new SystemModelRetrievalFactory();
+		SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
 		SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, bugFixHistory.getCodeRepositoryPath());
 		systemModel.retrieve();
 		systemModel.saveDataSet();
 	}
 
-	private void filterProjects(JavaModelRetrievalFactory javaModelFactory, String... projectNames) {
+	private void filterProjects(JavaModelRetrievalProvider javaModelFactory, String... projectNames) {
 		ProjectFilter parentProjectFilter = javaModelFactory.createProjectFilter();
 		javaModelFactory.setProjectFilter(() -> new ProjectNameFilter(
 				parentProjectFilter, new HashSet<>(Arrays.asList(projectNames))));

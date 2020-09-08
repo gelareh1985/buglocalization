@@ -10,7 +10,7 @@ public class Project {
 	private String name;
 
 	/**
-	 * Folder containing the project relative to the workspace folder.
+	 * Folder containing the project relative to the workspace (repository) folder.
 	 */
 	private Path folder;
 	
@@ -21,7 +21,7 @@ public class Project {
 
 	public Project() {
 	}
-
+	
 	public String getName() {
 		return name;
 	}

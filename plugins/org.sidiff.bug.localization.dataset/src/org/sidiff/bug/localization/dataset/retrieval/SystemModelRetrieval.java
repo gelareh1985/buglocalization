@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import org.eclipse.emf.common.util.URI;
@@ -19,7 +20,7 @@ import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 public class SystemModelRetrieval {
 	
-	private SystemModelRetrievalFactory factory;
+	private SystemModelRetrievalProvider provider;
 
 	private Path codeRepositoryPath;
 	
@@ -27,9 +28,12 @@ public class SystemModelRetrieval {
 	
 	private SystemModelRepository systemModelRepository;
 	
-	public SystemModelRetrieval(SystemModelRetrievalFactory factory, Path codeRepositoryPath) {
-		this.factory = factory;
+	private Predicate<Path> fileChangeFilter;
+	
+	public SystemModelRetrieval(SystemModelRetrievalProvider factory, Path codeRepositoryPath) {
+		this.provider = factory;
 		this.codeRepositoryPath = codeRepositoryPath;
+		this.fileChangeFilter = factory.createFileChangeFilter();
 	}
 
 	public void retrieve() {
@@ -50,7 +54,7 @@ public class SystemModelRetrieval {
 				
 				for (Project project : version.getWorkspace().getProjects()) {
 					try {
-						retrieveSystemModelVersion(version, project);
+						retrieveSystemModelVersion(olderVersion, version, project);
 					} catch (DiscoveryException e) {
 						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 							Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
@@ -70,22 +74,27 @@ public class SystemModelRetrieval {
 		}
 	}
 
-	private void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException, IOException {
+	private void retrieveSystemModelVersion(Version olderVersion, Version version, Project project) throws DiscoveryException, IOException {
 		javaModelRepository.checkout(version);
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
 		}
 		
-		// Discover the multi-view system model of the project version:
-		SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
-		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
-		factory.discover(systemModel, javaSystemModel);
-
-		// Store system model in data set:
 		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
-		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
-		systemModel.saveAll(Collections.emptyMap());
+		
+		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
+		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, fileChangeFilter)) {
+			
+			// Discover the multi-view system model of the project version:
+			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
+			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
+			provider.discover(systemModel, javaSystemModel);
+			
+			// Store system model in data set:
+			systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
+			systemModel.saveAll(Collections.emptyMap());
+		}
 		
 		// Update data set path:
 		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));

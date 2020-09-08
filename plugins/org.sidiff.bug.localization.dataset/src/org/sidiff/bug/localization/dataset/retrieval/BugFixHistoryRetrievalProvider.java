@@ -12,7 +12,7 @@ import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.Bugtracker;
 
-public class BugFixHistoryRetrievalFactory {
+public class BugFixHistoryRetrievalProvider {
 	
 	/**
 	 * The repository containing the source code to be discovered.
@@ -40,7 +40,7 @@ public class BugFixHistoryRetrievalFactory {
 	 */
 	private Supplier<BugReportFilter> bugReportFilter;
 	
-	public BugFixHistoryRetrievalFactory(
+	public BugFixHistoryRetrievalProvider(
 			Supplier<Repository> repository,
 			Supplier<BugFixMessageIDMatcher> bugFixMessageIDMatcher, 
 			Supplier<BugFixVersionFilter> bugFixVersionFilter,
@@ -54,7 +54,7 @@ public class BugFixHistoryRetrievalFactory {
 		this.bugReportFilter = bugReportFilter;
 	}
 
-	public BugFixHistoryRetrievalFactory(
+	public BugFixHistoryRetrievalProvider(
 			String codeRepositoryURL, Path codeRepositoryPath, 
 			Supplier<Bugtracker> bugtracker, String bugtrackerProduct) {
 		

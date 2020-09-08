@@ -18,7 +18,7 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 
 public class BugFixHistoryRetrieval {
 
-	private BugFixHistoryRetrievalFactory factory; 
+	private BugFixHistoryRetrievalProvider provider; 
 
 	private DataSet dataset;
 	
@@ -28,8 +28,8 @@ public class BugFixHistoryRetrieval {
 	
 	private Path codeRepositoryPath;
 	
-	public BugFixHistoryRetrieval(BugFixHistoryRetrievalFactory factory, DataSet dataset, Path datasetStorage) {
-		this.factory = factory;
+	public BugFixHistoryRetrieval(BugFixHistoryRetrievalProvider factory, DataSet dataset, Path datasetStorage) {
+		this.provider = factory;
 		this.dataset = dataset;
 		this.datasetPath = datasetStorage;
 	}
@@ -47,7 +47,7 @@ public class BugFixHistoryRetrieval {
 	}
 
 	private Repository retrieveRepository() {
-		this.codeRepository = factory.createCodeRepository();
+		this.codeRepository = provider.createCodeRepository();
 		this.codeRepositoryPath = codeRepository.getWorkingDirectory();
 		return codeRepository;
 	}
@@ -55,7 +55,7 @@ public class BugFixHistoryRetrieval {
 	private void retrieveBugFixes() {
 		
 		// Retrieve commits with bug fixes in their comments:
-		History history = codeRepository.getHistory(factory.createVersionFilter());
+		History history = codeRepository.getHistory(provider.createVersionFilter());
 		dataset.setHistory(history);
 	}
 
@@ -68,9 +68,9 @@ public class BugFixHistoryRetrieval {
 
 	public void retrieveBugReports() {
 		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(
-				factory.createBugtracker(), 
-				factory.createBugReportFilter(), 
-				factory.createBugFixMessageIDMatcher());
+				provider.createBugtracker(), 
+				provider.createBugReportFilter(), 
+				provider.createBugFixMessageIDMatcher());
 		bugReportRequestsExecutor.request(getBugFixes());
 		bugReportRequestsExecutor.setPlaceholders();
 	}

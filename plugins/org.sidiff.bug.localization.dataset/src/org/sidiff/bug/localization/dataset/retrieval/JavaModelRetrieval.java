@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -31,7 +32,7 @@ import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class JavaModelRetrieval {
 	
-	private JavaModelRetrievalFactory factory;
+	private JavaModelRetrievalProvider provider;
 	
 	private DataSet dataset;
 	
@@ -43,8 +44,11 @@ public class JavaModelRetrieval {
 	
 	private Path javaModelRepositoryPath;
 	
-	public JavaModelRetrieval(JavaModelRetrievalFactory factory, Path datasetPath) {
-		this.factory = factory;
+	private Predicate<Path> fileChangeFilter;
+	
+	public JavaModelRetrieval(JavaModelRetrievalProvider factory, Path datasetPath) {
+		this.provider = factory;
+		this.fileChangeFilter = factory.createFileChangeFilter();
 		
 		try {
 			this.dataset = DataSetStorage.load(datasetPath);
@@ -58,7 +62,7 @@ public class JavaModelRetrieval {
 		List<Version> versions = history.getVersions();
 		
 		// Storage:
-		this.codeRepository = factory.createCodeRepository();
+		this.codeRepository = provider.createCodeRepository();
 		this.codeRepositoryPath = codeRepository.getWorkingDirectory();
 		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
 		this.javaModelRepositoryPath = javaModelRepository.getRepositoryPath();
@@ -83,7 +87,7 @@ public class JavaModelRetrieval {
 					}
 					
 					try {
-						retrieveJavaModelVersion(project, changeLocationMatcher);
+						retrieveJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
 					} catch (DiscoveryException e) {
 						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 							Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
@@ -112,7 +116,7 @@ public class JavaModelRetrieval {
 		}
 		
 		Workspace workspace = new Workspace();
-		ProjectFilter projectFilter = factory.createProjectFilter();
+		ProjectFilter projectFilter = provider.createProjectFilter();
 		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, codeRepositoryPath);
 		workspaceBuilder.findProjects(codeRepositoryPath, projectFilter);
 		
@@ -120,31 +124,37 @@ public class JavaModelRetrieval {
 		return workspace;
 	}
 
-	private void retrieveJavaModelVersion(Project project, ChangeLocationMatcher changeLocationMatcher) throws DiscoveryException, IOException {
+	private void retrieveJavaModelVersion(Version olderVersion, Version version, Project project, ChangeLocationMatcher changeLocationMatcher) 
+			throws DiscoveryException, IOException {
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + project.getName());
 		}
 		
-		// Discover the Java AST of the project version:
-		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-		JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel();
-		SystemModel systemModel;
-		
-		if (changeLocationMatcher != null) {
-			// Discover with change locations:
-			ChangeLocationDiscoverer changeLocationDiscoverer = new ChangeLocationDiscoverer(changeLocationMatcher);
-			systemModel = systemModelDiscoverer.discover(workspaceProject, changeLocationDiscoverer, new NullProgressMonitor());
-			systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL).getChanges().addAll(changeLocationDiscoverer.getChanges());
-		} else {
-			systemModel = systemModelDiscoverer.discover(workspaceProject, null, new NullProgressMonitor());
-		}
-		
-		// Store system model in data set:
 		Path systemModelFile = javaModelRepository.getSystemModelFile(project);
-		URI systemModelURI = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
-		systemModel.eResource().setURI(systemModelURI);
-		systemModel.saveAll(Collections.emptyMap());
+		
+		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
+		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, fileChangeFilter)) {
+			
+			// Discover the Java AST of the project version:
+			IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
+			JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel();
+			SystemModel systemModel;
+			
+			if (changeLocationMatcher != null) {
+				// Discover with change locations:
+				ChangeLocationDiscoverer changeLocationDiscoverer = new ChangeLocationDiscoverer(changeLocationMatcher);
+				systemModel = systemModelDiscoverer.discover(workspaceProject, changeLocationDiscoverer, new NullProgressMonitor());
+				systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL).getChanges().addAll(changeLocationDiscoverer.getChanges());
+			} else {
+				systemModel = systemModelDiscoverer.discover(workspaceProject, null, new NullProgressMonitor());
+			}
+			
+			// Store system model in data set:
+			URI systemModelURI = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
+			systemModel.eResource().setURI(systemModelURI);
+			systemModel.saveAll(Collections.emptyMap());
+		}
 		
 		// Store path in data set:
 		project.setSystemModel(javaModelRepository.getDataSetPath().getParent().relativize(systemModelFile));

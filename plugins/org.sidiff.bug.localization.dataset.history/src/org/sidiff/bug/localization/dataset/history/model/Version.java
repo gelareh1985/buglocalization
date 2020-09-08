@@ -1,10 +1,13 @@
 package org.sidiff.bug.localization.dataset.history.model;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
+import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class Version {
@@ -38,6 +41,32 @@ public class Version {
 		this.date = date;
 		this.author = author;
 		this.commitMessage = commitMessage;
+	}
+	
+	public boolean hasChanges(Project project, Predicate<Path> fileChangeFilter) {
+		
+		for (FileChange fileChange : getChanges()) {
+			if (fileChangeFilter.test(fileChange.getLocation())) {
+				if (fileChange.getLocation().startsWith(project.getFolder())) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean hasPreviousVersion(Version oldVersion, Project project) {
+		
+		if (oldVersion != null) {
+			for (Project oldProject : oldVersion.getWorkspace().getProjects()) {
+				if (oldProject.getName().equals(project.getName())) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public boolean isVisible() {

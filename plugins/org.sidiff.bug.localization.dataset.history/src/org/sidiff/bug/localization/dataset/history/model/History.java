@@ -12,7 +12,7 @@ public class History {
 	public History() {
 		this.versions = new ArrayList<>();
 	}
-
+	
 	public List<Version> getVersions() {
 		return versions;
 	}

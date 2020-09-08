@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.nio.file.Path;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
@@ -9,7 +10,7 @@ import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 
-public class JavaModelRetrievalFactory {
+public class JavaModelRetrievalProvider {
 
 	/**
 	 * Filters projects from the source code repository, e.g., test code projects
@@ -22,17 +23,24 @@ public class JavaModelRetrievalFactory {
 	 */
 	private Supplier<Repository> codeRepository;
 	
-	public JavaModelRetrievalFactory(
+	/**
+	 * Files to be tested for changes, whether a model needs to be recalculated.
+	 */
+	private Supplier<Predicate<Path>> fileChangeFilter;
+	
+	public JavaModelRetrievalProvider(
 			Supplier<ProjectFilter> projectFilter, 
-			Supplier<Repository> codeRepository) {
-		
+			Supplier<Repository> codeRepository,
+			Supplier<Predicate<Path>> fileChangeFilter) {
 		this.projectFilter = projectFilter;
 		this.codeRepository = codeRepository;
+		this.fileChangeFilter = fileChangeFilter;
 	}
 
-	public JavaModelRetrievalFactory(Path codeRepositoryPath) {
+	public JavaModelRetrievalProvider(Path codeRepositoryPath) {
 		this.projectFilter =  () -> new TestProjectFilter(new PDEProjectFilter());
 		this.codeRepository = () -> new GitRepository(codeRepositoryPath.toFile());
+		this.fileChangeFilter = () -> (fileChangePath) -> fileChangePath.toString().endsWith(".java");
 	}
 	
 	public Repository createCodeRepository() {
@@ -49,5 +57,13 @@ public class JavaModelRetrievalFactory {
 
 	public void setProjectFilter(Supplier<ProjectFilter> projectFilter) {
 		this.projectFilter = projectFilter;
+	}
+
+	public Predicate<Path> createFileChangeFilter() {
+		return fileChangeFilter.get();
+	}
+
+	public void setFileChangeFilter(Supplier<Predicate<Path>> fileChangeFilter) {
+		this.fileChangeFilter = fileChangeFilter;
 	}
 }
