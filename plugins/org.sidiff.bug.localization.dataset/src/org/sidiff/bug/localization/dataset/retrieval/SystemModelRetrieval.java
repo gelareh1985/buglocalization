@@ -64,13 +64,6 @@ public class SystemModelRetrieval {
 			// Store Java AST model workspace as revision:
 			systemModelRepository.commitVersion(version, olderVersion);
 		}
-		
-		// Store data set for UML model:
-		try {
-			systemModelRepository.saveDataSet();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException, IOException {
@@ -92,6 +85,15 @@ public class SystemModelRetrieval {
 		
 		// Update data set path:
 		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
+	}
+	
+	public void saveDataSet() {
+		// Store and commit data set for Java model:
+		try {
+			systemModelRepository.saveDataSet(true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public Path getCodeRepositoryPath() {

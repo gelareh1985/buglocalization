@@ -22,6 +22,8 @@ import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalFactory
 
 public class RetrievalApplication implements IApplication {
 
+	// Program Arguments: -dataset "<Path to>/DataSet.json" -retrieval "<Path to>/RetrievalConfiguration.json"
+	
 	public static final String ARGUMENT_DATASET = "-dataset";
 	
 	public static final String ARGUMENT_CONFIGURATION = "-retrieval";
@@ -67,16 +69,19 @@ public class RetrievalApplication implements IApplication {
 				codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataSet.getBugtrackerProduct());
 		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
 		bugFixHistory.retrieve();
+		bugFixHistory.saveDataSet();
 		
 		// Java model:
 		JavaModelRetrievalFactory javaModelFactory = new JavaModelRetrievalFactory(bugFixHistory.getCodeRepositoryPath());
 		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());
 		javaModel.retrieve();
+		javaModel.saveDataSet();
 		
 		// System model:
 		SystemModelRetrievalFactory systemModelFactory = new SystemModelRetrievalFactory();
 		SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, bugFixHistory.getCodeRepositoryPath());
 		systemModel.retrieve();
+		systemModel.saveDataSet();
 	}
 
 	@Override

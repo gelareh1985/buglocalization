@@ -50,11 +50,13 @@ public class TestDriverApplication extends RetrievalApplication {
 		
 		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());
 		javaModel.retrieve();
+		javaModel.saveDataSet();
 		
 		// System model:
 		SystemModelRetrievalFactory systemModelFactory = new SystemModelRetrievalFactory();
 		SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, bugFixHistory.getCodeRepositoryPath());
 		systemModel.retrieve();
+		systemModel.saveDataSet();
 	}
 
 	private void filterProjects(JavaModelRetrievalFactory javaModelFactory, String... projectNames) {

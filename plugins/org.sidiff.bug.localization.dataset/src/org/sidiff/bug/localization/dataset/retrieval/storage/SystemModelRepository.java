@@ -49,8 +49,12 @@ public class SystemModelRepository {
 		return dataset;
 	}
 	
-	public void saveDataSet() throws IOException {
+	public void saveDataSet(boolean commit) throws IOException {
 		DataSetStorage.save(getDataSetPath(), dataset, false);
+		
+		if (commit) {
+			repository.commit("DATA SET", "na@na", "DATA SET " + DataSetStorage.getTimestamp(), null, null);
+		}
 	}
 	
 	public void checkout(Version version) {

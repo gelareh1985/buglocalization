@@ -98,13 +98,6 @@ public class JavaModelRetrieval {
 			// Store Java AST model workspace as revision:
 			javaModelRepository.commitVersion(version, olderVersion);
 		}
-		
-		// Store data set for Java model:
-		try {
-			javaModelRepository.saveDataSet();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private Workspace retrieveWorkspaceVersion(History history, Version version) {
@@ -151,6 +144,15 @@ public class JavaModelRetrieval {
 		
 		// Store path in data set:
 		project.setSystemModel(javaModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
+	}
+	
+	public void saveDataSet() {
+		// Store and commit data set for Java model:
+		try {
+			javaModelRepository.saveDataSet(true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public Path getCodeRepositoryPath() {

@@ -24,10 +24,8 @@ public class DataSetStorage {
 		builder.registerTypeAdapter(LineChange.class, new JsonLineChangeSerializer());
 		
 		if (timestamp) {
-			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.systemDefault());
-			String currentTimestamp = timeFormat.format(Instant.now());
 			String filename = datasetPath.getFileName().toString();
-			String stampedFilename = filename.substring(0, filename.lastIndexOf(".")) + "_" + currentTimestamp;
+			String stampedFilename = filename.substring(0, filename.lastIndexOf(".")) + "_" + getTimestamp();
 			stampedFilename = stampedFilename + "." + filename.substring(filename.lastIndexOf(".") + 1, filename.length());
 			datasetPath = Paths.get(datasetPath.getParent().toString(), stampedFilename);
 		}
@@ -35,6 +33,12 @@ public class DataSetStorage {
 		JsonUtil.save(dataset, datasetPath, builder);
 		
 		return datasetPath;
+	}
+	
+	public static String getTimestamp() {
+		DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.systemDefault());
+		String currentTimestamp = timeFormat.format(Instant.now());
+		return currentTimestamp;
 	}
 	
 	public static DataSet load(Path datasetPath) throws FileNotFoundException {

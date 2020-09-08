@@ -39,12 +39,6 @@ public class BugFixHistoryRetrieval {
 		retrieveBugFixChanges();
 		retrieveBugReports();
 		cleanUp(dataset);
-		
-		try {
-			saveDataSet();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public void retrieveHistory() {
@@ -107,8 +101,12 @@ public class BugFixHistoryRetrieval {
 		return dataset;
 	}
 	
-	public void saveDataSet() throws IOException {
-		this.datasetPath = DataSetStorage.save(datasetPath, dataset, true);
+	public void saveDataSet() {
+		try {
+			this.datasetPath = DataSetStorage.save(datasetPath, dataset, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private Iterator<Version> getBugFixes() {
