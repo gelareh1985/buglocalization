@@ -90,7 +90,7 @@ public class RetrievalApplication implements IApplication {
 	private boolean containsProgramArgument(IApplicationContext context, String argumentName) throws FileNotFoundException {
 		String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 		
-		for (int i = 0; i < args.length - 1; i++) {
+		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals(argumentName)) {
 				return true;
 			}
