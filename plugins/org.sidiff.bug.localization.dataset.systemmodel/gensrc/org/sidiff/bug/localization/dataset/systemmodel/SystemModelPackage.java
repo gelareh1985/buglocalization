@@ -169,13 +169,22 @@ public interface SystemModelPackage extends EPackage {
 	int SYSTEM_MODEL___GET_VIEW_BY_KIND__VIEWDESCRIPTION = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 1;
 
 	/**
+	 * The operation id for the '<em>Get View By Kind</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYSTEM_MODEL___GET_VIEW_BY_KIND__STRING = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 2;
+
+	/**
 	 * The operation id for the '<em>Contains View Kind</em>' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL___CONTAINS_VIEW_KIND__VIEWDESCRIPTION = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 2;
+	int SYSTEM_MODEL___CONTAINS_VIEW_KIND__VIEWDESCRIPTION = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 3;
 
 	/**
 	 * The operation id for the '<em>Remove View Kind</em>' operation.
@@ -184,7 +193,7 @@ public interface SystemModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL___REMOVE_VIEW_KIND__VIEWDESCRIPTION = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 3;
+	int SYSTEM_MODEL___REMOVE_VIEW_KIND__VIEWDESCRIPTION = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>System Model</em>' class.
@@ -193,7 +202,7 @@ public interface SystemModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYSTEM_MODEL_OPERATION_COUNT = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 4;
+	int SYSTEM_MODEL_OPERATION_COUNT = DESCRIBABLE_ELEMENT_OPERATION_COUNT + 5;
 
 	/**
 	 * The meta object id for the '{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl <em>View</em>}' class.
@@ -449,6 +458,16 @@ public interface SystemModelPackage extends EPackage {
 	EOperation getSystemModel__GetViewByKind__ViewDescription();
 
 	/**
+	 * Returns the meta object for the '{@link org.sidiff.bug.localization.dataset.systemmodel.SystemModel#getViewByKind(java.lang.String) <em>Get View By Kind</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get View By Kind</em>' operation.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModel#getViewByKind(java.lang.String)
+	 * @generated
+	 */
+	EOperation getSystemModel__GetViewByKind__String();
+
+	/**
 	 * Returns the meta object for the '{@link org.sidiff.bug.localization.dataset.systemmodel.SystemModel#containsViewKind(org.sidiff.bug.localization.dataset.systemmodel.ViewDescription) <em>Contains View Kind</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -695,6 +714,14 @@ public interface SystemModelPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation SYSTEM_MODEL___GET_VIEW_BY_KIND__VIEWDESCRIPTION = eINSTANCE.getSystemModel__GetViewByKind__ViewDescription();
+
+		/**
+		 * The meta object literal for the '<em><b>Get View By Kind</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation SYSTEM_MODEL___GET_VIEW_BY_KIND__STRING = eINSTANCE.getSystemModel__GetViewByKind__String();
 
 		/**
 		 * The meta object literal for the '<em><b>Contains View Kind</b></em>' operation.

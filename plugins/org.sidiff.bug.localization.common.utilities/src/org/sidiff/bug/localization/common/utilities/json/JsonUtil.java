@@ -67,9 +67,13 @@ public class JsonUtil {
 	}
 	
 	public static  <T> T parse(Path dataSetPath, Class<T> type, GsonBuilder builder) throws FileNotFoundException {
-		JsonReader reader = new JsonReader(new FileReader(dataSetPath.toFile()));
-		T data = builder.create().fromJson(reader, type);
-		return data;
+		try (JsonReader reader = new JsonReader(new FileReader(dataSetPath.toFile()))) {
+			T data = builder.create().fromJson(reader, type);
+			return data;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static void save(Object object, Path path) throws IOException {

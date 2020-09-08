@@ -180,7 +180,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 	 * @generated
 	 */
 	@Override
-	public EOperation getSystemModel__ContainsViewKind__ViewDescription() {
+	public EOperation getSystemModel__GetViewByKind__String() {
 		return systemModelEClass.getEOperations().get(2);
 	}
 
@@ -190,8 +190,18 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 	 * @generated
 	 */
 	@Override
-	public EOperation getSystemModel__RemoveViewKind__ViewDescription() {
+	public EOperation getSystemModel__ContainsViewKind__ViewDescription() {
 		return systemModelEClass.getEOperations().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getSystemModel__RemoveViewKind__ViewDescription() {
+		return systemModelEClass.getEOperations().get(4);
 	}
 
 	/**
@@ -387,6 +397,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		createEReference(systemModelEClass, SYSTEM_MODEL__VIEWS);
 		createEOperation(systemModelEClass, SYSTEM_MODEL___ADD_VIEW__RESOURCE_VIEWDESCRIPTION);
 		createEOperation(systemModelEClass, SYSTEM_MODEL___GET_VIEW_BY_KIND__VIEWDESCRIPTION);
+		createEOperation(systemModelEClass, SYSTEM_MODEL___GET_VIEW_BY_KIND__STRING);
 		createEOperation(systemModelEClass, SYSTEM_MODEL___CONTAINS_VIEW_KIND__VIEWDESCRIPTION);
 		createEOperation(systemModelEClass, SYSTEM_MODEL___REMOVE_VIEW_KIND__VIEWDESCRIPTION);
 
@@ -458,6 +469,9 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 
 		op = initEOperation(getSystemModel__GetViewByKind__ViewDescription(), this.getView(), "getViewByKind", 0, 1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, this.getViewDescription(), "viewDescription", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		op = initEOperation(getSystemModel__GetViewByKind__String(), this.getView(), "getViewByKind", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, theEcorePackage.getEString(), "viewDescription", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		op = initEOperation(getSystemModel__ContainsViewKind__ViewDescription(), theEcorePackage.getEBoolean(), "containsViewKind", 0, 1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, this.getViewDescription(), "viewDescription", 0, 1, IS_UNIQUE, IS_ORDERED);

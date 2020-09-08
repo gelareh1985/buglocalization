@@ -14,11 +14,19 @@
 package eu.artist.migration.mdt.javaee.java.uml.discovery;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.m2m.atl.core.ATLCoreException;
 import org.eclipse.m2m.atl.core.emf.EMFModel;
+import org.eclipse.m2m.atl.core.launch.ILauncher;
+import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
 import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 
@@ -62,6 +70,40 @@ public abstract class AbstractJava2UMLDiscoverer<T> extends AbstractModelDiscove
 
 	}
 
-	protected abstract void transform(EMFModel javaModel, EMFModel umlModel, IProgressMonitor monitor) throws IOException;
+	protected void transform(EMFModel javaModel, EMFModel umlModel, IProgressMonitor monitor) throws IOException {
+		createLauncher(javaModel, umlModel).launch(ILauncher.RUN_MODE, monitor, createOptions(), loadModules().toArray());
+	}
 
+	protected HashMap<String, Object> createOptions() {
+		HashMap<String, Object> options = new HashMap<String, Object>();
+		return options;
+	}
+
+	private ILauncher createLauncher(EMFModel javaModel, EMFModel umlModel) throws IOException {
+		ILauncher transformationLauncher = createLauncher();
+		transformationLauncher.addInModel(javaModel, "IN", "JAVA");
+		transformationLauncher.addOutModel(umlModel, "OUT", "UML");
+		return transformationLauncher;
+	}
+
+	protected ILauncher createLauncher() throws IOException {
+		ILauncher transformationLauncher = new EMFVMLauncher();
+		transformationLauncher.initialize(new HashMap<String, Object>());
+		
+		for (Entry<String, InputStream> library : loadLibraries().entrySet()) {
+			transformationLauncher.addLibrary(library.getKey(), library.getValue());
+		}
+		
+		return transformationLauncher;
+	}
+	
+	protected Map<String, InputStream> loadLibraries() throws IOException {
+		Map <String, InputStream > libraries = new HashMap<>();
+		return libraries;
+	}
+
+	protected List<InputStream> loadModules() throws IOException {
+		List<InputStream> modules = new ArrayList<>();
+		return modules;
+	}
 }

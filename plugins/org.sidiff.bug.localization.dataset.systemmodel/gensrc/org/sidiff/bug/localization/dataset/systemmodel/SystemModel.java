@@ -32,7 +32,14 @@ public interface SystemModel extends DescribableElement {
 	 * <!-- end-user-doc -->
 	 * @generated NOT
 	 */
-	String FILE_EXTENSION = "systemmodel";
+	public String FILE_EXTENSION = "systemmodel";
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	public String NS_URI =  "http://www.sidiff.org/systemmodel/1.0";
 
 	/**
 	 * Returns the value of the '<em><b>Views</b></em>' containment reference list.
@@ -63,6 +70,14 @@ public interface SystemModel extends DescribableElement {
 	 * @generated
 	 */
 	View getViewByKind(ViewDescription viewDescription);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	View getViewByKind(String viewDescription);
 
 	/**
 	 * <!-- begin-user-doc -->

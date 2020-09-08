@@ -1,10 +1,11 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
+import org.sidiff.bug.localization.dataset.systemmodel.View;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaModel2UMLClassSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaModel2UMLFlowSystemModel;
 
 public class SystemModelRetrievalFactory {
 
@@ -15,7 +16,7 @@ public class SystemModelRetrievalFactory {
 	
 	@FunctionalInterface
 	public interface SystemModelDiscoverer {
-		void discover(SystemModel systemModel, Resource javaResource) throws DiscoveryException;
+		void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException;
 	}
 	
 	public SystemModelRetrievalFactory(SystemModelDiscoverer[] javaModelToSystemModel) {
@@ -23,24 +24,33 @@ public class SystemModelRetrievalFactory {
 	}
 	
 	public SystemModelRetrievalFactory() {
-		SystemModelDiscoverer umlClasses = (systemModel, javaResource) -> {
-			JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer();
-			multiViewModelDiscoverer.discoverUMLClassDiagram(systemModel, javaResource, new NullProgressMonitor());
+		SystemModelDiscoverer umlClasses = (SystemModel systemModel, SystemModel javaSystemModel) -> {
+			JavaModel2UMLClassSystemModel java2UmlClass = new JavaModel2UMLClassSystemModel();
+			SystemModel umlSystemModel = java2UmlClass.discover(javaSystemModel, new NullProgressMonitor());
+			moveViews(umlSystemModel, systemModel);
 		};
 		
 		// FIXME: discover UML Operation Control Flow
 		@SuppressWarnings("unused")
-		SystemModelDiscoverer umlOperationControlFlow = (systemModel, javaResource) -> {
-			JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer();
-			multiViewModelDiscoverer.discoverUMLOperationControlFlow(systemModel, javaResource, new NullProgressMonitor());
+		SystemModelDiscoverer umlOperationControlFlow = (SystemModel systemModel, SystemModel javaSystemModel) -> {
+			JavaModel2UMLFlowSystemModel java2UmlClass = new JavaModel2UMLFlowSystemModel();
+			SystemModel umlSystemModel = java2UmlClass.discover(javaSystemModel, new NullProgressMonitor());
+			moveViews(umlSystemModel, systemModel);
 		};
 		
 		systemModelDiscoverer = new SystemModelDiscoverer[] {umlClasses};
 	}
 
-	public void discover(SystemModel systemModel, Resource javaModel) throws DiscoveryException {
+	private void moveViews(SystemModel source, SystemModel target) {
+		for (View sourceView : source.getViews().toArray(new View[0])) {
+			target.eResource().getResourceSet().getResources().add(sourceView.eResource());
+			target.getViews().add(sourceView);
+		}
+	}
+
+	public void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
 		for (SystemModelDiscoverer systemModelDiscovery : systemModelDiscoverer) {
-			systemModelDiscovery.discover(systemModel, javaModel);
+			systemModelDiscovery.discover(systemModel, javaSystemModel);
 		}
 	}
 	

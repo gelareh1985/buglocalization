@@ -151,8 +151,9 @@ public class GitRepository implements Repository {
 			git.clean().setCleanDirectories(true).call();
 			
 			// Switch to requested branch (if necessary):
-			git.checkout().setCreateBranch(false).setName(history.getIdentification())
-					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
+			// FIXME: trace branch in data set
+//			git.checkout().setCreateBranch(false).setName(history.getIdentification())
+//					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
 
 			// Check out specific version:
 			git.checkout().setName(version.getIdentification()).call();

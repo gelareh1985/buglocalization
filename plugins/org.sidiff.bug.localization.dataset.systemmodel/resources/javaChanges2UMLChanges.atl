@@ -1,0 +1,38 @@
+-- @path UMLSystemModel=/org.sidiff.bug.localization.dataset.systemmodel/model/systemmodel.ecore
+-- @path JavaSystemModel=/org.sidiff.bug.localization.dataset.systemmodel/model/systemmodel.ecore
+
+module javaChanges2UMLChanges;
+create OUT1: UMLSystemModel from IN1: JavaSystemModel;
+
+rule JSystemModelRootToUmlSystemModelRoot {
+	from
+		jSystemModelRoot: JavaSystemModel!SystemModel
+	to
+		umlSystemModelRoot: UMLSystemModel!SystemModel (
+			name <- jSystemModelRoot.name,
+			description <- jSystemModelRoot.description,
+			views <- jSystemModelRoot.views
+		)
+}
+
+rule JViewToUmlView {
+	from
+		jView: JavaSystemModel!View
+	to
+		umlView: UMLSystemModel!View (
+			model <- jView.model,
+			changes <- jView.changes,
+			kind <- 'uml'
+		)
+}
+
+rule JChangeToUmlChange {
+	from
+		jChange: JavaSystemModel!Change
+	to
+		umlChange: UMLSystemModel!Change (
+			type <- jChange.type,
+			quantification <- jChange.quantification,
+			location <- jChange.location
+		)
+}

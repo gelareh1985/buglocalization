@@ -32,7 +32,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		bugFixHistory.retrieveHistory();
 		
 		{
-			shrinkHistory(bugFixHistory.getDataset(), 3);
+			shrinkHistory(bugFixHistory.getDataset(), 4);
 		}
 		
 		bugFixHistory.retrieveBugFixChanges();

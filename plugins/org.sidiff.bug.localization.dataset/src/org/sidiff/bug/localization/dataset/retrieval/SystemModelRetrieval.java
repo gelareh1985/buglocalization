@@ -3,10 +3,10 @@ package org.sidiff.bug.localization.dataset.retrieval;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
@@ -36,15 +36,20 @@ public class SystemModelRetrieval {
 		
 		// Storage:
 		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL);
+		
 		DataSet dataset = javaModelRepository.getDataSet();
+		List<Version> versions = dataset.getHistory().getVersions();
 		
 		this.systemModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.UML_CLASS_DIAGRAM, dataset);
-		Version previousVersion = null;
 		
-		for (Version version : dataset.getHistory().getVersions()) {
+		// Iterate from old to new versions:
+		for (int i = versions.size(); i-- > 0;) {
+			Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
+			Version version = versions.get(i);
+			
 			for (Project project : version.getWorkspace().getProjects()) {
 				try {
-					retrieveSystemModelVersion(project);
+					retrieveSystemModelVersion(version, project);
 				} catch (DiscoveryException e) {
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
 						Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
@@ -57,7 +62,7 @@ public class SystemModelRetrieval {
 			}
 			
 			// Store Java AST model workspace as revision:
-			previousVersion = systemModelRepository.commitVersion(version, previousVersion);
+			systemModelRepository.commitVersion(version, olderVersion);
 		}
 		
 		// Store data set for UML model:
@@ -68,21 +73,18 @@ public class SystemModelRetrieval {
 		}
 	}
 
-	private void retrieveSystemModelVersion(Project project) throws DiscoveryException, IOException {
+	private void retrieveSystemModelVersion(Version version, Project project) throws DiscoveryException, IOException {
+		javaModelRepository.checkout(version);
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
 		}
 		
 		// Discover the multi-view system model of the project version:
-		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
-		
-		Resource javaModel = systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL).getModel().eResource();
-		factory.discover(systemModel, javaModel);
+		SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
+		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
+		factory.discover(systemModel, javaSystemModel);
 
-		// Remove java model:
-		systemModel.removeViewKind(ViewDescriptions.JAVA_MODEL);
-		
 		// Store system model in data set:
 		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
 		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));

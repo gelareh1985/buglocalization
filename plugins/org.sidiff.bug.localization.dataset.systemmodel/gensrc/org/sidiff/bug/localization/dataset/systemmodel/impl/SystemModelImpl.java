@@ -113,9 +113,19 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 	 */
 	@Override
 	public View getViewByKind(ViewDescription viewDescription) {
+		return getViewByKind(viewDescription.getViewKind());
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
+	public View getViewByKind(String viewDescription) {
 
 		for (View view : getViews()) {
-			if (view.getKind().equals(viewDescription.getViewKind())) {
+			if (view.getKind().equals(viewDescription)) {
 				return view;
 			}
 		}
@@ -260,6 +270,8 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 				return null;
 			case SystemModelPackage.SYSTEM_MODEL___GET_VIEW_BY_KIND__VIEWDESCRIPTION:
 				return getViewByKind((ViewDescription)arguments.get(0));
+			case SystemModelPackage.SYSTEM_MODEL___GET_VIEW_BY_KIND__STRING:
+				return getViewByKind((String)arguments.get(0));
 			case SystemModelPackage.SYSTEM_MODEL___CONTAINS_VIEW_KIND__VIEWDESCRIPTION:
 				return containsViewKind((ViewDescription)arguments.get(0));
 			case SystemModelPackage.SYSTEM_MODEL___REMOVE_VIEW_KIND__VIEWDESCRIPTION:

@@ -14,12 +14,9 @@
 package eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg;
 
 import java.io.IOException;
-import java.util.HashMap;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.m2m.atl.core.emf.EMFModel;
-import org.eclipse.m2m.atl.core.launch.ILauncher;
-import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import eu.artist.migration.mdt.javaee.java.uml.discovery.AbstractJava2UMLDiscoverer;
 import eu.artist.migration.mdt.javaee.java.uml.provider.TransformationProvider;
@@ -29,21 +26,18 @@ public abstract class Java2UMLActivityCFGBasicDiscoverer<T> extends AbstractJava
 	public Java2UMLActivityCFGBasicDiscoverer(TransformationProvider<T> transformationProvider) {
 		super(transformationProvider);
 	}
-
+	
 	@Override
-	protected void transform(EMFModel javaModel, EMFModel umlModel, IProgressMonitor monitor) throws IOException {
-		ILauncher transformationLauncher = new EMFVMLauncher();
-		transformationLauncher.initialize(new HashMap<String, Object>());
-		transformationLauncher.addInModel(javaModel, "IN", "JAVA");
-		transformationLauncher.addOutModel(umlModel, "OUT", "UML");
-		transformationLauncher.addLibrary("java2UMLActivityHelpers",
-				Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/java2UMLActivityHelpers.asm").openStream());
-		
-		HashMap<String, Object> options = new HashMap<String, Object>();
-//		options.put("allowInterModelReferences", true);
-		
-		transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options,
-				Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/JavaMethods2UMLActivityDiagram-OnlyCFG.asm").openStream());
+	protected Map<String, InputStream> loadLibraries() throws IOException {
+		Map<String, InputStream> libraries = super.loadLibraries();
+		libraries.put("java2UMLActivityHelpers", Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/java2UMLActivityHelpers.asm").openStream());
+		return libraries;
+	}
+
+	protected List<InputStream> loadModules() throws IOException {
+		List<InputStream> modules = super.loadModules();
+		modules.add(Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/JavaMethods2UMLActivityDiagram-OnlyCFG.asm").openStream());
+		return modules;
 	}
 
 }

@@ -22,8 +22,7 @@ import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
@@ -111,6 +110,10 @@ public class JavaModelRetrieval {
 	private Workspace retrieveWorkspaceVersion(History history, Version version) {
 		codeRepository.checkout(history, version);
 		
+		if (Activator.getLogger().isLoggable(Level.FINER)) {
+			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + version);
+		}
+		
 		Workspace workspace = new Workspace();
 		ProjectFilter projectFilter = factory.createProjectFilter();
 		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, codeRepositoryPath);
@@ -126,27 +129,24 @@ public class JavaModelRetrieval {
 			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + project.getName());
 		}
 		
-		// Storage:
-		Path systemModelFile = javaModelRepository.getSystemModelFile(project);
-		URI mulitviewFile = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
-		
 		// Discover the Java AST of the project version:
-		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(mulitviewFile);
-		
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-		JavaProject2SystemModelDiscoverer systemModelDiscoverer = new JavaProject2SystemModelDiscoverer(mulitviewFile);
+		JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel();
+		SystemModel systemModel;
 		
 		if (changeLocationMatcher != null) {
 			// Discover with change locations:
 			ChangeLocationDiscoverer changeLocationDiscoverer = new ChangeLocationDiscoverer(changeLocationMatcher);
-			systemModelDiscoverer.setJavaModelDiscovererListener(changeLocationDiscoverer);
-			systemModelDiscoverer.discoverJavaModel(systemModel, workspaceProject, new NullProgressMonitor());
+			systemModel = systemModelDiscoverer.discover(workspaceProject, changeLocationDiscoverer, new NullProgressMonitor());
 			systemModel.getViewByKind(ViewDescriptions.JAVA_MODEL).getChanges().addAll(changeLocationDiscoverer.getChanges());
 		} else {
-			systemModelDiscoverer.discoverJavaModel(systemModel, workspaceProject, new NullProgressMonitor());
+			systemModel = systemModelDiscoverer.discover(workspaceProject, null, new NullProgressMonitor());
 		}
 		
 		// Store system model in data set:
+		Path systemModelFile = javaModelRepository.getSystemModelFile(project);
+		URI systemModelURI = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
+		systemModel.eResource().setURI(systemModelURI);
 		systemModel.saveAll(Collections.emptyMap());
 		
 		// Store path in data set:

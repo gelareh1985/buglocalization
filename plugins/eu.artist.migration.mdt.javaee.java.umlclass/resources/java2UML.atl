@@ -86,9 +86,10 @@ rule JModelRootToUmlModelRoot {
 											if (thisModule.getExternalElements -> notEmpty()) then
 												thisModule.createExternalsModel(jModelRoot) 
 											else OclUndefined endif,
-											if (jModelRoot.compilationUnits -> notEmpty()) then
-												thisModule.createSourceReferences(jModelRoot)
-											else OclUndefined endif	}	
+											OclUndefined }
+--											if (jModelRoot.compilationUnits -> notEmpty()) then
+--												thisModule.createSourceReferences(jModelRoot)
+--											else OclUndefined endif	}	
 		)
 }
 
@@ -126,16 +127,16 @@ unique lazy rule createMainModel {
 }
 
 ---Create package 'sourcesReferences' for compilation units
-unique lazy rule createSourceReferences {
-	from 
-		jModel : JAVA!Model
-	to 
-		umlModel : UML!Model (
-				name <- 'sourcesReferences',
-				packagedElement <- jModel.compilationUnits 
-									-> union(jModel.compilationUnits -> collect(compUnit | thisModule.createDependencyTrace(compUnit))) 
-		)
-}
+--unique lazy rule createSourceReferences {
+--	from 
+--		jModel : JAVA!Model
+--	to 
+--		umlModel : UML!Model (
+--				name <- 'sourcesReferences',
+--				packagedElement <- jModel.compilationUnits 
+--									-> union(jModel.compilationUnits -> collect(compUnit | thisModule.createDependencyTrace(compUnit))) 
+--		)
+--}
 
 --***************Packages***************
 ---Convert a java package (not proxy) to an Uml package

@@ -14,12 +14,9 @@
 package eu.artist.migration.mdt.javaee.java.umlclass.discovery;
 
 import java.io.IOException;
-import java.util.HashMap;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.m2m.atl.core.emf.EMFModel;
-import org.eclipse.m2m.atl.core.launch.ILauncher;
-import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import eu.artist.migration.mdt.javaee.java.uml.discovery.AbstractJava2UMLDiscoverer;
 import eu.artist.migration.mdt.javaee.java.uml.provider.TransformationProvider;
@@ -31,19 +28,17 @@ public abstract class Java2UMLBasicDiscoverer<T> extends AbstractJava2UMLDiscove
 	}
 	
 	@Override
-	protected void transform(EMFModel javaModel, EMFModel umlModel, IProgressMonitor monitor) throws IOException {
-		ILauncher transformationLauncher = new EMFVMLauncher();
-		transformationLauncher.initialize(new HashMap<String, Object>());
-		transformationLauncher.addInModel(javaModel, "IN", "JAVA");
-		transformationLauncher.addOutModel(umlModel, "OUT", "UML");
-		transformationLauncher.addLibrary("java2UMLHelpers",
-				Java2UMLBasicDiscoverer.class.getResource("/resources/java2UMLHelpers.asm").openStream());
-
-		HashMap<String, Object> options = new HashMap<String, Object>();
-//		options.put("allowInterModelReferences", true);
-		
-		transformationLauncher.launch(ILauncher.RUN_MODE, monitor, options,
-				Java2UMLBasicDiscoverer.class.getResource("/resources/java2UML.asm").openStream());
+	protected Map<String, InputStream> loadLibraries() throws IOException {
+		Map<String, InputStream> libraries = super.loadLibraries();
+		libraries.put("java2UMLHelpers", Java2UMLBasicDiscoverer.class.getResource("/resources/java2UMLHelpers.asm").openStream());
+		return libraries;
 	}
 
+	@Override
+	protected List<InputStream> loadModules() throws IOException {
+		List<InputStream> modules = super.loadModules();
+		modules.add(Java2UMLBasicDiscoverer.class.getResource("/resources/java2UML.asm").openStream());
+		return modules;
+	}
+	
 }

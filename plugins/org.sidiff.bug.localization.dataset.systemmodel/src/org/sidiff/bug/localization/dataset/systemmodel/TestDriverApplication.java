@@ -10,12 +10,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Class;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModelDiscoverer;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
 
 public class TestDriverApplication implements IApplication {
 
@@ -24,11 +23,8 @@ public class TestDriverApplication implements IApplication {
 		Activator.getLogger().setLevel(Level.FINE);
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("org.sidiff.bug.localization.examples.musicplayer");
-		JavaProject2SystemModelDiscoverer multiViewModelDiscoverer = new JavaProject2SystemModelDiscoverer();
-		multiViewModelDiscoverer.discoverElement(project, new NullProgressMonitor());
-		
-		Resource systemModelResource = multiViewModelDiscoverer.getTargetModel();
-		SystemModel systemModel = (SystemModel) systemModelResource.getContents().get(0);
+		JavaProject2JavaSystemModel multiViewModelDiscoverer = new JavaProject2JavaSystemModel();
+		SystemModel systemModel = multiViewModelDiscoverer.discover(project, null, new NullProgressMonitor());
 		
 		for (View view : systemModel.getViews()) {
 			for (EObject modelElement : (Iterable<EObject>) () -> view.getModel().eAllContents()) {

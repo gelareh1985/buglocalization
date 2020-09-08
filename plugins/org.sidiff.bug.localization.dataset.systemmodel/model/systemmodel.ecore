@@ -9,6 +9,9 @@
     <eOperations name="getViewByKind" eType="#//View">
       <eParameters name="viewDescription" eType="#//ViewDescription"/>
     </eOperations>
+    <eOperations name="getViewByKind" eType="#//View">
+      <eParameters name="viewDescription" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    </eOperations>
     <eOperations name="containsViewKind" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean">
       <eParameters name="viewDescription" eType="#//ViewDescription"/>
     </eOperations>

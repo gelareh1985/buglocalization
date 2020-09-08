@@ -12,4 +12,5 @@ Export-Package: eu.artist.migration.mdt.javaee.java.uml.discovery,
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.m2m.atl.core,
  org.eclipse.m2m.atl.core.emf,
- org.eclipse.modisco.infra.discovery.core
+ org.eclipse.modisco.infra.discovery.core,
+ org.eclipse.m2m.atl.engine.emfvm.launch
