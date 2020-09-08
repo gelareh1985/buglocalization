@@ -1,5 +1,9 @@
 package org.sidiff.bug.localization.dataset.model;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 import org.sidiff.bug.localization.dataset.history.model.History;
 
 public class DataSet {
@@ -13,6 +17,8 @@ public class DataSet {
 	private String bugtrackerHost;
 	
 	private String bugtrackerProduct;
+	
+	private String timestamp;
 	
 	private History history;
 	
@@ -29,6 +35,12 @@ public class DataSet {
 		this.name = repositoryPath.substring(
 				repositoryPath.lastIndexOf("/") + 1,
 				repositoryPath.lastIndexOf("."));
+	}
+	
+	public String createTimestamp() {
+		DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.systemDefault());
+		this.timestamp = timeFormat.format(Instant.now());
+		return timestamp;
 	}
 
 	public String getName() {
@@ -70,6 +82,14 @@ public class DataSet {
 	public void setBugtrackerProduct(String bugtrackerProduct) {
 		this.bugtrackerProduct = bugtrackerProduct;
 	}
+	
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
 
 	public History getHistory() {
 		return history;
@@ -82,7 +102,8 @@ public class DataSet {
 	@Override
 	public String toString() {
 		return "DataSet [name=" + name + ", repositoryHost=" + repositoryHost + ", repositoryPath=" + repositoryPath
-				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProduct + ", history="
-				+ history + "]";
+				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProduct + ", timestamp="
+				+ timestamp + ", history=" + history + "]";
 	}
+
 }

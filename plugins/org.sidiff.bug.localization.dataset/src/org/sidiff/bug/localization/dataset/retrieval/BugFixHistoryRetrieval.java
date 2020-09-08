@@ -103,6 +103,7 @@ public class BugFixHistoryRetrieval {
 	
 	public void saveDataSet() {
 		try {
+			dataset.createTimestamp();
 			this.datasetPath = DataSetStorage.save(datasetPath, dataset, true);
 		} catch (IOException e) {
 			e.printStackTrace();

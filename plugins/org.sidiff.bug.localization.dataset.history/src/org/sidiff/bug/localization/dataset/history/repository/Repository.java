@@ -20,4 +20,10 @@ public interface Repository {
 	
 	String commit(String authorName, String authorEmail, String message, String username, String password);
 
+	/**
+	 * @return <code>true</code> if the repository was reset to the initial version
+	 *         (on creation time); <code>false</code>.
+	 */
+	boolean reset();
+
 }

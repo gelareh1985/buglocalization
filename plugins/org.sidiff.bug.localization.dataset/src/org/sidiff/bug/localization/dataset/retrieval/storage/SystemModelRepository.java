@@ -53,7 +53,8 @@ public class SystemModelRepository {
 		DataSetStorage.save(getDataSetPath(), dataset, false);
 		
 		if (commit) {
-			repository.commit("DATA SET", "na@na", "DATA SET " + DataSetStorage.getTimestamp(), null, null);
+			String message = "DATA SET " + dataset.getTimestamp();
+			repository.commit(message, "na@na", message, null, null);
 		}
 	}
 	
@@ -127,5 +128,9 @@ public class SystemModelRepository {
 		String modelFileName = project.getName() + "." + SystemModel.FILE_EXTENSION;
 		Path systemModelFile = Paths.get(getProjectPath(project).toString(), modelFileName);
 		return systemModelFile;
+	}
+
+	public boolean resetRepository() {
+		return repository.reset();
 	}
 }

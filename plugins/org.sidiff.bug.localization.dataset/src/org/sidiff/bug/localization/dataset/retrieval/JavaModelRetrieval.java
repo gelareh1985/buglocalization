@@ -63,40 +63,44 @@ public class JavaModelRetrieval {
 		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
 		this.javaModelRepositoryPath = javaModelRepository.getRepositoryPath();
 		
-		// Iterate from old to new versions:
-		// TODO: Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
-		for (int i = versions.size(); i-- > 0;) {
-			Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
-			Version version = versions.get(i);
-			Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
-			
-			Workspace workspace = retrieveWorkspaceVersion(history, version);
-			
-			for (Project project : workspace.getProjects()) {
+		try {
+			// Iterate from old to new versions:
+			for (int i = versions.size(); i-- > 0;) {
+				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
+				Version version = versions.get(i);
+				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
 				
-				// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-				// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-				ChangeLocationMatcher changeLocationMatcher  = null;
+				Workspace workspace = retrieveWorkspaceVersion(history, version);
 				
-				if ((newerVersion != null) && (newerVersion.hasBugReport())) {
-					changeLocationMatcher = new ChangeLocationMatcher(project.getName(), newerVersion.getChanges());
-				}
-				
-				try {
-					retrieveJavaModelVersion(project, changeLocationMatcher);
-				} catch (DiscoveryException e) {
-					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
-								+ project.getName() + "' version " + version.getIdentification());
+				for (Project project : workspace.getProjects()) {
+					
+					// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+					// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+					ChangeLocationMatcher changeLocationMatcher  = null;
+					
+					if ((newerVersion != null) && (newerVersion.hasBugReport())) {
+						changeLocationMatcher = new ChangeLocationMatcher(project.getName(), newerVersion.getChanges());
 					}
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
+					
+					try {
+						retrieveJavaModelVersion(project, changeLocationMatcher);
+					} catch (DiscoveryException e) {
+						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+							Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
+									+ project.getName() + "' version " + version.getIdentification());
+						}
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
+				
+				// Store Java AST model workspace as revision:
+				javaModelRepository.commitVersion(version, olderVersion);
 			}
-			
-			// Store Java AST model workspace as revision:
-			javaModelRepository.commitVersion(version, olderVersion);
+		} finally {
+			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
+			codeRepository.reset();
 		}
 	}
 

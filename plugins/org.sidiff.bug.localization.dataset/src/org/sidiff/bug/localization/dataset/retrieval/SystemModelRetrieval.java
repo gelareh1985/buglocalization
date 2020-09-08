@@ -42,27 +42,31 @@ public class SystemModelRetrieval {
 		
 		this.systemModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.UML_CLASS_DIAGRAM, dataset);
 		
-		// Iterate from old to new versions:
-		for (int i = versions.size(); i-- > 0;) {
-			Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
-			Version version = versions.get(i);
-			
-			for (Project project : version.getWorkspace().getProjects()) {
-				try {
-					retrieveSystemModelVersion(version, project);
-				} catch (DiscoveryException e) {
-					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
-								+ project.getName() + "' version " + version.getIdentification());
+		try {
+			// Iterate from old to new versions:
+			for (int i = versions.size(); i-- > 0;) {
+				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
+				Version version = versions.get(i);
+				
+				for (Project project : version.getWorkspace().getProjects()) {
+					try {
+						retrieveSystemModelVersion(version, project);
+					} catch (DiscoveryException e) {
+						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+							Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
+									+ project.getName() + "' version " + version.getIdentification());
+						}
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
+				
+				// Store Java AST model workspace as revision:
+				systemModelRepository.commitVersion(version, olderVersion);
 			}
-			
-			// Store Java AST model workspace as revision:
-			systemModelRepository.commitVersion(version, olderVersion);
+		} finally {
+			javaModelRepository.resetRepository();
 		}
 	}
 

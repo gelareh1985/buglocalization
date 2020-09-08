@@ -49,13 +49,29 @@ public class GitRepository implements Repository {
 	
 	private File workingDirectory;
 	
+	private Git gitRepository;
+	
+	private ObjectId initialVersion;
+	
 	public GitRepository(String repositoryURL, File workingDirectory) {
 		this.repositoryURL = repositoryURL;
 		this.workingDirectory = workingDirectory;
+		
+		try {
+			this.initialVersion = openGitRepository().getRepository().resolve(Constants.HEAD);
+		} catch (RevisionSyntaxException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public GitRepository(File localRepository) {
 		this.workingDirectory = localRepository;
+		
+		try {
+			this.initialVersion = openGitRepository().getRepository().resolve(Constants.HEAD);
+		} catch (RevisionSyntaxException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -67,19 +83,28 @@ public class GitRepository implements Repository {
 		return new File(workingDirectory.getAbsolutePath() + "/.git").exists();
 	}
 	
+	@Override
+	public boolean reset() {
+		return checkout(initialVersion.getName());
+	}
+	
 	private Git openGitRepository() throws IOException {
 		
-		if(!exists()) {
-			if(repositoryURL != null) {
-				Activator.getLogger().log(Level.INFO, "Repository " + repositoryURL + " will be cloned.");
-				return cloneGit();
+		if (gitRepository == null) {
+			if(!exists()) {
+				if(repositoryURL != null) {
+					Activator.getLogger().log(Level.INFO, "Repository " + repositoryURL + " will be cloned.");
+					this.gitRepository =  cloneGit();
+				} else {
+					Activator.getLogger().log(Level.INFO, "A new repository " + workingDirectory.getAbsolutePath() + " will be created.");
+					this.gitRepository =  createGit();
+				}
 			} else {
-				Activator.getLogger().log(Level.INFO, "A new repository " + workingDirectory.getAbsolutePath() + " will be created.");
-				return createGit();
+				this.gitRepository = new Git(new FileRepositoryBuilder().findGitDir(workingDirectory).build());
 			}
 		}
 		
-		return new Git(new FileRepositoryBuilder().findGitDir(workingDirectory).build());
+		return gitRepository;
 	}
 	
 	@Override
@@ -141,7 +166,17 @@ public class GitRepository implements Repository {
 	
 	@Override
 	public boolean checkout(History history, Version version) {
+		boolean succeeded = checkout(version.getIdentification());
 		
+		if (!succeeded) {
+			Activator.getLogger().log(Level.SEVERE, "Could not check out version=" + version + ", History=" + history);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean checkout(String identification) {
 		try (Git git = openGitRepository()) {
 			
 			// Unlock repository (if necessary):
@@ -151,24 +186,23 @@ public class GitRepository implements Repository {
 			git.clean().setCleanDirectories(true).call();
 			
 			// Switch to requested branch (if necessary):
-			// FIXME: trace branch in data set
+			// FIXME: trace branch in data set - e.g. commit ID for detached head
 //			git.checkout().setCreateBranch(false).setName(history.getIdentification())
 //					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
 
 			// Check out specific version:
-			git.checkout().setName(version.getIdentification()).call();
+			git.checkout().setName(identification).call();
 			
 			// Clean up current version (if necessary):
 			git.clean().setCleanDirectories(true).call();
 			
-			if (version.getIdentification().equals(getCurrentVersionID(git))) {
+			if (identification.equals(getCurrentVersionID(git))) {
 				return true;
 			}
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 		
-		Activator.getLogger().log(Level.SEVERE, "Could not check out version=" + version + ", History=" + history);
 		return false;
 	}
 	
