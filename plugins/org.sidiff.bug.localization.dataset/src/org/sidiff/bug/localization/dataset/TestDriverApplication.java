@@ -26,37 +26,46 @@ public class TestDriverApplication extends RetrievalApplication {
 		Path codeRepositoryPath = Paths.get(retrievalConfiguration.getLocalRepositoryPath().toString(), dataSet.getName());
 		
 		// Bug fixes:
-		BugFixHistoryRetrievalProvider bugFixHistoryConfig = new BugFixHistoryRetrievalProvider(
-				codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataSet.getBugtrackerProduct());
-		BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
-		bugFixHistory.retrieveHistory();
-		
 		{
-			shrinkHistory(bugFixHistory.getDataset(), 4);
+			BugFixHistoryRetrievalProvider bugFixHistoryConfig = new BugFixHistoryRetrievalProvider(
+					codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataSet.getBugtrackerProduct());
+			BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
+			bugFixHistory.retrieveHistory();
+			
+			{
+				shrinkHistory(bugFixHistory.getDataset(), 4);
+			}
+			
+			bugFixHistory.retrieveBugFixChanges();
+			bugFixHistory.retrieveBugReports();
+			BugFixHistoryRetrieval.cleanUp(bugFixHistory.getDataset());
+			bugFixHistory.saveDataSet();
+			
+			// update data set path to output file
+			dataSetPath = bugFixHistory.getDatasetPath();
 		}
-		
-		bugFixHistory.retrieveBugFixChanges();
-		bugFixHistory.retrieveBugReports();
-		BugFixHistoryRetrieval.cleanUp(bugFixHistory.getDataset());
-		bugFixHistory.saveDataSet();
 		
 		// Java model:
-		JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(bugFixHistory.getCodeRepositoryPath());
-		
 		{
-			filterProjects(javaModelFactory, "org.eclipse.jdt.core");
-			filterProjects(javaModelFactory, "org.eclipse.jdt.apt.core");
+			JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(codeRepositoryPath);
+			
+			{
+				filterProjects(javaModelFactory, "org.eclipse.jdt.core");
+				filterProjects(javaModelFactory, "org.eclipse.jdt.apt.core");
+			}
+			
+			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, dataSetPath);
+			javaModel.retrieve();
+			javaModel.saveDataSet();
 		}
 		
-		JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, bugFixHistory.getDatasetPath());
-		javaModel.retrieve();
-		javaModel.saveDataSet();
-		
 		// System model:
-		SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
-		SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, bugFixHistory.getCodeRepositoryPath());
-		systemModel.retrieve();
-		systemModel.saveDataSet();
+		{
+			SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
+			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath);
+			systemModel.retrieve();
+			systemModel.saveDataSet();
+		}
 	}
 
 	private void filterProjects(JavaModelRetrievalProvider javaModelFactory, String... projectNames) {
