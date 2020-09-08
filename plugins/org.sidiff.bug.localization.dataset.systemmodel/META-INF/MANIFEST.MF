@@ -24,6 +24,7 @@ Require-Bundle: eu.artist.migration.mdt.javaee.java.umlactivity,
  org.eclipse.uml2.uml,
  org.sidiff.bug.localization.common.utilities,
  org.eclipse.m2m.atl.core,
- org.eclipse.m2m.atl.core.emf
+ org.eclipse.m2m.atl.core.emf,
+ org.eclipse.modisco.java
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.sidiff.bug.localization.dataset.systemmodel

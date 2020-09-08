@@ -1,5 +1,8 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -9,6 +12,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.eclipse.modisco.java.CompilationUnit;
+import org.eclipse.modisco.java.Model;
 import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
 import org.eclipse.modisco.kdm.source.extension.discovery.SourceVisitListener;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
@@ -40,10 +45,22 @@ public class JavaProject2JavaSystemModel {
 		javaDiscoverer.discoverElement(project, subMonitor.split(90));
 		Resource javaResource = javaDiscoverer.getTargetModel();
 		javaResource.setURI(targetURI.trimFileExtension().trimFileExtension().appendFileExtension("java.xmi"));
+		makeProjectRelativePaths(javaResource, project);
 
 		systemModel.setName(project.getName());
 		systemModel.addView(javaResource, ViewDescriptions.JAVA_MODEL);
 		
 		return systemModel;
+	}
+
+	private void makeProjectRelativePaths(Resource javaResource, IProject project) {
+		Path projectContainerPath = Paths.get(project.getLocation().toFile().toString()).getParent();
+		Model javaModel = (Model) javaResource.getContents().get(0);
+		
+		for (CompilationUnit compilationUnit : javaModel.getCompilationUnits()) {
+			Path compilationUnitPath = Paths.get(compilationUnit.getOriginalFilePath());
+			Path relativeCompilationUnitPath = projectContainerPath.relativize(compilationUnitPath);
+			compilationUnit.setOriginalFilePath(relativeCompilationUnitPath.toString().replace("\\", "/"));
+		}
 	}
 }
