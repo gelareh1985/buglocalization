@@ -1,11 +1,10 @@
 package org.sidiff.bug.localization.dataset.history.model;
 
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
+import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
@@ -43,10 +42,10 @@ public class Version {
 		this.commitMessage = commitMessage;
 	}
 	
-	public boolean hasChanges(Project project, Predicate<Path> fileChangeFilter) {
+	public boolean hasChanges(Project project, FileChangeFilter fileChangeFilter) {
 		
 		for (FileChange fileChange : getChanges()) {
-			if (fileChangeFilter.test(fileChange.getLocation())) {
+			if (!fileChangeFilter.filter(fileChange)) {
 				if (fileChange.getLocation().startsWith(project.getFolder())) {
 					return true;
 				}
@@ -159,16 +158,10 @@ public class Version {
 		text.append((workspace != null) ? workspace.getProjects().size() : "n.a.");
 		text.append(", hasBugReport:");
 		text.append(hasBugReport() ? "YES" : "NO");
+		text.append(hasBugReport() ? ", Bug-ID: " + getBugReport().getId() : "");
+		text.append(hasBugReport() ? ", Product: " + getBugReport().getProduct() : "");
 		text.append(", author=");
 		text.append(author);
-		
-		if (text.length() >= 150) {
-			text.setLength(147);
-			text.append("...");
-		} else {
-			text.setLength(150);
-		}
-		
 		text.append(", commitMessage=");
 		text.append(commitMessage.replace("\n", "").replace("\r", ""));
 		text.append("]");

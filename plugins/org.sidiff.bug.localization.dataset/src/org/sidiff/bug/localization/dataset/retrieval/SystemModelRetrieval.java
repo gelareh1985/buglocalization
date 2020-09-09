@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import org.eclipse.emf.common.util.URI;
@@ -28,12 +27,9 @@ public class SystemModelRetrieval {
 	
 	private SystemModelRepository systemModelRepository;
 	
-	private Predicate<Path> fileChangeFilter;
-	
-	public SystemModelRetrieval(SystemModelRetrievalProvider factory, Path codeRepositoryPath) {
-		this.provider = factory;
+	public SystemModelRetrieval(SystemModelRetrievalProvider provider, Path codeRepositoryPath) {
+		this.provider = provider;
 		this.codeRepositoryPath = codeRepositoryPath;
-		this.fileChangeFilter = factory.createFileChangeFilter();
 	}
 
 	public void retrieve() {
@@ -84,7 +80,7 @@ public class SystemModelRetrieval {
 		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, fileChangeFilter)) {
+		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, provider.getFileChangeFilter())) {
 			
 			// Discover the multi-view system model of the project version:
 			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));

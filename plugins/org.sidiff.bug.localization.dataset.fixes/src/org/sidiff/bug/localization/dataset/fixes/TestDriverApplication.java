@@ -52,9 +52,9 @@ public class TestDriverApplication implements IApplication {
 		System.out.println("Start bug report requests:");
 		bugReportRequestsExecutor.request(retrieveReportsForVersions.iterator());
 		
-		System.out.println("Bug reports filtered for " + bugReportRequestsExecutor.getFilteredReports().size() + " bug fixes");
-		System.out.println("No bug reports found for " + bugReportRequestsExecutor.getNoReports().size() + " bug fixes");
-		System.out.println("Bug report request failed for " + bugReportRequestsExecutor.getMissingReports().size() + " bug fixes");
+		System.out.println("Bug reports filtered for " + bugReportRequestsExecutor.getDiscardedBugReports().getFilteredReports().size() + " bug fixes");
+		System.out.println("No bug reports found for " + bugReportRequestsExecutor.getDiscardedBugReports().getNoReports().size() + " bug fixes");
+		System.out.println("Bug report request failed for " + bugReportRequestsExecutor.getDiscardedBugReports().getMissingReports().size() + " bug fixes");
 		System.out.println("Request count: " + bugReportRequestsExecutor.getRequestCounter());
 
 		System.out.println(history);

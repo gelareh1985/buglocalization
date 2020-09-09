@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -44,11 +43,8 @@ public class JavaModelRetrieval {
 	
 	private Path javaModelRepositoryPath;
 	
-	private Predicate<Path> fileChangeFilter;
-	
-	public JavaModelRetrieval(JavaModelRetrievalProvider factory, Path datasetPath) {
-		this.provider = factory;
-		this.fileChangeFilter = factory.createFileChangeFilter();
+	public JavaModelRetrieval(JavaModelRetrievalProvider provider, Path datasetPath) {
+		this.provider = provider;
 		
 		try {
 			this.dataset = DataSetStorage.load(datasetPath);
@@ -83,7 +79,7 @@ public class JavaModelRetrieval {
 					ChangeLocationMatcher changeLocationMatcher  = null;
 					
 					if ((newerVersion != null) && (newerVersion.hasBugReport())) {
-						changeLocationMatcher = new ChangeLocationMatcher(project.getName(), newerVersion.getChanges());
+						changeLocationMatcher = new ChangeLocationMatcher(project.getName(), newerVersion.getChanges(), provider.getFileChangeFilter());
 					}
 					
 					try {
@@ -134,7 +130,7 @@ public class JavaModelRetrieval {
 		Path systemModelFile = javaModelRepository.getSystemModelFile(project);
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, fileChangeFilter)) {
+		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, provider.getFileChangeFilter())) {
 			
 			// Discover the Java AST of the project version:
 			IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());

@@ -68,8 +68,8 @@ public class ChangeLocationMatch {
 			return matchingLocations; // found exact matches
 		} else {
 			if (matchingCandidate != null) {
-				if (Activator.getLogger().isLoggable(Level.FINE)) {
-					Activator.getLogger().log(Level.FINE, "No exact location match found - closest match: " + matchingCandidate);
+				if (Activator.getLogger().isLoggable(Level.WARNING)) {
+					Activator.getLogger().log(Level.WARNING, "No exact location match found - closest match: " + matchingCandidate);
 				}
 				return Collections.singletonList(matchingCandidate); // closest match
 			} else {

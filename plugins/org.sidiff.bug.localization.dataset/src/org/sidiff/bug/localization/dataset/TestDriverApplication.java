@@ -38,7 +38,7 @@ public class TestDriverApplication extends RetrievalApplication {
 			
 			bugFixHistory.retrieveBugFixChanges();
 			bugFixHistory.retrieveBugReports();
-			BugFixHistoryRetrieval.cleanUp(bugFixHistory.getDataset());
+			bugFixHistory.cleanUpHistory();
 			bugFixHistory.saveDataSet();
 			
 			// update data set path to output file

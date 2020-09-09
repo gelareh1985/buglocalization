@@ -3,12 +3,14 @@ package org.sidiff.bug.localization.dataset.retrieval;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.fixes.report.request.BugReportRequestsExecutor;
-import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.BugReportPlaceholder;
+import org.sidiff.bug.localization.dataset.fixes.report.request.DiscardedBugReports;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
@@ -28,8 +30,10 @@ public class BugFixHistoryRetrieval {
 	
 	private Path codeRepositoryPath;
 	
-	public BugFixHistoryRetrieval(BugFixHistoryRetrievalProvider factory, DataSet dataset, Path datasetStorage) {
-		this.provider = factory;
+	private DiscardedBugReports discardedBugReports;
+	
+	public BugFixHistoryRetrieval(BugFixHistoryRetrievalProvider provider, DataSet dataset, Path datasetStorage) {
+		this.provider = provider;
 		this.dataset = dataset;
 		this.datasetPath = datasetStorage;
 	}
@@ -38,7 +42,7 @@ public class BugFixHistoryRetrieval {
 		retrieveHistory();
 		retrieveBugFixChanges();
 		retrieveBugReports();
-		cleanUp(dataset);
+		cleanUpHistory();
 	}
 	
 	public void retrieveHistory() {
@@ -72,19 +76,72 @@ public class BugFixHistoryRetrieval {
 				provider.createBugReportFilter(), 
 				provider.createBugFixMessageIDMatcher());
 		bugReportRequestsExecutor.request(getBugFixes());
-		bugReportRequestsExecutor.setPlaceholders();
+		this.discardedBugReports = bugReportRequestsExecutor.getDiscardedBugReports();
+		
+		if (Activator.getLogger().isLoggable(Level.INFO)) {
+			Activator.getLogger().log(Level.INFO, "Bug reports filtered for " + discardedBugReports.getFilteredReports().size() + " bug fixes.");
+			Activator.getLogger().log(Level.INFO, "No bug reports found for " + discardedBugReports.getNoReports().size() + " bug fixes.");
+			Activator.getLogger().log(Level.INFO, "Bug report request failed for " + discardedBugReports.getMissingReports().size() + " bug fixes.");
+		}
 	}
 
-	public static void cleanUp(DataSet dataset) {
-		for (Iterator<Version> iterator = dataset.getHistory().getVersions().iterator(); iterator.hasNext();) {
-			Version version = iterator.next();
-			
-			if (version.getBugReport() instanceof BugReportPlaceholder) {
-				if (Activator.getLogger().isLoggable(Level.WARNING)) {
-					Activator.getLogger().log(Level.WARNING,
-							"Version with bug report removed (" + version.getBugReport() + "):" + version);
+	public void cleanUpHistory() {
+		
+		// NOTE: isVisible() -> true -> version is considered as bug fix
+		//       isVisible() -> false -> version is version previous to a bug fix
+		
+		for (Version missingReport : discardedBugReports.getMissingReports()) {
+			if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+				Activator.getLogger().log(Level.SEVERE,
+						"Version >> Bug Report Request Failed <<: " + missingReport);
+			}
+			missingReport.setVisible(false);
+			missingReport.setBugReport(null);
+		}
+		
+		for (Version noReport : discardedBugReports.getNoReports()) {
+			if (Activator.getLogger().isLoggable(Level.WARNING)) {
+				Activator.getLogger().log(Level.WARNING,
+						"Version >> No Bug Report Found <<: " + noReport);
+			}
+			noReport.setVisible(false);
+			noReport.setBugReport(null);
+		}
+		
+		for (Version filteredReport : discardedBugReports.getFilteredReports()) {
+			if (Activator.getLogger().isLoggable(Level.WARNING)) {
+				Activator.getLogger().log(Level.WARNING,
+						"Version >> Filtered Bug Report <<: " + filteredReport + ", Bug Report [summary: " + filteredReport.getBugReport().getSummary() + "]");
+			}
+			filteredReport.setVisible(false);
+			filteredReport.setBugReport(null);
+		}
+		
+		// Remove not needed intermediate versions:
+		List<Version> versions = dataset.getHistory().getVersions();
+		Set<Version> toBeRemoved = new LinkedHashSet<>();
+		
+		// Iterate from old to new versions:
+		for (int i = versions.size(); i-- > 0;) {
+			Version version = versions.get(i);
+			Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
+		
+			if (!version.hasBugReport()) {
+				if (newerVersion != null) {
+					if (!newerVersion.hasBugReport()) {
+						toBeRemoved.add(version);
+					}
+				} else {
+					toBeRemoved.add(version);
 				}
-				iterator.remove();
+			}
+		}
+
+		versions.removeAll(toBeRemoved);
+		
+		if (Activator.getLogger().isLoggable(Level.FINE)) {
+			for (Version version : toBeRemoved) {
+				Activator.getLogger().log(Level.FINE, "Version Discarded: " + version);
 			}
 		}
 	}

@@ -10,13 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.eclipse.modisco.java.Package;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.modisco.java.Package;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange.FileChangeType;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange.LineChangeType;
 import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
+import org.sidiff.bug.localization.dataset.history.model.changes.LineChange.LineChangeType;
+import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
@@ -42,30 +43,36 @@ public class ChangeLocationMatcher {
 		FILE_CHANGE_MAP.put(FileChangeType.RENAME, ChangeType.MODIFY);
 	}
 
-	private String projectName = "";
+	private String projectName;
 	
 	private Map<String, List<ChangeLocationMatch>> fileToChangeIndex;
 	
 	private Map<FileChange, Package> addedFiles;
 	
-	public ChangeLocationMatcher(String projectName, Collection<FileChange> fileChanges) {
+	public ChangeLocationMatcher(String projectName, Collection<FileChange> fileChanges, FileChangeFilter fileChangeFilter) {
 		this.projectName = projectName;
 		this.fileToChangeIndex = new HashMap<>();
 		this.addedFiles = new HashMap<>();
 		
 		for (FileChange fileChange : fileChanges) {
-			if (fileChange.getLocation().startsWith(projectName)) {
-				if (fileChange.getType().equals(FileChangeType.ADD)) {
-					addedFiles.put(fileChange, null);
-				} else {
-					String path = fileChange.getLocation().toString().replace("\\", "/");
-					List<ChangeLocationMatch> changeLocationMatches = new ArrayList<>(fileChange.getLines().size());
-
-					for (LineChange lineChange : fileChange.getLines()) {
-						changeLocationMatches.add(new ChangeLocationMatch(lineChange));
+			if (!fileChangeFilter.filter(fileChange)) {
+				if (fileChange.getLocation().startsWith(projectName)) {
+					if (fileChange.getType().equals(FileChangeType.ADD)) {
+						addedFiles.put(fileChange, null);
+					} else {
+						String path = fileChange.getLocation().toString().replace("\\", "/");
+						List<ChangeLocationMatch> changeLocationMatches = new ArrayList<>(fileChange.getLines().size());
+						
+						for (LineChange lineChange : fileChange.getLines()) {
+							changeLocationMatches.add(new ChangeLocationMatch(lineChange));
+						}
+						
+						fileToChangeIndex.put(path, changeLocationMatches);
 					}
-
-					fileToChangeIndex.put(path, changeLocationMatches);
+				}
+			} else {
+				if (Activator.getLogger().isLoggable(Level.INFO)) {
+					Activator.getLogger().log(Level.INFO, "File Change Filtered: " + fileChange);
 				}
 			}
 		}

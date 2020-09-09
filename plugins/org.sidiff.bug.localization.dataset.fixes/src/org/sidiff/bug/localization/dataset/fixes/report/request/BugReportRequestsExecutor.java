@@ -2,19 +2,15 @@ package org.sidiff.bug.localization.dataset.fixes.report.request;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import org.sidiff.bug.localization.dataset.fixes.Activator;
 import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugFixMessageIDMatcher;
 import org.sidiff.bug.localization.dataset.fixes.report.request.filter.BugReportFilter;
-import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.FilteredBugReport;
-import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.MissingBugReport;
-import org.sidiff.bug.localization.dataset.fixes.report.request.placeholders.NoBugReportFound;
-import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.Bugtracker;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
@@ -33,12 +29,8 @@ public class BugReportRequestsExecutor {
 	
 	private int requestCounter = 0;
 	
-	private List<Version> missingReports;
-	
-	private List<Version> noReports;
-	
-	private List<Version> filteredReports;
-	
+	private DiscardedBugReports discardedBugReports;
+
 	public BugReportRequestsExecutor(Bugtracker bugtracker, BugReportFilter bugReportFilter, BugFixMessageIDMatcher bugFixMessageIDMatcher) {
 		this(bugtracker, bugReportFilter, bugFixMessageIDMatcher, 5, 3);
 	}
@@ -58,21 +50,16 @@ public class BugReportRequestsExecutor {
 	
 	public void request(Iterator<Version> versions) {
 		List<BugReportResponse> requests = new ArrayList<>();
-		
-		this.missingReports = new LinkedList<>();
-		versions.forEachRemaining(missingReports::add);
-		
-		this.noReports = new ArrayList<>();
-		this.filteredReports = new ArrayList<>();
-		
+		this.discardedBugReports = new DiscardedBugReports(versions);
+
 		this.retryCount++;
 		
-		while (!missingReports.isEmpty() && (retryCount > 0)) {
+		while (!discardedBugReports.getMissingReports().isEmpty() && (retryCount > 0)) {
 			--retryCount;
 			++requestCounter;
 			
 			// start requests:
-			for (Version version : missingReports) {
+			for (Version version : discardedBugReports.getMissingReports()) {
 				int bugID = bugFixMessageIDMatcher.matchBugID(version.getCommitMessage());
 				BugReportRequest request = new BugReportRequest(bugtracker, version, bugID);
 				Future<Boolean> response = executorService.submit(request);
@@ -87,20 +74,20 @@ public class BugReportRequestsExecutor {
 						BugReport bugReport = response.getRequest().getVersion().getBugReport();
 						
 						if (bugReportFilter.filter(bugReport)) {
-							response.getRequest().getVersion().setBugReport(new FilteredBugReport(bugReport));
-							filteredReports.add(response.getRequest().getVersion());
+							discardedBugReports.getFilteredReports().add(response.getRequest().getVersion());
 							
 							if (Activator.getLogger().isLoggable(Level.FINE)) {
-								Activator.getLogger().log(Level.FINE, "Bug report filtered for bug ID: " + response.getRequest().getBugID());
+								Activator.getLogger().log(Level.FINE, "Bug report filtered for bug ID: " 
+										+ response.getRequest().getBugID() + " Product: " + bugReport.getProduct());
 							}
 						}
-						missingReports.remove(response.getRequest().getVersion());
+						discardedBugReports.getMissingReports().remove(response.getRequest().getVersion());
 					} else {
-						noReports.add(response.getRequest().getVersion());
+						discardedBugReports.getNoReports().add(response.getRequest().getVersion());
 					}
 				} catch (Throwable e) {
 					
-					// report:
+					// logging:
 					if (retryCount == 0) {
 						
 						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
@@ -114,37 +101,19 @@ public class BugReportRequestsExecutor {
 						}
 					}
 				}
+				
+				// logging:
+				if (Activator.getLogger().isLoggable(Level.FINE)) {
+					Activator.getLogger().log(Level.FINE, "Remaining Reports: " + discardedBugReports.getMissingReports().size());
+				}
 			}
 		}
 		
 		executorService.shutdown();
 	}
 	
-	public void setPlaceholders() {
-		
-		for (Version version : missingReports) {
-			version.setBugReport(MissingBugReport.getInstance());
-		}
-		
-		for (Version version : noReports) {
-			version.setBugReport(NoBugReportFound.getInstance());
-		}
-		
-		for (Version version : filteredReports) {
-			version.setBugReport(new FilteredBugReport(version.getBugReport()));
-		}
-	}
-	
-	public List<Version> getMissingReports() {
-		return missingReports;
-	}
-
-	public List<Version> getNoReports() {
-		return noReports;
-	}
-	
-	public List<Version> getFilteredReports() {
-		return filteredReports;
+	public DiscardedBugReports getDiscardedBugReports() {
+		return discardedBugReports;
 	}
 	
 	public int getRequestCounter() {

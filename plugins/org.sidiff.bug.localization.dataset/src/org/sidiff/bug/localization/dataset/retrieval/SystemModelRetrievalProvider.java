@@ -1,11 +1,8 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
-import java.nio.file.Path;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaModel2UMLClassSystemModel;
@@ -21,7 +18,7 @@ public class SystemModelRetrievalProvider {
 	/**
 	 * Files to be tested for changes, whether a model needs to be recalculated.
 	 */
-	private Supplier<Predicate<Path>> fileChangeFilter;
+	private FileChangeFilter fileChangeFilter;
 	
 	@FunctionalInterface
 	public interface SystemModelDiscoverer {
@@ -30,7 +27,7 @@ public class SystemModelRetrievalProvider {
 	
 	public SystemModelRetrievalProvider(
 			SystemModelDiscoverer[] systemModelDiscoverer,
-			Supplier<Predicate<Path>> fileChangeFilter) {
+			FileChangeFilter fileChangeFilter) {
 		this.systemModelDiscoverer = systemModelDiscoverer;
 		this.fileChangeFilter = fileChangeFilter;
 	}
@@ -51,7 +48,7 @@ public class SystemModelRetrievalProvider {
 		};
 		
 		this.systemModelDiscoverer = new SystemModelDiscoverer[] {umlClasses};
-		this.fileChangeFilter = () -> (fileChangePath) -> fileChangePath.toString().endsWith(".java");
+		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
 	}
 
 	private void moveViews(SystemModel source, SystemModel target) {
@@ -71,11 +68,11 @@ public class SystemModelRetrievalProvider {
 		this.systemModelDiscoverer = systemModelDiscoverer;
 	}
 	
-	public Predicate<Path> createFileChangeFilter() {
-		return fileChangeFilter.get();
+	public FileChangeFilter getFileChangeFilter() {
+		return fileChangeFilter;
 	}
 
-	public void setFileChangeFilter(Supplier<Predicate<Path>> fileChangeFilter) {
+	public void setFileChangeFilter(FileChangeFilter fileChangeFilter) {
 		this.fileChangeFilter = fileChangeFilter;
 	}
 }

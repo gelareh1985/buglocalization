@@ -16,5 +16,6 @@ Export-Package: org.sidiff.bug.localization.dataset.history,
  org.sidiff.bug.localization.dataset.history.model,
  org.sidiff.bug.localization.dataset.history.model.changes,
  org.sidiff.bug.localization.dataset.history.model.changes.json,
+ org.sidiff.bug.localization.dataset.history.model.changes.util,
  org.sidiff.bug.localization.dataset.history.repository,
  org.sidiff.bug.localization.dataset.history.repository.filter

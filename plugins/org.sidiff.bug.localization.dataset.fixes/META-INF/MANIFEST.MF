@@ -15,6 +15,5 @@ Export-Package: org.sidiff.bug.localization.dataset.fixes,
  org.sidiff.bug.localization.dataset.fixes.report.recovery,
  org.sidiff.bug.localization.dataset.fixes.report.recovery.test,
  org.sidiff.bug.localization.dataset.fixes.report.request,
- org.sidiff.bug.localization.dataset.fixes.report.request.filter,
- org.sidiff.bug.localization.dataset.fixes.report.request.placeholders
+ org.sidiff.bug.localization.dataset.fixes.report.request.filter
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

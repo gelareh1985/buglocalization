@@ -1,9 +1,9 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.nio.file.Path;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
@@ -26,12 +26,12 @@ public class JavaModelRetrievalProvider {
 	/**
 	 * Files to be tested for changes, whether a model needs to be recalculated.
 	 */
-	private Supplier<Predicate<Path>> fileChangeFilter;
+	private FileChangeFilter fileChangeFilter;
 	
 	public JavaModelRetrievalProvider(
 			Supplier<ProjectFilter> projectFilter, 
 			Supplier<Repository> codeRepository,
-			Supplier<Predicate<Path>> fileChangeFilter) {
+			FileChangeFilter fileChangeFilter) {
 		this.projectFilter = projectFilter;
 		this.codeRepository = codeRepository;
 		this.fileChangeFilter = fileChangeFilter;
@@ -40,7 +40,7 @@ public class JavaModelRetrievalProvider {
 	public JavaModelRetrievalProvider(Path codeRepositoryPath) {
 		this.projectFilter =  () -> new TestProjectFilter(new PDEProjectFilter());
 		this.codeRepository = () -> new GitRepository(codeRepositoryPath.toFile());
-		this.fileChangeFilter = () -> (fileChangePath) -> fileChangePath.toString().endsWith(".java");
+		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
 	}
 	
 	public Repository createCodeRepository() {
@@ -59,11 +59,11 @@ public class JavaModelRetrievalProvider {
 		this.projectFilter = projectFilter;
 	}
 
-	public Predicate<Path> createFileChangeFilter() {
-		return fileChangeFilter.get();
+	public FileChangeFilter getFileChangeFilter() {
+		return fileChangeFilter;
 	}
 
-	public void setFileChangeFilter(Supplier<Predicate<Path>> fileChangeFilter) {
+	public void setFileChangeFilter(FileChangeFilter fileChangeFilter) {
 		this.fileChangeFilter = fileChangeFilter;
 	}
 }
