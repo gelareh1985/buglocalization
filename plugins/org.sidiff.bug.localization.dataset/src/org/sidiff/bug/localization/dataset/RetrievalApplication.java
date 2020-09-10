@@ -108,8 +108,12 @@ public class RetrievalApplication implements IApplication {
 			BugFixHistoryRetrievalProvider bugFixHistoryConfig = new BugFixHistoryRetrievalProvider(
 					codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataSet.getBugtrackerProduct());
 			BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataSet, dataSetPath);
-			bugFixHistory.retrieve();
-			bugFixHistory.saveDataSet();
+			
+			try {
+				bugFixHistory.retrieve();
+			} finally {
+				bugFixHistory.saveDataSet();
+			}
 			
 			// update data set path to output file:
 			dataSetPath = bugFixHistory.getDatasetPath();
@@ -119,16 +123,24 @@ public class RetrievalApplication implements IApplication {
 		if (retrieveJavaModelHistory) {
 			JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(codeRepositoryPath);
 			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, dataSetPath);
-			javaModel.retrieve();
-			javaModel.saveDataSet();
+			
+			try {
+				javaModel.retrieve();
+			} finally {
+				javaModel.saveDataSet();
+			}
 		}
 		
 		// System model:
 		if (retrieveSystemModelHistory) {
 			SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
 			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath);
-			systemModel.retrieve();
-			systemModel.saveDataSet();
+			
+			try {
+				systemModel.retrieve();
+			} finally {
+				systemModel.saveDataSet();
+			}
 		}
 	}
 

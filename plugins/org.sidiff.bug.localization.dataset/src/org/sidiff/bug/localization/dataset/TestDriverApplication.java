@@ -15,8 +15,10 @@ import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
+import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 
 public class TestDriverApplication extends RetrievalApplication {
 
@@ -47,14 +49,15 @@ public class TestDriverApplication extends RetrievalApplication {
 		
 		// Java model:
 		{
-			JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(codeRepositoryPath);
+			JavaModelRetrievalProvider javaModelProvider = new JavaModelRetrievalProvider(codeRepositoryPath);
+			javaModelProvider.setProjectFilter(() -> new TestProjectFilter(new PDEProjectFilter()));
 			
 			{
-				filterProjects(javaModelFactory, "org.eclipse.jdt.core");
-				filterProjects(javaModelFactory, "org.eclipse.jdt.apt.core");
+				filterProjects(javaModelProvider, "org.eclipse.jdt.core");
+				filterProjects(javaModelProvider, "org.eclipse.jdt.apt.core");
 			}
 			
-			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, dataSetPath);
+			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelProvider, dataSetPath);
 			javaModel.retrieve();
 			javaModel.saveDataSet();
 		}

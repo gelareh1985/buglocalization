@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.history.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class History {
@@ -14,6 +15,11 @@ public class History {
 	}
 	
 	public List<Version> getVersions() {
+		
+		if (versions == null) {
+			return Collections.emptyList();
+		}
+		
 		return versions;
 	}
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +24,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
@@ -302,7 +303,7 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 	 * @generated NOT
 	 */
 	@Override
-	public void saveAll(Map<?, ?> options) {
+	public void saveAll(Map<Object, Object> options) {
 		saveAll(options, Collections.emptySet());
 	}
 
@@ -312,7 +313,12 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 	 * @generated NOT
 	 */
 	@Override
-	public void saveAll(Map<?, ?> options, Set<Resource> exclude) {
+	public void saveAll(Map<Object, Object> options, Set<Resource> exclude) {
+		
+		// allow control characters, e.g., invalid XML character Unicode 0xc
+		options = new HashMap<>(options);
+		options.put(XMLResource.OPTION_XML_VERSION, "1.1");
+		
 		URI baseURI = eResource().getURI().trimSegments(1);
 		Set<Resource> viewResources = new HashSet<>();
 		
@@ -329,13 +335,14 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 				URI fileURI = baseURI.appendSegment(fileName);
 				resource.setURI(fileURI);
 				
+				
 				resource.save(options);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		// Save system model (yiews must be saved first for relative paths):
+		// Save system model (views must be saved first for relative paths):
 		try {
 			eResource().save(options);
 		} catch (IOException e) {

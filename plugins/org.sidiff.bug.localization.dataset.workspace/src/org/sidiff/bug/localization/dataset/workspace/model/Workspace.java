@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.workspace.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Workspace {
@@ -15,6 +16,11 @@ public class Workspace {
 	}
 
 	public List<Project> getProjects() {
+		
+		if (projects == null) {
+			return Collections.emptyList();
+		}
+		
 		return projects;
 	}
 

@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.reports.model;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 public class BugReport {
@@ -115,6 +116,11 @@ public class BugReport {
 	}
 
 	public List<BugReportComment> getComments() {
+		
+		if (comments == null) {
+			return Collections.emptyList();
+		}
+		
 		return comments;
 	}
 

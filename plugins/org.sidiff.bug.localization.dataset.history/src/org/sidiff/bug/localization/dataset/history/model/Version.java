@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.history.model;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
@@ -34,7 +35,7 @@ public class Version {
 	private BugReport bugReport;
 	
 	private Workspace workspace;
-
+	
 	public Version(String url, Instant date, String author, String commitMessage) {
 		this.identification = url;
 		this.date = date;
@@ -117,6 +118,11 @@ public class Version {
 	}
 	
 	public List<FileChange> getChanges() {
+		
+		if (fileChanges == null) {
+			return Collections.emptyList();
+		}
+		
 		return fileChanges;
 	}
 	

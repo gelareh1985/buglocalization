@@ -107,13 +107,13 @@ public interface SystemModel extends DescribableElement {
 	 * <!-- end-user-doc -->
 	 * @generated NOT
 	 */
-	void saveAll(Map<?, ?> options);
+	void saveAll(Map<Object, Object> options);
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated NOT
 	 */
-	void saveAll(Map<?, ?> options, Set<Resource> exclude);
+	void saveAll(Map<Object, Object> options, Set<Resource> exclude);
 
 } // SystemModel
