@@ -8,14 +8,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jgit,
  org.sidiff.bug.localization.dataset.reports,
  org.sidiff.bug.localization.dataset.workspace,
- org.sidiff.bug.localization.common.utilities
+ org.sidiff.bug.localization.common.utilities,
+ org.sidiff.bug.localization.dataset.changes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.sidiff.bug.localization.retrival.history
 Bundle-ActivationPolicy: lazy
 Export-Package: org.sidiff.bug.localization.dataset.history,
  org.sidiff.bug.localization.dataset.history.model,
- org.sidiff.bug.localization.dataset.history.model.changes,
- org.sidiff.bug.localization.dataset.history.model.changes.json,
- org.sidiff.bug.localization.dataset.history.model.changes.util,
  org.sidiff.bug.localization.dataset.history.repository,
- org.sidiff.bug.localization.dataset.history.repository.filter
+ org.sidiff.bug.localization.dataset.history.repository.filter,
+ org.sidiff.bug.localization.dataset.history.util

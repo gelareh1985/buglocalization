@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
+
 public class BugReport {
 	
-	// The field names need to be equal to the JSON attribute names!
+	// The field names are equal to the JSON attribute names of bugzilla!
 
 	private int id;
 	
@@ -30,9 +32,13 @@ public class BugReport {
 	
 	private List<BugReportComment> comments;
 	
-	// Needs empty argument constructor for JSON deserialization!
+	/**
+	 * The changes that were applied to fix this bug.
+	 */
+	private List<FileChange> bugLocations;
 
 	public BugReport() {
+		this.id = -1;
 	}
 
 	public int getId() {
@@ -127,13 +133,22 @@ public class BugReport {
 	public void setComments(List<BugReportComment> comments) {
 		this.comments = comments;
 	}
+	
+	public List<FileChange> getBugLocations() {
+		return bugLocations;
+	}
+
+	public void setBugLocations(List<FileChange> bugLocations) {
+		this.bugLocations = bugLocations;
+	}
 
 	@Override
 	public String toString() {
 		return "BugReport [id=" + id + ", product=" + product + ", component=" + component + ", creation_time="
 				+ creation_time + ", creator=" + creator + ", assigned_to=" + assigned_to + ", severity=" + severity
 				+ ", resolution=" + resolution + ", status=" + status + ", summary=" + summary + ", comments.size="
-				+ (comments != null ? comments.size() : "n/a") + "]";
+				+ (comments != null ? comments.size() : "n/a") + ", bugLocations.size="
+				+ (comments != null ? bugLocations.size() : "n/a") + "]";
 	}
-	
+
 }

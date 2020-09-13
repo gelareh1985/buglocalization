@@ -1,6 +1,5 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -15,14 +14,18 @@ import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.ChangeLocationDiscoverer;
 import org.sidiff.bug.localization.dataset.changes.ChangeLocationMatcher;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
+import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
-import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
+import org.sidiff.bug.localization.dataset.retrieval.util.ProjectChangeProvider;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.ChangeProvider;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalJavaParser;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
@@ -43,14 +46,12 @@ public class JavaModelRetrieval {
 	
 	private Path javaModelRepositoryPath;
 	
-	public JavaModelRetrieval(JavaModelRetrievalProvider provider, Path datasetPath) {
+	private IncrementalJavaParser javaParser;
+	
+	public JavaModelRetrieval(JavaModelRetrievalProvider provider, DataSet dataset, Path datasetPath) {
 		this.provider = provider;
-		
-		try {
-			this.dataset = DataSetStorage.load(datasetPath);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		this.dataset = dataset;
+		this.javaParser = new IncrementalJavaParser(false); // TODO
 	}
 
 	public void retrieve() {
@@ -72,30 +73,8 @@ public class JavaModelRetrieval {
 				
 				Workspace workspace = retrieveWorkspaceVersion(history, version);
 				
-				if (!workspace.getProjects().isEmpty()) { // optimization
-					for (Project project : workspace.getProjects()) {
-						
-						// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-						// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-						ChangeLocationMatcher changeLocationMatcher  = null;
-						
-						if ((newerVersion != null) && (newerVersion.hasBugReport())) {
-							changeLocationMatcher = new ChangeLocationMatcher(project.getName(), newerVersion.getChanges(), provider.getFileChangeFilter());
-						}
-						
-						try {
-							retrieveJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
-						} catch (DiscoveryException e) {
-							if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-								Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
-										+ project.getName() + "' version " + version.getIdentification());
-							}
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+				// Workspace -> Java Models
+				retrieveWorkspaceJavaModelVersion(olderVersion, version, newerVersion, workspace);
 				
 				// Store Java AST model workspace as revision:
 				javaModelRepository.commitVersion(version, olderVersion);
@@ -110,6 +89,35 @@ public class JavaModelRetrieval {
 		}
 	}
 
+	private void retrieveWorkspaceJavaModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
+		if (!workspace.getProjects().isEmpty()) { // optimization
+			for (Project project : workspace.getProjects()) {
+				
+				// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+				// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+				ChangeLocationMatcher changeLocationMatcher  = null;
+				
+				if ((newerVersion != null) && (newerVersion.hasBugReport())) {
+					changeLocationMatcher = new ChangeLocationMatcher(
+							project.getName(), newerVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter());
+				}
+				
+				try {
+					// Project -> Java Model
+					retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
+				} catch (DiscoveryException e) {
+					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+						Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
+								+ project.getName() + "' version " + version.getIdentification());
+					}
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	private Workspace retrieveWorkspaceVersion(History history, Version version) {
 		codeRepository.checkout(history, version);
 		
@@ -117,16 +125,19 @@ public class JavaModelRetrieval {
 			Activator.getLogger().log(Level.FINER, "Retrieve Workspace: " + version);
 		}
 		
-		Workspace workspace = new Workspace();
-		ProjectFilter projectFilter = provider.createProjectFilter();
-		WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workspace, codeRepositoryPath);
-		workspaceBuilder.findProjects(codeRepositoryPath, projectFilter);
+		Workspace discoveredWorkspace = version.getWorkspace();
+		WorkspaceBuilder workspaceDiscoverer = new WorkspaceBuilder(discoveredWorkspace, codeRepositoryPath);
+		workspaceDiscoverer.cleanWorkspace();
 		
-		version.setWorkspace(workspace);
-		return workspace;
+		// Load and filter workspace:
+		ProjectFilter projectFilter = provider.createProjectFilter();
+		Workspace loadedWorkspace = workspaceDiscoverer.createProjects(projectFilter);
+		version.setWorkspace(loadedWorkspace);
+		
+		return loadedWorkspace;
 	}
 
-	private void retrieveJavaModelVersion(Version olderVersion, Version version, Project project, ChangeLocationMatcher changeLocationMatcher) 
+	private void retrieveProjectJavaModelVersion(Version olderVersion, Version version, Project project, ChangeLocationMatcher changeLocationMatcher) 
 			throws DiscoveryException, IOException {
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
@@ -136,11 +147,15 @@ public class JavaModelRetrieval {
 		Path systemModelFile = javaModelRepository.getSystemModelFile(project);
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, provider.getFileChangeFilter())) {
+		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
+			
+			// Calculate changed files in project for incremental AST parser:
+			List<FileChange> projectFileChanges = HistoryUtil.getChanges(project, version.getFileChanges(), provider.getFileChangeFilter());
+			ChangeProvider changeProvider = new ProjectChangeProvider(projectFileChanges);
 			
 			// Discover the Java AST of the project version:
 			IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-			JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel();
+			JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel(javaParser, changeProvider);
 			SystemModel systemModel;
 			
 			if (changeLocationMatcher != null) {

@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.sidiff.bug.localization.dataset.reports;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.sidiff.bug.localization.dataset.reports.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.sidiff.bug.localization.common.utilities
+ org.sidiff.bug.localization.common.utilities,
+ org.sidiff.bug.localization.dataset.changes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval.reports
 Bundle-ActivationPolicy: lazy

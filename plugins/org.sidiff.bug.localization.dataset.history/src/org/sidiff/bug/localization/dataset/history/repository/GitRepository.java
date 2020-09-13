@@ -31,13 +31,13 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange.LineChangeType;
 import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange.FileChangeType;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange.LineChangeType;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 
 public class GitRepository implements Repository {
@@ -169,7 +169,7 @@ public class GitRepository implements Repository {
 		boolean succeeded = checkout(version.getIdentification());
 		
 		if (!succeeded) {
-			Activator.getLogger().log(Level.SEVERE, "Could not check out version=" + version + ", History=" + history);
+			Activator.getLogger().log(Level.SEVERE, "Could not check out version=" + version);
 			return false;
 		}
 		
@@ -247,17 +247,36 @@ public class GitRepository implements Repository {
 	}
 	
 	@Override
-	public List<FileChange> getChanges(Version version) {
-		
+	public List<FileChange> getChanges(Version versionA, Version versionB, boolean lines) {
 		try (Git git = openGitRepository()) {
-			ObjectId oldHead = git.getRepository().resolve(version.getIdentification() + "~1^{tree}");
-            ObjectId head = git.getRepository().resolve(version.getIdentification() + "^{tree}");
-
+			ObjectId idA = git.getRepository().resolve(versionA.getIdentification() + "^{tree}");
+			ObjectId idB = git.getRepository().resolve(versionB.getIdentification() + "^{tree}");
+			return getChanges(idA, idB, lines);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
+	}
+	
+	@Override
+	public List<FileChange> getChanges(Version version, boolean lines) {
+		try (Git git = openGitRepository()) {
+			ObjectId idA = git.getRepository().resolve(version.getIdentification() + "~1^{tree}");
+			ObjectId idB = git.getRepository().resolve(version.getIdentification() + "^{tree}");
+			return getChanges(idA, idB, lines);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
+	}
+	
+	private List<FileChange> getChanges(ObjectId idA, ObjectId idB, boolean lines) {
+		try (Git git = openGitRepository()) {
     		try (ObjectReader reader = git.getRepository().newObjectReader()) {
         		CanonicalTreeParser oldTreeIterator = new CanonicalTreeParser();
-        		oldTreeIterator.reset(reader, oldHead);
+        		oldTreeIterator.reset(reader, idA);
         		CanonicalTreeParser newTreeIterator = new CanonicalTreeParser();
-        		newTreeIterator.reset(reader, head);
+        		newTreeIterator.reset(reader, idB);
 
         		OutputStream outputStream = DisabledOutputStream.INSTANCE;
         		
@@ -283,16 +302,18 @@ public class GitRepository implements Repository {
 						fileChanges.add(fileChange);
 						
 						// changed lines:
-						for (Edit edit : fileHeader.toEditList()) {
-							LineChange lineChange = new LineChange();
-							lineChange.setType(LineChangeType.valueOf(edit.getType().toString()));
-							
-							lineChange.setBeginA(edit.getBeginA());
-							lineChange.setEndA(edit.getEndA());
-							lineChange.setBeginB(edit.getBeginB());
-							lineChange.setEndB(edit.getEndB());
-							
-							fileChange.getLines().add(lineChange);
+						if (lines) {
+							for (Edit edit : fileHeader.toEditList()) {
+								LineChange lineChange = new LineChange();
+								lineChange.setType(LineChangeType.valueOf(edit.getType().toString()));
+								
+								lineChange.setBeginA(edit.getBeginA());
+								lineChange.setEndA(edit.getEndA());
+								lineChange.setBeginB(edit.getBeginB());
+								lineChange.setEndB(edit.getEndB());
+								
+								fileChange.getLines().add(lineChange);
+							}
 						}
 					}
 
@@ -307,4 +328,5 @@ public class GitRepository implements Repository {
 		
 		return Collections.emptyList();
 	}
+	
 }

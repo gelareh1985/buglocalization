@@ -2,7 +2,7 @@ package org.sidiff.bug.localization.dataset.retrieval;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
-import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
+import org.sidiff.bug.localization.dataset.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaModel2UMLClassSystemModel;

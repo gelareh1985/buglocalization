@@ -6,9 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.json.JsonLineChangeDeserializer;
-import org.sidiff.bug.localization.dataset.history.model.changes.json.JsonLineChangeSerializer;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange;
+import org.sidiff.bug.localization.dataset.changes.model.json.JsonLineChangeDeserializer;
+import org.sidiff.bug.localization.dataset.changes.model.json.JsonLineChangeSerializer;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 
 import com.google.gson.GsonBuilder;

@@ -10,6 +10,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
@@ -80,7 +81,7 @@ public class SystemModelRetrieval {
 		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (!version.hasPreviousVersion(olderVersion, project) || version.hasChanges(project, provider.getFileChangeFilter())) {
+		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
 			
 			// Discover the multi-view system model of the project version:
 			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));

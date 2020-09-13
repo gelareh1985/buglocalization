@@ -4,14 +4,16 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
+import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
-import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class Version {
 	
+	/**
+	 * Creates a binary view on the history, e.g., filtered versions ({@link VersionFilter}).
+	 */
 	private boolean visible = true;
 
 	/**
@@ -24,49 +26,41 @@ public class Version {
 	 */
 	private String identificationTrace;
 	
+	/**
+	 * The date on which this version was commmitted to the repository.
+	 */
 	private Instant date;
 	
+	/**
+	 * The author of the committed version.
+	 */
 	private String author;
 	
+	/**
+	 * The message of the committed version. 
+	 */
 	private String commitMessage;
 	
+	/**
+	 * The files changes between this and the last version in this history.
+	 */
 	private List<FileChange> fileChanges;
 	
-	private BugReport bugReport;
-	
+	/**
+	 * All projects that are contained in this version of the workspace.
+	 */
 	private Workspace workspace;
+	
+	/**
+	 * An optional bug report attached to this version. We refer to those version as bug fixes.
+	 */
+	private BugReport bugReport;
 	
 	public Version(String url, Instant date, String author, String commitMessage) {
 		this.identification = url;
 		this.date = date;
 		this.author = author;
 		this.commitMessage = commitMessage;
-	}
-	
-	public boolean hasChanges(Project project, FileChangeFilter fileChangeFilter) {
-		
-		for (FileChange fileChange : getChanges()) {
-			if (!fileChangeFilter.filter(fileChange)) {
-				if (fileChange.getLocation().startsWith(project.getFolder())) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	public boolean hasPreviousVersion(Version oldVersion, Project project) {
-		
-		if (oldVersion != null) {
-			for (Project oldProject : oldVersion.getWorkspace().getProjects()) {
-				if (oldProject.getName().equals(project.getName())) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
 	}
 	
 	public boolean isVisible() {
@@ -117,7 +111,7 @@ public class Version {
 		this.commitMessage = commitMessage;
 	}
 	
-	public List<FileChange> getChanges() {
+	public List<FileChange> getFileChanges() {
 		
 		if (fileChanges == null) {
 			return Collections.emptyList();
@@ -126,7 +120,7 @@ public class Version {
 		return fileChanges;
 	}
 	
-	public void setChanges(List<FileChange> fileChanges) {
+	public void setFileChanges(List<FileChange> fileChanges) {
 		this.fileChanges = fileChanges;
 	}
 

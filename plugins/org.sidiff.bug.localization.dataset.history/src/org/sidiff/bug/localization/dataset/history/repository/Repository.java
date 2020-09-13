@@ -3,9 +3,9 @@ package org.sidiff.bug.localization.dataset.history.repository;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 
 public interface Repository {
@@ -14,7 +14,9 @@ public interface Repository {
 	
 	History getHistory(VersionFilter filter);
 	
-	List<FileChange> getChanges(Version version);
+	List<FileChange> getChanges(Version versionA, Version versionB, boolean lines);
+	
+	List<FileChange> getChanges(Version version, boolean lines);
 	
 	boolean checkout(History history, Version version);
 	

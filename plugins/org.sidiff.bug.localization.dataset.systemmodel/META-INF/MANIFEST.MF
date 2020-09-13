@@ -10,6 +10,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.sidiff.bug.localization.dataset.systemmodel,
  org.sidiff.bug.localization.dataset.systemmodel.discovery,
  org.sidiff.bug.localization.dataset.systemmodel.discovery.discoverer,
+ org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental,
  org.sidiff.bug.localization.dataset.systemmodel.impl,
  org.sidiff.bug.localization.dataset.systemmodel.util,
  org.sidiff.bug.localization.dataset.systemmodel.views
@@ -25,6 +26,8 @@ Require-Bundle: eu.artist.migration.mdt.javaee.java.umlactivity,
  org.sidiff.bug.localization.common.utilities,
  org.eclipse.m2m.atl.core,
  org.eclipse.m2m.atl.core.emf,
- org.eclipse.modisco.java
+ org.eclipse.modisco.java,
+ org.eclipse.jdt.core,
+ org.eclipse.modisco.infra.common.core
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.sidiff.bug.localization.dataset.systemmodel

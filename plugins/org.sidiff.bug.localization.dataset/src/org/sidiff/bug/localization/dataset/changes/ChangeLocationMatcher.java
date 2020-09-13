@@ -13,11 +13,11 @@ import java.util.logging.Level;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.modisco.java.Package;
 import org.sidiff.bug.localization.dataset.Activator;
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange.FileChangeType;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange.LineChangeType;
-import org.sidiff.bug.localization.dataset.history.model.changes.util.FileChangeFilter;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange.LineChangeType;
+import org.sidiff.bug.localization.dataset.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
@@ -71,8 +71,8 @@ public class ChangeLocationMatcher {
 					}
 				}
 			} else {
-				if (Activator.getLogger().isLoggable(Level.INFO)) {
-					Activator.getLogger().log(Level.INFO, "File Change Filtered: " + fileChange);
+				if (Activator.getLogger().isLoggable(Level.FINE)) {
+					Activator.getLogger().log(Level.FINE, "File Change Filtered: " + fileChange);
 				}
 			}
 		}

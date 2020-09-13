@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 import org.eclipse.emf.ecore.EObject;
 import org.sidiff.bug.localization.dataset.Activator;
-import org.sidiff.bug.localization.dataset.history.model.changes.LineChange;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 

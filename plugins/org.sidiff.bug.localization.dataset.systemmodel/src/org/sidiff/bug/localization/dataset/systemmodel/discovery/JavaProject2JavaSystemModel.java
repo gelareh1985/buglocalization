@@ -18,9 +18,24 @@ import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
 import org.eclipse.modisco.kdm.source.extension.discovery.SourceVisitListener;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.ChangeProvider;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalDiscoverJavaModelFromProject;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalJavaParser;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 
 public class JavaProject2JavaSystemModel {
+	
+	private IncrementalJavaParser javaParser;
+	
+	private ChangeProvider changeProvider;
+	
+	public JavaProject2JavaSystemModel() {
+	}
+	
+	public JavaProject2JavaSystemModel(IncrementalJavaParser javaParser, ChangeProvider changeProvider) {
+		this.javaParser = javaParser;
+		this.changeProvider = changeProvider;
+	}
 
 	public SystemModel discover(IProject project, SourceVisitListener discovererListener, IProgressMonitor monitor) throws DiscoveryException {
 		SubMonitor subMonitor = SubMonitor.convert(monitor);
@@ -35,14 +50,33 @@ public class JavaProject2JavaSystemModel {
 		SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(targetURI);
 		
 		// https://help.eclipse.org/2019-12/index.jsp?topic=%2Forg.eclipse.modisco.java.doc%2Fmediawiki%2Fjava_discoverer%2Fplugin_dev.html
-		DiscoverJavaModelFromProject javaDiscoverer = new DiscoverJavaModelFromProject();
-				
+		DiscoverJavaModelFromProject javaDiscoverer;
+		
+		// Use incremental Java parser:
+		long t = System.currentTimeMillis();
+		
+		if ((changeProvider != null) && (javaParser != null)) {
+			javaDiscoverer = new IncrementalDiscoverJavaModelFromProject(project, javaParser, changeProvider);
+			javaDiscoverer.setDeepAnalysis(javaParser.isDeepAnalysis());
+			javaDiscoverer.setRefreshSourceBeforeDiscovery(true);
+		} else {
+			javaDiscoverer = new DiscoverJavaModelFromProject();
+		}
+		
+		
+		// Check for new/removed files in the project:
+		javaDiscoverer.setRefreshSourceBeforeDiscovery(true);
+		
 		// Listen to change locations:
 		if (discovererListener != null) {
 			javaDiscoverer.addSourceVisitListener(discovererListener);
 		}
 
+		// START
 		javaDiscoverer.discoverElement(project, subMonitor.split(90));
+		System.out.println(project.getName() + ": " + (System.currentTimeMillis() - t));
+		
+		// Read result:
 		Resource javaResource = javaDiscoverer.getTargetModel();
 		javaResource.setURI(targetURI.trimFileExtension().trimFileExtension().appendFileExtension("java.xmi"));
 		makeProjectRelativePaths(javaResource, project);

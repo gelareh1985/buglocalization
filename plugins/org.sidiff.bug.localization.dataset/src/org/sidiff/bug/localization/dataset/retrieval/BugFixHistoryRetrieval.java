@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.sidiff.bug.localization.dataset.Activator;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.fixes.report.request.BugReportRequestsExecutor;
 import org.sidiff.bug.localization.dataset.fixes.report.request.DiscardedBugReports;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
-import org.sidiff.bug.localization.dataset.history.model.changes.FileChange;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
@@ -40,8 +40,8 @@ public class BugFixHistoryRetrieval {
 	
 	public void retrieve() {
 		retrieveHistory();
-		retrieveBugFixChanges();
 		retrieveBugReports();
+		retrieveBugFixLocations();
 		cleanUpHistory();
 	}
 	
@@ -63,10 +63,10 @@ public class BugFixHistoryRetrieval {
 		dataset.setHistory(history);
 	}
 
-	public void retrieveBugFixChanges() {
+	public void retrieveBugFixLocations() {
 		for (Version version : (Iterable<Version>) () -> getBugFixes()) {
-			List<FileChange> fixChanges = codeRepository.getChanges(version);
-			version.setChanges(fixChanges);
+			List<FileChange> fixChanges = codeRepository.getChanges(version, true);
+			version.getBugReport().setBugLocations(fixChanges);
 		}
 	}
 
@@ -125,6 +125,8 @@ public class BugFixHistoryRetrieval {
 		for (int i = versions.size(); i-- > 0;) {
 			Version version = versions.get(i);
 			Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
+			
+			version.setVisible(true);
 		
 			if (!version.hasBugReport()) {
 				if (newerVersion != null) {
