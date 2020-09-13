@@ -14,11 +14,11 @@ public class IncrementalJavaParser {
 
 	private Map<String, CompilationUnit> parsedCompilationUnits;
 	
-	private boolean deepAnalysis;
+	private boolean ignoreMethodBodies;
 	
-	public IncrementalJavaParser(boolean deepAnalysis) {
+	public IncrementalJavaParser(boolean ignoreMethodBodies) {
 		this.parsedCompilationUnits = new LinkedHashMap<>();
-		this.deepAnalysis = deepAnalysis;
+		this.ignoreMethodBodies = ignoreMethodBodies;
 	}
 	
 	public void update(Set<IPath> changed) {
@@ -52,12 +52,12 @@ public class IncrementalJavaParser {
 		}
 	}
 	
-	public boolean isDeepAnalysis() {
-		return deepAnalysis;
+	public boolean isIgnoreMethodBodies() {
+		return ignoreMethodBodies;
 	}
 
-	public void setDeepAnalysis(boolean deepAnalysis) {
-		this.deepAnalysis = deepAnalysis;
+	public void setIgnoreMethodBodies(boolean deepAnalysis) {
+		this.ignoreMethodBodies = deepAnalysis;
 	}
 	
 	// >>> protected static method parseCompilationUnit cannot be overwritten :(
@@ -71,7 +71,7 @@ public class IncrementalJavaParser {
 		parser.setSource(source);
 		
 		// >>> optimization: already ignore method bodies on parsing
-		parser.setIgnoreMethodBodies(!isDeepAnalysis());
+		parser.setIgnoreMethodBodies(isIgnoreMethodBodies());
 		// <<<
 		
 		CompilationUnit parsedCompilationUnit = (CompilationUnit) parser.createAST(null);

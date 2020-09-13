@@ -57,15 +57,13 @@ public class SystemModelRetrievalProvider {
 			target.getViews().add(sourceView);
 		}
 	}
-
-	public void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
-		for (SystemModelDiscoverer systemModelDiscovery : systemModelDiscoverer) {
-			systemModelDiscovery.discover(systemModel, javaSystemModel);
-		}
-	}
 	
 	public void setSystemModelDiscoverer(SystemModelDiscoverer[] systemModelDiscoverer) {
 		this.systemModelDiscoverer = systemModelDiscoverer;
+	}
+	
+	public SystemModelDiscoverer[] getSystemModelDiscoverer() {
+		return systemModelDiscoverer;
 	}
 	
 	public FileChangeFilter getFileChangeFilter() {

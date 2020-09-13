@@ -51,7 +51,7 @@ public class JavaModelRetrieval {
 	public JavaModelRetrieval(JavaModelRetrievalProvider provider, DataSet dataset, Path datasetPath) {
 		this.provider = provider;
 		this.dataset = dataset;
-		this.javaParser = new IncrementalJavaParser(false); // TODO
+		this.javaParser = new IncrementalJavaParser(provider.isIgnoreMethodBodies());
 	}
 
 	public void retrieve() {
@@ -102,17 +102,15 @@ public class JavaModelRetrieval {
 							project.getName(), newerVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter());
 				}
 				
+				// Project -> Java Model
 				try {
-					// Project -> Java Model
 					retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
-				} catch (DiscoveryException e) {
+				} catch (Throwable e) {
+					e.printStackTrace();
+
 					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover Java model for '"
-								+ project.getName() + "' version " + version.getIdentification());
+						Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + project);
 					}
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}

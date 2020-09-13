@@ -12,6 +12,7 @@ import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider.SystemModelDiscoverer;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
@@ -86,7 +87,7 @@ public class SystemModelRetrieval {
 			// Discover the multi-view system model of the project version:
 			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
 			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
-			provider.discover(systemModel, javaSystemModel);
+			discover(systemModel, javaSystemModel);
 			
 			// Store system model in data set:
 			systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
@@ -95,6 +96,20 @@ public class SystemModelRetrieval {
 		
 		// Update data set path:
 		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
+	}
+	
+	private void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
+		for (SystemModelDiscoverer systemModelDiscovery : provider.getSystemModelDiscoverer()) {
+			try {
+				systemModelDiscovery.discover(systemModel, javaSystemModel);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				
+				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + javaSystemModel.eResource().getURI());
+				}
+			}
+		}
 	}
 	
 	public void saveDataSet() {

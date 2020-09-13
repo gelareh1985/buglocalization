@@ -21,20 +21,28 @@ public class JavaModelRetrievalProvider extends WorkspaceHistoryRetrievalProvide
 	 */
 	private FileChangeFilter fileChangeFilter;
 	
+	/**
+	 * Ignore methode bodies during Java AST parsing and Java model discovery.
+	 */
+	private boolean ignoreMethodBodies;
+	
 	public JavaModelRetrievalProvider(
 			Supplier<ProjectFilter> projectFilter, 
 			Supplier<Repository> codeRepository,
-			FileChangeFilter fileChangeFilter) {
+			FileChangeFilter fileChangeFilter,
+			boolean ignoreMethodBodies) {
 		
 		super(codeRepository, fileChangeFilter);
 		this.projectFilter = projectFilter;
 		this.fileChangeFilter = fileChangeFilter;
+		this.ignoreMethodBodies = ignoreMethodBodies;
 	}
 	
 	public JavaModelRetrievalProvider(Path codeRepositoryPath) {
 		super(codeRepositoryPath);
 		this.projectFilter =  () -> new JavaProjectFilter(); // new PDEProjectFilter();
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
+		this.ignoreMethodBodies = true;
 	}
 
 	public ProjectFilter createProjectFilter() {
@@ -51,5 +59,13 @@ public class JavaModelRetrievalProvider extends WorkspaceHistoryRetrievalProvide
 
 	public void setFileChangeFilter(FileChangeFilter fileChangeFilter) {
 		this.fileChangeFilter = fileChangeFilter;
+	}
+
+	public boolean isIgnoreMethodBodies() {
+		return ignoreMethodBodies;
+	}
+
+	public void setIgnoreMethodBodies(boolean ignoreMethodBodies) {
+		this.ignoreMethodBodies = ignoreMethodBodies;
 	}
 }

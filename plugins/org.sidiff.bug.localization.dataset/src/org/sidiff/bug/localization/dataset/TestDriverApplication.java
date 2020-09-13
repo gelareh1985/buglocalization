@@ -83,6 +83,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void filterProjects(JavaModelRetrievalProvider provider, String... projectNames) {
 		ProjectFilter parentProjectFilter = provider.createProjectFilter();
 		provider.setProjectFilter(() -> new ProjectNameFilter(

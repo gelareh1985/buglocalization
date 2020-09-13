@@ -53,16 +53,13 @@ public class JavaProject2JavaSystemModel {
 		DiscoverJavaModelFromProject javaDiscoverer;
 		
 		// Use incremental Java parser:
-		long t = System.currentTimeMillis();
-		
 		if ((changeProvider != null) && (javaParser != null)) {
 			javaDiscoverer = new IncrementalDiscoverJavaModelFromProject(project, javaParser, changeProvider);
-			javaDiscoverer.setDeepAnalysis(javaParser.isDeepAnalysis());
+			javaDiscoverer.setDeepAnalysis(!javaParser.isIgnoreMethodBodies());
 			javaDiscoverer.setRefreshSourceBeforeDiscovery(true);
 		} else {
 			javaDiscoverer = new DiscoverJavaModelFromProject();
 		}
-		
 		
 		// Check for new/removed files in the project:
 		javaDiscoverer.setRefreshSourceBeforeDiscovery(true);
@@ -74,7 +71,6 @@ public class JavaProject2JavaSystemModel {
 
 		// START
 		javaDiscoverer.discoverElement(project, subMonitor.split(90));
-		System.out.println(project.getName() + ": " + (System.currentTimeMillis() - t));
 		
 		// Read result:
 		Resource javaResource = javaDiscoverer.getTargetModel();
