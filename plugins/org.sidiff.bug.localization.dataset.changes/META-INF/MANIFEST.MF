@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Changes
+Bundle-SymbolicName: org.sidiff.bug.localization.dataset.changes
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.bug.localization.dataset.changes.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.sidiff.bug.localization.common.utilities
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.sidiff.bug.localization.dataset.changes
+Bundle-ActivationPolicy: lazy
+Export-Package: org.sidiff.bug.localization.dataset.changes.model,
+ org.sidiff.bug.localization.dataset.changes.model.json,
+ org.sidiff.bug.localization.dataset.changes.util
