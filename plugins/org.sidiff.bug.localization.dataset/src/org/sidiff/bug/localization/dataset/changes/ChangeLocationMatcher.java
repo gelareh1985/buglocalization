@@ -55,24 +55,24 @@ public class ChangeLocationMatcher {
 		this.addedFiles = new HashMap<>();
 		
 		for (FileChange fileChange : fileChanges) {
-			if (!fileChangeFilter.filter(fileChange)) {
-				if (fileChange.getLocation().startsWith(projectName)) {
+			if (fileChange.getLocation().startsWith(projectName)) {
+				if (!fileChangeFilter.filter(fileChange)) {
 					if (fileChange.getType().equals(FileChangeType.ADD)) {
 						addedFiles.put(fileChange, null);
 					} else {
 						String path = fileChange.getLocation().toString().replace("\\", "/");
 						List<ChangeLocationMatch> changeLocationMatches = new ArrayList<>(fileChange.getLines().size());
-						
+
 						for (LineChange lineChange : fileChange.getLines()) {
 							changeLocationMatches.add(new ChangeLocationMatch(lineChange));
 						}
-						
+
 						fileToChangeIndex.put(path, changeLocationMatches);
 					}
-				}
-			} else {
-				if (Activator.getLogger().isLoggable(Level.FINE)) {
-					Activator.getLogger().log(Level.FINE, "File Change Filtered: " + fileChange);
+				} else {
+					if (Activator.getLogger().isLoggable(Level.FINE)) {
+						Activator.getLogger().log(Level.FINE, "File Change Filtered: " + fileChange);
+					}
 				}
 			}
 		}
