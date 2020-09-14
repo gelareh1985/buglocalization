@@ -3,5 +3,5 @@
   "repositoryHost": "https://git.eclipse.org",
   "repositoryPath": "/r/jdt/eclipse.jdt.core.git",
   "bugtrackerHost": "https://bugs.eclipse.org",
-  "bugtrackerProduct": "JDT"
+  "bugtrackerProducts": ["JDT", "Platform"]
 }

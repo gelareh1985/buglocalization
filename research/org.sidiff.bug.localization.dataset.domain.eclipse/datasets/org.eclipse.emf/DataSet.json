@@ -3,5 +3,5 @@
   "repositoryHost": "https://git.eclipse.org",
   "repositoryPath": "/c/emf/org.eclipse.emf.git",
   "bugtrackerHost": "https://bugs.eclipse.org",
-  "bugtrackerProduct": "EMF"
+  "bugtrackerProducts": ["EMF"]
 }
