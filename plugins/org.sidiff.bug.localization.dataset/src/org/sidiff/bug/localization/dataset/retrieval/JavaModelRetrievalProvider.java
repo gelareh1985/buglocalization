@@ -22,9 +22,14 @@ public class JavaModelRetrievalProvider extends WorkspaceHistoryRetrievalProvide
 	private FileChangeFilter fileChangeFilter;
 	
 	/**
-	 * Ignore methode bodies during Java AST parsing and Java model discovery.
+	 * Ignore method bodies during Java AST parsing and Java model discovery.
 	 */
 	private boolean ignoreMethodBodies;
+	
+	/**
+	 * Cyclic save of the data set.
+	 */
+	private int intermediateSave = -1;
 	
 	public JavaModelRetrievalProvider(
 			Supplier<ProjectFilter> projectFilter, 
@@ -43,6 +48,7 @@ public class JavaModelRetrievalProvider extends WorkspaceHistoryRetrievalProvide
 		this.projectFilter =  () -> new JavaProjectFilter(); // new PDEProjectFilter();
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
 		this.ignoreMethodBodies = true;
+		this.intermediateSave = 100;
 	}
 
 	public ProjectFilter createProjectFilter() {
@@ -67,5 +73,13 @@ public class JavaModelRetrievalProvider extends WorkspaceHistoryRetrievalProvide
 
 	public void setIgnoreMethodBodies(boolean ignoreMethodBodies) {
 		this.ignoreMethodBodies = ignoreMethodBodies;
+	}
+
+	public int getIntermediateSave() {
+		return intermediateSave;
+	}
+
+	public void setIntermediateSave(int intermediateSave) {
+		this.intermediateSave = intermediateSave;
 	}
 }

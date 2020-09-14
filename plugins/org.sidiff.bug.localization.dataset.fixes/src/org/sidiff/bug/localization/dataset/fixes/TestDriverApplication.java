@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.fixes;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -25,7 +26,7 @@ public class TestDriverApplication implements IApplication {
 		org.sidiff.bug.localization.dataset.reports.Activator.getLogger().setLevel(Level.FINE);
 		org.sidiff.bug.localization.dataset.history.Activator.getLogger().setLevel(Level.FINE);
 		
-		String product = "JDT"; // for validation and filtering of bug reports
+		List<String> products = Arrays.asList(new String[] {"JDT", "Platform"}); // for validation and filtering of bug reports
 		
 		String repositoryURL = "https://git.eclipse.org/r/jdt/eclipse.jdt.core.git";
 		String repositoryName = repositoryURL.substring(repositoryURL.lastIndexOf("/") + 1,
@@ -45,7 +46,7 @@ public class TestDriverApplication implements IApplication {
 		// > TEST ON SUB LIST OF VERSIONS <
 		List<Version> retrieveReportsForVersions = history.getVersions().subList(0, 50);
 		BugzillaBugtracker bugtracker = new EclipseBugzillaBugtracker();
-		BugReportFilter bugReportFilter = new BugReportProductMatchingFilter(product);
+		BugReportFilter bugReportFilter = new BugReportProductMatchingFilter(products);
 //		BugReportFilter bugReportFilter = BugReportFilter.FILTER_NOTHING;
 		BugReportRequestsExecutor bugReportRequestsExecutor = new BugReportRequestsExecutor(bugtracker, bugReportFilter, bugFixMatcher);
 		

@@ -66,6 +66,15 @@ public class SystemModelRetrieval {
 				
 				// Store Java AST model workspace as revision:
 				systemModelRepository.commitVersion(version, olderVersion);
+				
+				// Intermediate save:
+				if ((provider.getIntermediateSave() > 0) && ((i + 1) % provider.getIntermediateSave()) == 0) {
+					saveDataSet();
+				}
+				
+				if (Activator.getLogger().isLoggable(Level.FINE)) {
+					Activator.getLogger().log(Level.FINE, "Discovered system model version " + (versions.size() - i) + " of " + versions.size() + " versions");
+				}
 			}
 		} finally {
 			javaModelRepository.resetRepository();
@@ -73,6 +82,11 @@ public class SystemModelRetrieval {
 	}
 
 	private void retrieveSystemModelVersion(Version olderVersion, Version version, Project project) throws DiscoveryException, IOException {
+		
+		// Clean up older version:
+		systemModelRepository.removeMissingProjects(olderVersion, version);
+		
+		// Load newer version:
 		javaModelRepository.checkout(version);
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
@@ -87,6 +101,9 @@ public class SystemModelRetrieval {
 			// Discover the multi-view system model of the project version:
 			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
 			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
+			systemModel.setName(project.getName());
+			
+			// START:
 			discover(systemModel, javaSystemModel);
 			
 			// Store system model in data set:

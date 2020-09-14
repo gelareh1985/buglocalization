@@ -1,5 +1,7 @@
 package org.sidiff.bug.localization.dataset.fixes.report.recovery;
 
+import java.util.List;
+
 import org.sidiff.bug.localization.dataset.fixes.report.request.filter.BugReportFilter;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 
@@ -8,14 +10,14 @@ import org.sidiff.bug.localization.dataset.reports.model.BugReport;
  */
 public class BugReportProductMatchingFilter implements BugReportFilter {
 	
-	private String product;
+	private List<String> products;
 
-	public BugReportProductMatchingFilter(String product) {
-		this.product = product;
+	public BugReportProductMatchingFilter(List<String> products) {
+		this.products = products;
 	}
 	
 	@Override
 	public boolean filter(BugReport bugReport) {
-		return (bugReport.getProduct() == null) || !bugReport.getProduct().equals(product);
+		return (bugReport.getProduct() == null) || !products.contains(bugReport.getProduct());
 	}
 }

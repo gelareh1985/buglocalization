@@ -148,7 +148,10 @@ public class Version {
 	public String toString() {
 		StringBuilder text = new StringBuilder();
 		
-		text.append("Version [ID=");
+		text.append("Version [");
+		text.append("visible=");
+		text.append(visible);
+		text.append(", ID=");
 		text.append(identification);
 		text.append(", ID-Trace=");
 		text.append(identificationTrace);

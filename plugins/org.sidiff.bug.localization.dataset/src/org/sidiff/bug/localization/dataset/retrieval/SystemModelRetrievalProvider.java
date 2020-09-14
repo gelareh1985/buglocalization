@@ -20,6 +20,11 @@ public class SystemModelRetrievalProvider {
 	 */
 	private FileChangeFilter fileChangeFilter;
 	
+	/**
+	 * Cyclic save of the data set.
+	 */
+	private int intermediateSave = -1;
+	
 	@FunctionalInterface
 	public interface SystemModelDiscoverer {
 		void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException;
@@ -49,6 +54,7 @@ public class SystemModelRetrievalProvider {
 		
 		this.systemModelDiscoverer = new SystemModelDiscoverer[] {umlClasses};
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
+		this.intermediateSave = 100;
 	}
 
 	private void moveViews(SystemModel source, SystemModel target) {
@@ -72,5 +78,13 @@ public class SystemModelRetrievalProvider {
 
 	public void setFileChangeFilter(FileChangeFilter fileChangeFilter) {
 		this.fileChangeFilter = fileChangeFilter;
+	}
+
+	public int getIntermediateSave() {
+		return intermediateSave;
+	}
+
+	public void setIntermediateSave(int intermediateSave) {
+		this.intermediateSave = intermediateSave;
 	}
 }

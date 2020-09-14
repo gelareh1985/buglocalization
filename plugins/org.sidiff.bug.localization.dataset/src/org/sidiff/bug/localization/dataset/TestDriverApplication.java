@@ -23,6 +23,10 @@ import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 
 public class TestDriverApplication extends RetrievalApplication {
+	
+	private static int SHRINK_TO_HISTORY_SIZE = 4;
+	
+	private static String[] FILTER_PROJECTS = {}; // {"org.eclipse.jdt.core", "org.eclipse.jdt.apt.core"};
 
 	@Override
 	protected void start(Path datasetPath, DataSet dataset, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {		
@@ -32,12 +36,12 @@ public class TestDriverApplication extends RetrievalApplication {
 		// Bug fixes:
 		{
 			BugFixHistoryRetrievalProvider bugHistoryRetrievalProvider = new BugFixHistoryRetrievalProvider(
-					codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataset.getBugtrackerProduct());
+					codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataset.getBugtrackerProducts());
 			BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugHistoryRetrievalProvider, dataset, datasetPath);
 			bugFixHistory.retrieveHistory();
 			
 			{
-				shrinkHistory(bugFixHistory.getDataset(), 2);
+				shrinkHistory(bugFixHistory.getDataset(), SHRINK_TO_HISTORY_SIZE);
 			}
 			
 			bugFixHistory.retrieveBugReports();
@@ -66,7 +70,7 @@ public class TestDriverApplication extends RetrievalApplication {
 			javaModelRetrievalProvider.setProjectFilter(() -> new TestProjectFilter(new PDEProjectFilter()));
 			
 			{
-//				filterProjects(javaModelRetrievalProvider, "org.eclipse.jdt.core", "org.eclipse.jdt.apt.core");
+				filterProjects(javaModelRetrievalProvider, FILTER_PROJECTS);
 			}
 			
 			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelRetrievalProvider, dataset, datasetPath);
@@ -83,7 +87,6 @@ public class TestDriverApplication extends RetrievalApplication {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void filterProjects(JavaModelRetrievalProvider provider, String... projectNames) {
 		ProjectFilter parentProjectFilter = provider.createProjectFilter();
 		provider.setProjectFilter(() -> new ProjectNameFilter(

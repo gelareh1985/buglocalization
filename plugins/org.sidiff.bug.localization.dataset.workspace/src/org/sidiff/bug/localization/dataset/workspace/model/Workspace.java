@@ -31,7 +31,9 @@ public class Workspace {
 	public boolean containsProject(Project otherProject) {
 		for (Project project : projects) {
 			if (project.getName().equals(otherProject.getName())) {
-				return true;
+				if (project.getFolder().equals(otherProject.getFolder())) {
+					return true;
+				}
 			}
 		}
 		return false;

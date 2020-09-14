@@ -71,7 +71,7 @@ public class JavaModelRetrieval {
 				Version version = versions.get(i);
 				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
 				
-				Workspace workspace = retrieveWorkspaceVersion(history, version);
+				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
 				
 				// Workspace -> Java Models
 				retrieveWorkspaceJavaModelVersion(olderVersion, version, newerVersion, workspace);
@@ -79,8 +79,13 @@ public class JavaModelRetrieval {
 				// Store Java AST model workspace as revision:
 				javaModelRepository.commitVersion(version, olderVersion);
 				
+				// Intermediate save:
+				if ((provider.getIntermediateSave() > 0) && ((i + 1) % provider.getIntermediateSave()) == 0) {
+					saveDataSet();
+				}
+				
 				if (Activator.getLogger().isLoggable(Level.FINE)) {
-					Activator.getLogger().log(Level.FINE, "Discovered version " + (versions.size() - i) + " of " + versions.size() + " versions");
+					Activator.getLogger().log(Level.FINE, "Discovered java model version " + (versions.size() - i) + " of " + versions.size() + " versions");
 				}
 			}
 		} finally {
@@ -116,7 +121,12 @@ public class JavaModelRetrieval {
 		}
 	}
 
-	private Workspace retrieveWorkspaceVersion(History history, Version version) {
+	private Workspace retrieveWorkspaceVersion(History history, Version oldVersion, Version version) {
+		
+		// Clean up older version:
+		javaModelRepository.removeMissingProjects(oldVersion, version);
+		
+		// Load newer version:
 		codeRepository.checkout(history, version);
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {

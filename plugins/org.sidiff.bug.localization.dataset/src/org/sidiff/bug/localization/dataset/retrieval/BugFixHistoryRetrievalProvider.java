@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.sidiff.bug.localization.dataset.fixes.report.recovery.BugFixMessageIDMatcher;
@@ -56,13 +57,13 @@ public class BugFixHistoryRetrievalProvider {
 
 	public BugFixHistoryRetrievalProvider(
 			String codeRepositoryURL, Path codeRepositoryPath, 
-			Supplier<Bugtracker> bugtracker, String bugtrackerProduct) {
+			Supplier<Bugtracker> bugtracker, List<String> bugtrackerProducts) {
 		
 		this.codeRepository = () -> new GitRepository(codeRepositoryURL, codeRepositoryPath.toFile());
 		this.bugFixMessageIDMatcher = () -> new BugFixMessageIDMatcher();
 		this.versionFilter = () -> new BugFixVersionFilter(createBugFixMessageIDMatcher());
 		this.bugtracker = bugtracker;
-		this.bugReportFilter = () -> new BugReportProductMatchingFilter(bugtrackerProduct);
+		this.bugReportFilter = () -> new BugReportProductMatchingFilter(bugtrackerProducts);
 	}
 	
 	public Repository createCodeRepository() {

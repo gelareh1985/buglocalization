@@ -16,6 +16,7 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
+import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class SystemModelRepository {
 	
@@ -64,9 +65,6 @@ public class SystemModelRepository {
 	
 	public Version commitVersion(Version currentVersion, Version previousVersion) {
 		
-		// Remove projects that do not exist in the current version:
-		updateProjects(repositoryPath, currentVersion, previousVersion);
-		
 		// Commit to repository:
 		String identification = repository.commit(currentVersion.getIdentification(), currentVersion.getDate().toString(), currentVersion.getCommitMessage(), null, null);
 		
@@ -77,21 +75,6 @@ public class SystemModelRepository {
 		currentVersion.setIdentification(identification);
 		
 		return currentVersion;
-	}
-
-	private void updateProjects(Path javaASTRepositoryPath, Version currentVersion, Version previousVersion) {
-		if (previousVersion != null) {
-			for (Project project : previousVersion.getWorkspace().getProjects()) {
-				if (!currentVersion.getWorkspace().containsProject(project)) {
-					try {
-						Path projectPath = javaASTRepositoryPath.resolve(project.getFolder());
-						Files.walk(projectPath).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
 	}
 	
 	/*
@@ -129,7 +112,25 @@ public class SystemModelRepository {
 		Path systemModelFile = Paths.get(getProjectPath(project).toString(), modelFileName);
 		return systemModelFile;
 	}
-
+	
+	public void removeMissingProjects(Version olderVersion, Version currentVersion) {
+		if (olderVersion != null) { // initial version
+			Workspace olderWorkspace = olderVersion.getWorkspace();
+			Workspace currentWorkspace = currentVersion.getWorkspace();
+			
+			for (Project oldProject : olderWorkspace.getProjects()) {
+				if (!currentWorkspace.containsProject(oldProject)) {
+					try {
+						Path projectPath = repositoryPath.resolve(oldProject.getFolder());
+						Files.walk(projectPath).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
 	public boolean resetRepository() {
 		return repository.reset();
 	}

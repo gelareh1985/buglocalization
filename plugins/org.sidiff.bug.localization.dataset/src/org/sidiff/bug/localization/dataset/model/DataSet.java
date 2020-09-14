@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset.model;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.sidiff.bug.localization.dataset.history.model.History;
 
@@ -16,7 +17,7 @@ public class DataSet {
 	
 	private String bugtrackerHost;
 	
-	private String bugtrackerProduct;
+	private List<String> bugtrackerProducts;
 	
 	private String timestamp;
 	
@@ -25,11 +26,11 @@ public class DataSet {
 	public DataSet() {
 	}
 	
-	public DataSet(String repositoryHost, String repositoryPath, String bugtrackerHost, String bugtrackerProduct) {
+	public DataSet(String repositoryHost, String repositoryPath, String bugtrackerHost, List<String> bugtrackerProduct) {
 		this.repositoryHost = repositoryHost;
 		this.repositoryPath = repositoryPath;
 		this.bugtrackerHost = bugtrackerHost;
-		this.bugtrackerProduct = bugtrackerProduct;
+		this.bugtrackerProducts = bugtrackerProduct;
 		
 		// cut '.git' from last URL path segment:
 		this.name = repositoryPath.substring(
@@ -75,12 +76,12 @@ public class DataSet {
 		this.bugtrackerHost = bugtrackerHost;
 	}
 
-	public String getBugtrackerProduct() {
-		return bugtrackerProduct;
+	public List<String> getBugtrackerProducts() {
+		return bugtrackerProducts;
 	}
 
-	public void setBugtrackerProduct(String bugtrackerProduct) {
-		this.bugtrackerProduct = bugtrackerProduct;
+	public void setBugtrackerProduct(List<String> bugtrackerProduct) {
+		this.bugtrackerProducts = bugtrackerProduct;
 	}
 	
 	public String getTimestamp() {
@@ -102,7 +103,7 @@ public class DataSet {
 	@Override
 	public String toString() {
 		return "DataSet [name=" + name + ", repositoryHost=" + repositoryHost + ", repositoryPath=" + repositoryPath
-				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProduct + ", timestamp="
+				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProducts + ", timestamp="
 				+ timestamp + ", history=" + history + "]";
 	}
 
