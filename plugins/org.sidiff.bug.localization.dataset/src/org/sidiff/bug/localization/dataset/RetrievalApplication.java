@@ -151,7 +151,7 @@ public class RetrievalApplication implements IApplication {
 			datasetPath = workspaceHistoryRetrieval.getDatasetPath();
 		}
 		
-		List<Version> originalHistory = reduceToHistoryChunk(dataset, 0, 1000);
+//		List<Version> originalHistory = reduceToHistoryChunk(dataset, 0, 1000);
 		
 		// Java model:
 		if (retrieveJavaModelHistory) {
@@ -161,7 +161,7 @@ public class RetrievalApplication implements IApplication {
 			try {
 				javaModel.retrieve();
 			} finally {
-				dataset.getHistory().setVersions(originalHistory);
+//				dataset.getHistory().setVersions(originalHistory);
 				javaModel.saveDataSet();
 			}
 		}
@@ -187,6 +187,7 @@ public class RetrievalApplication implements IApplication {
 	 * @param chunkSize Constant size of the chunks.
 	 * @return The original history.
 	 */
+	@SuppressWarnings("unused")
 	private List<Version> reduceToHistoryChunk(DataSet dataset, int chunk, int chunkSize) {
 		
 		// low endpoint (inclusive) of the history:
