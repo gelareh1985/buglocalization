@@ -64,9 +64,11 @@ public class BugFixHistoryRetrieval {
 	}
 
 	public void retrieveBugFixLocations() {
-		for (Version version : (Iterable<Version>) () -> getBugFixes()) {
-			List<FileChange> fixChanges = codeRepository.getChanges(version, true);
-			version.getBugReport().setBugLocations(fixChanges);
+		for (Version version : dataset.getHistory().getVersions()) {
+			if (version.hasBugReport()) {
+				List<FileChange> fixChanges = codeRepository.getChanges(version, true);
+				version.getBugReport().setBugLocations(fixChanges);
+			}
 		}
 	}
 
