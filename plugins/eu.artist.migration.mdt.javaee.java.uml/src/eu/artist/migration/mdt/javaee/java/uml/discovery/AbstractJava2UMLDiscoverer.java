@@ -26,10 +26,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.m2m.atl.core.ATLCoreException;
 import org.eclipse.m2m.atl.core.emf.EMFModel;
 import org.eclipse.m2m.atl.core.launch.ILauncher;
-import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
 import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 
+import eu.artist.migration.mdt.javaee.java.uml.discovery.launcher.UMLLauncher;
 import eu.artist.migration.mdt.javaee.java.uml.provider.TransformationProvider;
 
 public abstract class AbstractJava2UMLDiscoverer<T> extends AbstractModelDiscoverer<T> {
@@ -87,7 +87,7 @@ public abstract class AbstractJava2UMLDiscoverer<T> extends AbstractModelDiscove
 	}
 
 	protected ILauncher createLauncher() throws IOException {
-		ILauncher transformationLauncher = new EMFVMLauncher();
+		ILauncher transformationLauncher = new UMLLauncher();
 		transformationLauncher.initialize(new HashMap<String, Object>());
 		
 		for (Entry<String, InputStream> library : loadLibraries().entrySet()) {
