@@ -50,6 +50,13 @@ public class SystemModelRetrieval {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
 				Version version = versions.get(i);
 				
+				// Clean up older version:
+				systemModelRepository.removeMissingProjects(olderVersion, version);
+				
+				// Load newer version:
+				javaModelRepository.checkout(version);
+				
+				// Discover projects:
 				for (Project project : version.getWorkspace().getProjects()) {
 					try {
 						retrieveSystemModelVersion(olderVersion, version, project);
@@ -82,12 +89,6 @@ public class SystemModelRetrieval {
 	}
 
 	private void retrieveSystemModelVersion(Version olderVersion, Version version, Project project) throws DiscoveryException, IOException {
-		
-		// Clean up older version:
-		systemModelRepository.removeMissingProjects(olderVersion, version);
-		
-		// Load newer version:
-		javaModelRepository.checkout(version);
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
