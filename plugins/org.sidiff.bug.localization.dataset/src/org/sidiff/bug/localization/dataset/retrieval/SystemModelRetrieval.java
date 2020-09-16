@@ -71,7 +71,7 @@ public class SystemModelRetrieval {
 					}
 				}
 				
-				// Store Java AST model workspace as revision:
+				// Store system model workspace as revision:
 				systemModelRepository.commitVersion(version, olderVersion);
 				
 				// Intermediate save:

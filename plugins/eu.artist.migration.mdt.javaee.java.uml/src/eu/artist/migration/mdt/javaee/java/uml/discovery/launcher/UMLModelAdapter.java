@@ -20,13 +20,13 @@ public class UMLModelAdapter extends EMFModelAdapter {
 			if (value instanceof Collection) {
 				for (Object obj : (Collection<?>) value) {
 					if (!isTargetModelReference(execEnv, obj)) {
-						ATLLogger.warning("Only references between target models are allowed (" + name + "): "  + obj);
+						ATLLogger.warning("Only references between target models are allowed for feature '" + name + "'. Element not transformed? "  + obj);
 						return;
 					}
 				}
 			} else {
 				if (!isTargetModelReference(execEnv, value)) {
-					ATLLogger.warning("Only references between target models are allowed (" + name + "): "  + value);
+					ATLLogger.warning("Only references between target models are allowed for feature '" + name + "'. Element not transformed? "  + value);
 					return;
 				}
 			}
