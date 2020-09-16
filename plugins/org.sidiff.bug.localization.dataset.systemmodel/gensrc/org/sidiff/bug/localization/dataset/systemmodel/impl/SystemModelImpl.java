@@ -2,7 +2,6 @@
  */
 package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,13 +11,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -330,23 +327,22 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 		viewResources.removeAll(exclude);
 		
 		for (Resource resource : viewResources) {
+			String fileName = resource.getURI().segment(resource.getURI().segmentCount() - 1);
+			URI fileURI = baseURI.appendSegment(fileName);
+			resource.setURI(fileURI);
+			
 			try {
-				String fileName = resource.getURI().segment(resource.getURI().segmentCount() - 1);
-				URI fileURI = baseURI.appendSegment(fileName);
-				resource.setURI(fileURI);
-				
-				
 				resource.save(options);
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Throwable e) {
+				System.err.println(fileURI + ": " + e.getCause());
 			}
 		}
 		
 		// Save system model (views must be saved first for relative paths):
 		try {
 			eResource().save(options);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Throwable e) {
+			System.err.println(eResource().getURI() + ": " + e.getCause());
 		}
 	}
 
