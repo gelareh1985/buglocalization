@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -51,6 +56,10 @@ public class DirectSystemModelRetrieval {
 	
 	private SystemModelRepository systemModelRepository;
 	
+	private ExecutorService commitSystemModelVersionThread;
+	
+	private RunnableFuture<Void> commitSystemModelVersionTask;
+	
 	public DirectSystemModelRetrieval(
 			JavaModelRetrievalProvider javaModelProvider, 
 			SystemModelRetrievalProvider systemModelProvider, 
@@ -81,6 +90,8 @@ public class DirectSystemModelRetrieval {
 		this.systemModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.UML_CLASS_DIAGRAM, dataset);
 		
 		try {
+			this.commitSystemModelVersionThread = Executors.newSingleThreadExecutor();
+			
 			// Iterate from old to new versions:
 			for (int i = resume; i-- > 0;) {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
@@ -100,8 +111,8 @@ public class DirectSystemModelRetrieval {
 				time = stopTime("Discover Java and System Model Version: ", time);
 				
 				// Store system model workspace as revision:
-				systemModelRepository.commitVersion(version, olderVersion);
-				time = stopTime("Commit System Model Version: ", time);
+				commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion), null);
+				commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
 				
 				if (Activator.getLogger().isLoggable(Level.FINE)) {
 					Activator.getLogger().log(Level.FINE, "Discovered system model version " + (versions.size() - i) + " of " + versions.size() + " versions");
@@ -116,6 +127,7 @@ public class DirectSystemModelRetrieval {
 		} finally {
 			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
 			codeRepository.reset();
+			commitSystemModelVersionThread.shutdown();
 		}
 	}
 
@@ -243,14 +255,13 @@ public class DirectSystemModelRetrieval {
 			discoverSystemModel(systemModel, javaSystemModel);
 			
 			// Store system model in data set:
-			systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
-			systemModel.saveAll(Collections.emptyMap());
+			storeSystemModel(systemModelFile, systemModel);
 		}
 		
 		// Update data set path:
 		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
 	}
-	
+
 	private void discoverSystemModel(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
 		for (SystemModelDiscoverer systemModelDiscovery : systemModelProvider.getSystemModelDiscoverer()) {
 			try {
@@ -263,6 +274,22 @@ public class DirectSystemModelRetrieval {
 				}
 			}
 		}
+	}
+	
+	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
+		
+		// Wait for last version to be commited:
+		try {
+			long time = System.currentTimeMillis();
+			commitSystemModelVersionTask.get();
+			time = stopTime("Commit System Model Version (waiting): ", time);
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		
+		// Save model:
+		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
+		systemModel.saveAll(Collections.emptyMap());
 	}
 	
 	private long stopTime(String text, long time) {
