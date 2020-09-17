@@ -19,17 +19,17 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalProvider;
-import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.DirectSystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
 
-public class RetrievalApplication implements IApplication {
+public class DirectRetrievalApplication implements IApplication {
 
 	/*
-	 *  Program Arguments: -dataset "<Path to>/DataSet.json" -retrieval "<Path to>/RetrievalConfiguration.json" -bughistory -workspacehistory -javamodelhistory -systemmodelhistory
+	 *  Program Arguments: -dataset "<Path to>/DataSet.json" -retrieval "<Path to>/RetrievalConfiguration.json" -bughistory -workspacehistory -systemmodelhistory
 	 */
 	
 	public static final String ARGUMENT_DATASET = "-dataset";
@@ -39,8 +39,6 @@ public class RetrievalApplication implements IApplication {
 	public static final String ARGUMENT_BUG_HISTORY = "-bughistory";
 	
 	public static final String ARGUMENT_WORKSPACE_HISTORY = "-workspacehistory";
-	
-	public static final String ARGUMENT_JAVA_MODEL_HISTORY = "-javamodelhistory";
 	
 	public static final String ARGUMENT_SYSTEM_MODEL_HISTORY = "-systemmodelhistory";
 	
@@ -56,14 +54,7 @@ public class RetrievalApplication implements IApplication {
 	private boolean retrieveWorkspaceHistory = true;
 	
 	/**
-	 * Phase 03: Retrieves the history of (MoDisco) Java models from the Java code
-	 * projects. If the phase 01 is not calculated within one run, the data set file
-	 * path need to be updated in the program argument to the output file of phase 01.
-	 */
-	private boolean retrieveJavaModelHistory = true;
-	
-	/**
-	 * Phase 04: Retrieves the system model (UML) from the (MoDisco) Java models.
+	 * Phase 03: Retrieves the system model (UML) from the (MoDisco) Java models.
 	 */
 	private boolean retrieveSystemModelHistory = true;
 	
@@ -78,7 +69,6 @@ public class RetrievalApplication implements IApplication {
 		
 		this.retrieveBugFixHistory = containsProgramArgument(context, ARGUMENT_BUG_HISTORY);
 		this.retrieveWorkspaceHistory = containsProgramArgument(context, ARGUMENT_WORKSPACE_HISTORY);
-		this.retrieveJavaModelHistory = containsProgramArgument(context, ARGUMENT_JAVA_MODEL_HISTORY);
 		this.retrieveSystemModelHistory = containsProgramArgument(context, ARGUMENT_SYSTEM_MODEL_HISTORY);
 		
 		start(dataSetPath, dataSet, retrievalConfigurationPath, retrievalConfiguration);
@@ -154,9 +144,11 @@ public class RetrievalApplication implements IApplication {
 //		List<Version> originalHistory = reduceToHistoryChunk(dataset, 0, 1000);
 		
 		// Java model:
-		if (retrieveJavaModelHistory) {
-			JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(codeRepositoryPath);
-			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, dataset, datasetPath);
+		if (retrieveSystemModelHistory) {
+			JavaModelRetrievalProvider javaModelProvider = new JavaModelRetrievalProvider(codeRepositoryPath);
+			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider();
+			
+			DirectSystemModelRetrieval javaModel = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 			
 			try {
 				javaModel.retrieve();
@@ -246,14 +238,6 @@ public class RetrievalApplication implements IApplication {
 	
 	public void setRetrieveWorkspaceHistory(boolean retrieveWorkspaceHistory) {
 		this.retrieveWorkspaceHistory = retrieveWorkspaceHistory;
-	}
-
-	public boolean isRetrieveJavaModelHistory() {
-		return retrieveJavaModelHistory;
-	}
-
-	public void setRetrieveJavaModelHistory(boolean retrieveJavaModelHistory) {
-		this.retrieveJavaModelHistory = retrieveJavaModelHistory;
 	}
 
 	public boolean isRetrieveSystemModelHistory() {

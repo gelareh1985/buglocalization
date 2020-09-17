@@ -1,5 +1,6 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,11 @@ public class IncrementalJavaParser {
 	public IncrementalJavaParser(boolean ignoreMethodBodies) {
 		this.parsedCompilationUnits = new LinkedHashMap<>();
 		this.ignoreMethodBodies = ignoreMethodBodies;
+	}
+	
+	public void reset() {
+		parsedCompilationUnits = new HashMap<>();
+		System.gc();
 	}
 	
 	public void update(Set<IPath> changed) {
@@ -77,6 +83,6 @@ public class IncrementalJavaParser {
 		CompilationUnit parsedCompilationUnit = (CompilationUnit) parser.createAST(null);
 		return parsedCompilationUnit;
 	}
-	
+
 	// <<<
 }
