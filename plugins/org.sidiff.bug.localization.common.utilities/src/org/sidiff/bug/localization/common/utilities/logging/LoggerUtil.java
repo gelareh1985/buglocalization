@@ -14,9 +14,11 @@ import org.osgi.framework.BundleContext;
 
 public class LoggerUtil {
 
-	public static Level DEFAULT_CONSOLE_LEVEL = Level.FINE;
+	public static Level DEFAULT_CONSOLE_LEVEL = Level.FINER;
 	
 	public static Level DEFAULT_FILE_LEVEL = Level.INFO;
+	
+	public static Level PERFORMANCE = Level.FINER;
 	
 	private static Logger INSTANCE;
 	

@@ -11,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.ChangeLocationDiscoverer;
 import org.sidiff.bug.localization.dataset.changes.ChangeLocationMatcher;
@@ -53,10 +54,18 @@ public class JavaModelRetrieval {
 		this.dataset = dataset;
 		this.javaParser = new IncrementalJavaParser(provider.isIgnoreMethodBodies());
 	}
-
+	
 	public void retrieve() {
+		retrieve(-1);
+	}
+
+	public void retrieve(int resume) {
 		History history = dataset.getHistory();
 		List<Version> versions = history.getVersions();
+		
+		if (resume == -1) {
+			resume = versions.size();
+		}
 		
 		// Storage:
 		this.codeRepository = provider.createCodeRepository();
@@ -66,18 +75,38 @@ public class JavaModelRetrieval {
 		
 		try {
 			// Iterate from old to new versions:
-			for (int i = versions.size(); i-- > 0;) {
+			for (int i = resume; i-- > 0;) {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
 				Version version = versions.get(i);
 				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
 				
+				long time = System.currentTimeMillis();
+				
 				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
+				
+				if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
+					Activator.getLogger().log(LoggerUtil.PERFORMANCE, "Checkout Workspace Version: " 
+							+ (System.currentTimeMillis() - time) + "ms");
+					time = System.currentTimeMillis();
+				}
 				
 				// Workspace -> Java Models
 				retrieveWorkspaceJavaModelVersion(olderVersion, version, newerVersion, workspace);
 				
+				if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
+					Activator.getLogger().log(LoggerUtil.PERFORMANCE, "Discover Java Model Version: " 
+							+ (System.currentTimeMillis() - time) + "ms");
+					time = System.currentTimeMillis();
+				}
+				
 				// Store Java AST model workspace as revision:
 				javaModelRepository.commitVersion(version, olderVersion);
+				
+				if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
+					Activator.getLogger().log(LoggerUtil.PERFORMANCE, "Commit Java Model Version: " 
+							+ (System.currentTimeMillis() - time) + "ms");
+					time = System.currentTimeMillis();
+				}
 				
 				// Intermediate save:
 				if ((provider.getIntermediateSave() > 0) && ((i + 1) % provider.getIntermediateSave()) == 0) {

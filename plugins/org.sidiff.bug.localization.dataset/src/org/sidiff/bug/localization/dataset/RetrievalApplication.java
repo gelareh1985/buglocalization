@@ -159,7 +159,7 @@ public class RetrievalApplication implements IApplication {
 			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, dataset, datasetPath);
 			
 			try {
-				javaModel.retrieve();
+				javaModel.retrieve(resume(dataset, "b8eea88732fddf5b8941f1f78bf8fbdf1e5e867c"));
 			} finally {
 //				dataset.getHistory().setVersions(originalHistory);
 				javaModel.saveDataSet();
@@ -181,6 +181,19 @@ public class RetrievalApplication implements IApplication {
 		Activator.getLogger().log(Level.INFO, "Retrieval Finished");
 	}
 	
+	private int resume(DataSet dataset, String versionID) {
+		List<Version> originalHistory = dataset.getHistory().getVersions();
+		int resumeIndex = -1;
+		
+		for (Version version : originalHistory) {
+			if (version.getIdentification().equals(versionID)) {
+				resumeIndex = originalHistory.indexOf(version);
+			}
+		}
+		
+		return resumeIndex;
+	}
+
 	/**
 	 * @param dataset   The data set to be cut.
 	 * @param chunk     Chunk number, counting from 0.
