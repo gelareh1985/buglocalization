@@ -1,8 +1,10 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
@@ -18,18 +20,31 @@ public class IncrementalJavaParser {
 	private boolean ignoreMethodBodies;
 	
 	public IncrementalJavaParser(boolean ignoreMethodBodies) {
-		this.parsedCompilationUnits = new LinkedHashMap<>();
+		this.parsedCompilationUnits = new HashMap<>();
 		this.ignoreMethodBodies = ignoreMethodBodies;
 	}
 	
 	public void reset() {
 		parsedCompilationUnits = new HashMap<>();
-		System.gc();
 	}
 	
 	public void update(Set<IPath> changed) {
 		for (IPath path : changed) {
 			parsedCompilationUnits.remove(getKey(path));
+		}
+	}
+	
+	public void update(List<String> removedProjects) {
+		if (!removedProjects.isEmpty()) {
+			for (Iterator<Entry<String, CompilationUnit>> iterator = parsedCompilationUnits.entrySet().iterator(); iterator.hasNext();) {
+				Entry<String, CompilationUnit> parsedCompilationUnit = iterator.next();
+				
+				for (String removedProject : removedProjects) {
+					if (parsedCompilationUnit.getKey().startsWith("/" + removedProject)) {
+						iterator.remove();
+					}
+				}
+			}
 		}
 	}
 	

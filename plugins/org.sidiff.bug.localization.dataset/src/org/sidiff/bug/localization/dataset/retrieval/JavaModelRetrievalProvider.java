@@ -48,7 +48,7 @@ public class JavaModelRetrievalProvider extends WorkspaceHistoryRetrievalProvide
 		this.projectFilter =  () -> new JavaProjectFilter(); // new PDEProjectFilter();
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
 		this.ignoreMethodBodies = true;
-		this.intermediateSave = 500;
+		this.intermediateSave = 200;
 	}
 
 	public ProjectFilter createProjectFilter() {

@@ -54,7 +54,7 @@ public class SystemModelRetrievalProvider {
 		
 		this.systemModelDiscoverer = new SystemModelDiscoverer[] {umlClasses};
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
-		this.intermediateSave = 500;
+		this.intermediateSave = 200;
 	}
 
 	private void moveViews(SystemModel source, SystemModel target) {

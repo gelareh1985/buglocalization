@@ -2,6 +2,7 @@ package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -10,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -26,6 +28,7 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider.SystemModelDiscoverer;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.ProjectChangeProvider;
@@ -43,6 +46,8 @@ import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 public class DirectSystemModelRetrieval {
 	
 	private DataSet dataset;
+	
+	private Path datasetPath;
 	
 	private Repository codeRepository;
 	
@@ -68,6 +73,7 @@ public class DirectSystemModelRetrieval {
 		this.javaModelProvider = javaModelProvider;
 		this.systemModelProvider = systemModelProvider;
 		this.dataset = dataset;
+		this.datasetPath = datasetPath;
 		
 		this.javaParser = new IncrementalJavaParser(javaModelProvider.isIgnoreMethodBodies());
 	}
@@ -93,10 +99,13 @@ public class DirectSystemModelRetrieval {
 			this.commitSystemModelVersionThread = Executors.newSingleThreadExecutor();
 			
 			// Iterate from old to new versions:
+			int counter = versions.size() - resume;
+			
 			for (int i = resume; i-- > 0;) {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
 				Version version = versions.get(i);
 				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
+				counter++;
 				
 				long time = System.currentTimeMillis();
 				
@@ -104,30 +113,60 @@ public class DirectSystemModelRetrieval {
 				time = stopTime("Checkout Workspace Version: ", time);
 				
 				// Clean up older version:
-				systemModelRepository.removeMissingProjects(olderVersion, version);
+				List<Project> removedProjects = systemModelRepository.removeMissingProjects(olderVersion, version);
+				javaParser.update(removedProjects.stream().map(Project::getName).collect(Collectors.toList()));
 				
 				// Workspace -> Java Models
 				retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace);
 				time = stopTime("Discover Java and System Model Version: ", time);
 				
 				// Store system model workspace as revision:
-				commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion), null);
-				commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
+				waitForCommit();
+				commit(olderVersion, version);
 				
 				if (Activator.getLogger().isLoggable(Level.FINE)) {
 					Activator.getLogger().log(Level.FINE, "Discovered system model version " + (versions.size() - i) + " of " + versions.size() + " versions");
 				}
 				
 				// Intermediate save:
-				if ((systemModelProvider.getIntermediateSave() > 0) && ((i + 1) % systemModelProvider.getIntermediateSave()) == 0) {
-					saveDataSet();
-					javaParser.reset();
+				if ((systemModelProvider.getIntermediateSave() > 0) && ((counter % systemModelProvider.getIntermediateSave()) == 0)) {
+					try {
+						waitForCommit();
+						DataSetStorage.save(Paths.get(
+								datasetPath.toString() + "_" 
+								+ counter + "_"
+								+ version.getIdentificationTrace() + "_"
+								+ version.getIdentification()), 
+								dataset, false);
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+//					javaParser.reset();
 				}
 			}
 		} finally {
 			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
 			codeRepository.reset();
 			commitSystemModelVersionThread.shutdown();
+		}
+	}
+
+	private void commit(Version olderVersion, Version version) {
+		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion), null);
+		commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
+	}
+
+	private void waitForCommit() {
+		// Wait for last version to be commited:
+		if (commitSystemModelVersionTask != null) {
+			try {
+				long time = System.currentTimeMillis();
+				commitSystemModelVersionTask.get();
+				this.commitSystemModelVersionTask = null;
+				time = stopTime("Commit System Model Version (waiting): ", time);
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -276,22 +315,6 @@ public class DirectSystemModelRetrieval {
 		}
 	}
 	
-	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
-		
-		// Wait for last version to be commited:
-		try {
-			long time = System.currentTimeMillis();
-			commitSystemModelVersionTask.get();
-			time = stopTime("Commit System Model Version (waiting): ", time);
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		
-		// Save model:
-		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
-		systemModel.saveAll(Collections.emptyMap());
-	}
-	
 	private long stopTime(String text, long time) {
 		if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
 			Activator.getLogger().log(LoggerUtil.PERFORMANCE,  text + (System.currentTimeMillis() - time) + "ms");
@@ -299,7 +322,17 @@ public class DirectSystemModelRetrieval {
 		return System.currentTimeMillis();
 	}
 	
+	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
+		waitForCommit();
+		
+		// Save model:
+		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
+		systemModel.saveAll(Collections.emptyMap());
+	}
+	
 	public void saveDataSet() {
+		waitForCommit();
+		
 		// Store and commit data set for Java model:
 		try {
 			systemModelRepository.saveDataSet(true);

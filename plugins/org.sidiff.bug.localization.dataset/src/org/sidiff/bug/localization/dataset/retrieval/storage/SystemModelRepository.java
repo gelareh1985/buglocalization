@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
@@ -113,13 +115,17 @@ public class SystemModelRepository {
 		return systemModelFile;
 	}
 	
-	public void removeMissingProjects(Version olderVersion, Version currentVersion) {
+	public List<Project> removeMissingProjects(Version olderVersion, Version currentVersion) {
+		List<Project> removedProjects = new ArrayList<>();
+		
 		if (olderVersion != null) { // initial version
 			Workspace olderWorkspace = olderVersion.getWorkspace();
 			Workspace currentWorkspace = currentVersion.getWorkspace();
 			
 			for (Project oldProject : olderWorkspace.getProjects()) {
 				if (!currentWorkspace.containsProject(oldProject)) {
+					removedProjects.add(oldProject);
+					
 					try {
 						Path projectPath = repositoryPath.resolve(oldProject.getFolder());
 						Files.walk(projectPath).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
@@ -129,6 +135,8 @@ public class SystemModelRepository {
 				}
 			}
 		}
+		
+		return removedProjects;
 	}
 	
 	public boolean resetRepository() {

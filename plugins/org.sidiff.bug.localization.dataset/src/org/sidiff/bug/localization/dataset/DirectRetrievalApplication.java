@@ -151,8 +151,14 @@ public class DirectRetrievalApplication implements IApplication {
 			DirectSystemModelRetrieval javaModel = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 			
 			try {
-				javaModel.retrieve();
-				// javaModel.retrieve(resume(dataset, "b8eea88732fddf5b8941f1f78bf8fbdf1e5e867c"));
+//				javaModel.retrieve();
+				try {
+					dataset = DataSetStorage.load(Paths.get("C:\\Users\\manue\\git\\buglocalization\\research\\org.sidiff.bug.localization.dataset.domain.eclipse\\datasets\\eclipse.jdt.core\\"
+							+ "DataSet_20200914170431_20200914201948.json_1800_ee27da3913a0be1d36796f232a0aef2f2ab51540_e6c85345366d4cbd0288513afcee0881e1305fb0"));
+					javaModel.retrieve(resume(dataset, "e6c85345366d4cbd0288513afcee0881e1305fb0"));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} finally {
 //				dataset.getHistory().setVersions(originalHistory);
 				javaModel.saveDataSet();
