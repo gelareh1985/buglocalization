@@ -1,10 +1,15 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +22,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.eclipse.uml2.common.util.CacheAdapter;
 import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.ChangeLocationDiscoverer;
@@ -29,11 +37,12 @@ import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
-import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider.SystemModelDiscoverer;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.ProjectChangeProvider;
+import org.sidiff.bug.localization.dataset.retrieval.util.SystemModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
+import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.ChangeProvider;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalJavaParser;
@@ -62,6 +71,8 @@ public class DirectSystemModelRetrieval {
 	private SystemModelRepository systemModelRepository;
 	
 	private ExecutorService commitSystemModelVersionThread;
+	
+	private ExecutorService cleanUpSystemModelResourcesThread;
 	
 	private RunnableFuture<Void> commitSystemModelVersionTask;
 	
@@ -97,6 +108,7 @@ public class DirectSystemModelRetrieval {
 		
 		try {
 			this.commitSystemModelVersionThread = Executors.newSingleThreadExecutor();
+			this.cleanUpSystemModelResourcesThread = Executors.newSingleThreadExecutor();
 			
 			// Iterate from old to new versions:
 			int counter = versions.size() - resume;
@@ -106,7 +118,7 @@ public class DirectSystemModelRetrieval {
 				Version version = versions.get(i);
 				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
 				counter++;
-				
+
 				long time = System.currentTimeMillis();
 				
 				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
@@ -141,13 +153,16 @@ public class DirectSystemModelRetrieval {
 					} catch (Throwable e) {
 						e.printStackTrace();
 					}
-//					javaParser.reset();
+					
+					// Prevent resource leaks - clear cached Java CompilationUnits:
+					javaParser.reset();
 				}
 			}
 		} finally {
 			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
 			codeRepository.reset();
 			commitSystemModelVersionThread.shutdown();
+			cleanUpSystemModelResourcesThread.shutdown();
 		}
 	}
 
@@ -222,7 +237,11 @@ public class DirectSystemModelRetrieval {
 	private Workspace retrieveWorkspaceVersion(History history, Version oldVersion, Version version) {
 		
 		// Load newer version:
-		codeRepository.checkout(history, version);
+		boolean versionCheckeout = codeRepository.checkout(history, version);
+		
+		if (!versionCheckeout) {
+			throw new RuntimeException("Could not check out version: " + version);
+		} 
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "Retrieve Workspace: " + version);
@@ -323,19 +342,91 @@ public class DirectSystemModelRetrieval {
 	}
 	
 	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
-		waitForCommit();
+		waitForCommit(); // synchronize
 		
 		// Save model:
 		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
 		systemModel.saveAll(Collections.emptyMap());
+		
+		// Unload models for garbage collection -> prevent resource leaks:
+		unloadSystemModel(systemModel);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void unloadSystemModel(SystemModel systemModel) {
+		
+		// Clear resource from UML CacheAdapter:
+		cleanUpSystemModelResourcesThread.execute(() -> {
+			Set<Resource> resources = new HashSet<>();
+			resources.addAll(systemModel.eResource().getResourceSet().getResources());
+			
+			// Make sure the (UML) model views are collected:
+			for (View view : systemModel.getViews()) {
+				if (view.getModel() != null) {
+					if (view.getModel().eResource() != null) {
+						if (view.getModel().eResource().getResourceSet() != null) {
+							resources.addAll(view.getModel().eResource().getResourceSet().getResources());
+						} else {
+							resources.add(view.getModel().eResource());
+						}
+					}
+				}
+			}
+			
+			// CacheAdapter/ECrossReferenceAdapter resource leak: remove adapter, clear caches, unload all resources 
+			for (Iterator<Resource> iterator = resources.iterator(); iterator.hasNext();) {
+				Resource resource = (Resource) iterator.next();
+				ECrossReferenceAdapter crossReferenceAdapter = ECrossReferenceAdapter.getCrossReferenceAdapter(resource);
+				
+				if (crossReferenceAdapter != null) {
+					crossReferenceAdapter.unsetTarget(resource);
+				}
+				
+				if (CacheAdapter.getInstance() != null) {
+					CacheAdapter.getInstance().clear(resource);
+				}
+				
+				resource.unload();
+			}
+			
+			// WORKAROUND: Clear resource leaks of UML CacheAdapter:
+			try {
+				CacheAdapter cacheAdapter = CacheAdapter.getInstance();
+				cacheAdapter.clear();
+				
+				// Clear inverseCrossReferencer map:
+				Field inverseCrossReferencerField = ECrossReferenceAdapter.class.getDeclaredField("inverseCrossReferencer");
+				inverseCrossReferencerField.setAccessible(true);
+				Object inverseCrossReferencerValue = inverseCrossReferencerField.get(cacheAdapter);
+				
+				if (inverseCrossReferencerValue instanceof Map) {
+					((Map) inverseCrossReferencerValue).clear();
+				}
+				
+				// Clear proxyMap map:
+				Class<?> inverseCrossReferencerClass = Class.forName("org.eclipse.emf.ecore.util.ECrossReferenceAdapter$InverseCrossReferencer");
+				Field proxyMapField = inverseCrossReferencerClass.getDeclaredField("proxyMap");
+				proxyMapField.setAccessible(true);
+				Object proxyMapValue = proxyMapField.get(inverseCrossReferencerValue);
+				
+				if (proxyMapValue instanceof Map) {
+					((Map) proxyMapValue).clear();
+				}
+				
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public void saveDataSet() {
-		waitForCommit();
+		waitForCommit(); // synchronize
 		
 		// Store and commit data set for Java model:
 		try {
-			systemModelRepository.saveDataSet(true);
+			DataSetStorage.save(Paths.get(
+					datasetPath.toString()), 
+					dataset, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
