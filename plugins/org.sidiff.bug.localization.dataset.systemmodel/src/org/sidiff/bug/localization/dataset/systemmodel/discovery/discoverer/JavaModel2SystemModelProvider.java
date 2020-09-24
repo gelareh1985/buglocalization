@@ -1,7 +1,6 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery.discoverer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,7 +12,10 @@ import org.eclipse.m2m.atl.core.emf.EMFInjector;
 import org.eclipse.m2m.atl.core.emf.EMFModel;
 import org.eclipse.m2m.atl.core.emf.EMFModelFactory;
 import org.eclipse.m2m.atl.core.launch.ILauncher;
+import org.eclipse.m2m.atl.engine.emfvm.ASM;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+
+import eu.artist.migration.mdt.javaee.java.uml.util.ModuleRegisty;
 
 public class JavaModel2SystemModelProvider {
 
@@ -72,7 +74,7 @@ public class JavaModel2SystemModelProvider {
 		return (EMFModel) systemModel;
 	}
 
-	public void loadModules(List<InputStream> modules) throws IOException {
-		modules.add(JavaModel2UMLClassSystemModelDiscoverer.class.getResource("/resources/javaChanges2UMLChanges.asm").openStream());
+	public void loadModules(List<ASM> modules) throws IOException {
+		modules.add(ModuleRegisty.getModule(JavaModel2UMLClassSystemModelDiscoverer.class.getResource("/resources/javaChanges2UMLChanges.asm")));
 	}
 }
