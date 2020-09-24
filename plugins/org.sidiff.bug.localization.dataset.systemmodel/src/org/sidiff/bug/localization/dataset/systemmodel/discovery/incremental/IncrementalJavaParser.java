@@ -25,12 +25,25 @@ public class IncrementalJavaParser {
 	}
 	
 	public void reset() {
-		parsedCompilationUnits = new HashMap<>();
+		for (Iterator<Entry<String, CompilationUnit>> iterator = parsedCompilationUnits.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, CompilationUnit> parsedCompilationUnit = iterator.next();
+			parsedCompilationUnit.getValue().delete();
+			parsedCompilationUnit.setValue(null);
+			iterator.remove();
+		}
+		this.parsedCompilationUnits = new HashMap<>();
 	}
 	
 	public void update(Set<IPath> changed) {
 		for (IPath path : changed) {
-			parsedCompilationUnits.remove(getKey(path));
+			String key = getKey(path);
+			CompilationUnit compilationUnit = parsedCompilationUnits.get(key);
+			
+			if (compilationUnit != null) {
+				compilationUnit.delete();
+				parsedCompilationUnits.put(key, null);
+				parsedCompilationUnits.remove(key);
+			}
 		}
 	}
 	
@@ -41,6 +54,8 @@ public class IncrementalJavaParser {
 				
 				for (String removedProject : removedProjects) {
 					if (parsedCompilationUnit.getKey().startsWith("/" + removedProject)) {
+						parsedCompilationUnit.getValue().delete();
+						parsedCompilationUnit.setValue(null);
 						iterator.remove();
 					}
 				}
