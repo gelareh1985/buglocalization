@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
@@ -181,6 +182,9 @@ public class GitRepository implements Repository {
 			
 			// Unlock repository (if necessary):
 			unlock();
+			
+			// Reset file changes (to HEAD):
+			git.reset().setMode(ResetType.HARD).call();
 			
 			// Clean up current branch (if necessary):
 			git.clean().setCleanDirectories(true).call();

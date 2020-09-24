@@ -14,12 +14,14 @@
 package eu.artist.migration.mdt.javaee.java.umlactivity.discovery.cfg;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.m2m.atl.engine.emfvm.ASM;
+
 import eu.artist.migration.mdt.javaee.java.uml.discovery.AbstractJava2UMLDiscoverer;
 import eu.artist.migration.mdt.javaee.java.uml.provider.TransformationProvider;
+import eu.artist.migration.mdt.javaee.java.uml.util.ModuleRegisty;
 
 public abstract class Java2UMLActivityCFGBasicDiscoverer<T> extends AbstractJava2UMLDiscoverer<T> {
 
@@ -28,15 +30,16 @@ public abstract class Java2UMLActivityCFGBasicDiscoverer<T> extends AbstractJava
 	}
 	
 	@Override
-	protected Map<String, InputStream> loadLibraries() throws IOException {
-		Map<String, InputStream> libraries = super.loadLibraries();
-		libraries.put("java2UMLActivityHelpers", Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/java2UMLActivityHelpers.asm").openStream());
+	protected Map<String, ASM> loadLibraries() throws IOException {
+		Map<String, ASM> libraries = super.loadLibraries();
+		libraries.put("java2UMLActivityHelpers", ModuleRegisty.getModule(Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/java2UMLActivityHelpers.asm")));
 		return libraries;
 	}
 
-	protected List<InputStream> loadModules() throws IOException {
-		List<InputStream> modules = super.loadModules();
-		modules.add(Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/JavaMethods2UMLActivityDiagram-OnlyCFG.asm").openStream());
+	protected List<ASM> loadModules() throws IOException {
+		List<ASM> modules = super.loadModules();
+		ASM java2UML = ModuleRegisty.getModule(Java2UMLActivityCFGBasicDiscoverer.class.getResource("/resources/JavaMethods2UMLActivityDiagram-OnlyCFG.asm"));
+		modules.add(java2UML);
 		return modules;
 	}
 
