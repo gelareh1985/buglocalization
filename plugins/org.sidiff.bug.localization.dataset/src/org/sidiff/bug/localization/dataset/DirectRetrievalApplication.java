@@ -1,8 +1,6 @@
 package org.sidiff.bug.localization.dataset;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,6 +21,7 @@ import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
+import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
 public class DirectRetrievalApplication implements IApplication {
 
@@ -59,49 +58,19 @@ public class DirectRetrievalApplication implements IApplication {
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		
-		Path dataSetPath = getPathFromProgramArguments(context, ARGUMENT_DATASET);
+		Path dataSetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		DataSet dataSet = DataSetStorage.load(dataSetPath);
 		
-		Path retrievalConfigurationPath = getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
+		Path retrievalConfigurationPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
 		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(retrievalConfigurationPath, RetrievalConfiguration.class);
 		
-		this.retrieveBugFixHistory = containsProgramArgument(context, ARGUMENT_BUG_HISTORY);
-		this.retrieveWorkspaceHistory = containsProgramArgument(context, ARGUMENT_WORKSPACE_HISTORY);
-		this.retrieveSystemModelHistory = containsProgramArgument(context, ARGUMENT_SYSTEM_MODEL_HISTORY);
+		this.retrieveBugFixHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_BUG_HISTORY);
+		this.retrieveWorkspaceHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_WORKSPACE_HISTORY);
+		this.retrieveSystemModelHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_SYSTEM_MODEL_HISTORY);
 		
 		start(dataSetPath, dataSet, retrievalConfigurationPath, retrievalConfiguration);
 		
 		return IApplication.EXIT_OK;
-	}
-
-	private Path getPathFromProgramArguments(IApplicationContext context, String argumentName) throws FileNotFoundException {
-		String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
-		
-		for (int i = 0; i < args.length - 1; i++) {
-			if (args[i].equals(argumentName)) {
-				Path dataSetPath = Paths.get(args[i + 1]);
-				
-				if (!Files.exists(dataSetPath)) {
-					throw new FileNotFoundException(args[i + 1]);
-				}
-				
-				return dataSetPath;
-			}
-		}
-		
-		throw new FileNotFoundException("Program argument '" + argumentName + "' not specified.");
-	}
-	
-	private boolean containsProgramArgument(IApplicationContext context, String argumentName) throws FileNotFoundException {
-		String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
-		
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals(argumentName)) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	protected void start(Path datasetPath, DataSet dataset, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {
