@@ -151,9 +151,10 @@ public class DirectRetrievalApplication implements IApplication {
 				
 				// Resume on last intermediate save:
 //				{
-//					dataset = DataSetStorage.load(Paths.get("C:\\Users\\manue\\git\\buglocalization\\research\\org.sidiff.bug.localization.dataset.domain.eclipse\\datasets\\eclipse.jdt.core\\"
-//							+ "DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
-//					systemModelRetrieval.retrieve(resume(dataset, "8521624bb4958b90fe639cb07dd85931ce792a13"));
+//					datasetPath = Paths.get(datasetPath.getParent().toString(),
+//							"DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6");
+//					dataset = DataSetStorage.load(datasetPath);
+//					systemModelRetrieval.retrieve(resume(dataset, "5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
 //				}
 			} finally {
 				systemModelRetrieval.saveDataSet();

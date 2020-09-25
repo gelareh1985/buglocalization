@@ -128,7 +128,7 @@ public class DirectSystemModelRetrieval {
 				List<Project> removedProjects = systemModelRepository.removeMissingProjects(olderVersion, version);
 				javaParser.update(removedProjects.stream().map(Project::getName).collect(Collectors.toList()));
 				
-				// Workspace -> Java Models
+				// Workspace -> Java Models -> System Model:
 				retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace);
 				time = stopTime("Discover Java and System Model Version: ", time);
 				

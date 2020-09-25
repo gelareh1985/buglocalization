@@ -2,9 +2,16 @@ package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -21,6 +28,7 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.ProjectChangeProvider;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
@@ -39,6 +47,8 @@ public class JavaModelRetrieval {
 	
 	private DataSet dataset;
 	
+	private Path datasetPath;
+	
 	private Repository codeRepository;
 	
 	private Path codeRepositoryPath;
@@ -49,9 +59,14 @@ public class JavaModelRetrieval {
 	
 	private IncrementalJavaParser javaParser;
 	
+	private ExecutorService commitSystemModelVersionThread;
+	
+	private RunnableFuture<Void> commitSystemModelVersionTask;
+	
 	public JavaModelRetrieval(JavaModelRetrievalProvider provider, DataSet dataset, Path datasetPath) {
 		this.provider = provider;
 		this.dataset = dataset;
+		this.datasetPath = datasetPath;
 		this.javaParser = new IncrementalJavaParser(provider.isIgnoreMethodBodies());
 	}
 	
@@ -74,77 +89,102 @@ public class JavaModelRetrieval {
 		this.javaModelRepositoryPath = javaModelRepository.getRepositoryPath();
 		
 		try {
+			this.commitSystemModelVersionThread = Executors.newSingleThreadExecutor();
+			
 			// Iterate from old to new versions:
+			int counter = versions.size() - resume;
+			
 			for (int i = resume; i-- > 0;) {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
 				Version version = versions.get(i);
 				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
-				
+				counter++;
+
 				long time = System.currentTimeMillis();
 				
 				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
+				time = stopTime("Checkout Workspace Version: ", time);
 				
-				if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
-					Activator.getLogger().log(LoggerUtil.PERFORMANCE, "Checkout Workspace Version: " 
-							+ (System.currentTimeMillis() - time) + "ms");
-					time = System.currentTimeMillis();
-				}
+				// Clean up older version:
+				List<Project> removedProjects = javaModelRepository.removeMissingProjects(olderVersion, version);
+				javaParser.update(removedProjects.stream().map(Project::getName).collect(Collectors.toList()));
 				
 				// Workspace -> Java Models
 				retrieveWorkspaceJavaModelVersion(olderVersion, version, newerVersion, workspace);
+				time = stopTime("Discover Java Model Version: ", time);
 				
-				if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
-					Activator.getLogger().log(LoggerUtil.PERFORMANCE, "Discover Java Model Version: " 
-							+ (System.currentTimeMillis() - time) + "ms");
-					time = System.currentTimeMillis();
-				}
+				// Store system model workspace as revision:
+				waitForCommit();
+				commit(olderVersion, version);
 				
-				// Store Java AST model workspace as revision:
-				javaModelRepository.commitVersion(version, olderVersion);
-				
-				if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
-					Activator.getLogger().log(LoggerUtil.PERFORMANCE, "Commit Java Model Version: " 
-							+ (System.currentTimeMillis() - time) + "ms");
-					time = System.currentTimeMillis();
+				if (Activator.getLogger().isLoggable(Level.FINE)) {
+					Activator.getLogger().log(Level.FINE, "Discovered system model version " + (versions.size() - i) + " of " + versions.size() + " versions");
 				}
 				
 				// Intermediate save:
-				if ((provider.getIntermediateSave() > 0) && ((i + 1) % provider.getIntermediateSave()) == 0) {
-					saveDataSet();
-				}
-				
-				if (Activator.getLogger().isLoggable(Level.FINE)) {
-					Activator.getLogger().log(Level.FINE, "Discovered java model version " + (versions.size() - i) + " of " + versions.size() + " versions");
+				if ((provider.getIntermediateSave() > 0) && ((counter % provider.getIntermediateSave()) == 0)) {
+					try {
+						waitForCommit();
+						DataSetStorage.save(Paths.get(
+								datasetPath.toString() + "_" 
+								+ counter + "_"
+								+ version.getIdentificationTrace() + "_"
+								+ version.getIdentification()), 
+								dataset, false);
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+					
+					// Prevent resource leaks - clear cached Java CompilationUnits:
+					javaParser.reset();
 				}
 			}
 		} finally {
 			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
 			codeRepository.reset();
+			commitSystemModelVersionThread.shutdown();
 		}
 	}
 
-	private void retrieveWorkspaceJavaModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
-		if (!workspace.getProjects().isEmpty()) { // optimization
-			for (Project project : workspace.getProjects()) {
-				
-				// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-				// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-				ChangeLocationMatcher changeLocationMatcher  = null;
-				
-				if ((newerVersion != null) && (newerVersion.hasBugReport())) {
-					changeLocationMatcher = new ChangeLocationMatcher(
-							project.getName(), newerVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter());
-				}
-				
-				// Project -> Java Model
-				try {
-					retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
-				} catch (Throwable e) {
-					e.printStackTrace();
+	private void commit(Version olderVersion, Version version) {
+		commitSystemModelVersionTask = new FutureTask<>(() -> javaModelRepository.commitVersion(version, olderVersion), null);
+		commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
+	}
 
-					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + project);
-					}
+	private void waitForCommit() {
+		// Wait for last version to be commited:
+		if (commitSystemModelVersionTask != null) {
+			try {
+				long time = System.currentTimeMillis();
+				commitSystemModelVersionTask.get();
+				this.commitSystemModelVersionTask = null;
+				time = stopTime("Commit System Model Version (waiting): ", time);
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void retrieveWorkspaceJavaModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
+		for (Project project : workspace.getProjects()) {
+
+			// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+			// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+			ChangeLocationMatcher changeLocationMatcher  = null;
+
+			if ((newerVersion != null) && (newerVersion.hasBugReport())) {
+				changeLocationMatcher = new ChangeLocationMatcher(
+						project.getName(), newerVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter());
+			}
+
+			// Project -> Java Model
+			try {
+				retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
+			} catch (Throwable e) {
+				e.printStackTrace();
+
+				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + project);
 				}
 			}
 		}
@@ -205,22 +245,39 @@ public class JavaModelRetrieval {
 			}
 			
 			// Store system model in data set:
-			URI systemModelURI = URI.createFileURI(systemModelFile.toFile().getAbsolutePath());
-			systemModel.eResource().setURI(systemModelURI);
-			systemModel.saveAll(Collections.emptyMap());
+			storeSystemModel(systemModelFile, systemModel);
 		}
 		
 		// Store path in data set:
 		project.setSystemModel(javaModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
 	}
 	
+	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
+		waitForCommit(); // synchronize
+		
+		// Save model:
+		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
+		systemModel.saveAll(Collections.emptyMap());
+	}
+	
 	public void saveDataSet() {
+		waitForCommit(); // synchronize
+		
 		// Store and commit data set for Java model:
 		try {
-			javaModelRepository.saveDataSet(true);
+			DataSetStorage.save(Paths.get(
+					datasetPath.toString()), 
+					dataset, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private long stopTime(String text, long time) {
+		if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
+			Activator.getLogger().log(LoggerUtil.PERFORMANCE,  text + (System.currentTimeMillis() - time) + "ms");
+		}
+		return System.currentTimeMillis();
 	}
 	
 	public Path getCodeRepositoryPath() {

@@ -1,7 +1,6 @@
 package org.sidiff.bug.localization.dataset.retrieval.storage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +13,6 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
-import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
@@ -36,33 +34,8 @@ public class SystemModelRepository {
 		this.dataset = dataset;
 	}
 	
-	public SystemModelRepository(Path originalRepositoryPath, ViewDescription view) {
-		this.repositoryPath = getModelRepositoryPath(originalRepositoryPath, view);
-		this.repository = new GitRepository(repositoryPath.toFile());
-	}
-	
-	public DataSet getDataSet() {
-		if (dataset == null) {
-			try {
-				this.dataset = DataSetStorage.load(getDataSetPath());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return dataset;
-	}
-	
-	public void saveDataSet(boolean commit) throws IOException {
-		DataSetStorage.save(getDataSetPath(), dataset, false);
-		
-		if (commit) {
-			String message = "DATA SET " + dataset.getTimestamp();
-			repository.commit(message, "na@na", message, null, null);
-		}
-	}
-	
 	public void checkout(Version version) {
-		repository.checkout(getDataSet().getHistory(), version);
+		repository.checkout(dataset.getHistory(), version);
 	}
 	
 	public Version commitVersion(Version currentVersion, Version previousVersion) {

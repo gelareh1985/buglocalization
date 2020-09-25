@@ -81,7 +81,7 @@ public class TestDriverApplication extends RetrievalApplication {
 		// System model:
 		{
 			SystemModelRetrievalProvider systemModelRetrievalProvider = new SystemModelRetrievalProvider();
-			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelRetrievalProvider, codeRepositoryPath);
+			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelRetrievalProvider, codeRepositoryPath, dataset, datasetPath);
 			systemModel.retrieve();
 			systemModel.saveDataSet();
 		}

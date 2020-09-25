@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -151,31 +150,43 @@ public class RetrievalApplication implements IApplication {
 			datasetPath = workspaceHistoryRetrieval.getDatasetPath();
 		}
 		
-//		List<Version> originalHistory = reduceToHistoryChunk(dataset, 0, 1000);
-		
 		// Java model:
 		if (retrieveJavaModelHistory) {
 			JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(codeRepositoryPath);
-			JavaModelRetrieval javaModel = new JavaModelRetrieval(javaModelFactory, dataset, datasetPath);
+			JavaModelRetrieval javaModelRetrieval = new JavaModelRetrieval(javaModelFactory, dataset, datasetPath);
 			
 			try {
-				javaModel.retrieve();
-				// javaModel.retrieve(resume(dataset, "b8eea88732fddf5b8941f1f78bf8fbdf1e5e867c"));
+				javaModelRetrieval.retrieve();
+				
+				// Resume on last intermediate save:
+//				{
+//					datasetPath = Paths.get(datasetPath.getParent().toString(),
+//							"DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6");
+//					dataset = DataSetStorage.load(datasetPath);
+//					systemModelRetrieval.retrieve(resume(dataset, "5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
+//				}
 			} finally {
-//				dataset.getHistory().setVersions(originalHistory);
-				javaModel.saveDataSet();
+				javaModelRetrieval.saveDataSet();
 			}
 		}
 		
 		// System model:
 		if (retrieveSystemModelHistory) {
 			SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
-			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath);
+			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath, dataset, datasetPath);
 			
 			try {
-				systemModel.retrieve();
+				systemModelRetrieval.retrieve();
+				
+				// Resume on last intermediate save:
+//				{
+//					datasetPath = Paths.get(datasetPath.getParent().toString(),
+//							"DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6");
+//					dataset = DataSetStorage.load(datasetPath);
+//					systemModelRetrieval.retrieve(resume(dataset, "5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
+//				}
 			} finally {
-				systemModel.saveDataSet();
+				systemModelRetrieval.saveDataSet();
 			}
 		}
 		
@@ -194,38 +205,6 @@ public class RetrievalApplication implements IApplication {
 		}
 		
 		return resumeIndex;
-	}
-
-	/**
-	 * @param dataset   The data set to be cut.
-	 * @param chunk     Chunk number, counting from 0.
-	 * @param chunkSize Constant size of the chunks.
-	 * @return The original history.
-	 */
-	@SuppressWarnings("unused")
-	private List<Version> reduceToHistoryChunk(DataSet dataset, int chunk, int chunkSize) {
-		
-		// low endpoint (inclusive) of the history:
-		int fromVersion = dataset.getHistory().getVersions().size() - ((chunk + 1) * chunkSize); 
-		fromVersion = fromVersion >= 0 ? fromVersion : 0;
-		
-		// high endpoint (exclusive) of the history
-		int toVersion = dataset.getHistory().getVersions().size() - (chunk * chunkSize);
-
-		List<Version> originalHistory = dataset.getHistory().getVersions();
-		
-		if (toVersion > 0) {
-			List<Version> historyChunk = dataset.getHistory().getVersions().subList(fromVersion, toVersion);
-			dataset.getHistory().setVersions(historyChunk);
-		} else {
-			dataset.getHistory().setVersions(Collections.emptyList());
-			
-			if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-				Activator.getLogger().log(Level.SEVERE, "No more history chunk for number: " + chunk);
-			}
-		}
-		
-		return originalHistory;
 	}
 
 	@Override
