@@ -45,6 +45,18 @@ public class HistoryUtil {
 		return projectFileChanges;
 	}
 	
+	public static List<FileChange> getChanges(Project project, List<FileChange> fileChanges) {
+		List<FileChange> projectFileChanges = new ArrayList<>();
+		
+		for (FileChange fileChange : fileChanges) {
+			if (fileChange.getLocation().startsWith(project.getFolder())) {
+				projectFileChanges.add(fileChange);
+			}
+		}
+		
+		return projectFileChanges;
+	}
+	
 	public static boolean hasPreviousVersion(Version oldVersion, Project project) {
 		
 		if (oldVersion != null) {
