@@ -116,15 +116,17 @@ public class DirectRetrievalApplication implements IApplication {
 			DirectSystemModelRetrieval systemModelRetrieval = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 			
 			try {
-				systemModelRetrieval.retrieve();
-				
-				// Resume on last intermediate save:
+//				// Resume on last intermediate save:
 //				{
 //					datasetPath = Paths.get(datasetPath.getParent().toString(),
 //							"DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6");
 //					dataset = DataSetStorage.load(datasetPath);
+//					
+//					systemModelRetrieval = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 //					systemModelRetrieval.retrieve(resume(dataset, "5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
 //				}
+				
+				systemModelRetrieval.retrieve();
 			} finally {
 				systemModelRetrieval.saveDataSet();
 			}
