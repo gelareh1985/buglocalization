@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -13,11 +14,17 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.util.BugFixIterator;
 import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
+import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
+import org.sidiff.bug.localization.dataset.systemmodel.Change;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.View;
+import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 public class StatisticsApplication implements IApplication {
@@ -29,38 +36,39 @@ public class StatisticsApplication implements IApplication {
 	public static final String CSV_ROW_SEPERATOR = "\n";
 	
 	private static class ProjectStatistic {
-		String projectName; 		// Project Name	
+		String projectName; 			// Project Name	
 		
-		int bugFixes; 				// Bug Fixes	
-		int javaBugFixes; 			// Java Bug Fixes
+		int bugFixes; 					// Bug Fixes	
+		int javaBugFixes; 				// Java Bug Fixes
 		
-		int fixedFiles; 			// Fixed Files	
-		int javaFixedFiles;			// Fixed Java Files
+		int fixedFiles; 				// Fixed Files	
+		int javaFixedFiles;				// Fixed Java Files
 		
-		int umlBugFixLocations;		// UML Bug Fix Locations
+		int umlBugFixLocations;			// UML Bug Fix Locations
+		int umlBugFixQuantification;	// UML Bug Fix Quantification
 		
-		int umlClasses;				// UML Classes
-		int umlMethods;				// UML Methods
-		int umlProperties;			// UML Properties
+		int umlClasses;					// UML Classes
+		int umlMethods;					// UML Methods
+		int umlProperties;				// UML Properties
 		
-		int umlExternalClasses;		// External UML Classes
-		int umlExternalMethods;		// External UML Methods
-		int umlExternalProperties;	// External UML Properties
+		int umlExternalClasses;			// External UML Classes
+		int umlExternalMethods;			// External UML Methods
+		int umlExternalProperties;		// External UML Properties
 	}
 	
 	private static class ProductStatistic {
-		String productName;			// Product Name
-		int versions;				// Versions (reduced) 
+		String productName;				// Product Name
+		int versions;					// Versions (reduced) 
 
-		int bugFixedVersions;		// Versions with Bug Fixes
-		int javaBugFixedVersions;	// Versions with Java Bug Fixes
+		int bugFixedVersions;			// Versions with Bug Fixes
+		int javaBugFixedVersions;		// Versions with Java Bug Fixes
 		
-		int fixedFiles;				// Fixed Files
-		int javaFixedFiles;			// Fixed Java Files
+		int fixedFiles;					// Fixed Files
+		int javaFixedFiles;				// Fixed Java Files
 		
-		int projects;				// Projects
-		int fixedProjects;			// Projects with Fixes
-		int javaFixedProjects;		// Projects with Java Fixes
+		int projects;					// Projects
+		int fixedProjects;				// Projects with Fixes
+		int javaFixedProjects;			// Projects with Java Fixes
 	}
 
 	@Override
@@ -70,46 +78,84 @@ public class StatisticsApplication implements IApplication {
 		DataSet dataSet = DataSetStorage.load(dataSetPath);
 		
 		SystemModelRetrievalProvider provider = new SystemModelRetrievalProvider();
+		SystemModelRepository systemModelRepository = new SystemModelRepository(Paths.get("C:\\Users\\manue\\git\\eclipse.jdt.core_uml.class_1"), dataSet);
 		
 		ProductStatistic productStatistic = new ProductStatistic();
 		Map<String, ProjectStatistic> projectStatistics = new LinkedHashMap<>();
 		
 		/*
-		 *  Product and project related statistics:
+		 * Product and project related statistics:
 		 */
 		
-		for (Version version : dataSet.getHistory().getVersions()) {
-			if (version.hasBugReport()) {
-				++productStatistic.bugFixedVersions;
+		BugFixIterator bugFixIterator = new BugFixIterator(dataSet.getHistory());
+		
+		while (bugFixIterator.hasNext()) {
+			System.out.println("Remaining Versions: " + bugFixIterator.getNewerVersionCount());
+			
+			bugFixIterator.next();
+			Version fixedVersion = bugFixIterator.getFixedVersion();
+			Version buggyVersion = bugFixIterator.getBuggyVersion();
+			
+			assert fixedVersion.hasBugReport();
+			
+			if (buggyVersion != null) {
+				systemModelRepository.checkout(buggyVersion); // UML related statistics:
 			}
 			
+			boolean hasBugFixes = false;
 			boolean hasJavaBugFixes = false;
 			
-			for (Project project : version.getWorkspace().getProjects()) {
+			for (Project project : fixedVersion.getWorkspace().getProjects()) {
 				ProjectStatistic projectStatistic = getProjectStatistic(projectStatistics, project);
-				
-				if (version.hasBugReport()) {
-					
-					// All changes:
-					List<FileChange> projectFileChanges = HistoryUtil.getChanges(project, version.getBugReport().getBugLocations());
 
-					if (!projectFileChanges.isEmpty()) {
-						++projectStatistic.bugFixes;
-						projectStatistic.fixedFiles += projectFileChanges.size();
-						productStatistic.fixedFiles += projectFileChanges.size();
-					}
-					
-					// Only changes on Java files:
-					List<FileChange> projectJavaFileChanges = HistoryUtil.getChanges(project, version.getBugReport().getBugLocations(), provider.getFileChangeFilter());
+				// All changes:
+				List<FileChange> projectFileChanges = HistoryUtil.getChanges(project, fixedVersion.getBugReport().getBugLocations());
 
-					if (!projectJavaFileChanges.isEmpty()) {
-						++projectStatistic.javaBugFixes;
-						projectStatistic.javaFixedFiles += projectJavaFileChanges.size();
-						productStatistic.javaFixedFiles += projectJavaFileChanges.size(); 
-						
-						hasJavaBugFixes = true;
+				if (!projectFileChanges.isEmpty()) {
+					++projectStatistic.bugFixes;
+					projectStatistic.fixedFiles += projectFileChanges.size(); // project
+					productStatistic.fixedFiles += projectFileChanges.size(); // product
+
+					hasBugFixes = true;
+				}
+
+				// Only changes on Java files:
+				List<FileChange> projectJavaFileChanges = HistoryUtil.getChanges(project, fixedVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter());
+
+				if (!projectJavaFileChanges.isEmpty()) {
+					++projectStatistic.javaBugFixes;
+					projectStatistic.javaFixedFiles += projectJavaFileChanges.size(); // project
+					productStatistic.javaFixedFiles += projectJavaFileChanges.size(); // product 
+
+					hasJavaBugFixes = true;
+					
+					/*
+					 *  UML related statistics:
+					 */
+					Project buggyProject = HistoryUtil.getCorrespondingVersion(buggyVersion, project);
+					
+					if (buggyProject != null) {
+						try {
+							SystemModel umlSystemModel = systemModelRepository.getSystemModel(buggyProject);
+							View classDiagramView = umlSystemModel.getViewByKind(ViewDescriptions.UML_CLASS_DIAGRAM);
+							
+							projectStatistic.umlBugFixLocations += classDiagramView.getChanges().size();
+							
+							for (Change bugFixLocation : classDiagramView.getChanges()) {
+								projectStatistic.umlBugFixQuantification += bugFixLocation.getQuantification();
+							}
+						} catch (Throwable e) {
+							e.printStackTrace();
+						}
 					}
 				}
+			}
+			
+			/*
+			 *  Product related statistics:
+			 */
+			if (hasBugFixes) {
+				++productStatistic.bugFixedVersions;
 			}
 			
 			if (hasJavaBugFixes) {
@@ -118,7 +164,7 @@ public class StatisticsApplication implements IApplication {
 		}
 		
 		/*
-		 *  Product related statistics:
+		 * Product related statistics:
 		 */
 		
 		productStatistic.productName = dataSet.getName();
@@ -138,9 +184,9 @@ public class StatisticsApplication implements IApplication {
 		});
 		
 		/*
-		 *  Save statistics to file:
+		 * Save statistics to file:
 		 */
-		
+
 		saveProductStatistics(dataSetPath, Collections.singletonList(productStatistic));
 		saveProjectStatistics(dataSetPath, new ArrayList<>(projectStatistics.values()));
 		
@@ -228,6 +274,7 @@ public class StatisticsApplication implements IApplication {
 		csv.append(CSV_COLUMN_SEPERATOR + "Fixed Java Files");
 		
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Bug Fix Locations");
+		csv.append(CSV_COLUMN_SEPERATOR + "UML Bug Fix Quantification");
 		
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Classes");
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Methods");
@@ -250,6 +297,7 @@ public class StatisticsApplication implements IApplication {
 			csv.append(CSV_COLUMN_SEPERATOR + projectStatistic.javaFixedFiles);
 			
 			csv.append(CSV_COLUMN_SEPERATOR + projectStatistic.umlBugFixLocations);
+			csv.append(CSV_COLUMN_SEPERATOR + projectStatistic.umlBugFixQuantification);
 			
 			csv.append(CSV_COLUMN_SEPERATOR + projectStatistic.umlClasses);
 			csv.append(CSV_COLUMN_SEPERATOR + projectStatistic.umlMethods);
