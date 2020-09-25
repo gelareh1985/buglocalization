@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -21,7 +20,6 @@ import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.DirectSystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalProvider;
-import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
@@ -141,39 +139,24 @@ public class DirectRetrievalApplication implements IApplication {
 			datasetPath = workspaceHistoryRetrieval.getDatasetPath();
 		}
 		
-//		List<Version> originalHistory = reduceToHistoryChunk(dataset, 0, 1000);
-		
-		// Java model:
+		// Direct System model (Java Model -> System Model):
 		if (retrieveSystemModelHistory) {
 			JavaModelRetrievalProvider javaModelProvider = new JavaModelRetrievalProvider(codeRepositoryPath);
 			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider();
 			
-			DirectSystemModelRetrieval javaModel = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
+			DirectSystemModelRetrieval systemModelRetrieval = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 			
 			try {
-//				javaModel.retrieve();
-				try {
-					dataset = DataSetStorage.load(Paths.get("C:\\Users\\manue\\git\\buglocalization\\research\\org.sidiff.bug.localization.dataset.domain.eclipse\\datasets\\eclipse.jdt.core\\"
-							+ "DataSet_20200914170431_20200914201948.json_1800_ee27da3913a0be1d36796f232a0aef2f2ab51540_e6c85345366d4cbd0288513afcee0881e1305fb0"));
-					javaModel.retrieve(resume(dataset, "e6c85345366d4cbd0288513afcee0881e1305fb0"));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				systemModelRetrieval.retrieve();
+				
+				// Resume on last intermediate save:
+//				{
+//					dataset = DataSetStorage.load(Paths.get("C:\\Users\\manue\\git\\buglocalization\\research\\org.sidiff.bug.localization.dataset.domain.eclipse\\datasets\\eclipse.jdt.core\\"
+//							+ "DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
+//					systemModelRetrieval.retrieve(resume(dataset, "8521624bb4958b90fe639cb07dd85931ce792a13"));
+//				}
 			} finally {
-//				dataset.getHistory().setVersions(originalHistory);
-				javaModel.saveDataSet();
-			}
-		}
-		
-		// System model:
-		if (retrieveSystemModelHistory) {
-			SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
-			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath);
-			
-			try {
-				systemModel.retrieve();
-			} finally {
-				systemModel.saveDataSet();
+				systemModelRetrieval.saveDataSet();
 			}
 		}
 		
@@ -192,38 +175,6 @@ public class DirectRetrievalApplication implements IApplication {
 		}
 		
 		return resumeIndex;
-	}
-
-	/**
-	 * @param dataset   The data set to be cut.
-	 * @param chunk     Chunk number, counting from 0.
-	 * @param chunkSize Constant size of the chunks.
-	 * @return The original history.
-	 */
-	@SuppressWarnings("unused")
-	private List<Version> reduceToHistoryChunk(DataSet dataset, int chunk, int chunkSize) {
-		
-		// low endpoint (inclusive) of the history:
-		int fromVersion = dataset.getHistory().getVersions().size() - ((chunk + 1) * chunkSize); 
-		fromVersion = fromVersion >= 0 ? fromVersion : 0;
-		
-		// high endpoint (exclusive) of the history
-		int toVersion = dataset.getHistory().getVersions().size() - (chunk * chunkSize);
-
-		List<Version> originalHistory = dataset.getHistory().getVersions();
-		
-		if (toVersion > 0) {
-			List<Version> historyChunk = dataset.getHistory().getVersions().subList(fromVersion, toVersion);
-			dataset.getHistory().setVersions(historyChunk);
-		} else {
-			dataset.getHistory().setVersions(Collections.emptyList());
-			
-			if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-				Activator.getLogger().log(Level.SEVERE, "No more history chunk for number: " + chunk);
-			}
-		}
-		
-		return originalHistory;
 	}
 
 	@Override
