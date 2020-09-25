@@ -295,7 +295,7 @@ public class DirectSystemModelRetrieval {
 			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
 		}
 		
-		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
+		Path systemModelFile = systemModelRepository.getSystemModelFile(project, true);
 		
 		// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
@@ -313,7 +313,7 @@ public class DirectSystemModelRetrieval {
 		}
 		
 		// Update data set path:
-		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
+		project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
 	}
 
 	private void discoverSystemModel(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {

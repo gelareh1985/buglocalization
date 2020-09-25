@@ -221,7 +221,7 @@ public class JavaModelRetrieval {
 			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + project.getName());
 		}
 		
-		Path systemModelFile = javaModelRepository.getSystemModelFile(project);
+		Path systemModelFile = javaModelRepository.getSystemModelFile(project, true);
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
 		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
@@ -249,7 +249,7 @@ public class JavaModelRetrieval {
 		}
 		
 		// Store path in data set:
-		project.setSystemModel(javaModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
+		project.setSystemModel(javaModelRepository.getRepositoryPath().relativize(systemModelFile));
 	}
 	
 	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {

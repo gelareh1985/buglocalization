@@ -14,6 +14,7 @@ import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
@@ -27,6 +28,12 @@ public class SystemModelRepository {
 	private Path repositoryPath;
 	
 	private DataSet dataset;
+	
+	public SystemModelRepository(Path repositoryPath, DataSet dataset) {
+		this.repositoryPath = repositoryPath;
+		this.repository = new GitRepository(repositoryPath.toFile());
+		this.dataset = dataset;
+	}
 	
 	public SystemModelRepository(Path originalRepositoryPath, ViewDescription view, DataSet dataset) {
 		this.repositoryPath = getModelRepositoryPath(originalRepositoryPath, view);
@@ -64,14 +71,10 @@ public class SystemModelRepository {
 		return Paths.get(originalRepositoryPath.toString() + "_" + view.getViewKind());
 	}
 	
-	public Path getDataSetPath() {
-		return Paths.get(repositoryPath.toString(), DATA_SET_FILE_NAME);
-	}
-	
-	public Path getProjectPath(Project project) {
+	public Path getProjectPath(Project project, boolean createDir) {
 		Path projectPath = Paths.get(repositoryPath.toString(), project.getName());
 		
-		if (!Files.exists(projectPath)) {
+		if (createDir && !Files.exists(projectPath)) {
 			try {
 				Files.createDirectories(projectPath);
 			} catch (IOException e) {
@@ -82,10 +85,14 @@ public class SystemModelRepository {
 		return projectPath;
 	}
 	
-	public Path getSystemModelFile(Project project) throws IOException {
+	public Path getSystemModelFile(Project project, boolean createDir) throws IOException {
 		String modelFileName = project.getName() + "." + SystemModel.FILE_EXTENSION;
-		Path systemModelFile = Paths.get(getProjectPath(project).toString(), modelFileName);
+		Path systemModelFile = Paths.get(getProjectPath(project, createDir).toString(), modelFileName);
 		return systemModelFile;
+	}
+	
+	public SystemModel getSystemModel(Project project) throws IOException {
+		return SystemModelFactory.eINSTANCE.createSystemModel(getSystemModelFile(project, false));
 	}
 	
 	public List<Project> removeMissingProjects(Version olderVersion, Version currentVersion) {

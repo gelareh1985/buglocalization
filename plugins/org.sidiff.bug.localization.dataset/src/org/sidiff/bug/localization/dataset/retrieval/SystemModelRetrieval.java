@@ -171,13 +171,13 @@ public class SystemModelRetrieval {
 			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
 		}
 		
-		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
+		Path systemModelFile = systemModelRepository.getSystemModelFile(project, true);
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
 		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
 			
 			// Discover the multi-view system model of the project version:
-			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project));
+			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project, true));
 			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
 			systemModel.setName(project.getName());
 			
@@ -189,7 +189,7 @@ public class SystemModelRetrieval {
 		}
 		
 		// Update data set path:
-		project.setSystemModel(systemModelRepository.getDataSetPath().getParent().relativize(systemModelFile));
+		project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
 	}
 	
 	private void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {

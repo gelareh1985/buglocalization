@@ -58,16 +58,20 @@ public class HistoryUtil {
 	}
 	
 	public static boolean hasPreviousVersion(Version oldVersion, Project project) {
+		return getCorrespondingVersion(oldVersion, project) != null;
+	}
+	
+	public static Project getCorrespondingVersion(Version otherVersion, Project project) {
 		
-		if (oldVersion != null) {
-			for (Project oldProject : oldVersion.getWorkspace().getProjects()) {
-				if (oldProject.getName().equals(project.getName())) {
-					return true;
+		if (otherVersion != null) {
+			for (Project otherProject : otherVersion.getWorkspace().getProjects()) {
+				if (otherProject.getName().equals(project.getName())) {
+					return otherProject;
 				}
 			}
 		}
 		
-		return false;
+		return null;
 	}
 	
 }
