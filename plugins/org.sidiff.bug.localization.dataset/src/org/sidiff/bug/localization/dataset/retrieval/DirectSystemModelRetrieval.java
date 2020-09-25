@@ -186,36 +186,31 @@ public class DirectSystemModelRetrieval {
 	}
 
 	private void retrieveWorkspaceSystemModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
-		
-		if (!workspace.getProjects().isEmpty()) { // optimization
-			for (Project project : workspace.getProjects()) {
-				long time = System.currentTimeMillis();
-				
-				try {
-					
-					/*
-					 *  Project -> Java Model
-					 */
-					
-					ChangeLocationMatcher changeLocationMatcher = getChangeLocationMatcher(newerVersion, project);
-					SystemModel javaSystemModel = retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
-					time = stopTime("Discover Java Model Project: ", time);
-					
-					/*
-					 * Java Model -> System Model
-					 */
-					
-					if (javaSystemModel != null) {
-						retrieveProjectSystemModelVersion(olderVersion, version, project, javaSystemModel);
-						time = stopTime("Discover System Model Project: ", time);
-					}
-					
-				} catch (Throwable e) {
-					e.printStackTrace();
 
-					if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-						Activator.getLogger().log(Level.SEVERE, "Could not discover model: " + project);
-					}
+		for (Project project : workspace.getProjects()) {
+			long time = System.currentTimeMillis();
+
+			try {
+
+				/*
+				 *  Project -> Java Model
+				 */
+
+				ChangeLocationMatcher changeLocationMatcher = getChangeLocationMatcher(newerVersion, project);
+				SystemModel javaSystemModel = retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
+				time = stopTime("Discover Java Model Project: ", time);
+
+				/*
+				 * Java Model -> System Model
+				 */
+
+				retrieveProjectSystemModelVersion(olderVersion, version, project, javaSystemModel);
+				time = stopTime("Discover System Model Project: ", time);
+			} catch (Throwable e) {
+				e.printStackTrace();
+
+				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "Could not discover model: " + project);
 				}
 			}
 		}
@@ -302,8 +297,9 @@ public class DirectSystemModelRetrieval {
 		
 		Path systemModelFile = systemModelRepository.getSystemModelFile(project);
 		
+		// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (HistoryUtil.hasChanges(project, olderVersion, version, javaModelProvider.getFileChangeFilter())) {
+		if ((javaSystemModel != null) && HistoryUtil.hasChanges(project, olderVersion, version, javaModelProvider.getFileChangeFilter())) {
 			
 			// Discover the multi-view system model of the project version:
 			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
