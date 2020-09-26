@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,9 +20,9 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Classifier;
-import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Interface;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.util.BugFixIterator;
@@ -133,7 +134,7 @@ public class StatisticsApplication implements IApplication {
 		
 		// Save statistics to file:
 		saveProductStatistics(dataSetPath, Collections.singletonList(productStatistic));
-		saveProjectStatistics(dataSetPath, new ArrayList<>(projectStatistics.values()));
+		saveProjectStatistics(dataSetPath, getSortedProjectStatistics());
 		
 		return IApplication.EXIT_OK;
 	}
@@ -332,29 +333,33 @@ public class StatisticsApplication implements IApplication {
 		
 		classDiagramView.getModel().eAllContents().forEachRemaining(element -> {
 			if (element instanceof Classifier) {
-				if (isExternalElement(element, trace)) {
-					++projectStatistic.umlExternalClassifiers;
+				if (isTraceableElement(element, trace)) {
+					if (element instanceof Class) {
+						++projectStatistic.umlClassifiers;
+						projectStatistic.umlOperations += ((Class) element).getOwnedOperations().size();
+						projectStatistic.umlProperties += ((Class) element).getAttributes().size();
+					} else if (element instanceof Interface) {
+						++projectStatistic.umlClassifiers;
+						projectStatistic.umlOperations += ((Interface) element).getOwnedOperations().size();
+						projectStatistic.umlProperties += ((Interface) element).getAttributes().size();
+					}
 				} else {
-					++projectStatistic.umlClassifiers;
-				}
-			} else if (element instanceof Operation) {
-				if (isExternalElement(element, trace)) {
-					++projectStatistic.umlExternalOperations;
-				} else {
-					++projectStatistic.umlOperations;
-				}
-			} else if (element instanceof Property) {
-				if (isExternalElement(element, trace)) {
-					++projectStatistic.umlExternalProperties;
-				} else {
-					++projectStatistic.umlProperties;
+					if (element instanceof Class) {
+						++projectStatistic.umlExternalClassifiers;
+						projectStatistic.umlExternalOperations += ((Class) element).getOwnedOperations().size();
+						projectStatistic.umlExternalProperties += ((Class) element).getAttributes().size();
+					} else if (element instanceof Interface) {
+						++projectStatistic.umlExternalClassifiers;
+						projectStatistic.umlExternalOperations += ((Interface) element).getOwnedOperations().size();
+						projectStatistic.umlExternalProperties += ((Interface) element).getAttributes().size();
+					}
 				}
 			}
 		});
 	}
 
-	private boolean isExternalElement(EObject element, Model2CodeTrace trace) {
-		return trace.getJavaFile(element, false) == null;
+	private boolean isTraceableElement(EObject element, Model2CodeTrace trace) {
+		return trace.getJavaFile(element, false) != null;
 	}
 
 	private ProjectStatistic getProjectStatistic(Project project) {
@@ -463,8 +468,8 @@ public class StatisticsApplication implements IApplication {
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Bug Fix Locations");
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Bug Fix Quantification");
 		
-		csv.append(CSV_COLUMN_SEPERATOR + "UML Classifiers");
-		csv.append(CSV_COLUMN_SEPERATOR + " + External UML Classifiers");
+		csv.append(CSV_COLUMN_SEPERATOR + "UML Classes/Interfaces");
+		csv.append(CSV_COLUMN_SEPERATOR + " + External UML Classes/Interfaces");
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Operations");
 		csv.append(CSV_COLUMN_SEPERATOR + " + External UML Operations");
 		csv.append(CSV_COLUMN_SEPERATOR + "UML Properties");
@@ -503,6 +508,18 @@ public class StatisticsApplication implements IApplication {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private List<ProjectStatistic> getSortedProjectStatistics() {
+		List<ProjectStatistic> sortedProjectStatistics = new ArrayList<>(projectStatistics.values());
+		sortedProjectStatistics.sort(new Comparator<ProjectStatistic>() {
+	
+			@Override
+			public int compare(ProjectStatistic s1, ProjectStatistic s2) {
+				return s1.projectName.compareTo(s2.projectName);
+			}
+		});
+		return sortedProjectStatistics;
 	}
 
 	@Override
