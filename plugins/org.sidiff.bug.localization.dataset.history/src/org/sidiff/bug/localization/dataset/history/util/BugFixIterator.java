@@ -21,7 +21,7 @@ public class BugFixIterator implements Iterator<Version> {
 
 	@Override
 	public boolean hasNext() {
-		return historyIterator.getCurrentVersion() != null;
+		return (historyIterator != null) && (historyIterator.getCurrentVersion() != null);
 	}
 
 	@Override
@@ -43,9 +43,10 @@ public class BugFixIterator implements Iterator<Version> {
 			historyIterator.next();
 			
 			if (historyIterator.getCurrentVersion().hasBugReport()) {
-				break;
+				return;
 			}
 		}
+		this.historyIterator = null;
 	}
 	
 	/**
@@ -62,8 +63,12 @@ public class BugFixIterator implements Iterator<Version> {
 		return buggyVersion;
 	}
 	
-	public int getNewerVersionCount() {
-		return historyIterator.getRemaining(); 
+	public int getNextIndex() {
+		if (historyIterator != null) {
+			return historyIterator.getRemaining() + 1; 
+		} else {
+			return -1;
+		}
 	}
 
 }
