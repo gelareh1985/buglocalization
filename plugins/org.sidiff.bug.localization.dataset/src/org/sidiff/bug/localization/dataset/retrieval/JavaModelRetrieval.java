@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.ProjectChangeProvider;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.ChangeProvider;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalJavaParser;
@@ -246,10 +248,41 @@ public class JavaModelRetrieval {
 			
 			// Store system model in data set:
 			storeSystemModel(systemModelFile, systemModel);
+		} else {
+			
+			// Clear changes or no system model?
+			if (Files.exists(systemModelFile)) {
+				// Optimization: Clear only if changes were written for last version
+				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), provider.getFileChangeFilter())) {
+					SystemModel systemModel = javaModelRepository.getSystemModel(project);
+					clearSystemModelChanges(systemModel, systemModelFile);
+				}
+			} else {
+				systemModelFile = null;
+			}
 		}
 		
 		// Store path in data set:
-		project.setSystemModel(javaModelRepository.getRepositoryPath().relativize(systemModelFile));
+		if (systemModelFile != null) {
+			project.setSystemModel(javaModelRepository.getRepositoryPath().relativize(systemModelFile));
+		} else {
+			project.setSystemModel(null); // no system model
+		}
+	}
+	
+	private void clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
+		boolean hasChanged = false;
+		
+		for (View view : systemModel.getViews()) {
+			if (!view.getChanges().isEmpty()) {
+				view.getChanges().clear();
+				hasChanged = true;
+			}
+		}
+		
+		if (hasChanged) {
+			storeSystemModel(systemModelFile, systemModel);
+		}
 	}
 	
 	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {

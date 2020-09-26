@@ -2,6 +2,7 @@ package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -299,7 +300,7 @@ public class DirectSystemModelRetrieval {
 		
 		// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if ((javaSystemModel != null) && HistoryUtil.hasChanges(project, olderVersion, version, javaModelProvider.getFileChangeFilter())) {
+		if ((javaSystemModel != null) && HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
 			
 			// Discover the multi-view system model of the project version:
 			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
@@ -310,10 +311,25 @@ public class DirectSystemModelRetrieval {
 			
 			// Store system model in data set:
 			storeSystemModel(systemModelFile, systemModel);
+		} else {
+			// Clear changes or no system model?
+			if (Files.exists(systemModelFile)) {
+				// Optimization: Clear only if changes were written for last version
+				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
+					SystemModel systemModel = systemModelRepository.getSystemModel(project);
+					clearSystemModelChanges(systemModel, systemModelFile);
+				}
+			} else {
+				systemModelFile = null;
+			}
 		}
 		
 		// Update data set path:
-		project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
+		if (systemModelFile != null) {
+			project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
+		} else {
+			project.setSystemModel(null); // no system model
+		}
 	}
 
 	private void discoverSystemModel(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
@@ -330,11 +346,19 @@ public class DirectSystemModelRetrieval {
 		}
 	}
 	
-	private long stopTime(String text, long time) {
-		if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
-			Activator.getLogger().log(LoggerUtil.PERFORMANCE,  text + (System.currentTimeMillis() - time) + "ms");
+	private void clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
+		boolean hasChanged = false;
+		
+		for (View view : systemModel.getViews()) {
+			if (!view.getChanges().isEmpty()) {
+				view.getChanges().clear();
+				hasChanged = true;
+			}
 		}
-		return System.currentTimeMillis();
+		
+		if (hasChanged) {
+			storeSystemModel(systemModelFile, systemModel);
+		}
 	}
 	
 	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
@@ -426,6 +450,13 @@ public class DirectSystemModelRetrieval {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private long stopTime(String text, long time) {
+		if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
+			Activator.getLogger().log(LoggerUtil.PERFORMANCE,  text + (System.currentTimeMillis() - time) + "ms");
+		}
+		return System.currentTimeMillis();
 	}
 	
 	public Path getCodeRepositoryPath() {

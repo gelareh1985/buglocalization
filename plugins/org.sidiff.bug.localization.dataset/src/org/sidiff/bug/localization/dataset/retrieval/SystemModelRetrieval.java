@@ -2,6 +2,7 @@ package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -186,10 +187,26 @@ public class SystemModelRetrieval {
 			
 			// Store system model in data set:
 			storeSystemModel(systemModelFile, systemModel);
+		} else {
+			
+			// Clear changes or no system model?
+			if (Files.exists(systemModelFile)) {
+				// Optimization: Clear only if changes were written for last version
+				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), provider.getFileChangeFilter())) {
+					SystemModel systemModel = systemModelRepository.getSystemModel(project);
+					clearSystemModelChanges(systemModel, systemModelFile);
+				}
+			} else {
+				systemModelFile = null;
+			}
 		}
 		
-		// Update data set path:
-		project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
+		// Store path in data set:
+		if (systemModelFile != null) {
+			project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
+		} else {
+			project.setSystemModel(null); // no system model
+		}
 	}
 	
 	private void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
@@ -203,6 +220,21 @@ public class SystemModelRetrieval {
 					Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + javaSystemModel.eResource().getURI());
 				}
 			}
+		}
+	}
+	
+	private void clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
+		boolean hasChanged = false;
+		
+		for (View view : systemModel.getViews()) {
+			if (!view.getChanges().isEmpty()) {
+				view.getChanges().clear();
+				hasChanged = true;
+			}
+		}
+		
+		if (hasChanged) {
+			storeSystemModel(systemModelFile, systemModel);
 		}
 	}
 	
