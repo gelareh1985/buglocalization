@@ -8,9 +8,11 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: eu.artist.migration.mdt.javaee.java.uml.discovery,
  eu.artist.migration.mdt.javaee.java.uml.provider,
+ eu.artist.migration.mdt.javaee.java.uml.traces,
  eu.artist.migration.mdt.javaee.java.uml.util
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.m2m.atl.core,
  org.eclipse.m2m.atl.core.emf,
  org.eclipse.modisco.infra.discovery.core,
- org.eclipse.m2m.atl.engine.emfvm.launch
+ org.eclipse.m2m.atl.engine.emfvm.launch,
+ org.eclipse.uml2.uml
