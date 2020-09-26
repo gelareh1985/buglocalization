@@ -5,12 +5,11 @@ import java.nio.file.Path;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.sidiff.bug.localization.common.utilities.web.WebUtil;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
-import org.sidiff.bug.localization.dataset.reports.model.BugReportComment;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
+import org.sidiff.bug.localization.dataset.retrieval.util.BugReportUtil;
 
 public class TextCorpusApplication implements IApplication {
 
@@ -27,17 +26,7 @@ public class TextCorpusApplication implements IApplication {
 		
 		for (Version version : dataSet.getHistory().getVersions()) {
 			if (version.hasBugReport()) {
-				textCorpus.append(getPlainText(version.getCommitMessage()));
-				textCorpus.append(" ");
-				textCorpus.append(getPlainText(version.getBugReport().getSummary()));
-				textCorpus.append(" ");
-				
-				for (BugReportComment comment : version.getBugReport().getComments()) {
-					if (!comment.getText().contains("Gerrit change")) {
-						textCorpus.append(getPlainText(comment.getText()));
-						textCorpus.append(" ");
-					}
-				}
+				textCorpus.append(BugReportUtil.getFullPlainText(version, BugReportUtil.DEFAULT_BUG_REPORT_COMMENT_FILTER));
 				textCorpus.append("\n");
 			}
 		}
@@ -52,10 +41,6 @@ public class TextCorpusApplication implements IApplication {
 		Files.write(textCorpusPath, textCorpus.toString().getBytes());
 		
 		return IApplication.EXIT_OK;
-	}
-
-	private String getPlainText(String string) {
-		return WebUtil.unescape(string).replace("\n", "").replace("\r", "");
 	}
 
 	@Override
