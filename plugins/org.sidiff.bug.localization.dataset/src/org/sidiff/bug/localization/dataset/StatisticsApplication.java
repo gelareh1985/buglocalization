@@ -3,7 +3,6 @@ package org.sidiff.bug.localization.dataset;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +43,8 @@ import eu.artist.migration.mdt.javaee.java.uml.traces.Model2CodeTrace;
 public class StatisticsApplication implements IApplication {
 	
 	public static final String ARGUMENT_DATASET = "-dataset";
+	
+	public static final String ARGUMENT_SYSTEM_MODEL_REPOSITORY = "-systemModelRepository";
 	
 	public static final String CSV_COLUMN_SEPERATOR = ";";
 	
@@ -113,8 +114,9 @@ public class StatisticsApplication implements IApplication {
 		this.dataSetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		this.dataSet = DataSetStorage.load(dataSetPath);
 		
+		Path systemModelRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SYSTEM_MODEL_REPOSITORY);
+		this.systemModelRepository = new SystemModelRepository(systemModelRepositoryPath, dataSet);
 		this.provider = new SystemModelRetrievalProvider();
-		this.systemModelRepository = new SystemModelRepository(Paths.get("C:\\Users\\manue\\git\\eclipse.jdt.core_uml.class_1"), dataSet);
 		
 		this.productStatistic = new ProductStatistic();
 		this.projectStatistics = new LinkedHashMap<>();
