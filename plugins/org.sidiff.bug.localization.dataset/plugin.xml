@@ -73,5 +73,17 @@
          </run>
       </application>
    </extension>
+   <extension
+         id="gitrewrite"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.sidiff.bug.localization.dataset.GitRewriteApplication">
+         </run>
+      </application>
+   </extension>
 
 </plugin>

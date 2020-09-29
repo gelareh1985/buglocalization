@@ -10,13 +10,17 @@ import org.eclipse.equinox.app.IApplicationContext;
 public class ApplicationUtil {
 
 	public static Path getPathFromProgramArguments(IApplicationContext context, String argumentName) throws FileNotFoundException {
+		return getPathFromProgramArguments(context, argumentName, true);
+	}
+	
+	public static Path getPathFromProgramArguments(IApplicationContext context, String argumentName, boolean exists) throws FileNotFoundException {
 		String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 		
 		for (int i = 0; i < args.length - 1; i++) {
-			if (args[i].equals(argumentName)) {
+			if (args[i].equalsIgnoreCase(argumentName)) {
 				Path dataSetPath = Paths.get(args[i + 1]);
 				
-				if (!Files.exists(dataSetPath)) {
+				if (exists && !Files.exists(dataSetPath)) {
 					throw new FileNotFoundException(args[i + 1]);
 				}
 				
@@ -31,7 +35,7 @@ public class ApplicationUtil {
 		String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 		
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals(argumentName)) {
+			if (args[i].equalsIgnoreCase(argumentName)) {
 				return true;
 			}
 		}

@@ -63,9 +63,9 @@ public class BugFixIterator implements Iterator<Version> {
 		return buggyVersion;
 	}
 	
-	public int getNextIndex() {
+	public int nextIndex() {
 		if (historyIterator != null) {
-			return historyIterator.getRemaining() + 1; 
+			return historyIterator.nextIndex(); 
 		} else {
 			return -1;
 		}

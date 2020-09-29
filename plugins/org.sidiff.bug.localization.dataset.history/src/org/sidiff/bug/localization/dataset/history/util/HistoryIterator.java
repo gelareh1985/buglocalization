@@ -68,7 +68,7 @@ public class HistoryIterator implements Iterator<Version> {
 		return olderVersion;
 	}
 	
-	public int getRemaining() {
+	public int nextIndex() {
 		return versionIterator.nextIndex(); 
 	}
 	
