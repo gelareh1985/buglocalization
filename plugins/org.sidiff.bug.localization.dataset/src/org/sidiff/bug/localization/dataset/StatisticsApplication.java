@@ -44,7 +44,7 @@ public class StatisticsApplication implements IApplication {
 	
 	public static final String ARGUMENT_DATASET = "-dataset";
 	
-	public static final String ARGUMENT_SYSTEM_MODEL_REPOSITORY = "-systemModelRepository";
+	public static final String ARGUMENT_SYSTEM_MODEL_REPOSITORY = "-systemmodelrepository";
 	
 	public static final String CSV_COLUMN_SEPERATOR = ";";
 	
@@ -259,7 +259,7 @@ public class StatisticsApplication implements IApplication {
 		BugFixIterator bugFixIterator = new BugFixIterator(dataSet.getHistory());
 		
 		while (bugFixIterator.hasNext()) {
-			System.out.println("UML Change Locations - Current Version: " + bugFixIterator.getNextIndex());
+			System.out.println("UML Change Locations - Current Version: " + bugFixIterator.nextIndex());
 			
 			bugFixIterator.next();
 			Version fixedVersion = bugFixIterator.getFixedVersion();
