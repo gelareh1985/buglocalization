@@ -133,6 +133,7 @@ public class DirectRetrievalApplication implements IApplication {
 		}
 		
 		Activator.getLogger().log(Level.INFO, "Retrieval Finished");
+		Activator.getLogger().log(Level.INFO, "To optimize disc space run: git gc --auto");
 	}
 	
 	@SuppressWarnings("unused")
