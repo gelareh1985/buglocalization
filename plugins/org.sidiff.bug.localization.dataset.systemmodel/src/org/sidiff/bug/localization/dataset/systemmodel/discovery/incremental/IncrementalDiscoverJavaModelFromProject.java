@@ -11,9 +11,8 @@ public class IncrementalDiscoverJavaModelFromProject extends DiscoverJavaModelFr
 
 	private IncrementalJavaParser javaParser;
 	
-	public IncrementalDiscoverJavaModelFromProject(IProject project, IncrementalJavaParser javaParser, ChangeProvider changeProvider) {
+	public IncrementalDiscoverJavaModelFromProject(IProject project, IncrementalJavaParser javaParser) {
 		this.javaParser = javaParser;
-		javaParser.update(changeProvider.getChanges(project));
 	}
 
 	@Override

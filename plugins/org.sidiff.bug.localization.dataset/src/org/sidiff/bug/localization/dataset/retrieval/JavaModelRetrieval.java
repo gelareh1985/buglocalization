@@ -227,14 +227,15 @@ public class JavaModelRetrieval {
 		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
 		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
+			IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
 			
 			// Calculate changed files in project for incremental AST parser:
 			List<FileChange> projectFileChanges = HistoryUtil.getChanges(project, version.getFileChanges(), provider.getFileChangeFilter());
 			ChangeProvider changeProvider = new ProjectChangeProvider(projectFileChanges);
+			javaParser.update(changeProvider.getChanges(workspaceProject));
 			
 			// Discover the Java AST of the project version:
-			IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
-			JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel(javaParser, changeProvider);
+			JavaProject2JavaSystemModel systemModelDiscoverer = new JavaProject2JavaSystemModel(javaParser);
 			SystemModel systemModel;
 			
 			if (changeLocationMatcher != null) {

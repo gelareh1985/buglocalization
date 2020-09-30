@@ -18,7 +18,6 @@ import org.eclipse.modisco.java.discoverer.DiscoverJavaModelFromProject;
 import org.eclipse.modisco.kdm.source.extension.discovery.SourceVisitListener;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.ChangeProvider;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalDiscoverJavaModelFromProject;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.IncrementalJavaParser;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
@@ -27,14 +26,11 @@ public class JavaProject2JavaSystemModel {
 	
 	private IncrementalJavaParser javaParser;
 	
-	private ChangeProvider changeProvider;
-	
 	public JavaProject2JavaSystemModel() {
 	}
 	
-	public JavaProject2JavaSystemModel(IncrementalJavaParser javaParser, ChangeProvider changeProvider) {
+	public JavaProject2JavaSystemModel(IncrementalJavaParser javaParser) {
 		this.javaParser = javaParser;
-		this.changeProvider = changeProvider;
 	}
 
 	public SystemModel discover(IProject project, SourceVisitListener discovererListener, IProgressMonitor monitor) throws DiscoveryException {
@@ -53,8 +49,8 @@ public class JavaProject2JavaSystemModel {
 		DiscoverJavaModelFromProject javaDiscoverer;
 		
 		// Use incremental Java parser:
-		if ((changeProvider != null) && (javaParser != null)) {
-			javaDiscoverer = new IncrementalDiscoverJavaModelFromProject(project, javaParser, changeProvider);
+		if (javaParser != null) {
+			javaDiscoverer = new IncrementalDiscoverJavaModelFromProject(project, javaParser);
 			javaDiscoverer.setDeepAnalysis(!javaParser.isIgnoreMethodBodies());
 			javaDiscoverer.setRefreshSourceBeforeDiscovery(true);
 		} else {
