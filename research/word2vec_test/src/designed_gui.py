@@ -65,7 +65,7 @@ def myClick3():
         print(text)
         analys1.sketch_analysis3(text)
         
-def myClick():
+def myClick_print():
       
     if len(variable1.get())!=0:
         text.append(variable1.get())
@@ -76,7 +76,7 @@ def myClick():
 ttk.btn1=Button(group_1, text = "Dim Plot and Loss Plot",command=myClick1).grid(row=0, column=2, sticky=E)
 ttk.btn3=Button(group_1, text = "Win Size Plot and Loss Plot",command=myClick2).grid(row=2, column=2, sticky=E)
 ttk.btn5=Button(group_1, text = "Epoch Plot and Loss Plot",command=myClick3).grid(row=3, column=2, sticky=E)
-ttk.btn6=Button(group_1, text = "Trained Data Example",command=myClick).grid(row=1, column=1, sticky=E)
+ttk.btn6=Button(group_1, text = "Trained Data Example",command=myClick_print).grid(row=1, column=1, sticky=E)
 
 
 group_2 = ttk.LabelFrame(root, padx=15, pady=10,text="Analysis Corpus Example")
@@ -103,6 +103,19 @@ def myClick6():
     if p!="":
         analys2.sketch_analysis_B3(str_path)
 
+def myClick7():
+    str_path=p.replace('/', "\\\\")
+    print(str_path)
+    if p!="":
+        analys2.sketch_analysis_B4(str_path)
+
+
+def myClick8():
+    str_path=p.replace('/', "\\\\")
+    print(str_path)
+    if p!="":
+        analys2.sketch_analysis_B5(str_path)
+
 
 def fileDialog():
     global p
@@ -113,12 +126,14 @@ def fileDialog():
     label.configure(text = filename)
     p=filename
     return p
+
     
 ttk.Button(group_2, text = "Browse a File: ", command=fileDialog).grid(row=0, column=0, sticky=W)
-ttk.btn1=Button(group_2, text = "Dim Plot and Loss Plot",command=myClick4).grid(row=0, column=2, sticky=E)
-ttk.btn3=Button(group_2, text = "Win Size Plot and Loss Plot",command=myClick5).grid(row=2, column=2, sticky=E)
-ttk.btn5=Button(group_2, text = "Epoch Plot and Loss Plot",command=myClick6).grid(row=3, column=2, sticky=E)
-
+ttk.btn1=Button(group_2, text = "With Stop word and Loss Plot",command=myClick4).grid(row=0, column=2, sticky=E)
+ttk.btn2=Button(group_2, text = "Without Stop word and Loss Plot",command=myClick5).grid(row=2, column=2, sticky=E)
+ttk.btn3=Button(group_2, text = "Dim Plot and Loss Plot",command=myClick6).grid(row=3, column=2, sticky=E)
+ttk.btn4=Button(group_2, text = "Win Size Plot and Loss Plot",command=myClick7).grid(row=4, column=2, sticky=E)
+ttk.btn5=Button(group_2, text = "Final Experiment",command=myClick8).grid(row=5, column=2, sticky=E)
 
 root.mainloop()      
 

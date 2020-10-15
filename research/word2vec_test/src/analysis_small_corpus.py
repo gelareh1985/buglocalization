@@ -32,7 +32,7 @@ def sketch_analysis1(text):
     epochs = 100
     learning_rate = 0.01
     #text = ["Best way to success is through hardwork and persistence"]
-    
+    #text=["Widening conversions combined with method invocation and switch expressions does not work"]
     word_to_index,index_to_word,corpus,vocab_size,length_of_corpus = generate_dictinoary_data(text)
     training_data,training_sample_words = generate_training_data(corpus,window_size,vocab_size,word_to_index,length_of_corpus)
     

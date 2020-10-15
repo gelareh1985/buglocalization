@@ -73,10 +73,14 @@ def sketch_analysis_B1(path):
         
     )
     dataframe_sim.append(df)
-    display(df) 
+    # pd.set_option('display.max_rows', len(df))
+    #display(df) 
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(df)
     
-    for i in range(len(dataframe_sim)):
-        print(dataframe_sim[i])
+#     for i in range(len(dataframe_sim)):
+#         print('Data frame display: ',dataframe_sim[i])
+        #display(dataframe_sim[i]) 
     
     plot_epoch_loss(
         'Stopwords_removed_',
@@ -118,7 +122,7 @@ def sketch_analysis_B2(str_path):
     loss_epoch = {}
     dataframe_sim = []
      
-    epoch_loss,weights_1,weights_2 = train(dimension,window_size,epochs,training_data,learning_rate,'yes',50)
+    epoch_loss,weights_1,weights_2 = train(dimension,vocab_size,epochs,training_data,learning_rate,'yes',50)
     loss_epoch.update( {'no': epoch_loss} )
      
     word_similarity_scatter_plot_bigger_corpus(
@@ -136,6 +140,10 @@ def sketch_analysis_B2(str_path):
         words_subset, word_to_index, vocab_size,index_to_word
     )
     dataframe_sim.append(df)
+    
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(df)
+    
     plot_epoch_loss(
         'Stopwords_removed_',
         loss_epoch,
@@ -145,8 +153,8 @@ def sketch_analysis_B2(str_path):
 #------------------------------------------------------------------------------   
 # Similarity matrix
 #------------------------------------------------------------------------------  
-    for i in range(len(dataframe_sim)):
-        display(dataframe_sim[i])
+#     for i in range(len(dataframe_sim)):
+#         display(dataframe_sim[i])
 
 def sketch_analysis_B3(str_path):            
 #------------------------------------------------------------------------------      
@@ -175,7 +183,7 @@ def sketch_analysis_B3(str_path):
     for dim in dimensions:
         print('Running for dimension :' ,dim)
         
-        epoch_loss,weights_1,weights_2 = train(dim,window_size,epochs,training_data,learning_rate,'yes',50)
+        epoch_loss,weights_1,weights_2 = train(dim,vocab_size,epochs,training_data,learning_rate,'yes',50)
         loss_epoch.update( {dim: epoch_loss} )
         
         word_similarity_scatter_plot_bigger_corpus(
@@ -193,6 +201,15 @@ def sketch_analysis_B3(str_path):
         )
         dataframe_sim.append(df)
         
+#         with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#             print(df) 
+    for i in range(len(dataframe_sim)):
+        #display(dataframe_sim[i])
+        
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+            df_out=pd.DataFrame(dataframe_sim[i])
+            print(df_out) 
+        
     plot_epoch_loss(
         'dim:',
         loss_epoch,
@@ -202,8 +219,12 @@ def sketch_analysis_B3(str_path):
 #------------------------------------------------------------------------------
 #Similarity matrix
 #------------------------------------------------------------------------------
-    for i in range(len(dataframe_sim)):
-        display(dataframe_sim[i])
+#     for i in range(len(dataframe_sim)):
+#         #display(dataframe_sim[i])
+#         
+#         with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#             df_out=pd.DataFrame(dataframe_sim[i])
+#             print(df_out) 
 
 def sketch_analysis_B4(str_path):    
 #------------------------------------------------------------------------------    
@@ -224,7 +245,7 @@ def sketch_analysis_B4(str_path):
         word_to_index,index_to_word,corpus,vocab_size,length_of_corpus = generate_dictinoary_data(text)
         training_data,training_sample_words = generate_training_data(corpus,ws,vocab_size,word_to_index,length_of_corpus)
         
-        epoch_loss,weights_1,weights_2 = train(dimension,ws,epochs,training_data,learning_rate,'yes',50)
+        epoch_loss,weights_1,weights_2 = train(dimension,vocab_size,epochs,training_data,learning_rate,'yes',50)
         loss_epoch.update( {ws: epoch_loss} )
         
         words_subset=[]
@@ -244,7 +265,14 @@ def sketch_analysis_B4(str_path):
             words_subset, word_to_index, vocab_size,index_to_word
         )
         dataframe_sim.append(df)
+    
+    for i in range(len(dataframe_sim)):
+        #display(dataframe_sim[i])
         
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+            df_out=pd.DataFrame(dataframe_sim[i])
+            print(df_out) 
+            
     plot_epoch_loss(
         'window_size:',
         loss_epoch,
@@ -254,8 +282,8 @@ def sketch_analysis_B4(str_path):
 #------------------------------------------------------------------------------
 # Similarity matrix
 #------------------------------------------------------------------------------
-    for i in range(len(dataframe_sim)):
-        display(dataframe_sim[i])
+#     for i in range(len(dataframe_sim)):
+#         display(dataframe_sim[i])
         
 def sketch_analysis_B5(str_path):   
     epochs = 200
@@ -277,7 +305,7 @@ def sketch_analysis_B5(str_path):
     loss_epoch = {}
     dataframe_sim = []
         
-    epoch_loss,weights_1,weights_2 = train(dimension,window_size,epochs,training_data,learning_rate,'yes',200)
+    epoch_loss,weights_1,weights_2 = train(dimension,vocab_size,epochs,training_data,learning_rate,'yes',200)
     loss_epoch.update( {'': epoch_loss} )
     
     word_similarity_scatter_plot_bigger_corpus(
@@ -296,6 +324,9 @@ def sketch_analysis_B5(str_path):
     )
     dataframe_sim.append(df)
     
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(df)
+    
     plot_epoch_loss(
         'Final_training',
         loss_epoch,
@@ -303,10 +334,18 @@ def sketch_analysis_B5(str_path):
         'final_training_epoch_loss_plot_'
     )
     
-    for i in range(len(dataframe_sim)):
-        display(dataframe_sim[i])
+#     for i in range(len(dataframe_sim)):
+#         display(dataframe_sim[i])
 
-
+def show_trained_data(str_path):
+    word_to_index,index_to_word,corpus,vocab_size,length_of_corpus = generate_dictinoary_data(str_path)
+    window_size = 2
+    training_data,training_sample_words = generate_training_data(corpus,2,vocab_size,word_to_index,length_of_corpus)
+    for i in range(len(training_data)):
+        print('*' * 50)
+        print('Target word:%s . Target vector: %s ' %(training_sample_words[i][0],training_data[i][0]))
+        print('Context word:%s . Context  vector: %s ' %(training_sample_words[i][1],training_data[i][1]))
+    
 
 
 
