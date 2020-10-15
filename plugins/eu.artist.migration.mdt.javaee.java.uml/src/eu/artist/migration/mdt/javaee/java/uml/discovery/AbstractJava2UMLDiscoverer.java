@@ -14,7 +14,6 @@
 package eu.artist.migration.mdt.javaee.java.uml.discovery;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +25,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.m2m.atl.core.ATLCoreException;
 import org.eclipse.m2m.atl.core.emf.EMFModel;
 import org.eclipse.m2m.atl.core.launch.ILauncher;
-import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
+import org.eclipse.m2m.atl.engine.emfvm.ASM;
 import org.eclipse.modisco.infra.discovery.core.AbstractModelDiscoverer;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
 
+import eu.artist.migration.mdt.javaee.java.uml.discovery.launcher.UMLLauncher;
 import eu.artist.migration.mdt.javaee.java.uml.provider.TransformationProvider;
 
 public abstract class AbstractJava2UMLDiscoverer<T> extends AbstractModelDiscoverer<T> {
@@ -87,23 +87,23 @@ public abstract class AbstractJava2UMLDiscoverer<T> extends AbstractModelDiscove
 	}
 
 	protected ILauncher createLauncher() throws IOException {
-		ILauncher transformationLauncher = new EMFVMLauncher();
+		ILauncher transformationLauncher = new UMLLauncher();
 		transformationLauncher.initialize(new HashMap<String, Object>());
 		
-		for (Entry<String, InputStream> library : loadLibraries().entrySet()) {
+		for (Entry<String, ASM> library : loadLibraries().entrySet()) {
 			transformationLauncher.addLibrary(library.getKey(), library.getValue());
 		}
 		
 		return transformationLauncher;
 	}
 	
-	protected Map<String, InputStream> loadLibraries() throws IOException {
-		Map <String, InputStream > libraries = new HashMap<>();
+	protected Map<String, ASM> loadLibraries() throws IOException {
+		Map <String, ASM> libraries = new HashMap<>();
 		return libraries;
 	}
 
-	protected List<InputStream> loadModules() throws IOException {
-		List<InputStream> modules = new ArrayList<>();
+	protected List<ASM> loadModules() throws IOException {
+		List<ASM> modules = new ArrayList<>();
 		return modules;
 	}
 }

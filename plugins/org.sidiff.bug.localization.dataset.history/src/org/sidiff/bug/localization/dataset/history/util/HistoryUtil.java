@@ -45,17 +45,33 @@ public class HistoryUtil {
 		return projectFileChanges;
 	}
 	
-	public static boolean hasPreviousVersion(Version oldVersion, Project project) {
+	public static List<FileChange> getChanges(Project project, List<FileChange> fileChanges) {
+		List<FileChange> projectFileChanges = new ArrayList<>();
 		
-		if (oldVersion != null) {
-			for (Project oldProject : oldVersion.getWorkspace().getProjects()) {
-				if (oldProject.getName().equals(project.getName())) {
-					return true;
+		for (FileChange fileChange : fileChanges) {
+			if (fileChange.getLocation().startsWith(project.getFolder())) {
+				projectFileChanges.add(fileChange);
+			}
+		}
+		
+		return projectFileChanges;
+	}
+	
+	public static boolean hasPreviousVersion(Version oldVersion, Project project) {
+		return getCorrespondingVersion(oldVersion, project) != null;
+	}
+	
+	public static Project getCorrespondingVersion(Version otherVersion, Project project) {
+		
+		if (otherVersion != null) {
+			for (Project otherProject : otherVersion.getWorkspace().getProjects()) {
+				if (otherProject.getName().equals(project.getName())) {
+					return otherProject;
 				}
 			}
 		}
 		
-		return false;
+		return null;
 	}
 	
 }

@@ -16,18 +16,17 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.reports.bugtracker.EclipseBugzillaBugtracker;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.BugFixHistoryRetrievalProvider;
-import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrieval;
+import org.sidiff.bug.localization.dataset.retrieval.DirectSystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.JavaModelRetrievalProvider;
-import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
-public class RetrievalApplication implements IApplication {
+public class DirectRetrievalApplication implements IApplication {
 
 	/*
-	 *  Program Arguments: -dataset "<Path to>/DataSet.json" -retrieval "<Path to>/RetrievalConfiguration.json" -bughistory -workspacehistory -javamodelhistory -systemmodelhistory
+	 *  Program Arguments: -dataset "<Path to>/DataSet.json" -retrieval "<Path to>/RetrievalConfiguration.json" -bughistory -workspacehistory -systemmodelhistory
 	 */
 	
 	public static final String ARGUMENT_DATASET = "-dataset";
@@ -37,8 +36,6 @@ public class RetrievalApplication implements IApplication {
 	public static final String ARGUMENT_BUG_HISTORY = "-bughistory";
 	
 	public static final String ARGUMENT_WORKSPACE_HISTORY = "-workspacehistory";
-	
-	public static final String ARGUMENT_JAVA_MODEL_HISTORY = "-javamodelhistory";
 	
 	public static final String ARGUMENT_SYSTEM_MODEL_HISTORY = "-systemmodelhistory";
 	
@@ -54,14 +51,7 @@ public class RetrievalApplication implements IApplication {
 	private boolean retrieveWorkspaceHistory = true;
 	
 	/**
-	 * Phase 03: Retrieves the history of (MoDisco) Java models from the Java code
-	 * projects. If the phase 01 is not calculated within one run, the data set file
-	 * path need to be updated in the program argument to the output file of phase 01.
-	 */
-	private boolean retrieveJavaModelHistory = true;
-	
-	/**
-	 * Phase 04: Retrieves the system model (UML) from the (MoDisco) Java models.
+	 * Phase 03: Retrieves the system model (UML) from the (MoDisco) Java models.
 	 */
 	private boolean retrieveSystemModelHistory = true;
 	
@@ -76,7 +66,6 @@ public class RetrievalApplication implements IApplication {
 		
 		this.retrieveBugFixHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_BUG_HISTORY);
 		this.retrieveWorkspaceHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_WORKSPACE_HISTORY);
-		this.retrieveJavaModelHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_JAVA_MODEL_HISTORY);
 		this.retrieveSystemModelHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_SYSTEM_MODEL_HISTORY);
 		
 		start(dataSetPath, dataSet, retrievalConfigurationPath, retrievalConfiguration);
@@ -119,43 +108,25 @@ public class RetrievalApplication implements IApplication {
 			datasetPath = workspaceHistoryRetrieval.getDatasetPath();
 		}
 		
-		// Java model:
-		if (retrieveJavaModelHistory) {
-			JavaModelRetrievalProvider javaModelFactory = new JavaModelRetrievalProvider(codeRepositoryPath);
-			JavaModelRetrieval javaModelRetrieval = new JavaModelRetrieval(javaModelFactory, dataset, datasetPath);
-			
-			try {
-				javaModelRetrieval.retrieve();
-				
-				// Resume on last intermediate save:
-//				{
-//					datasetPath = Paths.get(datasetPath.getParent().toString(),
-//							"DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6");
-//					dataset = DataSetStorage.load(datasetPath);
-//					javaModelRetrieval = new JavaModelRetrieval(javaModelFactory, dataset, datasetPath);
-//					systemModelRetrieval.retrieve(resume(dataset, "5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
-//				}
-			} finally {
-				javaModelRetrieval.saveDataSet();
-			}
-		}
-		
-		// System model:
+		// Direct System model (Java Model -> System Model):
 		if (retrieveSystemModelHistory) {
-			SystemModelRetrievalProvider systemModelFactory = new SystemModelRetrievalProvider();
-			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath, dataset, datasetPath);
+			JavaModelRetrievalProvider javaModelProvider = new JavaModelRetrievalProvider(codeRepositoryPath);
+			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider();
+			
+			DirectSystemModelRetrieval systemModelRetrieval = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 			
 			try {
-				systemModelRetrieval.retrieve();
-				
-				// Resume on last intermediate save:
+//				// Resume on last intermediate save:
 //				{
 //					datasetPath = Paths.get(datasetPath.getParent().toString(),
 //							"DataSet_20200914170431_20200914201948.json_8400_509692f4edb0ce705fd505934a81ec54e8a7a49f_5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6");
 //					dataset = DataSetStorage.load(datasetPath);
-//					systemModelRetrieval = new SystemModelRetrieval(systemModelFactory, codeRepositoryPath, dataset, datasetPath);
+//					
+//					systemModelRetrieval = new DirectSystemModelRetrieval(javaModelProvider, systemModelProvider, dataset, datasetPath);
 //					systemModelRetrieval.retrieve(resume(dataset, "5616ba0159b1fbae6dcb9169f80ccbb2bf230ea6"));
 //				}
+				
+				systemModelRetrieval.retrieve();
 			} finally {
 				systemModelRetrieval.saveDataSet();
 			}
@@ -197,14 +168,6 @@ public class RetrievalApplication implements IApplication {
 	
 	public void setRetrieveWorkspaceHistory(boolean retrieveWorkspaceHistory) {
 		this.retrieveWorkspaceHistory = retrieveWorkspaceHistory;
-	}
-
-	public boolean isRetrieveJavaModelHistory() {
-		return retrieveJavaModelHistory;
-	}
-
-	public void setRetrieveJavaModelHistory(boolean retrieveJavaModelHistory) {
-		this.retrieveJavaModelHistory = retrieveJavaModelHistory;
 	}
 
 	public boolean isRetrieveSystemModelHistory() {

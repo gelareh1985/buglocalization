@@ -1,13 +1,13 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery.discoverer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.m2m.atl.core.emf.EMFModel;
 import org.eclipse.m2m.atl.core.launch.ILauncher;
+import org.eclipse.m2m.atl.engine.emfvm.ASM;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
@@ -50,8 +50,8 @@ public class JavaModel2UMLClassSystemModelDiscoverer extends Java2UMLResourceDis
 	}
 	
 	@Override
-	protected List<InputStream> loadModules() throws IOException {
-		List<InputStream> modules = super.loadModules();
+	protected List<ASM> loadModules() throws IOException {
+		List<ASM> modules = super.loadModules();
 		javaModel2SystemModelProvider.loadModules(modules);
 		return modules;
 	}

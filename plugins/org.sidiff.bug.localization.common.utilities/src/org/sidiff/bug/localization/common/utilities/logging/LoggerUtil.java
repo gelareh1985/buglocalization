@@ -18,6 +18,8 @@ public class LoggerUtil {
 	
 	public static Level DEFAULT_FILE_LEVEL = Level.INFO;
 	
+	public static Level PERFORMANCE = Level.FINER;
+	
 	private static Logger INSTANCE;
 	
 	public static Logger getLogger(BundleContext bundleContext) {

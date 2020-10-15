@@ -37,14 +37,16 @@ abstract rule jAbstractTypDecToUmlClassifier {
 			ownedAttribute <- jAbstrTypdec.bodyDeclarations->select(d | d.oclIsTypeOf(JAVA!FieldDeclaration)),
 			ownedOperation <- jAbstrTypdec.bodyDeclarations -> select(d | d.oclIsKindOf(JAVA!AbstractMethodDeclaration)),
 			isLeaf <- jAbstrTypdec.isAbstractTypeFinal,
-			ownedComment <- jAbstrTypdec.annotations -> union(jAbstrTypdec.bodyDeclarations
-																-> collect(bd | bd.annotations)
-													),
+--			ownedComment <- jAbstrTypdec.annotations -> union(jAbstrTypdec.bodyDeclarations
+--																-> collect(bd | bd.annotations)
+--													),
 			ownedTemplateSignature <- 	if (jAbstrTypdec.isTypeDec)then
 											if (jAbstrTypdec.typeParameters -> notEmpty()) then 
 												thisModule.createTemplateSignature(jAbstrTypdec)
 											else OclUndefined endif	
-										else OclUndefined endif	
+										else OclUndefined endif,
+			ownedComment <- jAbstrTypdec.comments 			-> select(comment | comment.oclIsTypeOf(JAVA!Javadoc))
+															-> collect(comment | thisModule.JDocToComment(comment))
 		)
 }
 
@@ -60,7 +62,10 @@ abstract rule jBodyDecToUmlElement {
 		umlElement : UML!Element (
 			isStatic <- jBodyDec.isBodyDecStatic,
 			isLeaf <- jBodyDec.isBodyDecFinal,
-			ownedComment <- jBodyDec.annotations
+--			ownedComment <- jBodyDec.annotations,
+			ownedComment <- jBodyDec.comments 	-> select(comment | comment.oclIsTypeOf(JAVA!Javadoc))
+												-> collect(comment | thisModule.JDocToComment(comment))
+
 		)
 }
 
@@ -86,10 +91,10 @@ rule JModelRootToUmlModelRoot {
 											if (thisModule.getExternalElements -> notEmpty()) then
 												thisModule.createExternalsModel(jModelRoot) 
 											else OclUndefined endif,
-											OclUndefined }
---											if (jModelRoot.compilationUnits -> notEmpty()) then
---												thisModule.createSourceReferences(jModelRoot)
---											else OclUndefined endif	}	
+											OclUndefined,
+											if (jModelRoot.compilationUnits -> notEmpty()) then
+												thisModule.createSourceReferences(jModelRoot)
+											else OclUndefined endif	}	
 		)
 }
 
@@ -127,16 +132,16 @@ unique lazy rule createMainModel {
 }
 
 ---Create package 'sourcesReferences' for compilation units
---unique lazy rule createSourceReferences {
---	from 
---		jModel : JAVA!Model
---	to 
---		umlModel : UML!Model (
---				name <- 'sourcesReferences',
---				packagedElement <- jModel.compilationUnits 
---									-> union(jModel.compilationUnits -> collect(compUnit | thisModule.createDependencyTrace(compUnit))) 
---		)
---}
+unique lazy rule createSourceReferences {
+	from 
+		jModel : JAVA!Model
+	to 
+		umlModel : UML!Model (
+				name <- 'sourcesReferences',
+				packagedElement <- jModel.compilationUnits 
+									-> union(jModel.compilationUnits -> collect(compUnit | thisModule.createDependencyTrace(compUnit))) 
+		)
+}
 
 --***************Packages***************
 ---Convert a java package (not proxy) to an Uml package
@@ -162,10 +167,10 @@ rule JPackageToUmlPackageNotDup {
 				nestingPackage <- if jPackage.getPackage.oclIsUndefined()
 									then thisModule.createMainModel(jPackage.refImmediateComposite())
 									else jPackage.getPackage
-								endif,
-				ownedComment <- jPackage.ownedElements
-									-> select(elem | elem.oclIsKindOf(JAVA!AnnotationTypeDeclaration))
-									-> collect(annot | annot.annotations)
+								endif
+--				ownedComment <- jPackage.ownedElements
+--									-> select(elem | elem.oclIsKindOf(JAVA!AnnotationTypeDeclaration))
+--									-> collect(annot | annot.annotations)
 		)		
 }
 
@@ -188,10 +193,10 @@ rule JPackageProxyToUmlPackageNotDup {
 				nestingPackage <- if jPackage.getPackage.oclIsUndefined()
 									then thisModule.createExternalsModel(thisModule.jModelRoot)
 									else jPackage.getPackage
-								endif,
-				ownedComment <- jPackage.ownedElements
-									-> select(elem | elem.oclIsKindOf(JAVA!AnnotationTypeDeclaration))
-									-> collect(annot | annot.annotations)
+								endif
+--				ownedComment <- jPackage.ownedElements
+--									-> select(elem | elem.oclIsKindOf(JAVA!AnnotationTypeDeclaration))
+--									-> collect(annot | annot.annotations)
 		)		
 }
 
@@ -227,10 +232,10 @@ rule JPackageToUmlPackage {
 										else
 											jPackage.getPackage
 										endif
-									endif,
-				ownedComment <- jPackage.ownedElements
-									-> select(elem | elem.oclIsKindOf(JAVA!AnnotationTypeDeclaration))
-									-> collect(annot | annot.annotations)
+									endif
+--				ownedComment <- jPackage.ownedElements
+--									-> select(elem | elem.oclIsKindOf(JAVA!AnnotationTypeDeclaration))
+--									-> collect(annot | annot.annotations)
 		)		
 }
 
@@ -307,22 +312,22 @@ unique lazy rule createTemplateSignature{
 }
 
 ---For annotations
-rule createCommentsForAnnotations {
-	from 
-		jAnnot : JAVA!Annotation(
-			(jAnnot.refImmediateComposite().oclIsKindOf(JAVA!AbstractTypeDeclaration)
-			or jAnnot.refImmediateComposite().oclIsKindOf(JAVA!AbstractMethodDeclaration)
-			or jAnnot.refImmediateComposite().oclIsTypeOf(JAVA!FieldDeclaration))
-			or jAnnot.refImmediateComposite().oclIsKindOf(JAVA!Package)
-			and jAnnot.getAnnonymousClass.oclIsUndefined()
-		)
-	to 			
-		umlClass : UML!Comment (				
-			body <- jAnnot.getAnnotation.concat('jAnnot.refImmediateComposite().name : ' + jAnnot.refImmediateComposite().name
-			 + 	'__jAnnot.refImmediateComposite() : ' + jAnnot.refImmediateComposite().oclType().toString()
-			)
-		)
-}
+--rule createCommentsForAnnotations {
+--	from 
+--		jAnnot : JAVA!Annotation(
+--			(jAnnot.refImmediateComposite().oclIsKindOf(JAVA!AbstractTypeDeclaration)
+--			or jAnnot.refImmediateComposite().oclIsKindOf(JAVA!AbstractMethodDeclaration)
+--			or jAnnot.refImmediateComposite().oclIsTypeOf(JAVA!FieldDeclaration))
+--			or jAnnot.refImmediateComposite().oclIsKindOf(JAVA!Package)
+--			and jAnnot.getAnnonymousClass.oclIsUndefined()
+--		)
+--	to 			
+--		umlClass : UML!Comment (				
+--			body <- jAnnot.getAnnotation.concat('jAnnot.refImmediateComposite().name : ' + jAnnot.refImmediateComposite().name
+--			 + 	'__jAnnot.refImmediateComposite() : ' + jAnnot.refImmediateComposite().oclType().toString()
+--			)
+--		)
+--}
 
 ---For genericity
 rule createUmlClass {
@@ -455,8 +460,8 @@ rule JInterfaceToUmlInterface extends jAbstractTypDecToUmlClassifier{
 			generalization <- jAbstrTypdec.superInterfaces,
 			package <- if (not jAbstrTypdec.getPackage.oclIsUndefined())then
 							jAbstrTypdec.getPackage.getFirstDupBugModisco
-						else OclUndefined endif,
-			ownedComment <- jAbstrTypdec.annotations
+						else OclUndefined endif
+--			ownedComment <- jAbstrTypdec.annotations
 		)
 }
 
@@ -709,7 +714,7 @@ rule JMethodToUmlOperation extends jBodyDecToUmlElement {
 									else 
 										OclUndefined
 									endif,	
-				ownedComment <- jBodyDec.annotations,
+--				ownedComment <- jBodyDec.annotations,
 				isAbstract <- jBodyDec.isMethodAbstract,
 				visibility <- jBodyDec.getMethodVisibility
 		)
@@ -728,7 +733,7 @@ rule JConstructorToUmlOperation extends jBodyDecToUmlElement {
 									else 
 										OclUndefined
 									endif,	
-				ownedComment <- jBodyDec.annotations,
+--				ownedComment <- jBodyDec.annotations,
 				visibility <- jBodyDec.getMethodVisibility
 		)
 }
@@ -768,7 +773,21 @@ rule createPrimitiveType {
 		umlPrimitiveType : UML!PrimitiveType(
 			name <- jPrimitiveType.name
 		)
-}	
+}
+
+--***************Comments***************
+---Create a comment
+lazy rule JDocToComment {
+	from
+		jDoc : JAVA!Javadoc
+	to
+		umlComment : UML!Comment(
+			--	/**
+			--	  * Hallo Welt
+			--	  */
+			body <- jDoc.content.regexReplaceAll('(?m)(^\\s*?\\*/)|(^\\s*?/\\**)|(^\\s*?\\*\\s?)', '').trim()
+		)
+}
 
 --***************Unresolved items***************
 rule JUnresolvedItemToUmlClass {

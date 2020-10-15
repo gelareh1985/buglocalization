@@ -14,6 +14,18 @@
       </application>
    </extension>
    <extension
+         id="directretrieval"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.sidiff.bug.localization.dataset.DirectRetrievalApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
          id="testdriver"
          point="org.eclipse.core.runtime.applications">
       <application
@@ -46,6 +58,30 @@
             visible="true">
          <run
                class="org.sidiff.bug.localization.dataset.TextCorpusApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="statistics"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.sidiff.bug.localization.dataset.StatisticsApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="gitrewrite"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.sidiff.bug.localization.dataset.GitRewriteApplication">
          </run>
       </application>
    </extension>

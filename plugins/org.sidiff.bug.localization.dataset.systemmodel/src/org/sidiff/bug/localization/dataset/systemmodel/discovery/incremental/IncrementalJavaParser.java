@@ -1,7 +1,10 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
@@ -17,13 +20,46 @@ public class IncrementalJavaParser {
 	private boolean ignoreMethodBodies;
 	
 	public IncrementalJavaParser(boolean ignoreMethodBodies) {
-		this.parsedCompilationUnits = new LinkedHashMap<>();
+		this.parsedCompilationUnits = new HashMap<>();
 		this.ignoreMethodBodies = ignoreMethodBodies;
+	}
+	
+	public void reset() {
+		for (Iterator<Entry<String, CompilationUnit>> iterator = parsedCompilationUnits.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, CompilationUnit> parsedCompilationUnit = iterator.next();
+			parsedCompilationUnit.getValue().delete();
+			parsedCompilationUnit.setValue(null);
+			iterator.remove();
+		}
+		this.parsedCompilationUnits = new HashMap<>();
 	}
 	
 	public void update(Set<IPath> changed) {
 		for (IPath path : changed) {
-			parsedCompilationUnits.remove(getKey(path));
+			String key = getKey(path);
+			CompilationUnit compilationUnit = parsedCompilationUnits.get(key);
+			
+			if (compilationUnit != null) {
+				compilationUnit.delete();
+				parsedCompilationUnits.put(key, null);
+				parsedCompilationUnits.remove(key);
+			}
+		}
+	}
+	
+	public void update(List<String> removedProjects) {
+		if (!removedProjects.isEmpty()) {
+			for (Iterator<Entry<String, CompilationUnit>> iterator = parsedCompilationUnits.entrySet().iterator(); iterator.hasNext();) {
+				Entry<String, CompilationUnit> parsedCompilationUnit = iterator.next();
+				
+				for (String removedProject : removedProjects) {
+					if (parsedCompilationUnit.getKey().startsWith("/" + removedProject)) {
+						parsedCompilationUnit.getValue().delete();
+						parsedCompilationUnit.setValue(null);
+						iterator.remove();
+					}
+				}
+			}
 		}
 	}
 	
@@ -77,6 +113,6 @@ public class IncrementalJavaParser {
 		CompilationUnit parsedCompilationUnit = (CompilationUnit) parser.createAST(null);
 		return parsedCompilationUnit;
 	}
-	
+
 	// <<<
 }

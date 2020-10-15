@@ -22,6 +22,10 @@ public class Project {
 	public Project() {
 	}
 	
+	public boolean hasSystemModel() {
+		return systemModel != null;
+	}
+	
 	public String getName() {
 		return name;
 	}

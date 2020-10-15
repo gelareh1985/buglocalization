@@ -22,9 +22,9 @@ public class DataSetStorage {
 		builder.registerTypeAdapter(LineChange.class, new JsonLineChangeDeserializer());
 		builder.registerTypeAdapter(LineChange.class, new JsonLineChangeSerializer());
 		
-		if (appendTimestamp && (dataset.getTimestamp() != null)) {
+		if (appendTimestamp) {
 			String filename = datasetPath.getFileName().toString();
-			String stampedFilename = filename.substring(0, filename.lastIndexOf(".")) + TIMESTAMP_SEPARATOR + dataset.getTimestamp();
+			String stampedFilename = filename.substring(0, filename.lastIndexOf(".")) + TIMESTAMP_SEPARATOR + dataset.createTimestamp();
 			stampedFilename = stampedFilename + "." + filename.substring(filename.lastIndexOf(".") + 1, filename.length());
 			datasetPath = Paths.get(datasetPath.getParent().toString(), stampedFilename);
 		}

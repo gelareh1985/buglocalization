@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
@@ -29,11 +30,13 @@ import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
-import org.sidiff.bug.localization.dataset.changes.model.LineChange;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.changes.model.LineChange;
 import org.sidiff.bug.localization.dataset.changes.model.LineChange.LineChangeType;
 import org.sidiff.bug.localization.dataset.history.Activator;
 import org.sidiff.bug.localization.dataset.history.model.History;
@@ -140,6 +143,25 @@ public class GitRepository implements Repository {
 
         return history;
 	}
+	
+	public RevCommit getCurrentCommit() {
+		
+		try (Git git = openGitRepository()) {
+			LogCommand logCommand = git.log().add(git.getRepository().resolve(Constants.HEAD));
+
+			Iterator<RevCommit> revCommits = logCommand.call().iterator();
+			
+			if (revCommits.hasNext()) {
+				RevCommit revCommit = revCommits.next();
+				return revCommit;
+			}
+        } catch (RevisionSyntaxException | IOException | GitAPIException e) {
+        	Activator.getLogger().log(Level.SEVERE, "Exception occurred while reading repository history", e);
+			e.printStackTrace();
+		}
+
+        return null;
+	}
 
 	public Git cloneGit() {
 		try {
@@ -181,6 +203,9 @@ public class GitRepository implements Repository {
 			
 			// Unlock repository (if necessary):
 			unlock();
+			
+			// Reset file changes (to HEAD):
+			git.reset().setMode(ResetType.HARD).call();
 			
 			// Clean up current branch (if necessary):
 			git.clean().setCleanDirectories(true).call();
@@ -273,11 +298,23 @@ public class GitRepository implements Repository {
 	private List<FileChange> getChanges(ObjectId idA, ObjectId idB, boolean lines) {
 		try (Git git = openGitRepository()) {
     		try (ObjectReader reader = git.getRepository().newObjectReader()) {
-        		CanonicalTreeParser oldTreeIterator = new CanonicalTreeParser();
-        		oldTreeIterator.reset(reader, idA);
+    			
+    			// Version A:
+    			AbstractTreeIterator oldTreeIterator = new EmptyTreeIterator();//;
+    			
+    			// initial commit?
+    			if (idA == null) {
+    				oldTreeIterator = new EmptyTreeIterator();
+    			} else {
+    				oldTreeIterator = new CanonicalTreeParser();
+    				((CanonicalTreeParser) oldTreeIterator).reset(reader, idA);
+    			}
+    			
+    			// Version B:
         		CanonicalTreeParser newTreeIterator = new CanonicalTreeParser();
         		newTreeIterator.reset(reader, idB);
 
+        		// Read history:
         		OutputStream outputStream = DisabledOutputStream.INSTANCE;
         		
 				try (DiffFormatter formatter = new DiffFormatter(outputStream)) {

@@ -1,11 +1,16 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,7 +23,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
+import org.eclipse.uml2.common.util.CacheAdapter;
 import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.ChangeLocationDiscoverer;
@@ -32,7 +40,9 @@ import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.ProjectChangeProvider;
+import org.sidiff.bug.localization.dataset.retrieval.util.SystemModelDiscoverer;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.incremental.ChangeProvider;
@@ -43,9 +53,7 @@ import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
-public class JavaModelRetrieval {
-	
-	private JavaModelRetrievalProvider provider;
+public class DirectSystemModelRetrieval {
 	
 	private DataSet dataset;
 	
@@ -55,21 +63,31 @@ public class JavaModelRetrieval {
 	
 	private Path codeRepositoryPath;
 	
-	private SystemModelRepository javaModelRepository;
-	
-	private Path javaModelRepositoryPath;
+	private JavaModelRetrievalProvider javaModelProvider;
 	
 	private IncrementalJavaParser javaParser;
 	
+	private SystemModelRetrievalProvider systemModelProvider;
+	
+	private SystemModelRepository systemModelRepository;
+	
 	private ExecutorService commitSystemModelVersionThread;
+	
+	private ExecutorService cleanUpSystemModelResourcesThread;
 	
 	private RunnableFuture<Void> commitSystemModelVersionTask;
 	
-	public JavaModelRetrieval(JavaModelRetrievalProvider provider, DataSet dataset, Path datasetPath) {
-		this.provider = provider;
+	public DirectSystemModelRetrieval(
+			JavaModelRetrievalProvider javaModelProvider, 
+			SystemModelRetrievalProvider systemModelProvider, 
+			DataSet dataset, Path datasetPath) {
+		
+		this.javaModelProvider = javaModelProvider;
+		this.systemModelProvider = systemModelProvider;
 		this.dataset = dataset;
 		this.datasetPath = datasetPath;
-		this.javaParser = new IncrementalJavaParser(provider.isIgnoreMethodBodies());
+		
+		this.javaParser = new IncrementalJavaParser(javaModelProvider.isIgnoreMethodBodies());
 	}
 	
 	public void retrieve() {
@@ -85,13 +103,13 @@ public class JavaModelRetrieval {
 		}
 		
 		// Storage:
-		this.codeRepository = provider.createCodeRepository();
+		this.codeRepository = javaModelProvider.createCodeRepository();
 		this.codeRepositoryPath = codeRepository.getWorkingDirectory();
-		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
-		this.javaModelRepositoryPath = javaModelRepository.getRepositoryPath();
+		this.systemModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.UML_CLASS_DIAGRAM, dataset);
 		
 		try {
 			this.commitSystemModelVersionThread = Executors.newSingleThreadExecutor();
+			this.cleanUpSystemModelResourcesThread = Executors.newSingleThreadExecutor();
 			
 			// Iterate from old to new versions:
 			int counter = versions.size() - resume;
@@ -108,12 +126,12 @@ public class JavaModelRetrieval {
 				time = stopTime("Checkout Workspace Version: ", time);
 				
 				// Clean up older version:
-				List<Project> removedProjects = javaModelRepository.removeMissingProjects(olderVersion, version);
+				List<Project> removedProjects = systemModelRepository.removeMissingProjects(olderVersion, version);
 				javaParser.update(removedProjects.stream().map(Project::getName).collect(Collectors.toList()));
 				
-				// Workspace -> Java Models
-				retrieveWorkspaceJavaModelVersion(olderVersion, version, newerVersion, workspace);
-				time = stopTime("Discover Java Model Version: ", time);
+				// Workspace -> Java Models -> System Model:
+				retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace);
+				time = stopTime("Discover Java and System Model Version: ", time);
 				
 				// Store system model workspace as revision:
 				waitForCommit();
@@ -124,7 +142,7 @@ public class JavaModelRetrieval {
 				}
 				
 				// Intermediate save:
-				if ((provider.getIntermediateSave() > 0) && ((counter % provider.getIntermediateSave()) == 0)) {
+				if ((systemModelProvider.getIntermediateSave() > 0) && ((counter % systemModelProvider.getIntermediateSave()) == 0)) {
 					try {
 						waitForCommit();
 						DataSetStorage.save(Paths.get(
@@ -145,11 +163,12 @@ public class JavaModelRetrieval {
 			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
 			codeRepository.reset();
 			commitSystemModelVersionThread.shutdown();
+			cleanUpSystemModelResourcesThread.shutdown();
 		}
 	}
 
 	private void commit(Version olderVersion, Version version) {
-		commitSystemModelVersionTask = new FutureTask<>(() -> javaModelRepository.commitVersion(version, olderVersion), null);
+		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion), null);
 		commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
 	}
 
@@ -166,39 +185,59 @@ public class JavaModelRetrieval {
 			}
 		}
 	}
-	
-	private void retrieveWorkspaceJavaModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
+
+	private void retrieveWorkspaceSystemModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
+
 		for (Project project : workspace.getProjects()) {
+			long time = System.currentTimeMillis();
 
-			// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-			// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-			ChangeLocationMatcher changeLocationMatcher  = null;
-
-			if ((newerVersion != null) && (newerVersion.hasBugReport())) {
-				changeLocationMatcher = new ChangeLocationMatcher(
-						project.getName(), newerVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter());
-			}
-
-			// Project -> Java Model
 			try {
-				retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
+
+				/*
+				 *  Project -> Java Model
+				 */
+
+				ChangeLocationMatcher changeLocationMatcher = getChangeLocationMatcher(newerVersion, project);
+				SystemModel javaSystemModel = retrieveProjectJavaModelVersion(olderVersion, version, project, changeLocationMatcher);
+				time = stopTime("Discover Java Model Project: ", time);
+
+				/*
+				 * Java Model -> System Model
+				 */
+
+				retrieveProjectSystemModelVersion(olderVersion, version, project, javaSystemModel);
+				time = stopTime("Discover System Model Project: ", time);
 			} catch (Throwable e) {
 				e.printStackTrace();
 
 				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-					Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + project);
+					Activator.getLogger().log(Level.SEVERE, "Could not discover model: " + project);
 				}
 			}
 		}
 	}
 
+	private ChangeLocationMatcher getChangeLocationMatcher(Version newerVersion, Project project) {
+		
+		// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+		// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+		ChangeLocationMatcher changeLocationMatcher  = null;
+
+		if ((newerVersion != null) && (newerVersion.hasBugReport())) {
+			changeLocationMatcher = new ChangeLocationMatcher(
+					project.getName(), newerVersion.getBugReport().getBugLocations(), javaModelProvider.getFileChangeFilter());
+		}
+		return changeLocationMatcher;
+	}
+
 	private Workspace retrieveWorkspaceVersion(History history, Version oldVersion, Version version) {
 		
-		// Clean up older version:
-		javaModelRepository.removeMissingProjects(oldVersion, version);
-		
 		// Load newer version:
-		codeRepository.checkout(history, version);
+		boolean versionCheckeout = codeRepository.checkout(history, version);
+		
+		if (!versionCheckeout) {
+			throw new RuntimeException("Could not check out version: " + version);
+		} 
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "Retrieve Workspace: " + version);
@@ -209,28 +248,26 @@ public class JavaModelRetrieval {
 		workspaceDiscoverer.cleanWorkspace();
 		
 		// Load and filter workspace:
-		ProjectFilter projectFilter = provider.createProjectFilter();
+		ProjectFilter projectFilter = javaModelProvider.createProjectFilter();
 		Workspace loadedWorkspace = workspaceDiscoverer.createProjects(projectFilter);
 		version.setWorkspace(loadedWorkspace);
 		
 		return loadedWorkspace;
 	}
 
-	private void retrieveProjectJavaModelVersion(Version olderVersion, Version version, Project project, ChangeLocationMatcher changeLocationMatcher) 
+	private SystemModel retrieveProjectJavaModelVersion(Version olderVersion, Version version, Project project, ChangeLocationMatcher changeLocationMatcher) 
 			throws DiscoveryException, IOException {
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "Java Model Discovery: " + project.getName());
 		}
 		
-		Path systemModelFile = javaModelRepository.getSystemModelFile(project, true);
-		
 		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
+		if (HistoryUtil.hasChanges(project, olderVersion, version, javaModelProvider.getFileChangeFilter())) {
 			IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
 			
 			// Calculate changed files in project for incremental AST parser:
-			List<FileChange> projectFileChanges = HistoryUtil.getChanges(project, version.getFileChanges(), provider.getFileChangeFilter());
+			List<FileChange> projectFileChanges = HistoryUtil.getChanges(project, version.getFileChanges(), javaModelProvider.getFileChangeFilter());
 			ChangeProvider changeProvider = new ProjectChangeProvider(projectFileChanges);
 			javaParser.update(changeProvider.getChanges(workspaceProject));
 			
@@ -247,15 +284,40 @@ public class JavaModelRetrieval {
 				systemModel = systemModelDiscoverer.discover(workspaceProject, null, new NullProgressMonitor());
 			}
 			
+			return systemModel;
+		}
+		
+		return null;
+	}
+	
+	private void retrieveProjectSystemModelVersion(Version olderVersion, Version version, Project project, SystemModel javaSystemModel) 
+			throws DiscoveryException, IOException {
+		
+		if (Activator.getLogger().isLoggable(Level.FINER)) {
+			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
+		}
+		
+		Path systemModelFile = systemModelRepository.getSystemModelFile(project, true);
+		
+		// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
+		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
+		if ((javaSystemModel != null) && HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
+			
+			// Discover the multi-view system model of the project version:
+			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
+			systemModel.setName(project.getName());
+			
+			// START:
+			discoverSystemModel(systemModel, javaSystemModel);
+			
 			// Store system model in data set:
 			storeSystemModel(systemModelFile, systemModel);
 		} else {
-			
 			// Clear changes or no system model?
 			if (Files.exists(systemModelFile)) {
 				// Optimization: Clear only if changes were written for last version
-				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), provider.getFileChangeFilter())) {
-					SystemModel systemModel = javaModelRepository.getSystemModel(project);
+				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
+					SystemModel systemModel = systemModelRepository.getSystemModel(project);
 					clearSystemModelChanges(systemModel, systemModelFile);
 				}
 			} else {
@@ -263,11 +325,25 @@ public class JavaModelRetrieval {
 			}
 		}
 		
-		// Store path in data set:
+		// Update data set path:
 		if (systemModelFile != null) {
-			project.setSystemModel(javaModelRepository.getRepositoryPath().relativize(systemModelFile));
+			project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
 		} else {
 			project.setSystemModel(null); // no system model
+		}
+	}
+
+	private void discoverSystemModel(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
+		for (SystemModelDiscoverer systemModelDiscovery : systemModelProvider.getSystemModelDiscoverer()) {
+			try {
+				systemModelDiscovery.discover(systemModel, javaSystemModel);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				
+				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + javaSystemModel.eResource().getURI());
+				}
+			}
 		}
 	}
 	
@@ -292,6 +368,76 @@ public class JavaModelRetrieval {
 		// Save model:
 		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
 		systemModel.saveAll(Collections.emptyMap());
+		
+		// Unload models for garbage collection -> prevent resource leaks:
+		unloadSystemModel(systemModel);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void unloadSystemModel(SystemModel systemModel) {
+		
+		// Clear resource from UML CacheAdapter:
+		cleanUpSystemModelResourcesThread.execute(() -> {
+			Set<Resource> resources = new HashSet<>();
+			resources.addAll(systemModel.eResource().getResourceSet().getResources());
+			
+			// Make sure the (UML) model views are collected:
+			for (View view : systemModel.getViews()) {
+				if (view.getModel() != null) {
+					if (view.getModel().eResource() != null) {
+						if (view.getModel().eResource().getResourceSet() != null) {
+							resources.addAll(view.getModel().eResource().getResourceSet().getResources());
+						} else {
+							resources.add(view.getModel().eResource());
+						}
+					}
+				}
+			}
+			
+			// CacheAdapter/ECrossReferenceAdapter resource leak: remove adapter, clear caches, unload all resources 
+			for (Iterator<Resource> iterator = resources.iterator(); iterator.hasNext();) {
+				Resource resource = (Resource) iterator.next();
+				ECrossReferenceAdapter crossReferenceAdapter = ECrossReferenceAdapter.getCrossReferenceAdapter(resource);
+				
+				if (crossReferenceAdapter != null) {
+					crossReferenceAdapter.unsetTarget(resource);
+				}
+				
+				if (CacheAdapter.getInstance() != null) {
+					CacheAdapter.getInstance().clear(resource);
+				}
+				
+				resource.unload();
+			}
+			
+			// WORKAROUND: Clear resource leaks of UML CacheAdapter:
+			try {
+				CacheAdapter cacheAdapter = CacheAdapter.getInstance();
+				cacheAdapter.clear();
+				
+				// Clear inverseCrossReferencer map:
+				Field inverseCrossReferencerField = ECrossReferenceAdapter.class.getDeclaredField("inverseCrossReferencer");
+				inverseCrossReferencerField.setAccessible(true);
+				Object inverseCrossReferencerValue = inverseCrossReferencerField.get(cacheAdapter);
+				
+				if (inverseCrossReferencerValue instanceof Map) {
+					((Map) inverseCrossReferencerValue).clear();
+				}
+				
+				// Clear proxyMap map:
+				Class<?> inverseCrossReferencerClass = Class.forName("org.eclipse.emf.ecore.util.ECrossReferenceAdapter$InverseCrossReferencer");
+				Field proxyMapField = inverseCrossReferencerClass.getDeclaredField("proxyMap");
+				proxyMapField.setAccessible(true);
+				Object proxyMapValue = proxyMapField.get(inverseCrossReferencerValue);
+				
+				if (proxyMapValue instanceof Map) {
+					((Map) proxyMapValue).clear();
+				}
+				
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public void saveDataSet() {
@@ -318,7 +464,7 @@ public class JavaModelRetrieval {
 		return codeRepositoryPath;
 	}
 	
-	public Path getJavaModelRepositoryPath() {
-		return javaModelRepositoryPath;
+	public Path getSystemModelRepositoryPath() {
+		return systemModelRepository.getRepositoryPath();
 	}
 }
