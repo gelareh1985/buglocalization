@@ -37,6 +37,10 @@ import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
+/**
+ * @deprecated Use {@link DirectSystemModelRetrieval}
+ */
+@Deprecated
 public class SystemModelRetrieval {
 	
 	private SystemModelRetrievalProvider provider;

@@ -13,6 +13,9 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
+/**
+ * Helper application to run some validation rules on a data set.
+ */
 public class ValidationApplication implements IApplication {
 
 	public static final String ARGUMENT_DATASET = "-dataset";

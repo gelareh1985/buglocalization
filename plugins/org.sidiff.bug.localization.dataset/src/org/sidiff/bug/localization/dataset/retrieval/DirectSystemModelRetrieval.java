@@ -188,6 +188,9 @@ public class DirectSystemModelRetrieval {
 
 	private void retrieveWorkspaceSystemModelVersion(Version olderVersion, Version version, Version newerVersion, Workspace workspace) {
 
+		// NOTE: version      := buggy version
+		//       newerVersion := fixed version
+		
 		for (Project project : workspace.getProjects()) {
 			long time = System.currentTimeMillis();
 
@@ -217,15 +220,15 @@ public class DirectSystemModelRetrieval {
 		}
 	}
 
-	private ChangeLocationMatcher getChangeLocationMatcher(Version newerVersion, Project project) {
+	private ChangeLocationMatcher getChangeLocationMatcher(Version fixedVersion, Project project) {
 		
 		// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
 		// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
 		ChangeLocationMatcher changeLocationMatcher  = null;
 
-		if ((newerVersion != null) && (newerVersion.hasBugReport())) {
+		if ((fixedVersion != null) && (fixedVersion.hasBugReport())) {
 			changeLocationMatcher = new ChangeLocationMatcher(
-					project.getName(), newerVersion.getBugReport().getBugLocations(), javaModelProvider.getFileChangeFilter());
+					project.getName(), fixedVersion.getBugReport().getBugLocations(), javaModelProvider.getFileChangeFilter());
 		}
 		return changeLocationMatcher;
 	}

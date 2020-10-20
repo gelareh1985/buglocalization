@@ -40,6 +40,9 @@ import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 import eu.artist.migration.mdt.javaee.java.uml.traces.Model2CodeTrace;
 
+/**
+ * Generates some statistical information tables form a data set.
+ */
 public class StatisticsApplication implements IApplication {
 	
 	public static final String ARGUMENT_DATASET = "-dataset";

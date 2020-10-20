@@ -43,6 +43,10 @@ import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
+/**
+ * @deprecated Use {@link DirectSystemModelRetrieval}
+ */
+@Deprecated
 public class JavaModelRetrieval {
 	
 	private JavaModelRetrievalProvider provider;

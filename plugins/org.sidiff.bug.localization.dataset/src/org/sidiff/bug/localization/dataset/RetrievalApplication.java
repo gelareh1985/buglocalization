@@ -24,6 +24,12 @@ import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
+/**
+ * Converts a Java project including bug reports into an MoDisco model.
+ * 
+ * @deprecated Use {@link DirectRetrievalApplication}
+ */
+@Deprecated
 public class RetrievalApplication implements IApplication {
 
 	/*

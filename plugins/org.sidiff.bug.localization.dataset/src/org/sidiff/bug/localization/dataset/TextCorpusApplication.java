@@ -11,6 +11,9 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.retrieval.util.BugReportUtil;
 
+/**
+ * Retrieves a text corpus file from all bug reports of data set.
+ */
 public class TextCorpusApplication implements IApplication {
 
 	public static final String ARGUMENT_DATASET = "-dataset";

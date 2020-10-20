@@ -22,6 +22,7 @@ import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 
+@SuppressWarnings("deprecation")
 public class TestDriverApplication extends RetrievalApplication {
 	
 	private static int SHRINK_TO_HISTORY_SIZE = 4;

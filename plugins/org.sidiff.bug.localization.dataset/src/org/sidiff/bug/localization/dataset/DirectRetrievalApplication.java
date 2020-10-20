@@ -23,6 +23,9 @@ import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
+/**
+ * Converts a Java project including bug reports into an UML model (via MoDisco and ATL transformation).
+ */
 public class DirectRetrievalApplication implements IApplication {
 
 	/*

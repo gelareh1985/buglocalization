@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.logging.Level;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.equinox.app.IApplication;
@@ -17,16 +16,14 @@ import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeTy
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
-import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
-import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.View;
-import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
+/**
+ * Helper application to post-process a Git repository.
+ */
 public class GitRewriteApplication implements IApplication {
 
 	public static final String ARGUMENT_DATASET = "-dataset";
@@ -116,58 +113,58 @@ public class GitRewriteApplication implements IApplication {
 	protected void processVersion(Version olderVersion, Version currentVersion, Version newerVersion) throws Exception {
 		// TODO: Perform updates on the current version in the target repository:
 		
-		// Clean up system model references in data set...
-		for (Project project : currentVersion.getWorkspace().getProjects()) {
-			Path systemModel = getTargetRepositoryFile(project.getSystemModel());
-			
-			if (!Files.exists(systemModel)) {
-				project.setSystemModel(null);
-				
-				if (Activator.getLogger().isLoggable(Level.WARNING)) {
-					Activator.getLogger().log(Level.WARNING, "Clean up system model reference: " + currentVersion + " " + project);
-				}
-			}
-		}
-		
-		// Clean up system model changes...
-		SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider();
-		
-		for (Project project : currentVersion.getWorkspace().getProjects()) {
-			if (!HistoryUtil.hasChanges(project, currentVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
-				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
-					if (project.getSystemModel() != null) {
-						Path systemModelFile = getTargetRepositoryFile(project.getSystemModel());
-						SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelFile);
-						boolean hasChanged = clearSystemModelChanges(systemModel, systemModelFile);
-						
-						if (hasChanged && Activator.getLogger().isLoggable(Level.WARNING)) {
-							Activator.getLogger().log(Level.WARNING, "Clean up system model changes: " + systemModelFile);
-						}
-					}
-				}
-			}
-		}
+//		// Clean up system model references in data set...
+//		for (Project project : currentVersion.getWorkspace().getProjects()) {
+//			Path systemModel = getTargetRepositoryFile(project.getSystemModel());
+//			
+//			if (!Files.exists(systemModel)) {
+//				project.setSystemModel(null);
+//				
+//				if (Activator.getLogger().isLoggable(Level.WARNING)) {
+//					Activator.getLogger().log(Level.WARNING, "Clean up system model reference: " + currentVersion + " " + project);
+//				}
+//			}
+//		}
+//		
+//		// Clean up system model changes...
+//		SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider();
+//		
+//		for (Project project : currentVersion.getWorkspace().getProjects()) {
+//			if (!HistoryUtil.hasChanges(project, currentVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
+//				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
+//					if (project.getSystemModel() != null) {
+//						Path systemModelFile = getTargetRepositoryFile(project.getSystemModel());
+//						SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelFile);
+//						boolean hasChanged = clearSystemModelChanges(systemModel, systemModelFile);
+//						
+//						if (hasChanged && Activator.getLogger().isLoggable(Level.WARNING)) {
+//							Activator.getLogger().log(Level.WARNING, "Clean up system model changes: " + systemModelFile);
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 	
-	private boolean clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
-		boolean hasChanged = false;
-		
-		for (View view : systemModel.getViews()) {
-			if (!view.getChanges().isEmpty()) {
-				view.getChanges().clear();
-				hasChanged = true;
-			}
-		}
-		
-		if (hasChanged) {
-			storeSystemModel(systemModelFile, systemModel);
-			return true;
-		}
-		
-		return false;
-	}
+//	private boolean clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
+//		boolean hasChanged = false;
+//		
+//		for (View view : systemModel.getViews()) {
+//			if (!view.getChanges().isEmpty()) {
+//				view.getChanges().clear();
+//				hasChanged = true;
+//			}
+//		}
+//		
+//		if (hasChanged) {
+//			storeSystemModel(systemModelFile, systemModel);
+//			return true;
+//		}
+//		
+//		return false;
+//	}
 	
-	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
+	protected void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
 		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
 		systemModel.saveAll(Collections.emptyMap());
 	}
