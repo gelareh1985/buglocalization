@@ -12,3 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.sidiff.bug.localization.model2adjlist
 Bundle-ActivationPolicy: lazy
+Export-Package: org.sidiff.bug.localization.model2adjlist.converter,
+ org.sidiff.bug.localization.model2adjlist.converter.impl,
+ org.sidiff.bug.localization.model2adjlist.format,
+ org.sidiff.bug.localization.model2adjlist.util

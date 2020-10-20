@@ -18,7 +18,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.uml2.common,
  org.eclipse.uml2.uml,
  eu.artist.migration.mdt.javaee.java.uml,
- org.eclipse.jgit
+ org.eclipse.jgit,
+ org.eclipse.emf.compare,
+ org.sidiff.bug.localization.model2adjlist,
+ org.sidiff.bug.localization.dataset.graph
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
