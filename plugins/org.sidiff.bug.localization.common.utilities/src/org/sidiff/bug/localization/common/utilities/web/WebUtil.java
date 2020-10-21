@@ -11,8 +11,16 @@ import org.apache.commons.text.StringEscapeUtils;
 
 public class WebUtil {
 	
-	public static String unescape(String response) {
+	public static String unescapeHtml4(String response) {
 		return StringEscapeUtils.unescapeHtml4(response);
+	}
+	
+	public static String unescapeJson(String response) {
+		return StringEscapeUtils.unescapeJson(response);
+	}
+	
+	public static String escapeJson(String response) {
+		return StringEscapeUtils.escapeJson(response);
 	}
 	
 	public static String request(String requestURL) throws IOException {

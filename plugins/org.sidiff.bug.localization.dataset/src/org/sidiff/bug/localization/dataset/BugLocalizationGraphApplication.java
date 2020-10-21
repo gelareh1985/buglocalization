@@ -4,11 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.logging.Level;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphConstructor;
+import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphStorage;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
@@ -71,11 +74,16 @@ public class BugLocalizationGraphApplication implements IApplication {
 					
 					if (Files.exists(systemModelPath)) {
 						SystemModel buggySystemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelPath);
-						BugLocalizationGraphConstructor graphConstructor = new BugLocalizationGraphConstructor(buggyVersion, fixedVersion, project, buggySystemModel);
+						BugLocalizationGraphConstructor graphConstructor = new BugLocalizationGraphConstructor(fixedVersion.getBugReport(), buggySystemModel);
 						
 						if (!graphConstructor.getBugLocations().isEmpty()) {
-							graphConstructor.construct();
-							save(graphConstructor, ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+							Set<EObject> bugLocations = graphConstructor.getBugLocations();
+							
+							Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph();
+							save(bugLocalizationGraph, bugLocations, "evaluation", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+							
+							Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph();
+							save(localBugLocalizationGraph, bugLocations, "training", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 							
 							// TODO
 							if (bugFixCounter >= TEST_COUNT_OF_BUG_REPORTS) {
@@ -96,16 +104,19 @@ public class BugLocalizationGraphApplication implements IApplication {
 		return IApplication.EXIT_OK;
 	}
 
-	public void save(BugLocalizationGraphConstructor graphConstructor, int counter, int bugID, String version) throws FileNotFoundException, IOException {
+	public void save(Iterable<EObject> bugLocalizationGraph, Set<EObject> bugLocations,
+			String subFolder, int counter, int bugID, String version) throws FileNotFoundException, IOException {
+		
 		String folderName = datasetPath.getFileName().toString();
 		folderName = folderName.substring(0, folderName.lastIndexOf("."));
 		
 		String fileNames = String.format("%05d", counter) + "_bug_" + bugID + "_version_" + version;
 		
-		Path folder = datasetPath.getParent().resolve(folderName);
+		Path folder = datasetPath.getParent().resolve(folderName).resolve(subFolder);
 		Files.createDirectories(folder);
 		
-		graphConstructor.save(folder, fileNames);
+		BugLocalizationGraphStorage storage = new BugLocalizationGraphStorage(bugLocations, bugLocalizationGraph);
+		storage.save(folder, fileNames);
 	}
 
 	public Path getRepositoryFile(Path localPath) {

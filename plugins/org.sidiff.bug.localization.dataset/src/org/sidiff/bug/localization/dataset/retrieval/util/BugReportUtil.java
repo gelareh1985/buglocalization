@@ -17,7 +17,7 @@ public class BugReportUtil {
 						|| 	comment.getText().contains("Gerrit change http");
 
 	public static String getPlainText(String string) {
-		return WebUtil.unescape(string).replace("\n", "").replace("\r", "");
+		return WebUtil.unescapeJson(string).replace("\n", "").replace("\r", "");
 	}
 	
 	public static String getFullPlainText(Version version, Predicate<BugReportComment> commentFilter) {

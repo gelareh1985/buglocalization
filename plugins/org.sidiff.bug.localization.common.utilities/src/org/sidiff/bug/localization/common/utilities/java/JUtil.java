@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class JUtil {
 	
@@ -87,8 +88,16 @@ public class JUtil {
 	}
 	
 	
-	public static <T> Iterable<T> merge(Collection<T> c1, Collection<T> c2) {
+	public static <T> Iterable<T> concatCollections(Collection<T> c1, Collection<T> c2) {
 		return () -> Stream.concat(c1.stream(), c2.stream()).iterator();
+	}
+	
+	public static <T> Iterable<T> concatIerables(Iterable<T> it1, Iterable<T> it2) {
+		return () -> Stream.concat(iterableToStream(it1), iterableToStream(it2)).iterator();
+	}
+	
+	public static <T> Stream<T> iterableToStream(Iterable<T> iterable) {
+		return StreamSupport.stream(iterable.spliterator(), false);
 	}
 	
 	public static boolean notNull(Object... objects) {

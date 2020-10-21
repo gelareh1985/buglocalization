@@ -1,8 +1,5 @@
 package org.sidiff.bug.localization.dataset.graph;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -11,27 +8,13 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.sidiff.bug.localization.common.utilities.emf.ModelUtil;
 import org.sidiff.bug.localization.common.utilities.java.JUtil;
-import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.reports.model.BugReportComment;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
-import org.sidiff.bug.localization.dataset.workspace.model.Project;
-import org.sidiff.bug.localization.model2adjlist.converter.Model2AdjListConverter;
-import org.sidiff.bug.localization.model2adjlist.converter.ModelElement2NumberConverter;
-import org.sidiff.bug.localization.model2adjlist.converter.impl.Model2AdjListConverterImpl;
-import org.sidiff.bug.localization.model2adjlist.converter.impl.ModelElement2NumberConverterImpl;
-import org.sidiff.bug.localization.model2adjlist.format.ModelAdjacencyList;
-import org.sidiff.bug.localization.model2adjlist.util.Model2AdjacencyListUtil;
 
 public class BugLocalizationGraphConstructor {
-
-	private Version buggyVersion;
-	
-	private Version fixedVersion;
-	
-	private Project project;
 	
 	private SystemModel buggySystemModel;
 	
@@ -39,22 +22,32 @@ public class BugLocalizationGraphConstructor {
 	
 	private BugReportNode bugReportNode;
 	
-	private Set<EObject> bugLocalizationGraph;
+	private LocalBugLocalizationGraphSettings loaclGraphSettings;
 	
-	public BugLocalizationGraphConstructor(Version buggyVersion, Version fixedVersion, Project project, SystemModel buggySystemModel) {
-		this.buggyVersion = buggyVersion;
-		this.fixedVersion = fixedVersion;
-		this.project = project;
+	public static class LocalBugLocalizationGraphSettings {
+		int parentLevels = 4;
+		int childLevels = 3;
+		int outgoingDistance = 2;
+		int incomingDistance = 1;
+	}
+	
+	public BugLocalizationGraphConstructor(BugReport bugReport, SystemModel buggySystemModel) {
 		this.buggySystemModel = buggySystemModel;
-		this.bugLocations = getBugLocations(buggySystemModel);
+		this.bugLocations = collectBugLocations(buggySystemModel);
+		this.bugReportNode = createBugReportNode(bugReport, bugLocations);
+		this.loaclGraphSettings = new LocalBugLocalizationGraphSettings();
 	}
 	
-	public void construct() {
-		// NOTE: The bug report is stored for the fixed version.
-		this.bugLocalizationGraph = createBugLocalizationGraph(buggySystemModel);
-		this.bugReportNode = createBugReportNode(fixedVersion.getBugReport(), bugLocations);
+	protected Set<EObject> collectBugLocations(SystemModel systemModel) {
+		Set<EObject> bugLocations = new LinkedHashSet<>();
+		
+		for (View view : systemModel.getViews())  {
+			view.getChanges().stream().map(Change::getLocation).forEach(bugLocations::add);
+		}
+		
+		return bugLocations;
 	}
-	
+
 	protected BugReportNode createBugReportNode(BugReport bugReport, Set<EObject> locations) {
 		BugReportNode bugReportNode = BugLocalizationGraphFactory.eINSTANCE.createBugReportNode();
 		bugReportNode.getLocations().addAll(locations);
@@ -65,28 +58,31 @@ public class BugLocalizationGraphConstructor {
 		return bugReportNode;
 	}
 	
-	protected Set<EObject> getBugLocations(SystemModel systemModel) {
-		Set<EObject> bugLocations = new LinkedHashSet<>();
+	public Iterable<EObject> createBugLocalizationGraph() {
+		Iterable<EObject> bugLocalizationGraph = Collections.singletonList(bugReportNode);
 		
-		for (View view : systemModel.getViews())  {
-			view.getChanges().stream().map(Change::getLocation).forEach(bugLocations::add);
-		}
-		
-		return bugLocations;
-	}
-	
-	protected Set<EObject> createBugLocalizationGraph(SystemModel systemModel) {
-		Set<EObject> bugLocalizationGraph = new LinkedHashSet<>();
-		
-		for (View view : systemModel.getViews())  {
-			Set<EObject> bugLocations = view.getChanges().stream().map(Change::getLocation).collect(Collectors.toSet());
-			bugLocalizationGraph.addAll(createBugLocalizationGraph(view.getModel(), bugLocations));
+		for (View view : buggySystemModel.getViews())  {
+			bugLocalizationGraph = JUtil.concatIerables(bugLocalizationGraph, () -> view.getModel().eAllContents());
 		}
 		
 		return bugLocalizationGraph;
 	}
 
-	protected Set<EObject> createBugLocalizationGraph(EObject model, Set<EObject> locations) {
+	public Set<EObject> createLocalBugLocalizationGraph() {
+		Set<EObject> bugLocalizationGraph = new LinkedHashSet<>(); // keeps order
+		bugLocalizationGraph.add(bugReportNode); // bug report as first node
+		createLocalBugLocalizationGraph(bugLocalizationGraph);
+		return bugLocalizationGraph;
+	}
+	
+	protected void createLocalBugLocalizationGraph(Set<EObject> bugLocalizationGraph) {
+		for (View view : buggySystemModel.getViews())  {
+			Set<EObject> bugLocations = view.getChanges().stream().map(Change::getLocation).collect(Collectors.toSet());
+			bugLocalizationGraph.addAll(createLocalBugLocalizationGraph(view.getModel(), bugLocations));
+		}
+	}
+
+	protected Set<EObject> createLocalBugLocalizationGraph(EObject model, Set<EObject> locations) {
 		Set<EObject> modelElements = new LinkedHashSet<>();
 		Set<EObject> childTree = new LinkedHashSet<>();
 		
@@ -96,19 +92,17 @@ public class BugLocalizationGraphConstructor {
 		/*
 		 *  Parents/Container Elements:
 		 */
-		int parentLevels = 4;
 		
 		for (EObject location : locations) {
-			ModelUtil.collectParents(modelElements, location, parentLevels);
+			ModelUtil.collectParents(modelElements, location, loaclGraphSettings.parentLevels);
 		}
 		
 		/*
 		 * Child Elements:
 		 */
-		int childLevels = 3;
 		
 		for (EObject location : locations) {
-			ModelUtil.collectOutgoingReferences(childTree, location, childLevels, e -> e.isContainment());
+			ModelUtil.collectOutgoingReferences(childTree, location, loaclGraphSettings.childLevels, e -> e.isContainment());
 		}
 		
 		modelElements.addAll(childTree);
@@ -116,71 +110,37 @@ public class BugLocalizationGraphConstructor {
 		/*
 		 * Outgoing Elements of Child Tree:
 		 */
-		int outgoingDistance = 2;
 		
 		for (EObject modelElement : childTree) {
-			ModelUtil.collectOutgoingReferences(modelElements, modelElement, outgoingDistance, e -> !e.isContainment());
+			ModelUtil.collectOutgoingReferences(modelElements, modelElement, loaclGraphSettings.outgoingDistance, e -> !e.isContainment());
 		}
 		
 		/*
 		 * Incoming Elements of Child Tree (within Model):
 		 */
-		int incomingDistance = 1;
 		
-		ModelUtil.collectIncomingReferences(modelElements, model, childTree, incomingDistance, e -> !e.isContainment());
+		ModelUtil.collectIncomingReferences(modelElements, model, childTree, loaclGraphSettings.incomingDistance, e -> !e.isContainment());
 		
 		return modelElements;
 	}
-
-	/**
-	 * @param folder    The path to the storage folder.
-	 * @param fileNames The name of the file(s) without file extension.
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	public void save(Path folder, String fileNames) throws FileNotFoundException, IOException {
-		
-		if ((bugReportNode == null) || (bugLocalizationGraph == null)) {
-			construct();
-		}
-		
-		// Convert to adjacency list:
-		ModelElement2NumberConverter element2Number = new ModelElement2NumberConverterImpl();
-		Model2AdjListConverter model2AdjList = new Model2AdjListConverterImpl(element2Number);
-
-		Iterable<EObject> graphNodes = JUtil.merge(Collections.singletonList(bugReportNode), bugLocalizationGraph);
-		ModelAdjacencyList adjacencyList = model2AdjList.convert(graphNodes);
-
-		// Output:
-		Path path = folder.resolve(fileNames + ".edgelist");
-		Model2AdjacencyListUtil.save(path.toFile(), adjacencyList);
-	}
-
-	public Version getBuggyVersion() {
-		return buggyVersion;
-	}
-
-	public Version getFixedVersion() {
-		return fixedVersion;
-	}
-
-	public Project getProject() {
-		return project;
-	}
-
+	
 	public SystemModel getBuggySystemModel() {
 		return buggySystemModel;
 	}
-
+	
 	public Set<EObject> getBugLocations() {
 		return bugLocations;
 	}
-
+	
 	public BugReportNode getBugReportNode() {
 		return bugReportNode;
 	}
+	
+	public LocalBugLocalizationGraphSettings getLoaclGraphSettings() {
+		return loaclGraphSettings;
+	}
 
-	public Set<EObject> getBugLocalizationGraph() {
-		return bugLocalizationGraph;
+	public void setLoaclGraphSettings(LocalBugLocalizationGraphSettings loaclGraphSettings) {
+		this.loaclGraphSettings = loaclGraphSettings;
 	}
 }

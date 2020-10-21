@@ -240,8 +240,10 @@
         <setEntry value="org.eclipse.ui.workbench.texteditor@default:default"/>
         <setEntry value="org.eclipse.ui.workbench@default:default"/>
         <setEntry value="org.eclipse.ui@default:default"/>
+        <setEntry value="org.eclipse.uml2.common.edit@default:default"/>
         <setEntry value="org.eclipse.uml2.common@default:default"/>
         <setEntry value="org.eclipse.uml2.types@default:default"/>
+        <setEntry value="org.eclipse.uml2.uml.edit@default:default"/>
         <setEntry value="org.eclipse.uml2.uml.profile.standard@default:default"/>
         <setEntry value="org.eclipse.uml2.uml.resources@default:default"/>
         <setEntry value="org.eclipse.uml2.uml@default:default"/>

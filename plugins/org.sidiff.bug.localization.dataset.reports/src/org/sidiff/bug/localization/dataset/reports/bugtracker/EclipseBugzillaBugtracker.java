@@ -14,7 +14,7 @@ public class EclipseBugzillaBugtracker extends BugzillaBugtracker {
 	protected String extractJsonFromResponse(String response) {
 		// https://bugs.eclipse.org/bugs/rest.cgi wraps the response in an HTML page:
 		String jsonLine = response.substring(response.indexOf("<pre>") + "<pre>".length(), response.indexOf("</pre>"));
-		jsonLine = WebUtil.unescape(jsonLine);
+		jsonLine = WebUtil.unescapeHtml4(jsonLine);
 		return jsonLine;
 	}
 }
