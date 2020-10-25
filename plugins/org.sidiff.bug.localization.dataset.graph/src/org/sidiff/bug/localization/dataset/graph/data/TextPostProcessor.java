@@ -12,6 +12,10 @@ public class TextPostProcessor {
 		return WebUtil.escapeJson(text);
 	}
 	
+	public String unescape(String text) {
+		return WebUtil.unescapeJson(text);
+	}
+	
 	public String removeLineBreaks(String text) {
 		return text.replace("\n", " ").replace("\r", " ");
 	}

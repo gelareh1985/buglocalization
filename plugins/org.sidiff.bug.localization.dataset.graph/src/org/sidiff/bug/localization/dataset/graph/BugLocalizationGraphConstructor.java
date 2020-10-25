@@ -25,10 +25,10 @@ public class BugLocalizationGraphConstructor {
 	private LocalBugLocalizationGraphSettings loaclGraphSettings;
 	
 	public static class LocalBugLocalizationGraphSettings {
-		int parentLevels = 4;
-		int childLevels = 3;
-		int outgoingDistance = 2;
-		int incomingDistance = 1;
+		public int parentLevels = 4;
+		public int childLevels = 3;
+		public int outgoingDistance = 2;
+		public int incomingDistance = 1;
 	}
 	
 	public BugLocalizationGraphConstructor(BugReport bugReport, SystemModel buggySystemModel) {
