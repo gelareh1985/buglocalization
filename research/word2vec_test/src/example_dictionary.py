@@ -42,8 +42,9 @@ for filename in os.listdir(p):
            table=load_table(filepath)
            for line in table:
                #print('table lines: \t',line[0],'\t', line[1])
-               strline='{}{}\n'.format(line[0],line[1])
+               #strline='{}{}\n'.format(line[0],line[1])
                #print(strline)
+               strline='{}\n'.format(line[1])
                text.append(strline)
                f.write(strline)
             #print("Finished collecting data from all files!")        
@@ -60,8 +61,8 @@ for value in text:
                
 print('length of set: ',len(iterated_items))
 #   
-# with open(file_with_unique_lines,"a") as f:
-#       #print(txtset)
-#       for l in iterated_items: 
-#           f.write(l)
+with open(file_with_unique_lines,"a") as f:
+      #print(txtset)
+      for l in iterated_items: 
+          f.write(l)
 #                 
