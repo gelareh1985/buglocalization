@@ -108,16 +108,4 @@ list2=create_unique_set(text2)
 save_file(txtfile2,list2)
 
 
-# save_path="encoded_file.txt"
-# list3=[]
-# for line1 in list1:
-#     #for line2 in list2:
-#         if(line1 in list2):
-#             str='1'+' '
-#         else:
-#             str='0'+' '
-#             #break    
-#         list3.append(str)        
-# save_file(save_path,list3)    
-           
               
