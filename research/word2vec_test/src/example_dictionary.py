@@ -4,7 +4,6 @@ import re
 from nltk.tokenize import RegexpTokenizer
 from collections import OrderedDict
 from word_to_vec import generate_dictinoary_data
-from bokeh.util.terminal import dim
 
 print("Hello World!")
 
@@ -125,7 +124,7 @@ for filename in os.listdir(p2):
 print('length of list of vectors: ', len(list_of_vectors), '  length of sublist vector: ', len(sublist_vector))
 
 with open('list_of_lists.txt','w') as f:
-    for item1 in  list_of_vectors:
-        for item2 in sublist_vector:
-         f.write(item2+' ')
+    for list_item1 in  list_of_vectors:
+        for list_item2 in sublist_vector:
+         f.write(list_item2+' ')
 
