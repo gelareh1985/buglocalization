@@ -75,7 +75,7 @@ with open("dictionary_file_corpus.txt",'w') as f:
         f.write(str(values)+'\t'+keys)
                     
 i=1
-listoflists=[]
+list_of_vectors=[]
 for filename in os.listdir(p2):
     
     filepath=os.path.join(p2,filename)
@@ -101,16 +101,16 @@ for filename in os.listdir(p2):
         encoded_l=np.zeros(vocabulary_size1,dtype=np.uint8)
 
         j=0
-        sublist=[]
+        sublist_vector=[]
         for line in dictionary_list1.keys():
             if line in dictionary_list2:
                 encoded_l[j]=1
-                sublist.append(str(encoded_l[j]))
+                sublist_vector.append(str(encoded_l[j]))
             else:
                 encoded_l[j]=0
-                sublist.append(str(encoded_l[j]))
+                sublist_vector.append(str(encoded_l[j]))
             j+=1
-        listoflists.append(sublist)    
+        list_of_vectors.append(sublist_vector)    
 
         encoded_file_name="encoded_file_"+str(i)+".txt"  
         np.savetxt(encoded_file_name,encoded_l, fmt="%d")
@@ -122,10 +122,10 @@ for filename in os.listdir(p2):
                 
     i=i+1
 
-print('length of listoflists: ', len(listoflists), '  length of sublist: ', len(sublist))
+print('length of listoflists: ', len(list_of_vectors), '  length of sublist: ', len(sublist_vector))
 
 with open('list_of_lists.txt','w') as f:
-    for item1 in  listoflists:
-        for item2 in sublist:
+    for item1 in  list_of_vectors:
+        for item2 in sublist_vector:
          f.write(item2+' ')
 
