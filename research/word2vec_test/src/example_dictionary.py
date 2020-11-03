@@ -3,7 +3,6 @@ import numpy as np
 import re
 from nltk.tokenize import RegexpTokenizer
 from collections import OrderedDict
-from word_to_vec import generate_dictinoary_data
 
 print("Hello World!")
 
