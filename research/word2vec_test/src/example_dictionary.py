@@ -122,7 +122,7 @@ for filename in os.listdir(p2):
                 
     i=i+1
 
-print('length of listoflists: ', len(list_of_vectors), '  length of sublist: ', len(sublist_vector))
+print('length of list of vectors: ', len(list_of_vectors), '  length of sublist vector: ', len(sublist_vector))
 
 with open('list_of_lists.txt','w') as f:
     for item1 in  list_of_vectors:
