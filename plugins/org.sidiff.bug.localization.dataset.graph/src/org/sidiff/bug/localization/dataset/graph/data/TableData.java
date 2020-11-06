@@ -13,9 +13,9 @@ public class TableData {
 	
 	private String entrySeperator = "\n";
 	
-	private String valueSeperator = " ";
+	private String valueSeperator = "\t";
 	
-	private String commentSeperator = " # ";
+	private String commentSeperator = valueSeperator + "# ";
 	
 	private TextPostProcessor textPostProcessor;
 

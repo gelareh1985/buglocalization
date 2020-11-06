@@ -36,7 +36,9 @@ public class BugLocalizationGraphApplication implements IApplication {
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-repository";
 	
-	public static final int TEST_COUNT_OF_BUG_REPORTS = 10;
+	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = 10; // or -1
+	
+	public static final boolean SETTINGS_ADD_BUG_REPORT_COMMENTS = true;
 	
 	private Path datasetPath;
 
@@ -79,14 +81,13 @@ public class BugLocalizationGraphApplication implements IApplication {
 						if (!graphConstructor.getBugLocations().isEmpty()) {
 							Set<EObject> bugLocations = graphConstructor.getBugLocations();
 							
-							Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph();
+							Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
 							save(bugLocalizationGraph, bugLocations, "evaluation", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 							
-							Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph();
+							Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
 							save(localBugLocalizationGraph, bugLocations, "training", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 							
-							// TODO
-							if (bugFixCounter >= TEST_COUNT_OF_BUG_REPORTS) {
+							if ((bugFixCounter > 0) && (bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS)) {
 								return IApplication.EXIT_OK;
 							}
 						} else {

@@ -77,6 +77,11 @@ public class BugLocalizationGraphAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseBugReportCommentNode(BugReportCommentNode object) {
+			return createBugReportCommentNodeAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -120,6 +125,20 @@ public class BugLocalizationGraphAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createBugReportNodeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.graph.BugReportCommentNode <em>Bug Report Comment Node</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.graph.BugReportCommentNode
+	 * @generated
+	 */
+	public Adapter createBugReportCommentNodeAdapter() {
 		return null;
 	}
 

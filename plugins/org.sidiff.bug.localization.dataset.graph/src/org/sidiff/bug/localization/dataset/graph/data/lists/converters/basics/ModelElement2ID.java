@@ -1,10 +1,10 @@
-package org.sidiff.bug.localization.dataset.graph.data.model.converters.basics;
+package org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.ModelElementConverter;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.ModelElementConverter;
 
 public class ModelElement2ID implements ModelElementConverter<Integer> {
 

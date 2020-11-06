@@ -1,8 +1,8 @@
-package org.sidiff.bug.localization.dataset.graph.data.model.converters.basics;
+package org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.ModelReferenceTest;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.ModelReferenceTest;
 
 public class ModelReferenceTestSubGraph implements ModelReferenceTest {
 

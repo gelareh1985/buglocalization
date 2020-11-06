@@ -60,6 +60,8 @@ public class BugLocalizationGraphFactoryImpl extends EFactoryImpl implements Bug
 			return createBugLocalizationGraph();
 		case BugLocalizationGraphPackage.BUG_REPORT_NODE:
 			return createBugReportNode();
+		case BugLocalizationGraphPackage.BUG_REPORT_COMMENT_NODE:
+			return createBugReportCommentNode();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -85,6 +87,17 @@ public class BugLocalizationGraphFactoryImpl extends EFactoryImpl implements Bug
 	public BugReportNode createBugReportNode() {
 		BugReportNodeImpl bugReportNode = new BugReportNodeImpl();
 		return bugReportNode;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public BugReportCommentNode createBugReportCommentNode() {
+		BugReportCommentNodeImpl bugReportCommentNode = new BugReportCommentNodeImpl();
+		return bugReportCommentNode;
 	}
 
 	/**

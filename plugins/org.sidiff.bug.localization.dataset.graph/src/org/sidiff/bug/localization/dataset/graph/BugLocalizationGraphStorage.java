@@ -6,16 +6,17 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.sidiff.bug.localization.dataset.graph.data.model.Edges;
-import org.sidiff.bug.localization.dataset.graph.data.model.Nodes;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.basics.ModelElement2Comment;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.basics.ModelElement2ID;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.basics.ModelReference2SourceID;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.basics.ModelReference2TargetID;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.basics.ModelReferenceTestSubGraph;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.signature.ModelElement2Signature;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.signature.ModelElement2SignatureBugReport;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.signature.ModelElement2SignatureName;
+import org.sidiff.bug.localization.dataset.graph.data.lists.EdgeList;
+import org.sidiff.bug.localization.dataset.graph.data.lists.NodeList;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics.ModelElement2Comment;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics.ModelElement2ID;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics.ModelElement2Type;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics.ModelReference2SourceID;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics.ModelReference2TargetID;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.basics.ModelReferenceTestSubGraph;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.signature.ModelElement2Signature;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.signature.ModelElement2SignatureBugReport;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.signature.ModelElement2SignatureName;
 
 public class BugLocalizationGraphStorage {
 
@@ -54,6 +55,8 @@ public class BugLocalizationGraphStorage {
 		ModelElement2Signature modelElement2Signature = new ModelElement2Signature(new ModelElement2SignatureName());
 		modelElement2Signature.addTypedConverter(BugLocalizationGraphPackage.eINSTANCE.getBugReportNode(), new ModelElement2SignatureBugReport());
 		
+		ModelElement2Type modelElement2Type = new ModelElement2Type();
+		
 		// Tag bug locations as comments:
 		ModelElement2Comment modelElement2Comment = new ModelElement2Comment();
 		
@@ -62,7 +65,7 @@ public class BugLocalizationGraphStorage {
 		}
 		
 		// NOTE: The bug localization graph also contains the bug report node.
-		Nodes nodesData = new Nodes(modelElement2Comment, modelElement2ID, modelElement2Signature);
+		NodeList nodesData = new NodeList(modelElement2Comment, modelElement2ID, modelElement2Signature, modelElement2Type);
 		nodesData.addNodes(bugLocalizationGraph);
 		
 		Path nodesPath = folder.resolve(fileNames + ".nodelist");
@@ -77,7 +80,7 @@ public class BugLocalizationGraphStorage {
 		ModelReferenceTestSubGraph modelReferenceTestSubGraph = new ModelReferenceTestSubGraph(modelElement2ID);
 		
 		// NOTE: The bug localization graph also contains the bug report node.
-		Edges edgesDate = new Edges(modelReferenceTestSubGraph, modelReference2SourceID, modelReference2TargetID);
+		EdgeList edgesDate = new EdgeList(modelReferenceTestSubGraph, modelReference2SourceID, modelReference2TargetID);
 		edgesDate.addEdges(bugLocalizationGraph, false);
 		
 		Path edgesPath = folder.resolve(fileNames + ".edgelist");

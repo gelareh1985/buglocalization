@@ -41,6 +41,15 @@ public interface BugLocalizationGraphFactory extends EFactory {
 	BugReportNode createBugReportNode();
 
 	/**
+	 * Returns a new object of class '<em>Bug Report Comment Node</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Bug Report Comment Node</em>'.
+	 * @generated
+	 */
+	BugReportCommentNode createBugReportCommentNode();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.graph.data.model;
+package org.sidiff.bug.localization.dataset.graph.data.lists;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,21 +6,21 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.sidiff.bug.localization.dataset.graph.data.TableData;
 import org.sidiff.bug.localization.dataset.graph.data.TableDataEntry;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.ModelElementConverter;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.ModelElementConverter;
 
-public class Nodes extends TableData {
+public class NodeList extends TableData {
 
 	private ModelElementConverter<String> commentConverter;
 	
 	private List<ModelElementConverter<?>> converters;
 	
-	public Nodes(ModelElementConverter<String> commentConverter, List<ModelElementConverter<?>> converters) {
+	public NodeList(ModelElementConverter<String> commentConverter, List<ModelElementConverter<?>> converters) {
 		super(converters.size());
 		this.commentConverter = commentConverter;
 		this.converters = converters;
 	}
 	
-	public Nodes(ModelElementConverter<String> commentConverter, ModelElementConverter<?>... converter) {
+	public NodeList(ModelElementConverter<String> commentConverter, ModelElementConverter<?>... converter) {
 		this(commentConverter, Arrays.asList(converter));
 	}
 	

@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraph;
 import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphFactory;
 import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphPackage;
+import org.sidiff.bug.localization.dataset.graph.BugReportCommentNode;
 import org.sidiff.bug.localization.dataset.graph.BugReportNode;
 
 /**
@@ -35,6 +36,13 @@ public class BugLocalizationGraphPackageImpl extends EPackageImpl implements Bug
 	 * @generated
 	 */
 	private EClass bugReportNodeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass bugReportCommentNodeEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -160,8 +168,28 @@ public class BugLocalizationGraphPackageImpl extends EPackageImpl implements Bug
 	 * @generated
 	 */
 	@Override
-	public EAttribute getBugReportNode_Comments() {
-		return (EAttribute) bugReportNodeEClass.getEStructuralFeatures().get(2);
+	public EReference getBugReportNode_Comments() {
+		return (EReference) bugReportNodeEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getBugReportCommentNode() {
+		return bugReportCommentNodeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getBugReportCommentNode_Comment() {
+		return (EAttribute) bugReportCommentNodeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -171,7 +199,7 @@ public class BugLocalizationGraphPackageImpl extends EPackageImpl implements Bug
 	 */
 	@Override
 	public EReference getBugReportNode_Locations() {
-		return (EReference) bugReportNodeEClass.getEStructuralFeatures().get(3);
+		return (EReference) bugReportNodeEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -210,8 +238,11 @@ public class BugLocalizationGraphPackageImpl extends EPackageImpl implements Bug
 		bugReportNodeEClass = createEClass(BUG_REPORT_NODE);
 		createEAttribute(bugReportNodeEClass, BUG_REPORT_NODE__ID);
 		createEAttribute(bugReportNodeEClass, BUG_REPORT_NODE__SUMMARY);
-		createEAttribute(bugReportNodeEClass, BUG_REPORT_NODE__COMMENTS);
 		createEReference(bugReportNodeEClass, BUG_REPORT_NODE__LOCATIONS);
+		createEReference(bugReportNodeEClass, BUG_REPORT_NODE__COMMENTS);
+
+		bugReportCommentNodeEClass = createEClass(BUG_REPORT_COMMENT_NODE);
+		createEAttribute(bugReportCommentNodeEClass, BUG_REPORT_COMMENT_NODE__COMMENT);
 	}
 
 	/**
@@ -261,12 +292,18 @@ public class BugLocalizationGraphPackageImpl extends EPackageImpl implements Bug
 		initEAttribute(getBugReportNode_Summary(), ecorePackage.getEString(), "summary", null, 0, 1,
 				BugReportNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getBugReportNode_Comments(), theEcorePackage.getEString(), "comments", null, 0, -1,
-				BugReportNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
 		initEReference(getBugReportNode_Locations(), theEcorePackage.getEObject(), null, "locations", null, 0, -1,
 				BugReportNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBugReportNode_Comments(), this.getBugReportCommentNode(), null, "comments", null, 0, -1,
+				BugReportNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(bugReportCommentNodeEClass, BugReportCommentNode.class, "BugReportCommentNode", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getBugReportCommentNode_Comment(), theEcorePackage.getEString(), "comment", null, 0, 1,
+				BugReportCommentNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

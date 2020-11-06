@@ -1,11 +1,11 @@
-package org.sidiff.bug.localization.dataset.graph.data.model.converters.signature;
+package org.sidiff.bug.localization.dataset.graph.data.lists.converters.signature;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.ModelElementConverter;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.ModelElementConverter;
 
 public class ModelElement2Signature implements ModelElementConverter<String> {
 

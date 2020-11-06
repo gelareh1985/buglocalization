@@ -17,8 +17,8 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.sidiff.bug.localization.dataset.graph.BugReportNode#getId <em>Id</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.graph.BugReportNode#getSummary <em>Summary</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.graph.BugReportNode#getComments <em>Comments</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.graph.BugReportNode#getLocations <em>Locations</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.graph.BugReportNode#getComments <em>Comments</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphPackage#getBugReportNode()
@@ -71,16 +71,16 @@ public interface BugReportNode extends EObject {
 	void setSummary(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Comments</b></em>' attribute list.
-	 * The list contents are of type {@link java.lang.String}.
+	 * Returns the value of the '<em><b>Comments</b></em>' containment reference list.
+	 * The list contents are of type {@link org.sidiff.bug.localization.dataset.graph.BugReportCommentNode}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Comments</em>' attribute list.
+	 * @return the value of the '<em>Comments</em>' containment reference list.
 	 * @see org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphPackage#getBugReportNode_Comments()
-	 * @model
+	 * @model containment="true"
 	 * @generated
 	 */
-	EList<String> getComments();
+	EList<BugReportCommentNode> getComments();
 
 	/**
 	 * Returns the value of the '<em><b>Locations</b></em>' reference list.

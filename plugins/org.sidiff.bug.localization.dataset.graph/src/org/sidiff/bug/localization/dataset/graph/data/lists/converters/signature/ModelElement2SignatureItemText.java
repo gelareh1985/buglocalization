@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.graph.data.model.converters.signature;
+package org.sidiff.bug.localization.dataset.graph.data.lists.converters.signature;
 
 import org.eclipse.emf.ecore.EObject;
 import org.sidiff.bug.localization.common.utilities.emf.ItemProviderUtil;

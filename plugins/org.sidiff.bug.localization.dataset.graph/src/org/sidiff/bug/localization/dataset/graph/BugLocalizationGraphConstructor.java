@@ -48,18 +48,34 @@ public class BugLocalizationGraphConstructor {
 		return bugLocations;
 	}
 
+	protected Set<EObject> collectBugReportGraph(boolean bugReportComments) {
+		Set<EObject> bugGraph = new LinkedHashSet<>(); // keeps order
+		bugGraph.add(bugReportNode); // bug report as first node
+		
+		if (bugReportComments) {
+			bugGraph.addAll(bugReportNode.getComments());
+		}
+		
+		return bugGraph;
+	}
+
 	protected BugReportNode createBugReportNode(BugReport bugReport, Set<EObject> locations) {
 		BugReportNode bugReportNode = BugLocalizationGraphFactory.eINSTANCE.createBugReportNode();
 		bugReportNode.getLocations().addAll(locations);
 		bugReportNode.setId(bugReport.getId());
 		bugReportNode.setSummary(bugReport.getSummary());
-		bugReportNode.getComments().addAll(bugReport.getComments().stream().map(BugReportComment::getText).collect(Collectors.toList()));
+		
+		for (BugReportComment bugReportComment : bugReport.getComments()) {
+			BugReportCommentNode bugReportCommentNode = BugLocalizationGraphFactory.eINSTANCE.createBugReportCommentNode();
+			bugReportCommentNode.setComment(bugReportComment.getText());
+			bugReportNode.getComments().add(bugReportCommentNode);
+		}
 		
 		return bugReportNode;
 	}
 	
-	public Iterable<EObject> createBugLocalizationGraph() {
-		Iterable<EObject> bugLocalizationGraph = Collections.singletonList(bugReportNode);
+	public Iterable<EObject> createBugLocalizationGraph(boolean bugReportComments) {
+		Iterable<EObject> bugLocalizationGraph = collectBugReportGraph(bugReportComments);
 		
 		for (View view : buggySystemModel.getViews())  {
 			bugLocalizationGraph = JUtil.concatIerables(bugLocalizationGraph, () -> view.getModel().eAllContents());
@@ -68,9 +84,8 @@ public class BugLocalizationGraphConstructor {
 		return bugLocalizationGraph;
 	}
 
-	public Set<EObject> createLocalBugLocalizationGraph() {
-		Set<EObject> bugLocalizationGraph = new LinkedHashSet<>(); // keeps order
-		bugLocalizationGraph.add(bugReportNode); // bug report as first node
+	public Set<EObject> createLocalBugLocalizationGraph(boolean bugReportComments) {
+		Set<EObject> bugLocalizationGraph = collectBugReportGraph(bugReportComments); // keeps order
 		createLocalBugLocalizationGraph(bugLocalizationGraph);
 		return bugLocalizationGraph;
 	}

@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.graph.data.model;
+package org.sidiff.bug.localization.dataset.graph.data.lists;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,22 +10,22 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.sidiff.bug.localization.dataset.graph.data.TableData;
 import org.sidiff.bug.localization.dataset.graph.data.TableDataEntry;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.ModelReferenceConverter;
-import org.sidiff.bug.localization.dataset.graph.data.model.converters.ModelReferenceTest;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.ModelReferenceConverter;
+import org.sidiff.bug.localization.dataset.graph.data.lists.converters.ModelReferenceTest;
 
-public class Edges extends TableData {
+public class EdgeList extends TableData {
 
 	private List<ModelReferenceConverter<?>> converter;
 	
 	private ModelReferenceTest test;
 	
-	public Edges(ModelReferenceTest test, List<ModelReferenceConverter<?>> converter) {
+	public EdgeList(ModelReferenceTest test, List<ModelReferenceConverter<?>> converter) {
 		super(converter.size());
 		this.test = test;
 		this.converter = converter;
 	}
 	
-	public Edges(ModelReferenceTest test, ModelReferenceConverter<?>... converter) {
+	public EdgeList(ModelReferenceTest test, ModelReferenceConverter<?>... converter) {
 		this(test, Arrays.asList(converter));
 	}
 	
