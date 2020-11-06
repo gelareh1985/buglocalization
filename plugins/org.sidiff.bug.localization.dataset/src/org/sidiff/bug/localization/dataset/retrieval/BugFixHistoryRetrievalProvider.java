@@ -28,7 +28,7 @@ public class BugFixHistoryRetrievalProvider {
 	/**
 	 * Matches version in of the source code repository that represent bug fixes.
 	 */
-	private Supplier<BugFixVersionFilter> versionFilter;
+	private Supplier<VersionFilter> versionFilter;
 
 	/**
 	 * The bug tracker that corresponds to the source code repository.
@@ -44,7 +44,7 @@ public class BugFixHistoryRetrievalProvider {
 	public BugFixHistoryRetrievalProvider(
 			Supplier<Repository> repository,
 			Supplier<BugFixMessageIDMatcher> bugFixMessageIDMatcher, 
-			Supplier<BugFixVersionFilter> bugFixVersionFilter,
+			Supplier<VersionFilter> bugFixVersionFilter,
 			Supplier<Bugtracker> bugtracker, 
 			Supplier<BugReportFilter> bugReportFilter) {
 		
@@ -86,7 +86,7 @@ public class BugFixHistoryRetrievalProvider {
 		return versionFilter.get();
 	}
 	
-	public void setVersionFilter(Supplier<BugFixVersionFilter> versionFilter) {
+	public void setVersionFilter(Supplier<VersionFilter> versionFilter) {
 		this.versionFilter = versionFilter;
 	}
 
