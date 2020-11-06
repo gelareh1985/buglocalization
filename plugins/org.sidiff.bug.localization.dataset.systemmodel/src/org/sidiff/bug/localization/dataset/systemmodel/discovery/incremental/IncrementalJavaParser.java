@@ -97,6 +97,9 @@ public class IncrementalJavaParser {
 	}
 	
 	// >>> protected static method parseCompilationUnit cannot be overwritten :(
+	// NOTE: MoDisco is able to resolve binding internally by qualified names.
+	// TODO: We might check weather setResolveBindings(true) is needed at all:
+	//       - It seems that the packages are not matched correctly (duplicated per class) without resolving binding!
 
 	@SuppressWarnings("deprecation")
 	protected CompilationUnit internal_parseCompilationUnit(final ITypeRoot source) {
