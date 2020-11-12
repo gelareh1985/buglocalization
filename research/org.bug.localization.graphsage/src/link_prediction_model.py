@@ -36,7 +36,6 @@ pair2=np.array(len(data_column2),dtype=object)
 pair1=np.unique(data_column1)
 pair2=np.unique(data_column1)
 
-print('list pairs shape: ', pairs_array.shape)
 print('length of pair 1: '+str(len(pair1)))
 print('length of pair 2: '+str(len(pair2)))
 print('pair 1: ',pair1)          
