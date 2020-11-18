@@ -287,8 +287,13 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 	public void setURI(URI uri) {
 		if (eResource() == null) {
 			ResourceSet resourceSet = new ResourceSetImpl();
-			Resource multiViewResource = resourceSet.createResource(uri);
-			multiViewResource.getContents().add(this);
+			
+			if (!resourceSet.getURIConverter().exists(uri, Collections.emptyMap())) {
+				Resource multiViewResource = resourceSet.createResource(uri);
+				multiViewResource.getContents().add(this);
+			} else {
+				resourceSet.getResource(uri, true);
+			}
 		} else {
 			eResource().setURI(uri);
 		}

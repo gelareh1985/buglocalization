@@ -16,13 +16,7 @@ public class FileChange {
 		MODIFY,
 
 		/** Delete an existing file from the project */
-		DELETE,
-
-		/** Rename an existing file to a new location */
-		RENAME,
-
-		/** Copy an existing file to a new location, keeping the original */
-		COPY;
+		DELETE
 	}
 	
 	private FileChangeType type;

@@ -24,7 +24,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.sidiff.bug.localization.dataset.graph
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.sidiff.bug.localization.dataset,
  org.sidiff.bug.localization.dataset.configuration,
  org.sidiff.bug.localization.dataset.model,

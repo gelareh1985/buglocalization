@@ -14,16 +14,7 @@ public class Project {
 	 */
 	private Path folder;
 	
-	/**
-	 * The system model representing this project. 
-	 */
-	private Path systemModel;
-
 	public Project() {
-	}
-	
-	public boolean hasSystemModel() {
-		return systemModel != null;
 	}
 	
 	public String getName() {
@@ -46,16 +37,8 @@ public class Project {
 		this.folder = local.relativize(folder);
 	}
 
-	public Path getSystemModel() {
-		return systemModel;
-	}
-
-	public void setSystemModel(Path systemModel) {
-		this.systemModel = systemModel;
-	}
-
 	@Override
 	public String toString() {
-		return "Project [name=" + name + ", folder=" + folder + ", systemModel=" + systemModel + "]";
+		return "Project [name=" + name + ", folder=" + folder + "]";
 	}
 }

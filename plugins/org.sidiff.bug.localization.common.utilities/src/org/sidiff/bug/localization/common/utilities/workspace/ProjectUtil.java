@@ -47,7 +47,9 @@ public class ProjectUtil {
 	
 	public static boolean isJavaProject(IProject project) throws CoreException {
 		try {
-			return project.hasNature(JavaCore.NATURE_ID);
+			if (project.isOpen()) {
+				return project.hasNature(JavaCore.NATURE_ID);
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

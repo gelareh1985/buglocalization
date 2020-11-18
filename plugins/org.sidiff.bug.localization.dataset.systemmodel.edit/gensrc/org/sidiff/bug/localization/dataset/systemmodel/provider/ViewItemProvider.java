@@ -133,6 +133,7 @@ public class ViewItemProvider extends DescribableElementItemProvider {
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+			childrenFeatures.add(SystemModelPackage.Literals.VIEW__MODEL);
 			childrenFeatures.add(SystemModelPackage.Literals.VIEW__CHANGES);
 		}
 		return childrenFeatures;

@@ -3,6 +3,7 @@
 package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
 import java.nio.file.Path;
+import java.util.Collections;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -124,9 +125,17 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 */
 	@Override
 	public SystemModel createSystemModel(URI uri) {
-		SystemModelImpl systemModel = new SystemModelImpl();
-		systemModel.setURI(uri);
-		return systemModel;
+		ResourceSet resourceSet = new ResourceSetImpl();
+		
+		if (!resourceSet.getURIConverter().exists(uri, Collections.emptyMap())) {
+			SystemModelImpl systemModel = new SystemModelImpl();
+			Resource multiViewResource = resourceSet.createResource(uri);
+			multiViewResource.getContents().add(systemModel);
+			return systemModel;
+		} else {
+			Resource multiViewResource = resourceSet.getResource(uri, true);
+			return (SystemModel) multiViewResource.getContents().get(0);
+		}
 	}
 	
 	/**
@@ -136,9 +145,7 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 */
 	@Override
 	public SystemModel createSystemModel(Path file) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		Resource resource = resourceSet.getResource(URI.createFileURI(file.toString()), true);
-		return (SystemModel) resource.getContents().get(0);
+		return createSystemModel(URI.createFileURI(file.toString()));
 	}
 
 	/**

@@ -85,14 +85,18 @@ public class SystemModelRepository {
 		return projectPath;
 	}
 	
-	public Path getSystemModelFile(Project project, boolean createDir) throws IOException {
-		String modelFileName = project.getName() + "." + SystemModel.FILE_EXTENSION;
-		Path systemModelFile = Paths.get(getProjectPath(project, createDir).toString(), modelFileName);
+	public Path getSystemModelFile() {
+		String modelFileName = dataset.getName() + "." + SystemModel.FILE_EXTENSION;
+		Path systemModelFile = Paths.get(modelFileName);
 		return systemModelFile;
 	}
 	
-	public SystemModel getSystemModel(Project project) throws IOException {
-		return SystemModelFactory.eINSTANCE.createSystemModel(getSystemModelFile(project, false));
+	public Path getSystemModelPath() {
+		return getRepositoryPath().resolve(getSystemModelFile());
+	}
+	
+	public SystemModel getSystemModel() throws IOException {
+		return SystemModelFactory.eINSTANCE.createSystemModel(getSystemModelPath());
 	}
 	
 	public List<Project> removeMissingProjects(Version olderVersion, Version currentVersion) {

@@ -21,7 +21,6 @@ import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 /**
  * Converts the EMF model and bug report with its fix-locations to "simple" graph structure.
@@ -70,37 +69,32 @@ public class BugLocalizationGraphApplication implements IApplication {
 				// NOTE: The buggy version is the version previous to the fixed version.
 				Version buggyVersion = historyIterator.getOlderVersion();
 				repository.checkout(dataset.getHistory(), buggyVersion);
-				
-				for (Project project : buggyVersion.getWorkspace().getProjects()) {
-					Path systemModelPath = getRepositoryFile(project.getSystemModel());
-					
-					if (Files.exists(systemModelPath)) {
-						SystemModel buggySystemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelPath);
-						BugLocalizationGraphConstructor graphConstructor = new BugLocalizationGraphConstructor(fixedVersion.getBugReport(), buggySystemModel);
-						
-						if (!graphConstructor.getBugLocations().isEmpty()) {
-							Set<EObject> bugLocations = graphConstructor.getBugLocations();
-							
-							Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-							save(bugLocalizationGraph, bugLocations, "evaluation", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
-							
-							Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-							save(localBugLocalizationGraph, bugLocations, "training", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
-							
-							if ((bugFixCounter > 0) && (bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS)) {
-								return IApplication.EXIT_OK;
-							}
-						} else {
-							Activator.getLogger().log(Level.WARNING, "No locations found for bug: " 
-									+ fixedVersion.getBugReport().getId() + " Bug report will be ignored!");
+
+				Path systemModelPath = getRepositoryFile(dataset.getSystemModel());
+
+				if (Files.exists(systemModelPath)) {
+					SystemModel buggySystemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelPath);
+					BugLocalizationGraphConstructor graphConstructor = new BugLocalizationGraphConstructor(fixedVersion.getBugReport(), buggySystemModel);
+
+					if (!graphConstructor.getBugLocations().isEmpty()) {
+						Set<EObject> bugLocations = graphConstructor.getBugLocations();
+
+						Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
+						save(bugLocalizationGraph, bugLocations, "evaluation", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+
+						Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
+						save(localBugLocalizationGraph, bugLocations, "training", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+
+						if ((bugFixCounter > 0) && (bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS)) {
+							return IApplication.EXIT_OK;
 						}
-					} else {
-						Activator.getLogger().log(Level.SEVERE, "System model not found: " + systemModelPath);
 					}
+				} else {
+					Activator.getLogger().log(Level.SEVERE, "System model not found: " + systemModelPath);
 				}
 			}
 		}
-		
+
 		Activator.getLogger().log(Level.INFO, "Finished");
 		return IApplication.EXIT_OK;
 	}
