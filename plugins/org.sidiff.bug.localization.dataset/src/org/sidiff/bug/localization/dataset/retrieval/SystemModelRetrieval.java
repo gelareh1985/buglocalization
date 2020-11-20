@@ -112,19 +112,18 @@ public class SystemModelRetrieval {
 				
 				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
 				refreshWorkspace(olderVersion, version, workspace);
-				time = stopTime("Checkout Workspace Version: ", time);
 				
 				// Clean up older version:
-				systemModelRepository.removeMissingProjects(olderVersion, version); // FIXME needs migration
 				clearSystemModelChanges(systemModel); // of last version
-				time = stopTime("Cleanup Workspace Model: ", time);
+				time = stopTime("Checkout Workspace Version: ", time);
 				
 				/* Synchronize before storing new changes in the model repository */
 				waitForCommit(); 
 				time = stopTime("Commit System Model Version (waiting): ", time);
 				
 				// Workspace -> System Model:
-				List<Path> modelResources = retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace, systemModel);
+				List<Path> removedModelResources = removeMissingProjects(olderVersion, version);
+				List<Path> modifiedModelResources = retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace, systemModel);
 				transformation.saveModel();
 				time = stopTime("Discover System Model Workspace: ", time);
 				
@@ -132,7 +131,8 @@ public class SystemModelRetrieval {
 				if (olderVersion == null) { // initial version?
 					commit(olderVersion, version, null); 
 				} else {
-					commit(olderVersion, version, modelResources); 
+					modifiedModelResources.addAll(removedModelResources);
+					commit(olderVersion, version, modifiedModelResources);
 				}
 				
 				time = stopTime("Commit Model Version: ", time);
@@ -166,7 +166,7 @@ public class SystemModelRetrieval {
 			}
 		}
 	}
-
+	
 	private void commit(Version olderVersion, Version version, List<Path> modelResources) {
 		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion, modelResources), null);
 		commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
@@ -321,6 +321,23 @@ public class SystemModelRetrieval {
 				olderVersion == null);
 	}
 
+	private List<Path> removeMissingProjects(Version olderVersion, Version currentVersion) {
+		List<Path> removed = new ArrayList<>();
+		
+		if (olderVersion != null) { // initial version
+			Workspace olderWorkspace = olderVersion.getWorkspace();
+			Workspace currentWorkspace = currentVersion.getWorkspace();
+			
+			for (Project oldProject : olderWorkspace.getProjects()) {
+				if (!currentWorkspace.containsProject(oldProject)) {
+					removed.addAll(transformation.removeProject(oldProject.getName()));
+				}
+			}
+		}
+		
+		return removed;
+	}
+
 	private List<FileChange> getBugLocations(Version version, Version newerVersion) {
 		if ((version != null) && (newerVersion != null) && (newerVersion.hasBugReport())) {
 			return newerVersion.getBugReport().getBugLocations();
@@ -349,7 +366,6 @@ public class SystemModelRetrieval {
 	}
 	
 	private long stopTime(String text, long time) {
-		System.out.println(text + (System.currentTimeMillis() - time) + "ms"); // TODO
 		if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
 			Activator.getLogger().log(LoggerUtil.PERFORMANCE,  text + (System.currentTimeMillis() - time) + "ms");
 		}

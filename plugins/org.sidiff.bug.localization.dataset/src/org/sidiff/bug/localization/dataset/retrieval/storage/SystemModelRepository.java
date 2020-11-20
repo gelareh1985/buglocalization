@@ -1,12 +1,9 @@
 package org.sidiff.bug.localization.dataset.retrieval.storage;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.sidiff.bug.localization.dataset.history.model.Version;
@@ -17,7 +14,6 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
-import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class SystemModelRepository {
 	
@@ -110,30 +106,6 @@ public class SystemModelRepository {
 	
 	public SystemModel getSystemModel() throws IOException {
 		return SystemModelFactory.eINSTANCE.createSystemModel(getSystemModelPath());
-	}
-	
-	public List<Project> removeMissingProjects(Version olderVersion, Version currentVersion) {
-		List<Project> removedProjects = new ArrayList<>();
-		
-		if (olderVersion != null) { // initial version
-			Workspace olderWorkspace = olderVersion.getWorkspace();
-			Workspace currentWorkspace = currentVersion.getWorkspace();
-			
-			for (Project oldProject : olderWorkspace.getProjects()) {
-				if (!currentWorkspace.containsProject(oldProject)) {
-					removedProjects.add(oldProject);
-					
-					try {
-						Path projectPath = repositoryPath.resolve(oldProject.getFolder());
-						Files.walk(projectPath).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		
-		return removedProjects;
 	}
 	
 	public boolean resetRepository() {

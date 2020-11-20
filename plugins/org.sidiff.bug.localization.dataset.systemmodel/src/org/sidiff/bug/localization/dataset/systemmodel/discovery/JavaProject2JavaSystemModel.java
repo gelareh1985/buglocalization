@@ -185,6 +185,19 @@ public class JavaProject2JavaSystemModel {
 		return fileChanges;
 	}
 
+	public List<Path> removeProject(String projectName) {
+		List<Path> removed = transformation.removeProject(projectName);
+		
+		List<Path> fileChanges = new ArrayList<>();
+		fileChanges.add(modelRepository.relativize(Paths.get(settings.getWorkspaceModel().getURI().toFileString())));
+		
+		for (Path removedFile : removed) {
+			fileChanges.add(modelRepository.relativize(removedFile));
+		}
+		
+		return fileChanges;
+	}
+
 	/**
 	 * Changes to create the current revision.
 	 * @param projectBugLocations 
