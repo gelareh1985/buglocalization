@@ -14,18 +14,6 @@
       </application>
    </extension>
    <extension
-         id="directretrieval"
-         point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            thread="main"
-            visible="true">
-         <run
-               class="org.sidiff.bug.localization.dataset.DataSetRetrievalApplication">
-         </run>
-      </application>
-   </extension>
-   <extension
          id="testdriver"
          point="org.eclipse.core.runtime.applications">
       <application
