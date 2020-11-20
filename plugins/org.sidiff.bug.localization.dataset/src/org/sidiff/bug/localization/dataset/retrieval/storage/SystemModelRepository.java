@@ -45,10 +45,23 @@ public class SystemModelRepository {
 		repository.checkout(dataset.getHistory(), version);
 	}
 	
-	public Version commitVersion(Version currentVersion, Version previousVersion) {
-		
+	public Version commitVersion(Version currentVersion, Version previousVersion, List<Path> resources) {
+		String identification = null;
+			
 		// Commit to repository:
-		String identification = repository.commit(currentVersion.getIdentification(), currentVersion.getDate().toString(), currentVersion.getCommitMessage(), null, null);
+		if (resources != null) {
+			identification = repository.commit(
+					currentVersion.getIdentification(), 
+					currentVersion.getDate().toString(), 
+					currentVersion.getCommitMessage(),
+					null, null, resources);
+		} else {
+			identification = repository.commit(
+					currentVersion.getIdentification(), 
+					currentVersion.getDate().toString(), 
+					currentVersion.getCommitMessage(), 
+					null, null);
+		}
 		
 		// Trace commit IDs to original repository:
 		if (currentVersion.getIdentificationTrace() == null) {
@@ -62,7 +75,7 @@ public class SystemModelRepository {
 	/*
 	 * Path conventions:
 	 */
-	
+
 	public Path getRepositoryPath() {
 		return repositoryPath;
 	}

@@ -2,6 +2,7 @@
  */
 package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
@@ -296,6 +297,20 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 			}
 		} else {
 			eResource().setURI(uri);
+		}
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
+	public void save() {
+		try {
+			eResource().save(Collections.emptyMap());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

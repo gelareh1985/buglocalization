@@ -101,6 +101,13 @@ public interface SystemModel extends DescribableElement {
 	 * @generated NOT
 	 */
 	void setURI(URI uri);
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	void save();
 
 	/**
 	 * <!-- begin-user-doc -->

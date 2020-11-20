@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset.history.repository;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -251,12 +252,35 @@ public class GitRepository implements Repository {
 	
 	@Override
 	public String commit(String authorName, String authorEmail, String message, String username, String password) {
+		return commit(authorName, authorEmail, message, username, password, null);
+	}
+	
+	@Override
+	public String commit(String authorName, String authorEmail, String message, String username, String password, List<Path> files) {
 		try (Git git = openGitRepository()) {
-			git.add().addFilepattern(".").call();
-			RevCommit commit = git.commit().setAll(true).setAllowEmpty(true)
-					.setAuthor(authorName, authorEmail)
-					.setCommitter(authorName, authorEmail)
-					.setMessage(message).call();
+			RevCommit commit = null;
+			
+			if (files == null) {
+				git.add().addFilepattern(".").call();
+				commit = git.commit().setAll(true).setAllowEmpty(true)
+						.setAuthor(authorName, authorEmail)
+						.setCommitter(authorName, authorEmail)
+						.setMessage(message).call();
+			} else {
+				Path workingDirectory = Paths.get(this.workingDirectory.getAbsolutePath());
+				
+				for (Path file : files) {
+					if (Files.exists(workingDirectory.resolve(file))) {
+						git.add().addFilepattern(file.toString().replace("\\", "/")).call();
+					} else {
+						git.rm().addFilepattern(file.toString().replace("\\", "/")).call();
+					}
+				}
+				commit = git.commit().setAllowEmpty(true)
+						.setAuthor(authorName, authorEmail)
+						.setCommitter(authorName, authorEmail)
+						.setMessage(message).call();
+			}
 
 			if ((repositoryURL != null) && (username != null) && (password != null)) {
 				PushCommand pushCommand = git.push();

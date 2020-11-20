@@ -22,7 +22,7 @@ import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
 
 public class TestDriverApplication extends DataSetRetrievalApplication {
 	
-	private static int SHRINK_TO_HISTORY_SIZE = 10;
+	private static int SHRINK_TO_HISTORY_SIZE = 1000;
 	
 	private static String[] FILTER_PROJECTS = {}; // {"org.eclipse.jdt.core", "org.eclipse.jdt.apt.core"};
 

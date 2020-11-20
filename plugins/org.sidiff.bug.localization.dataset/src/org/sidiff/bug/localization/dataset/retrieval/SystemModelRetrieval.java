@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset.retrieval;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -15,10 +16,14 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
@@ -106,23 +111,31 @@ public class SystemModelRetrieval {
 				long time = System.currentTimeMillis();
 				
 				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
+				refreshWorkspace(olderVersion, version, workspace);
 				time = stopTime("Checkout Workspace Version: ", time);
 				
 				// Clean up older version:
-				systemModelRepository.removeMissingProjects(olderVersion, version);
-				
-				// Workspace -> Java Models -> System Model:
+				systemModelRepository.removeMissingProjects(olderVersion, version); // FIXME needs migration
 				clearSystemModelChanges(systemModel); // of last version
-				retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace, systemModel);
+				time = stopTime("Cleanup Workspace Model: ", time);
 				
+				/* Synchronize before storing new changes in the model repository */
+				waitForCommit(); 
+				time = stopTime("Commit System Model Version (waiting): ", time);
+				
+				// Workspace -> System Model:
+				List<Path> modelResources = retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace, systemModel);
 				transformation.saveModel();
-				systemModel.eResource().save(Collections.emptyMap());
+				time = stopTime("Discover System Model Workspace: ", time);
 				
-				time = stopTime("System Model Version: ", time);
+				// Commit new revision none blocking
+				if (olderVersion == null) { // initial version?
+					commit(olderVersion, version, null); 
+				} else {
+					commit(olderVersion, version, modelResources); 
+				}
 				
-				// Store system model workspace as revision:
-				waitForCommit();
-				commit(olderVersion, version);
+				time = stopTime("Commit Model Version: ", time);
 				
 				if (Activator.getLogger().isLoggable(Level.FINE)) {
 					Activator.getLogger().log(Level.FINE, "Discovered system model version " + (versions.size() - i) + " of " + versions.size() + " versions");
@@ -151,14 +164,11 @@ public class SystemModelRetrieval {
 			if (commitSystemModelVersionThread != null) {
 				commitSystemModelVersionThread.shutdown();
 			}
-			if (transformation != null) {
-				transformation.shutdown();
-			}
 		}
 	}
 
-	private void commit(Version olderVersion, Version version) {
-		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion), null);
+	private void commit(Version olderVersion, Version version, List<Path> modelResources) {
+		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion, modelResources), null);
 		commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
 	}
 
@@ -166,10 +176,8 @@ public class SystemModelRetrieval {
 		// Wait for last version to be commited:
 		if (commitSystemModelVersionTask != null) {
 			try {
-				long time = System.currentTimeMillis();
 				commitSystemModelVersionTask.get();
 				this.commitSystemModelVersionTask = null;
-				time = stopTime("Commit System Model Version (waiting): ", time);
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
@@ -201,7 +209,41 @@ public class SystemModelRetrieval {
 		return loadedWorkspace;
 	}
 	
-	private void retrieveWorkspaceSystemModelVersion(
+	private void refreshWorkspace(Version olderVersion, Version version, Workspace workspace) {
+		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		
+		// Make checked out resource changes visible:
+		if (olderVersion == null) { // initial version?
+			for (Project project : workspace.getProjects()) {
+				try {
+					workspaceRoot.getProject(project.getName()).refreshLocal(IResource.DEPTH_INFINITE, null);
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			for (Project project : workspace.getProjects()) {
+				for (FileChange fileChange : version.getFileChanges()) {
+					if (fileChange.getType().equals(FileChangeType.ADD) || fileChange.getType().equals(FileChangeType.DELETE)) {
+						if (fileChange.getLocation().startsWith(project.getFolder())) {
+							try {
+								IProject workspaceProject = workspaceRoot.getProject(project.getName());
+								Path fileToBeRefreshed = project.getFolder().relativize(fileChange.getLocation());
+								
+								if ((workspaceProject != null) && (fileToBeRefreshed != null)) {
+									workspaceProject.getFile(fileToBeRefreshed.toString()).refreshLocal(IResource.DEPTH_ZERO, null);
+								}
+							} catch (CoreException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private List<Path> retrieveWorkspaceSystemModelVersion(
 			Version olderVersion, 
 			Version version, 
 			Version newerVersion,
@@ -210,6 +252,10 @@ public class SystemModelRetrieval {
 	
 		// NOTE: version      := buggy version
 		//       newerVersion := fixed version
+		
+		// Log files to be commited:
+		List<Path> modelFiles = new ArrayList<>();
+		modelFiles.add(systemModelRepository.getSystemModelFile());
 		
 		Set<String> workspaceProjectScope = workspace.getProjects().stream().map(Project::getName).collect(Collectors.toSet());
 		
@@ -222,8 +268,11 @@ public class SystemModelRetrieval {
 				if (HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
 					
 					// Java Code -> System Model
-					retrieveProjectSystemModelVersion(olderVersion, version, newerVersion, project, workspaceProjectScope, systemModel);
-					time = stopTime("Discover System Model Project: ", time);
+					List<Path> modelProjectFiles =retrieveProjectSystemModelVersion(
+							olderVersion, version, newerVersion, project, workspaceProjectScope, systemModel);
+					modelFiles.addAll(modelProjectFiles);
+					time = stopTime("Discover System Model Project (Name: " + project.getName() + ", Model Files: "
+							+ ((olderVersion == null) ? "*" : modelProjectFiles.size()) + "): ", time);
 				}
 			} catch (Throwable e) {
 				e.printStackTrace();
@@ -233,12 +282,11 @@ public class SystemModelRetrieval {
 				}
 			}
 		}
-
-		// Store system model in data set:
-		storeSystemModel(systemModel);
+		
+		return modelFiles;
 	}
 
-	private void retrieveProjectSystemModelVersion(
+	private List<Path> retrieveProjectSystemModelVersion(
 			Version olderVersion, 
 			Version version, 
 			Version newerVersion, 
@@ -263,7 +311,7 @@ public class SystemModelRetrieval {
 		List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
 
 		// Discover the system model of the project version:
-		transformation.discover(
+		return transformation.discover(
 				workspaceProject, 
 				project.getFolder(), 
 				workspaceProjectScope, 
@@ -287,17 +335,6 @@ public class SystemModelRetrieval {
 		}
 	}
 	
-	private void storeSystemModel(SystemModel systemModel) {
-		waitForCommit(); // synchronize
-		
-		// Save model:
-		try {
-			systemModel.eResource().save(Collections.emptyMap());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public void saveDataSet() {
 		waitForCommit(); // synchronize
 		
@@ -312,6 +349,7 @@ public class SystemModelRetrieval {
 	}
 	
 	private long stopTime(String text, long time) {
+		System.out.println(text + (System.currentTimeMillis() - time) + "ms"); // TODO
 		if (Activator.getLogger().isLoggable(LoggerUtil.PERFORMANCE)) {
 			Activator.getLogger().log(LoggerUtil.PERFORMANCE,  text + (System.currentTimeMillis() - time) + "ms");
 		}
