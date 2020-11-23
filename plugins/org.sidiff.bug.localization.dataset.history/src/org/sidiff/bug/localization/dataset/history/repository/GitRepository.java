@@ -202,25 +202,37 @@ public class GitRepository implements Repository {
 	private boolean checkout(String identification) {
 		try (Git git = openGitRepository()) {
 			
-			// Unlock repository (if necessary):
-			unlock();
-			
-			// Reset file changes (to HEAD):
-			git.reset().setMode(ResetType.HARD).call();
-			
-			// Clean up current branch (if necessary):
-			git.clean().setCleanDirectories(true).call();
-			
-			// Switch to requested branch (if necessary):
-			// FIXME: trace branch in data set - e.g. commit ID for detached head
-//			git.checkout().setCreateBranch(false).setName(history.getIdentification())
-//					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
-
 			// Check out specific version:
-			git.checkout().setName(identification).call();
+			try {
+				// Unlock repository (if necessary):
+				unlock();
+				
+				// Reset file changes (to HEAD):
+				git.reset().setMode(ResetType.HARD).call();
+
+				// Clean up current branch (if necessary):
+				git.clean().setCleanDirectories(true).call();
+
+				// Switch to requested branch (if necessary):
+				// FIXME: trace branch in data set - e.g. commit ID for detached head
+				// git.checkout().setCreateBranch(false).setName(history.getIdentification())
+				// .setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
+		
+				git.checkout().setName(identification).call();
+			} catch (Throwable e) {
+				
+				// Fallback - checkout with hard reset to version:
+				git.reset().setRef(identification).call();
+				git.reset().setRef(identification).setMode(ResetType.HARD).call();
+				git.checkout().setName(identification).call();
+			}
 			
 			// Clean up current version (if necessary):
-			git.clean().setCleanDirectories(true).call();
+			try {
+				git.clean().setCleanDirectories(true).call();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 			
 			if (identification.equals(getCurrentVersionID(git))) {
 				return true;

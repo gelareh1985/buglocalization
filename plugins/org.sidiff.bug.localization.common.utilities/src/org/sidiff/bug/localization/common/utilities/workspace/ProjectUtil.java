@@ -45,7 +45,7 @@ public class ProjectUtil {
 		return false;
 	}
 	
-	public static boolean isJavaProject(IProject project) throws CoreException {
+	public static boolean isJavaProject(IProject project) {
 		try {
 			if (project.isOpen()) {
 				return project.hasNature(JavaCore.NATURE_ID);

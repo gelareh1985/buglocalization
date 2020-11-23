@@ -4,6 +4,11 @@ Bundle-Name: Data Set Acquisition
 Bundle-SymbolicName: org.sidiff.bug.localization.dataset;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.sidiff.bug.localization.dataset.Activator
+Export-Package: org.sidiff.bug.localization.dataset,
+ org.sidiff.bug.localization.dataset.configuration,
+ org.sidiff.bug.localization.dataset.model,
+ org.sidiff.bug.localization.dataset.retrieval,
+ org.sidiff.bug.localization.dataset.retrieval.storage
 Require-Bundle: org.eclipse.core.runtime,
  org.sidiff.bug.localization.common.utilities,
  org.sidiff.bug.localization.dataset.history,
@@ -22,11 +27,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.compare,
  org.sidiff.bug.localization.model2adjlist,
  org.sidiff.bug.localization.dataset.graph
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
-Export-Package: org.sidiff.bug.localization.dataset,
- org.sidiff.bug.localization.dataset.configuration,
- org.sidiff.bug.localization.dataset.model,
- org.sidiff.bug.localization.dataset.retrieval,
- org.sidiff.bug.localization.dataset.retrieval.storage

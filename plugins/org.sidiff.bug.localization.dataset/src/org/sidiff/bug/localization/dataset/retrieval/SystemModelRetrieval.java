@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -16,14 +17,10 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
-import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
@@ -31,14 +28,16 @@ import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
+import org.sidiff.bug.localization.dataset.retrieval.util.WorkspaceUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
-import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2JavaSystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
+import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
 
 public class SystemModelRetrieval {
 	
@@ -54,7 +53,14 @@ public class SystemModelRetrieval {
 	
 	private SystemModelRetrievalProvider systemModelProvider;
 	
-	private JavaProject2JavaSystemModel transformation;
+	private JavaProject2SystemModel transformation;
+	
+	/**
+	 * Optimization flag - false -> incremental commit and workspace refresh
+	 */
+	private boolean newProjectAdded = true;
+	
+	private Set<String> transformedProjects = new HashSet<>();
 	
 	// Threads:
 	
@@ -69,6 +75,8 @@ public class SystemModelRetrieval {
 		this.systemModelProvider = systemModelProvider;
 		this.dataset = dataset;
 		this.datasetPath = datasetPath;
+		
+		this.newProjectAdded = true; 
 	}
 	
 	public void retrieve() throws IOException {
@@ -80,7 +88,9 @@ public class SystemModelRetrieval {
 		List<Version> versions = history.getVersions();
 		
 		if (resume != -1) {
-			versions = versions.subList(0, versions.size() - resume);
+			versions = versions.subList(0, resume);
+			removeMissingProjects(versions.get(resume), versions.get(resume - 1));
+			this.newProjectAdded = true; 
 		}
 		
 		// Storage:
@@ -94,8 +104,9 @@ public class SystemModelRetrieval {
 			SystemModel systemModel = systemModelRepository.getSystemModel();
 			dataset.setSystemModel(systemModelRepository.getSystemModelFile());
 			
-			this.transformation = new JavaProject2JavaSystemModel(
+			this.transformation = new JavaProject2SystemModel(
 					systemModelRepository.getRepositoryPath(), 
+					dataset.getName(),
 					systemModelProvider.isIncludeMethodBodies(), 
 					systemModel);
 			
@@ -110,8 +121,8 @@ public class SystemModelRetrieval {
 
 				long time = System.currentTimeMillis();
 				
-				Workspace workspace = retrieveWorkspaceVersion(history, olderVersion, version);
-				refreshWorkspace(olderVersion, version, workspace);
+				Workspace workspace = retrieveWorkspaceVersion(history, version);
+				WorkspaceUtil.refreshWorkspace(version, workspace, newProjectAdded);
 				
 				// Clean up older version:
 				clearSystemModelChanges(systemModel); // of last version
@@ -128,8 +139,9 @@ public class SystemModelRetrieval {
 				time = stopTime("Discover System Model Workspace: ", time);
 				
 				// Commit new revision none blocking
-				if (olderVersion == null) { // initial version?
+				if (newProjectAdded) {
 					commit(olderVersion, version, null); 
+					this.newProjectAdded = false;
 				} else {
 					modifiedModelResources.addAll(removedModelResources);
 					commit(olderVersion, version, modifiedModelResources);
@@ -184,7 +196,7 @@ public class SystemModelRetrieval {
 		}
 	}
 
-	private Workspace retrieveWorkspaceVersion(History history, Version oldVersion, Version version) {
+	private Workspace retrieveWorkspaceVersion(History history, Version version) {
 		
 		// Load newer version:
 		boolean versionCheckeout = codeRepository.checkout(history, version);
@@ -209,40 +221,6 @@ public class SystemModelRetrieval {
 		return loadedWorkspace;
 	}
 	
-	private void refreshWorkspace(Version olderVersion, Version version, Workspace workspace) {
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		
-		// Make checked out resource changes visible:
-		if (olderVersion == null) { // initial version?
-			for (Project project : workspace.getProjects()) {
-				try {
-					workspaceRoot.getProject(project.getName()).refreshLocal(IResource.DEPTH_INFINITE, null);
-				} catch (CoreException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			for (Project project : workspace.getProjects()) {
-				for (FileChange fileChange : version.getFileChanges()) {
-					if (fileChange.getType().equals(FileChangeType.ADD) || fileChange.getType().equals(FileChangeType.DELETE)) {
-						if (fileChange.getLocation().startsWith(project.getFolder())) {
-							try {
-								IProject workspaceProject = workspaceRoot.getProject(project.getName());
-								Path fileToBeRefreshed = project.getFolder().relativize(fileChange.getLocation());
-								
-								if ((workspaceProject != null) && (fileToBeRefreshed != null)) {
-									workspaceProject.getFile(fileToBeRefreshed.toString()).refreshLocal(IResource.DEPTH_ZERO, null);
-								}
-							} catch (CoreException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	private List<Path> retrieveWorkspaceSystemModelVersion(
 			Version olderVersion, 
 			Version version, 
@@ -304,21 +282,35 @@ public class SystemModelRetrieval {
 		
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
 
-		// Calculate changed files in project:
-		// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-		// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-		List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
-		List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
-
-		// Discover the system model of the project version:
-		return transformation.discover(
-				workspaceProject, 
-				project.getFolder(), 
-				workspaceProjectScope, 
-				systemModel, 
-				projectFileChanges,
-				projectBugLocations,
-				olderVersion == null);
+		if ((workspaceProject != null) && ProjectUtil.isJavaProject(workspaceProject)) {
+			
+			// Calculate changed files in project:
+			// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+			// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+			List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
+			List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
+			
+			// Discover the system model of the project version:
+			boolean initialVersion = !transformedProjects.contains(project.getFolder().toString());
+			
+			List<Path> resultFiles = transformation.discover(
+					workspaceProject, 
+					project.getFolder(), 
+					workspaceProjectScope, 
+					systemModel, 
+					projectFileChanges,
+					projectBugLocations,
+					initialVersion);
+			
+			if (initialVersion) {
+				transformedProjects.add(project.getFolder().toString());
+				this.newProjectAdded = true;
+			}
+			
+			return resultFiles;
+		}
+		
+		return Collections.emptyList();
 	}
 
 	private List<Path> removeMissingProjects(Version olderVersion, Version currentVersion) {
@@ -331,6 +323,7 @@ public class SystemModelRetrieval {
 			for (Project oldProject : olderWorkspace.getProjects()) {
 				if (!currentWorkspace.containsProject(oldProject)) {
 					removed.addAll(transformation.removeProject(oldProject.getName()));
+					transformedProjects.remove(oldProject.getFolder().toString());
 				}
 			}
 		}

@@ -44,7 +44,7 @@ import org.sidiff.reverseengineering.java.util.CodeLinesToModelTrace;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class JavaProject2JavaSystemModel {
+public class JavaProject2SystemModel {
 	
 	private Path modelRepository;
 	
@@ -62,7 +62,7 @@ public class JavaProject2JavaSystemModel {
 	
 	private Set<Resource> modelResources;
 	
-	public JavaProject2JavaSystemModel(Path modelRepository, boolean includeMethodBodies, SystemModel systemModel) {
+	public JavaProject2SystemModel(Path modelRepository, String name, boolean includeMethodBodies, SystemModel systemModel) {
 		this.modelRepository = modelRepository;
 		
 		// Remember created/modified resources:
@@ -75,6 +75,7 @@ public class JavaProject2JavaSystemModel {
 		this.settings.setBaseURI(URI.createFileURI(modelRepository.toString()));
 		this.settings.setIncludeMethodBodies(includeMethodBodies);
 		this.settings.setModelFileExtension(TransformationDomainUML.getModelFileExtension());
+		this.settings.setName(name);
 		
 		// Add to UML model to system model:
 		this.systemModel = systemModel;
@@ -131,6 +132,8 @@ public class JavaProject2JavaSystemModel {
 	}
 
 	public void saveModel() {
+		this.umlClassDiagramView.setModel(settings.getWorkspaceModel().getContents().get(0));
+		
 		transformation.saveWorkspaceModel();
 		transformation.saveLibraryModel();
 		systemModel.save();
