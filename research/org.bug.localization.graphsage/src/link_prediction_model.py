@@ -1,57 +1,111 @@
 '''
-Created on Nov 10, 2020
+Created on Nov 14, 2020
 
 @author: Gelareh_mp
 '''
-
-#import stellargraph as sg
+import stellargraph as sg
+from stellargraph import datasets
 from stellargraph import StellarGraph
+from stellargraph.data import EdgeSplitter
+from stellargraph.mapper import GraphSAGELinkGenerator
+from stellargraph.layer import GraphSAGE, HinSAGE, link_classification
+from IPython.display import display, HTML
+
+from tensorflow import keras
+from sklearn import preprocessing, feature_extraction, model_selection
+
 from stellargraph import IndexedArray
 
 import numpy as np
 import pandas as pd
 
-def load_table(filepath):
-    data_column1=[]
-    data_column2=[]
-    list=[]
-    with open(filepath) as f:
-        for j,line in enumerate(f):
-                info = line.strip().split('\t')
-                #info=[info[0],info[1]]
-                data_column1.append(str(info[0]))
-                data_column2.append(str(info[1]))
-                info2=[info[0],info[1]]
-                list.append(info2)
-    return  data_column1,data_column2, list
+dataset = datasets.Cora()
+display(HTML(dataset.description))
+dataset.download()
 
-##################################################################
-filepath='data.edgelist'
+G, _ = dataset.load(subject_as_feature=True)
 
-data_column1,data_column2,list=load_table(filepath)
+print(G.info())
 
-pair1=np.array(len(data_column1),dtype=object)
-pair2=np.array(len(data_column2),dtype=object)
+# Define an edge splitter on the original graph G:
+edge_splitter_test = EdgeSplitter(G)
 
-pair1=np.unique(data_column1)
-pair2=np.unique(data_column1)
+# Randomly sample a fraction p=0.1 of all positive links, and same number of negative links, from G, and obtain the
+# reduced graph G_test with the sampled links removed:
+G_test, edge_ids_test, edge_labels_test = edge_splitter_test.train_test_split(
+    p=0.1, method="global", keep_connected=True
+)
 
-print('length of pair 1: '+str(len(pair1)))
-print('length of pair 2: '+str(len(pair2)))
-print('pair 1: ',pair1)          
-print('pair 2: ',pair2)
+# Define an edge splitter on the reduced graph G_test:
+edge_splitter_train = EdgeSplitter(G_test)
 
-          
-feature_array= np.random.rand(len(pair1), 2)
-          
-ind_arr1=IndexedArray(feature_array,index= pair1) 
-ind_arr2=IndexedArray(index= pair2) 
-          
-square_numeric_edges = pd.DataFrame(
-    {"source": pair1, "target": pair2}
-) 
-     
-square_numeric = StellarGraph(ind_arr1, square_numeric_edges)
-print(square_numeric.info())
+# Randomly sample a fraction p=0.1 of all positive links, and same number of negative links, from G_test, and obtain the
+# reduced graph G_train with the sampled links removed:
+G_train, edge_ids_train, edge_labels_train = edge_splitter_train.train_test_split(
+    p=0.1, method="global", keep_connected=True
+)
+
+print(G_train.info())
+print(G_test.info())
+
+batch_size = 20
+epochs = 20
+num_samples = [20, 10]
 
 
+train_gen = GraphSAGELinkGenerator(G_train, batch_size, num_samples)
+train_flow = train_gen.flow(edge_ids_train, edge_labels_train, shuffle=True)
+
+test_gen = GraphSAGELinkGenerator(G_test, batch_size, num_samples)
+test_flow = test_gen.flow(edge_ids_test, edge_labels_test)
+
+layer_sizes = [20, 20]
+graphsage = GraphSAGE(
+    layer_sizes=layer_sizes, generator=train_gen, bias=True, dropout=0.3
+)
+
+
+# Build the model and expose input and output sockets of graphsage model
+# for link prediction
+x_inp, x_out = graphsage.in_out_tensors()
+
+prediction = link_classification(
+    output_dim=1, output_act="relu", edge_embedding_method="ip"
+)(x_out)
+
+
+model = keras.Model(inputs=x_inp, outputs=prediction)
+
+model.compile(
+    optimizer=keras.optimizers.Adam(lr=1e-3),
+    loss=keras.losses.binary_crossentropy,
+    metrics=["acc"],
+)
+
+
+init_train_metrics = model.evaluate(train_flow)
+init_test_metrics = model.evaluate(test_flow)
+
+print("\nTrain Set Metrics of the initial (untrained) model:")
+for name, val in zip(model.metrics_names, init_train_metrics):
+    print("\t{}: {:0.4f}".format(name, val))
+
+print("\nTest Set Metrics of the initial (untrained) model:")
+for name, val in zip(model.metrics_names, init_test_metrics):
+    print("\t{}: {:0.4f}".format(name, val))
+    
+history = model.fit(train_flow, epochs=epochs, validation_data=test_flow, verbose=2)
+sg.utils.plot_history(history)
+
+train_metrics = model.evaluate(train_flow)
+test_metrics = model.evaluate(test_flow)
+
+print("\nTrain Set Metrics of the trained model:")
+for name, val in zip(model.metrics_names, train_metrics):
+    print("\t{}: {:0.4f}".format(name, val))
+
+print("\nTest Set Metrics of the trained model:")
+for name, val in zip(model.metrics_names, test_metrics):
+    print("\t{}: {:0.4f}".format(name, val))
+    
+        
