@@ -9,14 +9,16 @@ from tensorflow import keras
 
 
 dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset\buglocations_5000/"
-feature_size = 6
 
-def load_dataset(dataset_path, feature_size, log=False):
+
+def load_dataset(dataset_path, log=False):
 
     # Collect all graphs from the given folder:
     dataset_nodes = []
     dataset_edges = []
     dataset_bug_locations = []
+    
+    feature_size = None
     
     for filename in os.listdir(dataset_path):
         if filename.endswith(".featurenodelist"):
@@ -24,6 +26,9 @@ def load_dataset(dataset_path, feature_size, log=False):
             node_list_path = dataset_path + graph_filename + ".featurenodelist"
             edge_list_path = dataset_path + graph_filename + ".edgelist"
             graph_number = graph_filename[0:graph_filename.find("_")]
+    
+            if (feature_size == None):
+                feature_size = get_feature_size(node_list_path)
     
             # nodes:
             nodes_data = load_nodes(node_list_path, feature_size, graph_number)
@@ -45,6 +50,10 @@ def load_dataset(dataset_path, feature_size, log=False):
             
     return dataset_nodes, dataset_edges, dataset_bug_locations
 
+# Assumes Tables: index, n-feature, tag
+
+def get_feature_size(node_list_path):
+    return len(pd.read_table(node_list_path).columns) - 2
 
 def load_nodes(node_list_path, feature_size, graph_number):
     
@@ -128,7 +137,7 @@ def unpack(packed_list):
 ###################################################################################################
 
 # Collect all graphs from the given folder:
-dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(dataset_path, feature_size, log=True)
+dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(dataset_path, log=True)
 
 # Positive training set:
 nodes_train = pd.concat(dataset_nodes[1::2]) # split 50% odd
