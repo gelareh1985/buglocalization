@@ -7,12 +7,11 @@ from stellargraph.layer import GraphSAGE, link_classification
 from stellargraph.mapper import GraphSAGELinkGenerator
 from tensorflow import keras
 
-dictionary = {"parameter" : 0, "shadowing" : 1, "nested" : 2}  # dummy
 
-dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset/" 
+dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset\buglocations_5000/"
+feature_size = 6
 
-
-def load_dataset(dataset_path, dictionary, log=False):
+def load_dataset(dataset_path, feature_size, log=False):
 
     # Collect all graphs from the given folder:
     dataset_nodes = []
@@ -20,16 +19,15 @@ def load_dataset(dataset_path, dictionary, log=False):
     dataset_bug_locations = []
     
     for filename in os.listdir(dataset_path):
-        if filename.endswith(".nodelist"):
+        if filename.endswith(".featurenodelist"):
             graph_filename = filename[:filename.rfind(".")]
-            node_list_path = dataset_path + graph_filename + ".nodelist"
+            node_list_path = dataset_path + graph_filename + ".featurenodelist"
             edge_list_path = dataset_path + graph_filename + ".edgelist"
             graph_number = graph_filename[0:graph_filename.find("_")]
     
             # nodes:
-            nodes_data = load_nodes(node_list_path, graph_number)
-            nodes_features = node_to_vector(nodes_data, dictionary)
-            dataset_nodes.append(nodes_features)
+            nodes_data = load_nodes(node_list_path, feature_size, graph_number)
+            dataset_nodes.append(nodes_data)
             
             # edges:
             edge_data = load_edges(edge_list_path, graph_number)
@@ -48,37 +46,26 @@ def load_dataset(dataset_path, dictionary, log=False):
     return dataset_nodes, dataset_edges, dataset_bug_locations
 
 
-def load_nodes(node_list_path, graph_number):
-    node_list_col_names = ["index", "text", "type", "tag"]
-    node_data = pd.read_table(node_list_path, names=node_list_col_names, index_col="index")
+def load_nodes(node_list_path, feature_size, graph_number):
+    
+    # Column names:
+    node_data_columns = []
+    node_data_columns.append("index")
+    
+    for feature_num in range(0, feature_size):
+        node_data_columns.append("feature" + str(feature_num))
+    
+    node_data_columns.append("tag")
+    
+    # Load data:
+    node_data = pd.read_table(node_list_path, names=node_data_columns)
+    
+    # Create index:
+    node_data.set_index("index", inplace=True)
     node_data = node_data.rename(index=lambda index: add_prefix(graph_number, index))
     node_data = node_data.fillna("")
+    
     return node_data
-
-
-def node_to_vector(node_data, dictionary):
-    node_feature_data = pd.DataFrame(index=node_data.index, columns=dictionary)
-    
-    # Initialize with 0:
-    for column in node_feature_data.columns:
-        node_feature_data[column].values[:] = 0
-    
-    # Encode words:
-    for index, row in node_data.iterrows():
-        feature_row = node_feature_data.loc[index]
-        
-        text = row["text"]
-        words = text_to_words(text)
-        
-        for word in words:
-            if word in dictionary:
-                feature_row[dictionary[word]] = 1
-            
-    return node_feature_data
-
-
-def text_to_words(text):
-    return text.split(" ")
 
 
 def load_edges(edge_list_path, graph_number):
@@ -101,20 +88,18 @@ def extract_bug_locations(node_data):
     bug_report_node = None
     
     for node_index, node_row in node_data.iterrows():
-        type_name = node_row["type"]
         tag = node_row["tag"]
         
-        if (type_name == "BugReportNode"):
+        if (tag == "# REPORT"):
             bug_report_node = node_index
-        elif (type_name == "BugReportCommentNode"):
-            pass
         elif (tag == "# LOCATION"):
             bug_location_node = node_index
             bug_locations.append([bug_report_node, bug_location_node])
-        else:
-            # Assuming that the data set starts with the bug report and its locations.
-            break  # optimization
-        
+    
+    if (bug_report_node is None):
+        raise Exception("Error: Bug report node not found!")
+    
+    node_data.drop("tag", inplace=True, axis=1)
     return bug_locations
 
 
@@ -143,7 +128,7 @@ def unpack(packed_list):
 ###################################################################################################
 
 # Collect all graphs from the given folder:
-dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(dataset_path, dictionary, log=True)
+dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(dataset_path, feature_size, log=True)
 
 # Positive training set:
 nodes_train = pd.concat(dataset_nodes[1::2]) # split 50% odd
