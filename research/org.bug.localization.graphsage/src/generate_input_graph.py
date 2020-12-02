@@ -3,19 +3,11 @@ Created on Nov 10, 2020
 
 @author: Gelareh_mp
 '''
-import stellargraph as sg
 from stellargraph import StellarGraph
 from stellargraph import IndexedArray
 
-from stellargraph.data import EdgeSplitter
-from stellargraph.mapper import GraphSAGELinkGenerator
-from stellargraph.layer import GraphSAGE, HinSAGE, link_classification
+from src.generate_dataset import MDEdataset
 
-from tensorflow import keras
-from sklearn import preprocessing, feature_extraction, model_selection
-#from IPython.display import display, HTML
-
-from generate_dataset import MDEdataset
 import os
 import numpy as np
 import pandas as pd
@@ -39,13 +31,13 @@ output_filepath1=nodelist_output_folder
 fname=""
 all_files_table=[]
 for filename in os.listdir(p3):
-   filepath=os.path.join(p3,filename)
-   number_of_files=len(os.listdir(p3))
-   if filename.endswith(".nodelist"):
-       data_instance=MDEdataset(filepath,stop_words,output_filepath1,number_of_files,fname)
-       table=data_instance.load_table()
-       print('length of all files table: ', len(table))
-       all_files_table.append(table)
+    filepath=os.path.join(p3,filename)
+    number_of_files=len(os.listdir(p3))
+    if filename.endswith(".nodelist"):
+        data_instance=MDEdataset(filepath,stop_words,output_filepath1,number_of_files,fname)
+        table=data_instance.load_table()
+        print('length of all files table: ', len(table))
+        all_files_table.append(table)
        
 data_instance.number_of_files=number_of_files
 
@@ -74,52 +66,50 @@ list_of_list_columns=[]
 
 for filename in os.listdir(p4):
     
-   filepath=os.path.join(p4,filename)
-   number_of_files=1 
-   
-   
-   
-   if filename.endswith(".nodelist"):
-       
-       data_instance2=MDEdataset(filepath,stop_words,output_filepath2,number_of_files,fname)
-       
-       table=data_instance2.load_table()
-      
-       data_instance2.number_of_files=number_of_files
-       node_ids=data_instance2.generate_list_of_data(table,0,data_instance2.number_of_files) 
-       nodes=data_instance2.generate_list_of_data(table,1,data_instance2.number_of_files)
-          
-       meta_types=data_instance2.generate_list_of_data(table,2,data_instance2.number_of_files)    
-       
-       list_of_node_ids.append(node_ids)
-       list_of_nodes.append(nodes)
-       list_of_meta_types.append(meta_types)
-       
-      
-       bug_report_vector=np.zeros(len(nodelist_dictionary_of_all_words))
-       data_instance2.generate_one_hot_vector(table,0,1,1,nodelist_dictionary_of_all_words,bug_report_vector)
-       
-       list_of_bug_vectors.append(bug_report_vector)
-       
-       model_vectors=[]
-       found_words=[]
-       for k in range(len(table)):
-           model_vector=np.zeros(len(nodelist_dictionary_of_all_words))
-           data_instance2.generate_one_hot_vector(table,k+1,k+2,1,nodelist_dictionary_of_all_words,model_vector) 
-           model_vectors.append(model_vector)
-       list_of_model_vectors.append(model_vectors) 
-       
-       
-   elif filename.endswith(".edgelist"):
-       data_instance3=MDEdataset(filepath,stop_words,output_filepath2,number_of_files,fname)
-       data_column1,data_column2=data_instance3.load_edge_table()
-       
-       #print('length of dcol1: ',len(data_column1), 'length of dcol2: ', len(data_column2))
-#        list_of_list_column1.append(data_column1)   
-#        list_of_list_column2.append(data_column2)    
-       list_of_list_columns.append([data_column1,data_column2])     
-   i=i+1    
-   
+        filepath=os.path.join(p4,filename)
+        number_of_files=1 
+        
+        if filename.endswith(".nodelist"):
+            
+            data_instance2=MDEdataset(filepath,stop_words,output_filepath2,number_of_files,fname)
+            
+            table=data_instance2.load_table()
+           
+            data_instance2.number_of_files=number_of_files
+            node_ids=data_instance2.generate_list_of_data(table,0,data_instance2.number_of_files) 
+            nodes=data_instance2.generate_list_of_data(table,1,data_instance2.number_of_files)
+               
+            meta_types=data_instance2.generate_list_of_data(table,2,data_instance2.number_of_files)    
+            
+            list_of_node_ids.append(node_ids)
+            list_of_nodes.append(nodes)
+            list_of_meta_types.append(meta_types)
+            
+           
+            bug_report_vector=np.zeros(len(nodelist_dictionary_of_all_words))
+            data_instance2.generate_one_hot_vector(table,0,1,1,nodelist_dictionary_of_all_words,bug_report_vector)
+            
+            list_of_bug_vectors.append(bug_report_vector)
+            
+            model_vectors=[]
+            found_words=[]
+            for k in range(len(table)):
+                model_vector=np.zeros(len(nodelist_dictionary_of_all_words))
+                data_instance2.generate_one_hot_vector(table,k+1,k+2,1,nodelist_dictionary_of_all_words,model_vector) 
+                model_vectors.append(model_vector)
+            list_of_model_vectors.append(model_vectors) 
+            
+            
+        elif filename.endswith(".edgelist"):
+            data_instance3=MDEdataset(filepath,stop_words,output_filepath2,number_of_files,fname)
+            data_column1,data_column2=data_instance3.load_edge_table()
+            
+            #print('length of dcol1: ',len(data_column1), 'length of dcol2: ', len(data_column2))
+        #        list_of_list_column1.append(data_column1)   
+        #        list_of_list_column2.append(data_column2)    
+            list_of_list_columns.append([data_column1,data_column2])     
+        i=i+1    
+
 ############################################################################################################
 list_of_dataframes=[]
 for edge in list_of_list_columns:
@@ -130,34 +120,33 @@ for edge in list_of_list_columns:
 
 
 node_ids_features_array_list=[]
-list_of_graphs=[]
 for i in range(len(list_of_node_ids)):
      
-     node_id_array=np.array([list_of_node_ids[i]],dtype=np.object)
-     #print('model array dimensions: ',node_ids_features_array)
-     
-     for dim in range(len(list_of_model_vectors[i])):
-         #print('dim: ',dim)
-         node_ids_features_array=np.array(list_of_model_vectors[i][dim],dtype=np.object)
-         node_ids_features_array_list.append(node_ids_features_array)
-     
-     modelnode_feats=np.array([node_ids_features_array_list[i]],dtype=np.object)
-     #print('model array info:    ',modelnode_feats.shape,'    ',node_id_array.shape)  
-     
-     model_node_array=IndexedArray(modelnode_feats,index=node_id_array) 
-              
-     bug_node=np.array([["1"]],dtype=np.object)
-     bug_node_features_array=np.array([list_of_bug_vectors[i]],dtype=np.object)
-     print('bug array info:    ',bug_node_features_array.shape,'    ', bug_node.shape) 
-     bug_node_array=IndexedArray(bug_node_features_array,index=bug_node) 
-     
-     print('*******************************************************************************')
-     
-     Gs1 = StellarGraph({"model nodes":model_node_array})
-     Gs2 = StellarGraph({"bug nodes":bug_node_array})
-     print(Gs1.info())
-#      print('--------------------------------------------------')
-     print(Gs2.info())
+        node_id_array=np.array([list_of_node_ids[i]],dtype=np.object)
+        #print('model array dimensions: ',node_ids_features_array)
+        
+        for dim in range(len(list_of_model_vectors[i])):
+            #print('dim: ',dim)
+            node_ids_features_array=np.array(list_of_model_vectors[i][dim],dtype=np.object)
+            node_ids_features_array_list.append(node_ids_features_array)
+        
+        modelnode_feats=np.array([node_ids_features_array_list[i]],dtype=np.object)
+        #print('model array info:    ',modelnode_feats.shape,'    ',node_id_array.shape)  
+        
+        model_node_array=IndexedArray(modelnode_feats,index=node_id_array) 
+                 
+        bug_node=np.array([["1"]],dtype=np.object)
+        bug_node_features_array=np.array([list_of_bug_vectors[i]],dtype=np.object)
+        print('bug array info:    ',bug_node_features_array.shape,'    ', bug_node.shape) 
+        bug_node_array=IndexedArray(bug_node_features_array,index=bug_node) 
+        
+        print('*******************************************************************************')
+        
+        Gs1 = StellarGraph({"model nodes":model_node_array})
+        Gs2 = StellarGraph({"bug nodes":bug_node_array})
+        print(Gs1.info())
+        #      print('--------------------------------------------------')
+        print(Gs2.info())
 #      #print('new dims info:    ','    (',len(list_of_node_ids),',',len(list_of_node_ids[0]),')', '    (',len(list_of_model_vectors),',',len(list_of_model_vectors[0]),')') 
      
 #      Gs3 = StellarGraph({"model new nodes":model_node_array_new}) 
@@ -172,29 +161,5 @@ for i in range(len(list_of_node_ids)):
 #      print('model array info:    ',modelnode_feats.shape,'    ',node_id_array.shape, '    ',edges.shape,'\n')  
 #      Gs4=StellarGraph({"model nodes":model_node_array_new})
 #      print(Gs4.info(),'\n')
-     list_of_graphs.append(Gs1)
-     
 ############################################################################################################
-G=list_of_graphs[0]
-
-# Define an edge splitter on the original graph G:
-edge_splitter_test = EdgeSplitter(G)
-
-# Randomly sample a fraction p=0.1 of all positive links, and same number of negative links, from G, and obtain the
-# reduced graph G_test with the sampled links removed:
-G_test, edge_ids_test, edge_labels_test = edge_splitter_test.train_test_split(
-    p=0.1, method="global", keep_connected=True
-)
-
-# Define an edge splitter on the reduced graph G_test:
-edge_splitter_train = EdgeSplitter(G_test)
-
-# Randomly sample a fraction p=0.1 of all positive links, and same number of negative links, from G_test, and obtain the
-# reduced graph G_train with the sampled links removed:
-G_train, edge_ids_train, edge_labels_train = edge_splitter_train.train_test_split(
-    p=0.1, method="global", keep_connected=True
-)
-
-print(G_train.info())
-print(G_test.info())
 

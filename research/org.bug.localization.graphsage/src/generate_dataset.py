@@ -10,7 +10,7 @@ from nltk.corpus import stopwords
 import re
 
 print("Hello World!")
-#---------------------------------------------------------------
+
 class MDEdataset():
     def __init__(self,filepath,stop_words,output_filepath,number_of_files,file_name):
         super(MDEdataset, self).__init__()
@@ -21,22 +21,22 @@ class MDEdataset():
         self.number_of_files=number_of_files
         self.file_name=file_name
      
-    def output_filepath(self):
+    def get_output_filepath(self):
         return self.output_filepath
 
-    def output_filepath(self, value):
+    def set_output_filepath(self, value):
         self.output_filepath = value
 
-    def number_of_files(self):
+    def get_number_of_files(self):
         return self.number_of_files
 
-    def number_of_files(self, value):
+    def set_number_of_files(self, value):
         self.number_of_files = value
         
-    def file_name(self):
+    def gte_file_name(self):
         return self.file_name
 
-    def file_name(self, value):
+    def set_file_name(self, value):
         self.file_name = value
      
     def load_edge_table(self):
@@ -45,12 +45,12 @@ class MDEdataset():
         #list=[]
         with open(self.filepath) as f:
             for j,line in enumerate(f):
-                    info = line.strip().split('\t')
-                    #info=[info[0],info[1]]
-                    data_column1.append(str(info[0]))
-                    data_column2.append(str(info[1]))
-                   #info2=[info[0],info[1]]
-                   #list.append(info2)
+                info = line.strip().split('\t')
+                #info=[info[0],info[1]]
+                data_column1.append(str(info[0]))
+                data_column2.append(str(info[1]))
+                #info2=[info[0],info[1]]
+                #list.append(info2)
         return  data_column1,data_column2
 
         
@@ -93,17 +93,17 @@ class MDEdataset():
         return all_word_to_index
     
     def generate_dictinoary_of_words(self,table,column_number,word_to_index,index_to_word):
-           count =len(word_to_index)
-           #print('stop words: ',self.stop_words)
-           for row in table:
-               words=self.get_words(row[column_number])
-               for word in words:
-                   if len(word) > 1 and word not in self.stop_words:
-                       if word_to_index.get(word) == None:
-                           word_to_index.update ( {word : count})
-                           index_to_word.update ( {count : word })
-                           count  += 1
-           return  word_to_index              
+        count =len(word_to_index)
+        #print('stop words: ',self.stop_words)
+        for row in table:
+            words=self.get_words(row[column_number])
+            for word in words:
+                if len(word) > 1 and word not in self.stop_words:
+                    if word_to_index.get(word) == None:
+                        word_to_index.update ( {word : count})
+                        index_to_word.update ( {count : word })
+                        count  += 1
+        return  word_to_index              
                            
     def generate_one_hot_vector(self,table,row_start,row_end,column_number,dictionary,vector):   
         for row_index in range(row_start,row_end):
