@@ -1,6 +1,5 @@
 package org.sidiff.bug.localization.dataset.graph;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +44,10 @@ public class BugLocalizationGraphConstructor {
 			view.getChanges().stream().map(Change::getLocation).forEach(bugLocations::add);
 		}
 		
+		if (bugLocations.contains(null)) {
+			bugLocations.remove(null);
+			System.err.println("Bug Report Contains Null-Location");
+		}
 		return bugLocations;
 	}
 

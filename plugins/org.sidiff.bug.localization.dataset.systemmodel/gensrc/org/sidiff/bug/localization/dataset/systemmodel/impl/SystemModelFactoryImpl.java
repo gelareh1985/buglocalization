@@ -124,7 +124,7 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 * @generated NOT
 	 */
 	@Override
-	public SystemModel createSystemModel(URI uri) {
+	public SystemModel createSystemModel(URI uri, boolean resolveResources) {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		
 		if (!resourceSet.getURIConverter().exists(uri, Collections.emptyMap())) {
@@ -134,7 +134,17 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 			return systemModel;
 		} else {
 			Resource multiViewResource = resourceSet.getResource(uri, true);
-			return (SystemModel) multiViewResource.getContents().get(0);
+			SystemModel systemModel = (SystemModel) multiViewResource.getContents().get(0);
+			
+			if (resolveResources) {
+				for (View view : systemModel.getViews()) {
+					if (view.getModel() != null) {
+						view.getModel().eAllContents().forEachRemaining(e -> {});
+					}
+				}
+			}
+			
+			return systemModel;
 		}
 	}
 	
@@ -144,8 +154,8 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 * @generated NOT
 	 */
 	@Override
-	public SystemModel createSystemModel(Path file) {
-		return createSystemModel(URI.createFileURI(file.toString()));
+	public SystemModel createSystemModel(Path file, boolean resolveResources) {
+		return createSystemModel(URI.createFileURI(file.toString()), resolveResources);
 	}
 
 	/**

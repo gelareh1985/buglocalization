@@ -17,6 +17,10 @@ public class ModelUtil {
 	 * @param distance  the level of parent elements to be collected.
 	 */
 	public static void collectParents(Set<EObject> collected, EObject element, int distance) {
+		if (element == null) {
+			return;
+		}
+		
 		EObject currentElement = element;
 		
 		for (int i = 0; i < distance; i++) {
@@ -38,9 +42,13 @@ public class ModelUtil {
 	 *                  should considered.
 	 */
 	public static void collectOutgoingReferences(Set<EObject> collected, EObject element, int distance, Predicate<EReference> edgeTest) {
+		if (element == null) {
+			return;
+		}
+		
 		collected.add(element);
 		
-		if (distance > 0) {
+		if (distance <= 0) {
 			return;
 		}
 		
@@ -78,7 +86,7 @@ public class ModelUtil {
 		for (int i = 0; i < incomingDistance; i++) {
 			
 			for (EObject modelElement : (Iterable<EObject>) () -> model.eAllContents()) {
-				if (!collected.contains(modelElement)) {
+				if ((modelElement != null) && !collected.contains(modelElement)) {
 					if (ModelUtil.isAdjacent(modelElement, currentModelElements, edgeTest)) {
 						collected.add(modelElement);
 					}

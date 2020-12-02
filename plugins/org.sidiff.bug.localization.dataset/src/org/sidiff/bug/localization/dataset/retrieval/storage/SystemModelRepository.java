@@ -105,7 +105,7 @@ public class SystemModelRepository {
 	}
 	
 	public SystemModel getSystemModel() throws IOException {
-		return SystemModelFactory.eINSTANCE.createSystemModel(getSystemModelPath());
+		return SystemModelFactory.eINSTANCE.createSystemModel(getSystemModelPath(), true);
 	}
 	
 	public boolean resetRepository() {
