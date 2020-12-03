@@ -84,19 +84,19 @@ for filename in os.listdir(p3):
     filepath=os.path.join(p3,filename)
     
     if filename.endswith(".nodelist"):
-       table=load_table(filepath)
-       for line in table:
-       #if(line[0]!=""):
+        table=load_table(filepath)
+        for line in table:
+        #if(line[0]!=""):
             tokenizer=RegexpTokenizer('[A-Za-z]+')
             #print(line)
             st=tokenizer.tokenize(line[0].lower())
             strln=" ".join(st)
             l1=strln+'\t'+line[2]+'\n'
             if(len(line)==6):
-               l2=strln+'\t'+line[2]+'\t'+line[4]+'\n'
-               text1.append(l2)
+                l2=strln+'\t'+line[2]+'\t'+line[4]+'\n'
+                text1.append(l2)
             else: 
-               text1.append(l1)  
+                text1.append(l1)  
                 
 
 #print("length of all text: ",len(text1))
@@ -132,10 +132,10 @@ for filename in os.listdir(p4):
             strln=" ".join(st)
             l1=strln+'\t'+line[2]+'\n'
             if(len(line)==6):
-               l2=strln+'\t'+line[2]+'\t'+line[4]+'\n'
-               text2.append(l2)
+                l2=strln+'\t'+line[2]+'\t'+line[4]+'\n'
+                text2.append(l2)
             else: 
-               text2.append(l1)  
+                text2.append(l1)  
                       
         list2=create_unique_set(text2)
         print('length of file '+str(i)+': '+str(len(list2)))

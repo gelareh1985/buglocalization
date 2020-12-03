@@ -8,7 +8,6 @@ import numpy as np
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 import re
-import collections
 
 print("Hello World!")
 
@@ -60,17 +59,17 @@ def generate_dictinoary_of_all_words(table,stop_words,column_number,word_to_inde
     return word_to_index
 
 def generate_dictinoary_of_words(table,stop_words,column_number,word_to_index,index_to_word):
-       count =len(word_to_index)
-       
-       for row in table:
-           words=get_words(row[column_number])
-           for word in words:
-               if len(word) > 1 and word not in stop_words:
-                   if word_to_index.get(word) == None:
-                       word_to_index.update ( {word : count})
-                       index_to_word.update ( {count : word })
-                       count  += 1
-       return  word_to_index              
+    count =len(word_to_index)
+   
+    for row in table:
+        words=get_words(row[column_number])
+        for word in words:
+            if len(word) > 1 and word not in stop_words:
+                if word_to_index.get(word) == None:
+                    word_to_index.update ( {word : count})
+                    index_to_word.update ( {count : word })
+                    count  += 1
+    return  word_to_index              
                        
 def generate_one_hot_vector(table,row_start,row_end,column_number,dictionary,vector):   
     for row_index in range(row_start,row_end):
@@ -149,34 +148,32 @@ i=0
 j=0 
 list_of_all_data=[]
 for filename in os.listdir(p3):
-   filepath=os.path.join(p3,filename)
-   
-   if filename.endswith(".nodelist"):
-       table=load_table(filepath)
-       nodelist_dictionary_of_words=generate_dictinoary_of_words(table,stop_words,1,word_to_index,index_to_word)  
-       print('length of nodelist dictionary of words: ', len(nodelist_dictionary_of_words))
-
-       nodes=generate_list_of_data(table,1,1)          
-       meta_types=generate_list_of_data(table,2,1)    
+    filepath=os.path.join(p3,filename)
+    
+    if filename.endswith(".nodelist"):
+        table=load_table(filepath)
+        nodelist_dictionary_of_words=generate_dictinoary_of_words(table,stop_words,1,word_to_index,index_to_word)  
+        print('length of nodelist dictionary of words: ', len(nodelist_dictionary_of_words))
+    
+        nodes=generate_list_of_data(table,1,1)          
+        meta_types=generate_list_of_data(table,2,1)    
+        
+        bug_report_vector=np.zeros(len(nodelist_dictionary_of_all_words))
+        model_vector=np.zeros(len(nodelist_dictionary_of_all_words))
+        #model_type_vector=np.zeros(len(nodelist_dictionary_of_words))
+        generate_one_hot_vector(table,0,1,1,nodelist_dictionary_of_all_words,bug_report_vector)
+        generate_one_hot_vector(table,1,len(table),1,nodelist_dictionary_of_all_words,model_vector) 
+        #generate_one_hot_vector(table,1,len(table),1,meta_type_to_index,model_type_vector)
+        print('bug report vector: ', bug_report_vector)
+        print('model vector: ', model_vector)
+        #print('model type vector: ', model_type_vector)
+        encoded_file_name=output_folder+"bug_report_vector_encoded_file_"+str(i)+".txt" 
+        save_data_vector(bug_report_vector,encoded_file_name)
+        encoded_file_name=output_folder+"model_vector_encoded_file_"+str(i)+".txt"   
+        save_data_vector(model_vector,encoded_file_name)
        
-       bug_report_vector=np.zeros(len(nodelist_dictionary_of_all_words))
-       model_vector=np.zeros(len(nodelist_dictionary_of_all_words))
-       #model_type_vector=np.zeros(len(nodelist_dictionary_of_words))
-       generate_one_hot_vector(table,0,1,1,nodelist_dictionary_of_all_words,bug_report_vector)
-       generate_one_hot_vector(table,1,len(table),1,nodelist_dictionary_of_all_words,model_vector) 
-       #generate_one_hot_vector(table,1,len(table),1,meta_type_to_index,model_type_vector)
-       print('bug report vector: ', bug_report_vector)
-       print('model vector: ', model_vector)
-       #print('model type vector: ', model_type_vector)
-       encoded_file_name=output_folder+"bug_report_vector_encoded_file_"+str(i)+".txt" 
-       save_data_vector(bug_report_vector,encoded_file_name)
-       encoded_file_name=output_folder+"model_vector_encoded_file_"+str(i)+".txt"   
-       save_data_vector(model_vector,encoded_file_name)
-       
-       list_of_vectors=[str(j),bug_report_vector,model_vector,nodes,meta_types]
-   list_of_all_data.append(list)
-   i=i+1    
-   j=j+1    
+    list_of_vectors=[str(j),bug_report_vector,model_vector,nodes,meta_types]
+    list_of_all_data.append(list)
+    i=i+1    
+    j=j+1    
   
-   
-       
