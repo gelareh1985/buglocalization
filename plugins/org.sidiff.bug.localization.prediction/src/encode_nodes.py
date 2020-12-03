@@ -5,14 +5,16 @@ Created on Nov 30, 2020
 '''
 import pandas as pd
 import os
-from nltk.tokenize import RegexpTokenizer
-import re
+import text_util
 
-dictionary_words = {"parameter" : 0, "shadowing" : 1, "nested" : 2}  # dummy
+#dictionary_words = {"parameter" : 0, "shadowing" : 1, "nested" : 2}  # dummy
 dictionary_types = {"Operation" : 0, "Class" : 1, "Parameter" : 2}  # dummy
 
+
 #dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset\buglocations_5000\all_files\buglocations/" 
-dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset\buglocations_5000/"
+#dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset\buglocations_5000/"
+dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset/"
+dictionary_path =  "D:\\files_MDEAI_original\\Datasets\\buglocations_dataset\\saved files\\"
 
 def dataset_to_vector(dataset_path, dictionary_words, dictionary_types, log=False):
 
@@ -32,8 +34,7 @@ def dataset_to_vector(dataset_path, dictionary_words, dictionary_types, log=Fals
             
             if log:
                 print("Graph: ", graph_number)
-            
-
+        
 def load_nodes(node_list_path):
     node_list_col_names = ["index", "text", "type", "tag"]
     node_data = pd.read_table(node_list_path, names=node_list_col_names, index_col="index")
@@ -54,7 +55,7 @@ def node_to_vector(node_data, dictionary_words, dictionary_types):
         feature_row = node_feature_data.loc[index]
         
         text = row["text"]
-        words = text_to_words(text)
+        words = text_util.text_to_words(text)
         
         for word in words:
             if word in dictionary_words:
@@ -84,21 +85,31 @@ def node_to_vector(node_data, dictionary_words, dictionary_types):
     return node_feature_data
 
 
-def text_to_words(text):
-    words_array=[]
-    tokenizer=RegexpTokenizer('[A-Za-z]+')
-    words=tokenizer.tokenize(text)
-    for word in words:
-        splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', word)).split()
-        for split_word in splitted:
-            split_word=split_word.lower()
-            words_array.append(split_word)
-    return words_array 
-
 ###################################################################################################
 # Create Training and Test Data:
 ###################################################################################################
 
+dictionary_words=dict()
+
+filename=dictionary_path+"complete_dict.dictionary"
+with open(filename) as f:
+    #contents = f.read()
+    list_dict=[]
+    for i, line in enumerate(f):
+        info = line.strip().split('\t')
+        #print([info[0],info[1]])
+        #list_dict.append([info[0],info[1]])
+        dictionary_words[info[0]]=info[1]
+f.close()
+
+#print("length of dictionary: ", len(list_dict), "\n",list_dict)
+  
+# for i in range(len(list_dict)):
+#     dictionary_words.update ( {list_dict[i][0] : list_dict[i][1] })
+    
+for keys,values in dictionary_words.items():
+    print(str(values)+'\t'+str(keys)+"\n")   
+                 
 # Encode all graphs from the given folder:
 dataset_to_vector(dataset_path, dictionary_words, dictionary_types, log=True)
 
