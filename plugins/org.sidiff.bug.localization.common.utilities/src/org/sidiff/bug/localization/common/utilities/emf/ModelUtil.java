@@ -4,8 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.FeatureMap;
 
 public class ModelUtil {
 
@@ -120,7 +124,7 @@ public class ModelUtil {
 				} else {
 					Object targetElement = modelElement.eGet(reference);
 					
-					if (adjacentElements.contains(targetElement)) {
+					if ((targetElement != null) && adjacentElements.contains(targetElement)) {
 						return true;
 					}
 				}
@@ -128,6 +132,48 @@ public class ModelUtil {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * @param modelElement A model element.
+	 * @return The labeling text; typically the name or a string attribute.
+	 */
+	public static String getLabel(EObject modelElement) {
+		if (modelElement != null) {
+			EStructuralFeature lableFeature = getLabelFeature(modelElement.eClass());
+			Object value = modelElement.eGet(lableFeature);
+			
+			if (value != null) {
+				return value.toString();
+			} else {
+				return "";
+			}
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * @param eClass A model element type.
+	 * @return The labeling feature; typically the name or a string attribute.
+	 */
+	public static EStructuralFeature getLabelFeature(EClass eClass) {
+		EAttribute result = null;
+		
+		for (EAttribute eAttribute : eClass.getEAllAttributes()) {
+			if (!eAttribute.isMany() && eAttribute.getEType().getInstanceClass() != FeatureMap.Entry.class) {
+				if ("name".equalsIgnoreCase(eAttribute.getName())) {
+					result = eAttribute;
+					break;
+				} else if (result == null) {
+					result = eAttribute;
+				} else if (eAttribute.getEAttributeType().getInstanceClass() == String.class
+						&& result.getEAttributeType().getInstanceClass() != String.class) {
+					result = eAttribute;
+				}
+			}
+		}
+		return result;
 	}
 	
 }

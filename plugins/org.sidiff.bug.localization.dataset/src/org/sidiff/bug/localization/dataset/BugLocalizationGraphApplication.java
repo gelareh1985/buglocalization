@@ -36,11 +36,17 @@ public class BugLocalizationGraphApplication implements IApplication {
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-repository";
 	
-	public static final String SETTINGS_START_AFTER_VERSION_ID = "b5c71680b837c51b2aca5cc74bc415c837dde136";
+	public static final String SETTINGS_START_AFTER_VERSION_ID = null; // e.g. "f722ea23e3caf3bc3d51d10558e3e3fea80cbcc5" or null
 	
-	public static final int SETTINGS_START_AFTER_VERSION_NO = 4000;
+	public static final int SETTINGS_START_AFTER_VERSION_NO = 0;
 	
-	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = 5000; // or -1
+	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = 1000; // or -1
+	
+	public static final boolean SETTINGS_FULL_VERSION = false;
+	
+	public static final boolean SETTINGS_POSITIVE_SAMPLES = false;
+	
+	public static final boolean SETTINGS_NEGATIVE_SAMPLES = true;
 	
 	public static final boolean SETTINGS_ADD_BUG_REPORT_COMMENTS = true;
 	
@@ -99,11 +105,21 @@ public class BugLocalizationGraphApplication implements IApplication {
 						Set<EObject> bugLocations = graphConstructor.getBugLocations();
 						++bugFixCounter;
 
-						Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-						save(bugLocalizationGraph, bugLocations, "full", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						if (SETTINGS_FULL_VERSION) {
+							Iterable<EObject> fullBugLocalizationGraph = graphConstructor.createFullBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
+							save(fullBugLocalizationGraph, bugLocations, "full", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						}
 
-						Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-						save(localBugLocalizationGraph, bugLocations, "buglocations", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						if (SETTINGS_POSITIVE_SAMPLES) {
+							Iterable<EObject> positiveSampleBugLocalizationGraph = graphConstructor.createPositiveSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
+							save(positiveSampleBugLocalizationGraph, bugLocations, "buglocations", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						}
+						
+						if (SETTINGS_NEGATIVE_SAMPLES) {
+							Set<EObject> negativeSampleBugLocations = graphConstructor.selectNegativeSamples(bugLocations, 10, 100, 1, 1000);
+							Iterable<EObject> negativeSampleBugLocalizationGraph = graphConstructor.createNegativeSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS, negativeSampleBugLocations);
+							save(negativeSampleBugLocalizationGraph, negativeSampleBugLocations, "negativesamples", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						}
 
 						if ((bugFixCounter > 0) && (bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS)) {
 							return IApplication.EXIT_OK;
