@@ -35,17 +35,37 @@ public interface SystemModelFactory extends EFactory {
 
 	/**
 	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * 
+	 * @param file             The system model file. If the file exists it will be
+	 *                         loaded; otherwise a new resource will be created.
+	 * @param resolveResources <code>true</code> if all contained resources should
+	 *                         be loaded; <code>false</code> if not. This is
+	 *                         important if a system model consist of multiple
+	 *                         models that are stored by cross-resource
+	 *                         containments. For example, change locations might
+	 *                         point into a resource but its parent resource will
+	 *                         not be loaded automatically.
+	 * @return <!-- end-user-doc -->
 	 * @generated NOT
 	 */
-	SystemModel createSystemModel(URI uri);
+	SystemModel createSystemModel(URI uri, boolean resolveResources);
 
 	/**
 	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * 
+	 * @param file             The system model file. If the file exists it will be
+	 *                         loaded; otherwise a new resource will be created.
+	 * @param resolveResources <code>true</code> if all contained resources should
+	 *                         be loaded; <code>false</code> if not. This is
+	 *                         important if a system model consist of multiple
+	 *                         models that are stored by cross-resource
+	 *                         containments. For example, change locations might
+	 *                         point into a resource but its parent resource will
+	 *                         not be loaded automatically.
+	 * @return <!-- end-user-doc -->
 	 * @generated NOT
 	 */
-	SystemModel createSystemModel(Path file);
+	SystemModel createSystemModel(Path file, boolean resolveResources);
 
 	/**
 	 * Returns a new object of class '<em>View</em>'.

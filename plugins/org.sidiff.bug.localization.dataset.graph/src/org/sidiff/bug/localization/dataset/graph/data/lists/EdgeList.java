@@ -31,7 +31,11 @@ public class EdgeList extends TableData {
 	
 	public void addEdges(Iterable<EObject> modelElements, boolean allowParallelEdges) {
 		for (EObject modelElement : modelElements) {
-			addEdges(modelElement, allowParallelEdges);
+			if (modelElement != null) {
+				addEdges(modelElement, allowParallelEdges);
+			} else {
+				System.err.println("Null-Element in Edge-List.");
+			}
 		}
 	}
 

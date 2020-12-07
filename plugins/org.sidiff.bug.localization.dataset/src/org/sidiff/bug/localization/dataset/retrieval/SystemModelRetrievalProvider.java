@@ -1,15 +1,19 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
+import java.nio.file.Path;
+import java.util.function.Supplier;
+
 import org.sidiff.bug.localization.dataset.changes.util.FileChangeFilter;
-import org.sidiff.bug.localization.dataset.retrieval.discoverer.UMLClassSystemModelDiscoverer;
-import org.sidiff.bug.localization.dataset.retrieval.util.SystemModelDiscoverer;
+import org.sidiff.bug.localization.dataset.workspace.filter.JavaProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 
-public class SystemModelRetrievalProvider {
-
+public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvider {
+	
 	/**
-	 * The discovery transformations from the Java model to the system model.
+	 * Filters projects from the source code repository, e.g., test code projects
+	 * and by default searches PDE projects.
 	 */
-	private SystemModelDiscoverer[] systemModelDiscoverer;
+	private Supplier<ProjectFilter> projectFilter;
 	
 	/**
 	 * Files to be tested for changes, whether a model needs to be recalculated.
@@ -21,32 +25,26 @@ public class SystemModelRetrievalProvider {
 	 */
 	private int intermediateSave = -1;
 	
-	public SystemModelRetrievalProvider(
-			SystemModelDiscoverer[] systemModelDiscoverer,
-			FileChangeFilter fileChangeFilter) {
-		this.systemModelDiscoverer = systemModelDiscoverer;
-		this.fileChangeFilter = fileChangeFilter;
-	}
+	/**
+	 * Transform method bodies in system model.
+	 */
+	private boolean includeMethodBodies = false;
 	
-	public SystemModelRetrievalProvider() {
-		SystemModelDiscoverer umlClasses = new UMLClassSystemModelDiscoverer();
-		
-		// FIXME: discover UML Operation Control Flow
-//		SystemModelDiscoverer umlOperationControlFlow = new UMLFlowSystemModelDiscoverer();
-		
-		this.systemModelDiscoverer = new SystemModelDiscoverer[] {umlClasses};
-		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().endsWith(".java");
+	public SystemModelRetrievalProvider(Path codeRepositoryPath) {
+		super(codeRepositoryPath);
+		this.projectFilter =  () -> new JavaProjectFilter(); // new PDEProjectFilter();
+		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().toLowerCase().endsWith(".java");
 		this.intermediateSave = 200;
 	}
 	
-	public void setSystemModelDiscoverer(SystemModelDiscoverer[] systemModelDiscoverer) {
-		this.systemModelDiscoverer = systemModelDiscoverer;
+	public ProjectFilter createProjectFilter() {
+		return projectFilter.get();
 	}
-	
-	public SystemModelDiscoverer[] getSystemModelDiscoverer() {
-		return systemModelDiscoverer;
+
+	public void setProjectFilter(Supplier<ProjectFilter> projectFilter) {
+		this.projectFilter = projectFilter;
 	}
-	
+
 	public FileChangeFilter getFileChangeFilter() {
 		return fileChangeFilter;
 	}
@@ -61,5 +59,13 @@ public class SystemModelRetrievalProvider {
 
 	public void setIntermediateSave(int intermediateSave) {
 		this.intermediateSave = intermediateSave;
+	}
+
+	public boolean isIncludeMethodBodies() {
+		return includeMethodBodies;
+	}
+
+	public void setIncludeMethodBodies(boolean includeMethodBodies) {
+		this.includeMethodBodies = includeMethodBodies;
 	}
 }

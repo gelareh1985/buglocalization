@@ -3,6 +3,7 @@
 package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
 import java.nio.file.Path;
+import java.util.Collections;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -123,10 +124,28 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 * @generated NOT
 	 */
 	@Override
-	public SystemModel createSystemModel(URI uri) {
-		SystemModelImpl systemModel = new SystemModelImpl();
-		systemModel.setURI(uri);
-		return systemModel;
+	public SystemModel createSystemModel(URI uri, boolean resolveResources) {
+		ResourceSet resourceSet = new ResourceSetImpl();
+		
+		if (!resourceSet.getURIConverter().exists(uri, Collections.emptyMap())) {
+			SystemModelImpl systemModel = new SystemModelImpl();
+			Resource multiViewResource = resourceSet.createResource(uri);
+			multiViewResource.getContents().add(systemModel);
+			return systemModel;
+		} else {
+			Resource multiViewResource = resourceSet.getResource(uri, true);
+			SystemModel systemModel = (SystemModel) multiViewResource.getContents().get(0);
+			
+			if (resolveResources) {
+				for (View view : systemModel.getViews()) {
+					if (view.getModel() != null) {
+						view.getModel().eAllContents().forEachRemaining(e -> {});
+					}
+				}
+			}
+			
+			return systemModel;
+		}
 	}
 	
 	/**
@@ -135,10 +154,8 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 * @generated NOT
 	 */
 	@Override
-	public SystemModel createSystemModel(Path file) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		Resource resource = resourceSet.getResource(URI.createFileURI(file.toString()), true);
-		return (SystemModel) resource.getContents().get(0);
+	public SystemModel createSystemModel(Path file, boolean resolveResources) {
+		return createSystemModel(URI.createFileURI(file.toString()), resolveResources);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package org.sidiff.bug.localization.dataset.model;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +21,8 @@ public class DataSet {
 	private List<String> bugtrackerProducts;
 	
 	private String timestamp;
+	
+	private Path systemModel;
 	
 	private History history;
 	
@@ -91,6 +94,17 @@ public class DataSet {
 	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
+	
+	public boolean hasSystemModel() {
+		return systemModel != null;
+	}
+	public Path getSystemModel() {
+		return systemModel;
+	}
+
+	public void setSystemModel(Path systemModel) {
+		this.systemModel = systemModel;
+	}
 
 	public History getHistory() {
 		return history;
@@ -104,7 +118,7 @@ public class DataSet {
 	public String toString() {
 		return "DataSet [name=" + name + ", repositoryHost=" + repositoryHost + ", repositoryPath=" + repositoryPath
 				+ ", bugtrackerHost=" + bugtrackerHost + ", bugtrackerProduct=" + bugtrackerProducts + ", timestamp="
-				+ timestamp + ", history=" + history + "]";
+				+ timestamp + ", systemModel=" + systemModel +  ", history=" + history + "]";
 	}
 
 }

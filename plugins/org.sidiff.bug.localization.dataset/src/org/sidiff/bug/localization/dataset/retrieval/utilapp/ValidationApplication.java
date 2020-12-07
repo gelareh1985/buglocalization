@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset;
+package org.sidiff.bug.localization.dataset.retrieval.utilapp;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;

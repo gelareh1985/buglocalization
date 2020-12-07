@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset;
+package org.sidiff.bug.localization.dataset.retrieval.utilapp;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -119,7 +119,7 @@ public class StatisticsApplication implements IApplication {
 		
 		Path systemModelRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SYSTEM_MODEL_REPOSITORY);
 		this.systemModelRepository = new SystemModelRepository(systemModelRepositoryPath, dataSet);
-		this.provider = new SystemModelRetrievalProvider();
+		this.provider = new SystemModelRetrievalProvider(null);
 		
 		this.productStatistic = new ProductStatistic();
 		this.projectStatistics = new LinkedHashMap<>();
@@ -274,28 +274,31 @@ public class StatisticsApplication implements IApplication {
 				systemModelRepository.checkout(buggyVersion);
 			}
 			
+			SystemModel umlSystemModel;
+			
+			try {
+				umlSystemModel = systemModelRepository.getSystemModel();
+			} catch (Throwable e) {
+				System.err.println("System model not loaded: ");
+				System.err.println(buggyVersion);
+				continue;
+			}
+
 			for (Project project : fixedVersion.getWorkspace().getProjects()) {
 				if (HistoryUtil.hasChanges(project, fixedVersion.getBugReport().getBugLocations(), provider.getFileChangeFilter())) {
 					Project buggyProject = HistoryUtil.getCorrespondingVersion(buggyVersion, project);
-					
-					if ((buggyProject != null) && (buggyProject.hasSystemModel())) {
-						try {
-							ProjectStatistic projectStatistic = getProjectStatistic(buggyProject);
-							
-							SystemModel umlSystemModel = systemModelRepository.getSystemModel(buggyProject);
-							View classDiagramView = umlSystemModel.getViewByKind(ViewDescriptions.UML_CLASS_DIAGRAM);
-							
-							projectStatistic.umlBugFixLocations += classDiagramView.getChanges().size(); // project
-							productStatistic.umlBugFixLocations += classDiagramView.getChanges().size(); // product
-							
-							for (Change bugFixLocation : classDiagramView.getChanges()) {
-								projectStatistic.umlBugFixQuantification += bugFixLocation.getQuantification(); // project
-								productStatistic.umlBugFixQuantification += bugFixLocation.getQuantification(); // product
-							}
-						} catch (Throwable e) {
-							System.err.println("System model not loaded: ");
-							System.err.println(project);
-							System.err.println(buggyProject);
+
+					if (buggyProject != null) {
+						ProjectStatistic projectStatistic = getProjectStatistic(buggyProject);
+
+						View classDiagramView = umlSystemModel.getViewByKind(ViewDescriptions.UML_CLASS_DIAGRAM);
+
+						projectStatistic.umlBugFixLocations += classDiagramView.getChanges().size(); // project
+						productStatistic.umlBugFixLocations += classDiagramView.getChanges().size(); // product
+
+						for (Change bugFixLocation : classDiagramView.getChanges()) {
+							projectStatistic.umlBugFixQuantification += bugFixLocation.getQuantification(); // project
+							productStatistic.umlBugFixQuantification += bugFixLocation.getQuantification(); // product
 						}
 					}
 				}
@@ -309,24 +312,26 @@ public class StatisticsApplication implements IApplication {
 		
 		for (Version version : dataSet.getHistory().getVersions()) {
 			System.out.println("UML Measure Model - Current Version: " + ++counter);
+			systemModelRepository.checkout(version);
 			
+			SystemModel umlSystemModel;
+			
+			try {
+				umlSystemModel = systemModelRepository.getSystemModel();
+			} catch (Throwable e) {
+				System.err.println("System model not loaded: ");
+				System.err.println(version);
+				continue;
+			}
+
 			for (Project project : version .getWorkspace().getProjects()) {
-				
+
 				// Measure only size of latest version:
-				if (!measuredUMLModels.contains(project.getName()) && project.hasSystemModel()) {
-					try {
-						systemModelRepository.checkout(version);
-						SystemModel umlSystemModel = systemModelRepository.getSystemModel(project);
+				if (!measuredUMLModels.contains(project.getName())) {
+					ProjectStatistic projectStatistic = getProjectStatistic(project);
+					measureUMLModel(umlSystemModel, projectStatistic);
 
-						ProjectStatistic projectStatistic = getProjectStatistic(project);
-						measureUMLModel(umlSystemModel, projectStatistic);
-
-						measuredUMLModels.add(project.getName());
-					} catch (Throwable e) {
-						System.err.println("System model not loaded: ");
-						System.err.println(project);
-						System.err.println(version);
-					}
+					measuredUMLModels.add(project.getName());
 				}
 			}
 		}

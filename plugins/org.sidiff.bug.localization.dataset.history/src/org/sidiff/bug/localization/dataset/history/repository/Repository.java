@@ -21,6 +21,8 @@ public interface Repository {
 	boolean checkout(History history, Version version);
 	
 	String commit(String authorName, String authorEmail, String message, String username, String password);
+	
+	String commit(String authorName, String authorEmail, String message, String username, String password, List<Path> files);
 
 	/**
 	 * @return <code>true</code> if the repository was reset to the initial version

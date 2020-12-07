@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset;
+package org.sidiff.bug.localization.dataset.retrieval.utilapp;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -96,15 +96,12 @@ public class GitRewriteApplication implements IApplication {
 			Path sourceFile = getSourceRepositoryFile(fileChange.getLocation());
 			Path targetFile = getTargetRepositoryFile(fileChange.getLocation());
 			
-			if (fileChange.getType().equals(FileChangeType.DELETE) 
-					|| fileChange.getType().equals(FileChangeType.RENAME)) {
+			if (fileChange.getType().equals(FileChangeType.DELETE)) {
 				deleteFile(targetFile);
 			} 
 			
 			if (fileChange.getType().equals(FileChangeType.ADD) 
-					|| fileChange.getType().equals(FileChangeType.RENAME)
-					|| fileChange.getType().equals(FileChangeType.MODIFY)
-					|| fileChange.getType().equals(FileChangeType.COPY)) {
+					|| fileChange.getType().equals(FileChangeType.MODIFY)) {
 				copyFile(sourceFile, targetFile);
 			}
 		}

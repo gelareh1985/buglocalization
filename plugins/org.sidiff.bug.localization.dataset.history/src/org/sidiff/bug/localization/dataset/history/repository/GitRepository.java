@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset.history.repository;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -201,25 +202,37 @@ public class GitRepository implements Repository {
 	private boolean checkout(String identification) {
 		try (Git git = openGitRepository()) {
 			
-			// Unlock repository (if necessary):
-			unlock();
-			
-			// Reset file changes (to HEAD):
-			git.reset().setMode(ResetType.HARD).call();
-			
-			// Clean up current branch (if necessary):
-			git.clean().setCleanDirectories(true).call();
-			
-			// Switch to requested branch (if necessary):
-			// FIXME: trace branch in data set - e.g. commit ID for detached head
-//			git.checkout().setCreateBranch(false).setName(history.getIdentification())
-//					.setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
-
 			// Check out specific version:
-			git.checkout().setName(identification).call();
+			try {
+				// Unlock repository (if necessary):
+				unlock();
+				
+				// Reset file changes (to HEAD):
+				git.reset().setMode(ResetType.HARD).call();
+
+				// Clean up current branch (if necessary):
+				git.clean().setCleanDirectories(true).call();
+
+				// Switch to requested branch (if necessary):
+				// FIXME: trace branch in data set - e.g. commit ID for detached head
+				// git.checkout().setCreateBranch(false).setName(history.getIdentification())
+				// .setStartPoint(version.getIdentification()).setForceRefUpdate(true).call();
+		
+				git.checkout().setName(identification).call();
+			} catch (Throwable e) {
+				
+				// Fallback - checkout with hard reset to version:
+				git.reset().setRef(identification).call();
+				git.reset().setRef(identification).setMode(ResetType.HARD).call();
+				git.checkout().setName(identification).call();
+			}
 			
 			// Clean up current version (if necessary):
-			git.clean().setCleanDirectories(true).call();
+			try {
+				git.clean().setCleanDirectories(true).call();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 			
 			if (identification.equals(getCurrentVersionID(git))) {
 				return true;
@@ -251,12 +264,35 @@ public class GitRepository implements Repository {
 	
 	@Override
 	public String commit(String authorName, String authorEmail, String message, String username, String password) {
+		return commit(authorName, authorEmail, message, username, password, null);
+	}
+	
+	@Override
+	public String commit(String authorName, String authorEmail, String message, String username, String password, List<Path> files) {
 		try (Git git = openGitRepository()) {
-			git.add().addFilepattern(".").call();
-			RevCommit commit = git.commit().setAll(true).setAllowEmpty(true)
-					.setAuthor(authorName, authorEmail)
-					.setCommitter(authorName, authorEmail)
-					.setMessage(message).call();
+			RevCommit commit = null;
+			
+			if (files == null) {
+				git.add().addFilepattern(".").call();
+				commit = git.commit().setAll(true).setAllowEmpty(true)
+						.setAuthor(authorName, authorEmail)
+						.setCommitter(authorName, authorEmail)
+						.setMessage(message).call();
+			} else {
+				Path workingDirectory = Paths.get(this.workingDirectory.getAbsolutePath());
+				
+				for (Path file : files) {
+					if (Files.exists(workingDirectory.resolve(file))) {
+						git.add().addFilepattern(file.toString().replace("\\", "/")).call();
+					} else {
+						git.rm().addFilepattern(file.toString().replace("\\", "/")).call();
+					}
+				}
+				commit = git.commit().setAllowEmpty(true)
+						.setAuthor(authorName, authorEmail)
+						.setCommitter(authorName, authorEmail)
+						.setMessage(message).call();
+			}
 
 			if ((repositoryURL != null) && (username != null) && (password != null)) {
 				PushCommand pushCommand = git.push();

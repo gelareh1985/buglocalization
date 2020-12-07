@@ -26,6 +26,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getType <em>Type</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getQuantification <em>Quantification</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getLocation <em>Location</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getOriginalResource <em>Original Resource</em>}</li>
  * </ul>
  *
  * @generated
@@ -80,6 +81,26 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 	 * @ordered
 	 */
 	protected EObject location;
+
+	/**
+	 * The default value of the '{@link #getOriginalResource() <em>Original Resource</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOriginalResource()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String ORIGINAL_RESOURCE_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getOriginalResource() <em>Original Resource</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOriginalResource()
+	 * @generated
+	 * @ordered
+	 */
+	protected String originalResource = ORIGINAL_RESOURCE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -192,6 +213,29 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 	 * @generated
 	 */
 	@Override
+	public String getOriginalResource() {
+		return originalResource;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setOriginalResource(String newOriginalResource) {
+		String oldOriginalResource = originalResource;
+		originalResource = newOriginalResource;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.CHANGE__ORIGINAL_RESOURCE, oldOriginalResource, originalResource));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case SystemModelPackage.CHANGE__TYPE:
@@ -201,6 +245,8 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 			case SystemModelPackage.CHANGE__LOCATION:
 				if (resolve) return getLocation();
 				return basicGetLocation();
+			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
+				return getOriginalResource();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -221,6 +267,9 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 				return;
 			case SystemModelPackage.CHANGE__LOCATION:
 				setLocation((EObject)newValue);
+				return;
+			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
+				setOriginalResource((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -243,6 +292,9 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 			case SystemModelPackage.CHANGE__LOCATION:
 				setLocation((EObject)null);
 				return;
+			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
+				setOriginalResource(ORIGINAL_RESOURCE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -261,6 +313,8 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 				return quantification != QUANTIFICATION_EDEFAULT;
 			case SystemModelPackage.CHANGE__LOCATION:
 				return location != null;
+			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
+				return ORIGINAL_RESOURCE_EDEFAULT == null ? originalResource != null : !ORIGINAL_RESOURCE_EDEFAULT.equals(originalResource);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -279,6 +333,8 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 		result.append(type);
 		result.append(", quantification: ");
 		result.append(quantification);
+		result.append(", originalResource: ");
+		result.append(originalResource);
 		result.append(')');
 		return result.toString();
 	}
