@@ -40,7 +40,7 @@ public class BugLocalizationGraphApplication implements IApplication {
 	
 	public static final int SETTINGS_START_AFTER_VERSION_NO = 0;
 	
-	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = 1000; // or -1
+	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = -1; // or -1
 	
 	public static final boolean SETTINGS_FULL_VERSION = false;
 	
@@ -116,12 +116,12 @@ public class BugLocalizationGraphApplication implements IApplication {
 						}
 						
 						if (SETTINGS_NEGATIVE_SAMPLES) {
-							Set<EObject> negativeSampleBugLocations = graphConstructor.selectNegativeSamples(bugLocations, 10, 100, 1, 1000);
+							Set<EObject> negativeSampleBugLocations = graphConstructor.selectNegativeSamples(bugLocations, 10, 100, 50, 1, 1000);
 							Iterable<EObject> negativeSampleBugLocalizationGraph = graphConstructor.createNegativeSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS, negativeSampleBugLocations);
 							save(negativeSampleBugLocalizationGraph, negativeSampleBugLocations, "negativesamples", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 						}
 
-						if ((bugFixCounter > 0) && (bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS)) {
+						if ((bugFixCounter > 0) && ((bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS) && (SETTINGS_COUNT_OF_BUG_REPORTS != -1))) {
 							return IApplication.EXIT_OK;
 						}
 					}

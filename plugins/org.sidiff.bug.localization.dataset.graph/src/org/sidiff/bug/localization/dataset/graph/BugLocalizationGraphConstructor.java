@@ -125,8 +125,10 @@ public class BugLocalizationGraphConstructor {
 	}
 
 	public Set<EObject> selectNegativeSamples(Set<EObject> bugLocations, 
-			int samplesPerLocation, int testSamplesPerLocation, int minSampleDistance, int maxSampleDistance) {
-		Set<EObject> negativeSamples = new HashSet<>();
+			int samplesPerLocation, int testSamplesPerLocation, int maxSamplesPerBug, 
+			int minSampleDistance, int maxSampleDistance) {
+		
+		List<EObject> negativeSamples = new ArrayList<>();
 		
 		for (EObject bugLocation : bugLocations) {
 			EObject model = getModel(bugLocation);
@@ -143,17 +145,19 @@ public class BugLocalizationGraphConstructor {
 			// Take the most dissimilar model elements as negative samples:
 			Collections.shuffle(testSamples);
 			Collections.sort(testSamples, (a, b) -> rankedSamples.get(a).compareTo(rankedSamples.get(b)));
-			
-			for (EObject testSample : testSamples) {
-				if (negativeSamples.size() < samplesPerLocation) {
-					negativeSamples.add(testSample);
-				} else {
-					break;
-				}
+			negativeSamples.addAll(testSamples.subList(0, Math.min(testSamplesPerLocation, testSamples.size())));
+		}
+		
+		Collections.shuffle(negativeSamples);
+		Set<EObject> selectedNegativeSamples = new HashSet<>();
+		
+		for (EObject negativeSample : negativeSamples) {
+			if (selectedNegativeSamples.size() < maxSamplesPerBug) {
+				selectedNegativeSamples.add(negativeSample);
 			}
 		}
 		
-		return negativeSamples;
+		return selectedNegativeSamples;
 	}
 
 	private EObject getModel(EObject bugLocation) {
