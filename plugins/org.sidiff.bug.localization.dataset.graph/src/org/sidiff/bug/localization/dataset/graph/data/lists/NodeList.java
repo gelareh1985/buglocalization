@@ -26,7 +26,11 @@ public class NodeList extends TableData {
 	
 	public void addNodes(Iterable<EObject> modelElements) {
 		for (EObject modelElement : modelElements) {
-			addNode(modelElement);
+			if (modelElement != null) {
+				addNode(modelElement);
+			} else {
+				System.err.println("Null-Element in Node-List.");
+			}
 		}
 	}
 

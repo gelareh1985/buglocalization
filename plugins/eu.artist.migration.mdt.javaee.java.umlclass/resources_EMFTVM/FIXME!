@@ -1,7 +1,0 @@
-EMFTVM Interpreter Version
-...needs more migration...see FIXME...
-
-- Fixed Problems: 
- - select() require flatten()
- - Sequence{} wrapping single values for multi-valued attributes
- - Rule selector predicates need to be distinct -> UML Class generation

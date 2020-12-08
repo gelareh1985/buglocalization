@@ -2,6 +2,7 @@
  */
 package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
@@ -287,10 +288,29 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 	public void setURI(URI uri) {
 		if (eResource() == null) {
 			ResourceSet resourceSet = new ResourceSetImpl();
-			Resource multiViewResource = resourceSet.createResource(uri);
-			multiViewResource.getContents().add(this);
+			
+			if (!resourceSet.getURIConverter().exists(uri, Collections.emptyMap())) {
+				Resource multiViewResource = resourceSet.createResource(uri);
+				multiViewResource.getContents().add(this);
+			} else {
+				resourceSet.getResource(uri, true);
+			}
 		} else {
 			eResource().setURI(uri);
+		}
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
+	public void save() {
+		try {
+			eResource().save(Collections.emptyMap());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

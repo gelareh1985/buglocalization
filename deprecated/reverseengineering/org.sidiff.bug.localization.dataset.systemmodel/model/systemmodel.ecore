@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="systemmodel" nsURI="http://www.sidiff.org/systemmodel/1.0" nsPrefix="SystemModel">
+  <eClassifiers xsi:type="ecore:EClass" name="SystemModel" eSuperTypes="#//DescribableElement">
+    <eOperations name="addView">
+      <eParameters name="resource" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EResource"/>
+      <eParameters name="viewDescription" eType="#//ViewDescription"/>
+    </eOperations>
+    <eOperations name="getViewByKind" eType="#//View">
+      <eParameters name="viewDescription" eType="#//ViewDescription"/>
+    </eOperations>
+    <eOperations name="getViewByKind" eType="#//View">
+      <eParameters name="viewDescription" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    </eOperations>
+    <eOperations name="containsViewKind" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean">
+      <eParameters name="viewDescription" eType="#//ViewDescription"/>
+    </eOperations>
+    <eOperations name="removeViewKind" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean">
+      <eParameters name="viewDescription" eType="#//ViewDescription"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="views" upperBound="-1"
+        eType="#//View" containment="true" eOpposite="#//View/system"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="View" eSuperTypes="#//DescribableElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="system" eType="#//SystemModel"
+        eOpposite="#//SystemModel/views"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="model" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="changes" upperBound="-1"
+        eType="#//Change" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DescribableElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Change">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//ChangeType"
+        defaultValueLiteral="Add"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantification" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="location" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ChangeType">
+    <eLiterals name="Add"/>
+    <eLiterals name="Delete" value="1"/>
+    <eLiterals name="Modify" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ViewDescription" eSuperTypes="#//DescribableElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="viewKind" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+  </eClassifiers>
+</ecore:EPackage>

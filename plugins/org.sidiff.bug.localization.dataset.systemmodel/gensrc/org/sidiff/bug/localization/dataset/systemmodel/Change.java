@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getType <em>Type</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getQuantification <em>Quantification</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getLocation <em>Location</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getOriginalResource <em>Original Resource</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getChange()
@@ -92,5 +93,27 @@ public interface Change extends EObject {
 	 * @generated
 	 */
 	void setLocation(EObject value);
+
+	/**
+	 * Returns the value of the '<em><b>Original Resource</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Original Resource</em>' attribute.
+	 * @see #setOriginalResource(String)
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getChange_OriginalResource()
+	 * @model
+	 * @generated
+	 */
+	String getOriginalResource();
+
+	/**
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getOriginalResource <em>Original Resource</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Original Resource</em>' attribute.
+	 * @see #getOriginalResource()
+	 * @generated
+	 */
+	void setOriginalResource(String value);
 
 } // Change

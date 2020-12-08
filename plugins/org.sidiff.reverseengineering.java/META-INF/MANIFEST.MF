@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Reverse Engineering UML
+Bundle-SymbolicName: org.sidiff.reverseengineering.java;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.reverseengineering.java.Activator
+Require-Bundle: com.google.guava,
+ com.google.inject;visibility:=reexport,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.emf.compare,
+ org.eclipse.emf.compare.uml2,
+ org.eclipse.emf.ecore,
+ org.eclipse.jdt.core,
+ org.eclipse.ui,
+ org.eclipse.uml2.uml
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.sidiff.reverseengineering.uml
+Export-Package: org.sidiff.reverseengineering.java,
+ org.sidiff.reverseengineering.java.configuration,
+ org.sidiff.reverseengineering.java.configuration.uml,
+ org.sidiff.reverseengineering.java.transformation,
+ org.sidiff.reverseengineering.java.transformation.uml,
+ org.sidiff.reverseengineering.java.transformation.uml.rulebase,
+ org.sidiff.reverseengineering.java.transformation.uml.rules,
+ org.sidiff.reverseengineering.java.util

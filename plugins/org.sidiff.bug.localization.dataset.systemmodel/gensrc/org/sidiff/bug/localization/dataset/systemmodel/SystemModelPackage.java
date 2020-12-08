@@ -333,13 +333,22 @@ public interface SystemModelPackage extends EPackage {
 	int CHANGE__LOCATION = 2;
 
 	/**
+	 * The feature id for the '<em><b>Original Resource</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE__ORIGINAL_RESOURCE = 3;
+
+	/**
 	 * The number of structural features of the '<em>Change</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_FEATURE_COUNT = 3;
+	int CHANGE_FEATURE_COUNT = 4;
 
 	/**
 	 * The number of operations of the '<em>Change</em>' class.
@@ -628,6 +637,17 @@ public interface SystemModelPackage extends EPackage {
 	EReference getChange_Location();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getOriginalResource <em>Original Resource</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Original Resource</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.Change#getOriginalResource()
+	 * @see #getChange()
+	 * @generated
+	 */
+	EAttribute getChange_OriginalResource();
+
+	/**
 	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.ViewDescription <em>View Description</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -848,6 +868,14 @@ public interface SystemModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference CHANGE__LOCATION = eINSTANCE.getChange_Location();
+
+		/**
+		 * The meta object literal for the '<em><b>Original Resource</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE__ORIGINAL_RESOURCE = eINSTANCE.getChange_OriginalResource();
 
 		/**
 		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewDescriptionImpl <em>View Description</em>}' class.

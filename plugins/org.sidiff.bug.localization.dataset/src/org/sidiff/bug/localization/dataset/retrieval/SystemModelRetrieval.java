@@ -1,15 +1,12 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -17,120 +14,147 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
-import org.eclipse.modisco.infra.discovery.core.exception.DiscoveryException;
-import org.eclipse.uml2.common.util.CacheAdapter;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
 import org.sidiff.bug.localization.dataset.Activator;
+import org.sidiff.bug.localization.dataset.changes.model.FileChange;
+import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryUtil;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
-import org.sidiff.bug.localization.dataset.retrieval.util.SystemModelDiscoverer;
+import org.sidiff.bug.localization.dataset.retrieval.util.WorkspaceUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
+import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
+import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
+import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
 
-/**
- * @deprecated Use {@link DirectSystemModelRetrieval}
- */
-@Deprecated
 public class SystemModelRetrieval {
-	
-	private SystemModelRetrievalProvider provider;
 	
 	private DataSet dataset;
 	
 	private Path datasetPath;
-
+	
 	private Path codeRepositoryPath;
 	
-	private SystemModelRepository javaModelRepository;
+	private Repository codeRepository;
 	
 	private SystemModelRepository systemModelRepository;
 	
-	private ExecutorService commitSystemModelVersionThread;
+	private SystemModelRetrievalProvider systemModelProvider;
 	
-	private ExecutorService cleanUpSystemModelResourcesThread;
+	private JavaProject2SystemModel transformation;
+	
+	/**
+	 * Optimization flag - false -> incremental commit and workspace refresh
+	 */
+	private boolean newProjectAdded = true;
+	
+	private Set<String> transformedProjects = new HashSet<>();
+	
+	// Threads:
+	
+	private ExecutorService commitSystemModelVersionThread;
 	
 	private RunnableFuture<Void> commitSystemModelVersionTask;
 	
-	public SystemModelRetrieval(SystemModelRetrievalProvider provider, Path codeRepositoryPath, DataSet dataset, Path datasetPath) {
-		this.provider = provider;
-		this.codeRepositoryPath = codeRepositoryPath;
+	public SystemModelRetrieval(
+			SystemModelRetrievalProvider systemModelProvider, 
+			DataSet dataset, Path datasetPath) {
+		
+		this.systemModelProvider = systemModelProvider;
 		this.dataset = dataset;
 		this.datasetPath = datasetPath;
+		
+		this.newProjectAdded = true; 
 	}
-
-	public void retrieve() {
+	
+	public void retrieve() throws IOException {
 		retrieve(-1);
 	}
 
-	public void retrieve(int resume) {
+	public void retrieve(int resume) throws IOException {
+		History history = dataset.getHistory();
+		List<Version> versions = history.getVersions();
 		
-		// Storage:
-		this.javaModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.JAVA_MODEL, dataset);
-		List<Version> versions = dataset.getHistory().getVersions();
-		
-		if (resume == -1) {
-			resume = versions.size();
+		if (resume != -1) {
+			versions = versions.subList(0, resume);
+			removeMissingProjects(versions.get(resume), versions.get(resume - 1));
+			this.newProjectAdded = true; 
 		}
 		
+		// Storage:
+		this.codeRepository = systemModelProvider.createCodeRepository();
+		this.codeRepositoryPath = codeRepository.getWorkingDirectory();
 		this.systemModelRepository = new SystemModelRepository(codeRepositoryPath, ViewDescriptions.UML_CLASS_DIAGRAM, dataset);
 		
 		try {
 			this.commitSystemModelVersionThread = Executors.newSingleThreadExecutor();
-			this.cleanUpSystemModelResourcesThread = Executors.newSingleThreadExecutor();
+			
+			SystemModel systemModel = systemModelRepository.getSystemModel();
+			dataset.setSystemModel(systemModelRepository.getSystemModelFile());
+			
+			this.transformation = new JavaProject2SystemModel(
+					systemModelRepository.getRepositoryPath(), 
+					dataset.getName(),
+					systemModelProvider.isIncludeMethodBodies(), 
+					systemModel);
 			
 			// Iterate from old to new versions:
-			int counter = versions.size() - resume;
+			int counter = 0;
 			
 			for (int i = versions.size(); i-- > 0;) {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
 				Version version = versions.get(i);
+				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
 				counter++;
 
 				long time = System.currentTimeMillis();
 				
+				Workspace workspace = retrieveWorkspaceVersion(history, version);
+				WorkspaceUtil.refreshWorkspace(version, workspace, newProjectAdded);
+				
 				// Clean up older version:
-				systemModelRepository.removeMissingProjects(olderVersion, version);
+				clearSystemModelChanges(systemModel); // of last version
+				time = stopTime("Checkout Workspace Version: ", time);
 				
-				// Load newer version:
-				javaModelRepository.checkout(version);
-				time = stopTime("Checkout Version: ", time);
+				/* Synchronize before storing new changes in the model repository */
+				waitForCommit(); 
+				time = stopTime("Commit System Model Version (waiting): ", time);
 				
-				// Discover projects:
-				for (Project project : version.getWorkspace().getProjects()) {
-					try {
-						retrieveSystemModelVersion(olderVersion, version, project);
-					} catch (DiscoveryException e) {
-						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-							Activator.getLogger().log(Level.SEVERE, "Could not discover system model for '"
-									+ project.getName() + "' version " + version.getIdentification());
-						}
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+				// Workspace -> System Model:
+				List<Path> removedModelResources = removeMissingProjects(olderVersion, version);
+				List<Path> modifiedModelResources = retrieveWorkspaceSystemModelVersion(olderVersion, version, newerVersion, workspace, systemModel);
+				transformation.saveModel();
+				time = stopTime("Discover System Model Workspace: ", time);
+				
+				// Commit new revision none blocking
+				if (newProjectAdded) {
+					commit(olderVersion, version, null); 
+					this.newProjectAdded = false;
+				} else {
+					modifiedModelResources.addAll(removedModelResources);
+					commit(olderVersion, version, modifiedModelResources);
 				}
-				time = stopTime("Discover System Model Version: ", time);
 				
-				// Store system model workspace as revision:
-				waitForCommit();
-				commit(olderVersion, version);
+				time = stopTime("Commit Model Version: ", time);
 				
 				if (Activator.getLogger().isLoggable(Level.FINE)) {
 					Activator.getLogger().log(Level.FINE, "Discovered system model version " + (versions.size() - i) + " of " + versions.size() + " versions");
 				}
 				
 				// Intermediate save:
-				if ((provider.getIntermediateSave() > 0) && ((counter % provider.getIntermediateSave()) == 0)) {
+				if ((systemModelProvider.getIntermediateSave() > 0) && ((counter % systemModelProvider.getIntermediateSave()) == 0)) {
 					try {
 						waitForCommit();
 						DataSetStorage.save(Paths.get(
@@ -146,13 +170,17 @@ public class SystemModelRetrieval {
 			}
 		} finally {
 			// Always reset head pointer of the code repository to its original position, e.g., if the iteration fails.
-			commitSystemModelVersionThread.shutdown();
-			cleanUpSystemModelResourcesThread.shutdown();
+			if (codeRepository != null) {
+				codeRepository.reset();
+			}
+			if (commitSystemModelVersionThread != null) {
+				commitSystemModelVersionThread.shutdown();
+			}
 		}
 	}
 	
-	private void commit(Version olderVersion, Version version) {
-		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion), null);
+	private void commit(Version olderVersion, Version version, List<Path> modelResources) {
+		commitSystemModelVersionTask = new FutureTask<>(() -> systemModelRepository.commitVersion(version, olderVersion, modelResources), null);
 		commitSystemModelVersionThread.execute(commitSystemModelVersionTask);
 	}
 
@@ -160,164 +188,161 @@ public class SystemModelRetrieval {
 		// Wait for last version to be commited:
 		if (commitSystemModelVersionTask != null) {
 			try {
-				long time = System.currentTimeMillis();
 				commitSystemModelVersionTask.get();
 				this.commitSystemModelVersionTask = null;
-				time = stopTime("Commit System Model Version (waiting): ", time);
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private void retrieveSystemModelVersion(Version olderVersion, Version version, Project project) throws DiscoveryException, IOException {
+	private Workspace retrieveWorkspaceVersion(History history, Version version) {
+		
+		// Load newer version:
+		boolean versionCheckeout = codeRepository.checkout(history, version);
+		
+		if (!versionCheckeout) {
+			throw new RuntimeException("Could not check out version: " + version);
+		} 
+		
+		if (Activator.getLogger().isLoggable(Level.FINER)) {
+			Activator.getLogger().log(Level.FINER, "Retrieve Workspace: " + version);
+		}
+		
+		Workspace discoveredWorkspace = version.getWorkspace();
+		WorkspaceBuilder workspaceDiscoverer = new WorkspaceBuilder(discoveredWorkspace, codeRepositoryPath);
+		workspaceDiscoverer.cleanWorkspace();
+		
+		// Load and filter workspace:
+		ProjectFilter projectFilter = systemModelProvider.createProjectFilter();
+		Workspace loadedWorkspace = workspaceDiscoverer.createProjects(projectFilter);
+		version.setWorkspace(loadedWorkspace);
+		
+		return loadedWorkspace;
+	}
+	
+	private List<Path> retrieveWorkspaceSystemModelVersion(
+			Version olderVersion, 
+			Version version, 
+			Version newerVersion,
+			Workspace workspace,
+			SystemModel systemModel) {
+	
+		// NOTE: version      := buggy version
+		//       newerVersion := fixed version
+		
+		// Log files to be commited:
+		List<Path> modelFiles = new ArrayList<>();
+		modelFiles.add(systemModelRepository.getSystemModelFile());
+		
+		Set<String> workspaceProjectScope = workspace.getProjects().stream().map(Project::getName).collect(Collectors.toSet());
+		
+		for (Project project : workspace.getProjects()) {
+			try {
+				long time = System.currentTimeMillis();
+				
+				// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
+				// OPTIMIZATION: Recalculate changed projects only (and initial versions).
+				if (HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
+					
+					// Java Code -> System Model
+					List<Path> modelProjectFiles =retrieveProjectSystemModelVersion(
+							olderVersion, version, newerVersion, project, workspaceProjectScope, systemModel);
+					modelFiles.addAll(modelProjectFiles);
+					time = stopTime("Discover System Model Project (Name: " + project.getName() + ", Model Files: "
+							+ ((olderVersion == null) ? "*" : modelProjectFiles.size()) + "): ", time);
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
+
+				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "Could not discover model: " + project);
+				}
+			}
+		}
+		
+		return modelFiles;
+	}
+
+	private List<Path> retrieveProjectSystemModelVersion(
+			Version olderVersion, 
+			Version version, 
+			Version newerVersion, 
+			Project project,
+			Set<String> workspaceProjectScope,
+			SystemModel systemModel) 
+					throws IOException {
+		
+		// NOTE: version      := buggy version
+		//       newerVersion := fixed version
 		
 		if (Activator.getLogger().isLoggable(Level.FINER)) {
 			Activator.getLogger().log(Level.FINER, "System Model Discovery: " + project.getName());
 		}
 		
-		Path systemModelFile = systemModelRepository.getSystemModelFile(project, true);
-		
-		// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-		if (HistoryUtil.hasChanges(project, olderVersion, version, provider.getFileChangeFilter())) {
+		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
+
+		if ((workspaceProject != null) && ProjectUtil.isJavaProject(workspaceProject)) {
 			
-			// Discover the multi-view system model of the project version:
-			SystemModel javaSystemModel = SystemModelFactory.eINSTANCE.createSystemModel(javaModelRepository.getSystemModelFile(project, true));
-			SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel();
-			systemModel.setName(project.getName());
+			// Calculate changed files in project:
+			// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+			// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+			List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
+			List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
 			
-			// START:
-			discover(systemModel, javaSystemModel);
+			// Discover the system model of the project version:
+			boolean initialVersion = !transformedProjects.contains(project.getFolder().toString());
 			
-			// Store system model in data set:
-			storeSystemModel(systemModelFile, systemModel);
-		} else {
+			List<Path> resultFiles = transformation.discover(
+					workspaceProject, 
+					project.getFolder(), 
+					workspaceProjectScope, 
+					systemModel, 
+					projectFileChanges,
+					projectBugLocations,
+					initialVersion);
 			
-			// Clear changes or no system model?
-			if (Files.exists(systemModelFile)) {
-				// Optimization: Clear only if changes were written for last version
-				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), provider.getFileChangeFilter())) {
-					SystemModel systemModel = systemModelRepository.getSystemModel(project);
-					clearSystemModelChanges(systemModel, systemModelFile);
-				}
-			} else {
-				systemModelFile = null;
+			if (initialVersion) {
+				transformedProjects.add(project.getFolder().toString());
+				this.newProjectAdded = true;
 			}
+			
+			return resultFiles;
 		}
 		
-		// Store path in data set:
-		if (systemModelFile != null) {
-			project.setSystemModel(systemModelRepository.getRepositoryPath().relativize(systemModelFile));
-		} else {
-			project.setSystemModel(null); // no system model
-		}
-	}
-	
-	private void discover(SystemModel systemModel, SystemModel javaSystemModel) throws DiscoveryException {
-		for (SystemModelDiscoverer systemModelDiscovery : provider.getSystemModelDiscoverer()) {
-			try {
-				systemModelDiscovery.discover(systemModel, javaSystemModel);
-			} catch (Throwable e) {
-				e.printStackTrace();
-				
-				if (Activator.getLogger().isLoggable(Level.SEVERE)) {
-					Activator.getLogger().log(Level.SEVERE, "Could not discover system model: " + javaSystemModel.eResource().getURI());
-				}
-			}
-		}
-	}
-	
-	private void clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
-		boolean hasChanged = false;
-		
-		for (View view : systemModel.getViews()) {
-			if (!view.getChanges().isEmpty()) {
-				view.getChanges().clear();
-				hasChanged = true;
-			}
-		}
-		
-		if (hasChanged) {
-			storeSystemModel(systemModelFile, systemModel);
-		}
-	}
-	
-	private void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
-		waitForCommit(); // synchronize
-		
-		// Save model:
-		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
-		systemModel.saveAll(Collections.emptyMap());
-		
-		// Unload models for garbage collection -> prevent resource leaks:
-		unloadSystemModel(systemModel);
+		return Collections.emptyList();
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void unloadSystemModel(SystemModel systemModel) {
+	private List<Path> removeMissingProjects(Version olderVersion, Version currentVersion) {
+		List<Path> removed = new ArrayList<>();
 		
-		// Clear resource from UML CacheAdapter:
-		cleanUpSystemModelResourcesThread.execute(() -> {
-			Set<Resource> resources = new HashSet<>();
-			resources.addAll(systemModel.eResource().getResourceSet().getResources());
+		if (olderVersion != null) { // initial version
+			Workspace olderWorkspace = olderVersion.getWorkspace();
+			Workspace currentWorkspace = currentVersion.getWorkspace();
 			
-			// Make sure the (UML) model views are collected:
-			for (View view : systemModel.getViews()) {
-				if (view.getModel() != null) {
-					if (view.getModel().eResource() != null) {
-						if (view.getModel().eResource().getResourceSet() != null) {
-							resources.addAll(view.getModel().eResource().getResourceSet().getResources());
-						} else {
-							resources.add(view.getModel().eResource());
-						}
-					}
+			for (Project oldProject : olderWorkspace.getProjects()) {
+				if (!currentWorkspace.containsProject(oldProject)) {
+					removed.addAll(transformation.removeProject(oldProject.getName()));
+					transformedProjects.remove(oldProject.getFolder().toString());
 				}
 			}
-			
-			// CacheAdapter/ECrossReferenceAdapter resource leak: remove adapter, clear caches, unload all resources 
-			for (Iterator<Resource> iterator = resources.iterator(); iterator.hasNext();) {
-				Resource resource = (Resource) iterator.next();
-				ECrossReferenceAdapter crossReferenceAdapter = ECrossReferenceAdapter.getCrossReferenceAdapter(resource);
-				
-				if (crossReferenceAdapter != null) {
-					crossReferenceAdapter.unsetTarget(resource);
-				}
-				
-				if (CacheAdapter.getInstance() != null) {
-					CacheAdapter.getInstance().clear(resource);
-				}
-				
-				resource.unload();
-			}
-			
-			// WORKAROUND: Clear resource leaks of UML CacheAdapter:
-			try {
-				CacheAdapter cacheAdapter = CacheAdapter.getInstance();
-				cacheAdapter.clear();
-				
-				// Clear inverseCrossReferencer map:
-				Field inverseCrossReferencerField = ECrossReferenceAdapter.class.getDeclaredField("inverseCrossReferencer");
-				inverseCrossReferencerField.setAccessible(true);
-				Object inverseCrossReferencerValue = inverseCrossReferencerField.get(cacheAdapter);
-				
-				if (inverseCrossReferencerValue instanceof Map) {
-					((Map) inverseCrossReferencerValue).clear();
-				}
-				
-				// Clear proxyMap map:
-				Class<?> inverseCrossReferencerClass = Class.forName("org.eclipse.emf.ecore.util.ECrossReferenceAdapter$InverseCrossReferencer");
-				Field proxyMapField = inverseCrossReferencerClass.getDeclaredField("proxyMap");
-				proxyMapField.setAccessible(true);
-				Object proxyMapValue = proxyMapField.get(inverseCrossReferencerValue);
-				
-				if (proxyMapValue instanceof Map) {
-					((Map) proxyMapValue).clear();
-				}
-				
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
-		});
+		}
+		
+		return removed;
+	}
+
+	private List<FileChange> getBugLocations(Version version, Version newerVersion) {
+		if ((version != null) && (newerVersion != null) && (newerVersion.hasBugReport())) {
+			return newerVersion.getBugReport().getBugLocations();
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	private void clearSystemModelChanges(SystemModel systemModel) {
+		for (View view : systemModel.getViews()) {
+			view.getChanges().clear();
+		}
 	}
 	
 	public void saveDataSet() {
@@ -342,10 +367,6 @@ public class SystemModelRetrieval {
 	
 	public Path getCodeRepositoryPath() {
 		return codeRepositoryPath;
-	}
-	
-	public Path getJavaModelRepositoryPath() {
-		return javaModelRepository.getRepositoryPath();
 	}
 	
 	public Path getSystemModelRepositoryPath() {

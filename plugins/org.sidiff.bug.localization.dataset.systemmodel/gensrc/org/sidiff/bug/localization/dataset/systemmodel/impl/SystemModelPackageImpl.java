@@ -340,6 +340,16 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 	 * @generated
 	 */
 	@Override
+	public EAttribute getChange_OriginalResource() {
+		return (EAttribute)changeEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getViewDescription() {
 		return viewDescriptionEClass;
 	}
@@ -416,6 +426,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		createEAttribute(changeEClass, CHANGE__TYPE);
 		createEAttribute(changeEClass, CHANGE__QUANTIFICATION);
 		createEReference(changeEClass, CHANGE__LOCATION);
+		createEAttribute(changeEClass, CHANGE__ORIGINAL_RESOURCE);
 
 		viewDescriptionEClass = createEClass(VIEW_DESCRIPTION);
 		createEAttribute(viewDescriptionEClass, VIEW_DESCRIPTION__VIEW_KIND);
@@ -494,6 +505,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		initEAttribute(getChange_Type(), this.getChangeType(), "type", "Add", 0, 1, Change.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getChange_Quantification(), theEcorePackage.getEInt(), "quantification", null, 0, 1, Change.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getChange_Location(), theEcorePackage.getEObject(), null, "location", null, 0, 1, Change.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChange_OriginalResource(), theEcorePackage.getEString(), "originalResource", null, 0, 1, Change.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(viewDescriptionEClass, ViewDescription.class, "ViewDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getViewDescription_ViewKind(), theEcorePackage.getEString(), "viewKind", null, 0, 1, ViewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -8,9 +8,7 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.common.util.ResourceLocator;
-
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
@@ -21,7 +19,6 @@ import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
-
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
@@ -64,6 +61,7 @@ public class ChangeItemProvider
 			addTypePropertyDescriptor(object);
 			addQuantificationPropertyDescriptor(object);
 			addLocationPropertyDescriptor(object);
+			addOriginalResourcePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -135,6 +133,28 @@ public class ChangeItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Original Resource feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addOriginalResourcePropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_Change_originalResource_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_Change_originalResource_feature", "_UI_Change_type"),
+				 SystemModelPackage.Literals.CHANGE__ORIGINAL_RESOURCE,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This returns Change.gif.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -175,6 +195,7 @@ public class ChangeItemProvider
 		switch (notification.getFeatureID(Change.class)) {
 			case SystemModelPackage.CHANGE__TYPE:
 			case SystemModelPackage.CHANGE__QUANTIFICATION:
+			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}
@@ -202,6 +223,27 @@ public class ChangeItemProvider
 	@Override
 	public ResourceLocator getResourceLocator() {
 		return MultiviewEditPlugin.INSTANCE;
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Collection<?> getChildren(Object object) {
+		Collection children = super.getChildren(object);
+		
+		if (object instanceof Change) {
+			Object location = ((Change) object).getLocation();
+			
+			if (location != null) {
+				children.add(location);
+			}
+		}
+		
+		return children;
 	}
 
 }

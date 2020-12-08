@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphConstructor;
@@ -21,7 +22,6 @@ import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 /**
  * Converts the EMF model and bug report with its fix-locations to "simple" graph structure.
@@ -36,7 +36,17 @@ public class BugLocalizationGraphApplication implements IApplication {
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-repository";
 	
-	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = 10; // or -1
+	public static final String SETTINGS_START_AFTER_VERSION_ID = null; // e.g. "f722ea23e3caf3bc3d51d10558e3e3fea80cbcc5" or null
+	
+	public static final int SETTINGS_START_AFTER_VERSION_NO = 0;
+	
+	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = -1; // or -1
+	
+	public static final boolean SETTINGS_FULL_VERSION = false;
+	
+	public static final boolean SETTINGS_POSITIVE_SAMPLES = false;
+	
+	public static final boolean SETTINGS_NEGATIVE_SAMPLES = true;
 	
 	public static final boolean SETTINGS_ADD_BUG_REPORT_COMMENTS = true;
 	
@@ -58,6 +68,20 @@ public class BugLocalizationGraphApplication implements IApplication {
 		HistoryIterator historyIterator = new HistoryIterator(dataset.getHistory());
 		int bugFixCounter = 0;
 		
+		if (SETTINGS_START_AFTER_VERSION_ID != null) {
+			while (historyIterator.hasNext()) {
+				Version version = historyIterator.next();
+				
+				if (version.getIdentification().equals(SETTINGS_START_AFTER_VERSION_ID)) {
+					if (historyIterator.hasNext()) {
+						historyIterator.next();
+					}
+					break;
+				}
+			}
+			bugFixCounter = SETTINGS_START_AFTER_VERSION_NO;
+		}
+		
 		while (historyIterator.hasNext()) {
 			System.out.println("Remaining Versions: " + (historyIterator.nextIndex() + 1));
 			
@@ -70,37 +94,51 @@ public class BugLocalizationGraphApplication implements IApplication {
 				// NOTE: The buggy version is the version previous to the fixed version.
 				Version buggyVersion = historyIterator.getOlderVersion();
 				repository.checkout(dataset.getHistory(), buggyVersion);
-				
-				for (Project project : buggyVersion.getWorkspace().getProjects()) {
-					Path systemModelPath = getRepositoryFile(project.getSystemModel());
-					
-					if (Files.exists(systemModelPath)) {
-						SystemModel buggySystemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelPath);
-						BugLocalizationGraphConstructor graphConstructor = new BugLocalizationGraphConstructor(fixedVersion.getBugReport(), buggySystemModel);
-						
-						if (!graphConstructor.getBugLocations().isEmpty()) {
-							Set<EObject> bugLocations = graphConstructor.getBugLocations();
-							
-							Iterable<EObject> bugLocalizationGraph = graphConstructor.createBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-							save(bugLocalizationGraph, bugLocations, "evaluation", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
-							
-							Iterable<EObject> localBugLocalizationGraph = graphConstructor.createLocalBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-							save(localBugLocalizationGraph, bugLocations, "training", ++bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
-							
-							if ((bugFixCounter > 0) && (bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS)) {
-								return IApplication.EXIT_OK;
-							}
-						} else {
-							Activator.getLogger().log(Level.WARNING, "No locations found for bug: " 
-									+ fixedVersion.getBugReport().getId() + " Bug report will be ignored!");
+
+				Path systemModelPath = getRepositoryFile(dataset.getSystemModel());
+
+				if (Files.exists(systemModelPath)) {
+					SystemModel buggySystemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelPath, true);
+					BugLocalizationGraphConstructor graphConstructor = new BugLocalizationGraphConstructor(fixedVersion.getBugReport(), buggySystemModel);
+
+					if (!graphConstructor.getBugLocations().isEmpty()) {
+						Set<EObject> bugLocations = graphConstructor.getBugLocations();
+						++bugFixCounter;
+
+						if (SETTINGS_FULL_VERSION) {
+							Iterable<EObject> fullBugLocalizationGraph = graphConstructor.createFullBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
+							save(fullBugLocalizationGraph, bugLocations, "full", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 						}
-					} else {
-						Activator.getLogger().log(Level.SEVERE, "System model not found: " + systemModelPath);
+
+						if (SETTINGS_POSITIVE_SAMPLES) {
+							Iterable<EObject> positiveSampleBugLocalizationGraph = graphConstructor.createPositiveSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
+							save(positiveSampleBugLocalizationGraph, bugLocations, "buglocations", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						}
+						
+						if (SETTINGS_NEGATIVE_SAMPLES) {
+							Set<EObject> negativeSampleBugLocations = graphConstructor.selectNegativeSamples(bugLocations, 10, 100, 50, 1, 1000);
+							Iterable<EObject> negativeSampleBugLocalizationGraph = graphConstructor.createNegativeSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS, negativeSampleBugLocations);
+							save(negativeSampleBugLocalizationGraph, negativeSampleBugLocations, "negativesamples", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+						}
+
+						if ((bugFixCounter > 0) && ((bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS) && (SETTINGS_COUNT_OF_BUG_REPORTS != -1))) {
+							return IApplication.EXIT_OK;
+						}
 					}
+					
+					try {
+						for (Resource systemModelResource : buggySystemModel.eResource().getResourceSet().getResources()) {
+							systemModelResource.unload();
+						}
+					} catch (Throwable e) {
+						System.err.println("Unload exception: " + e.toString());
+					}
+				} else {
+					Activator.getLogger().log(Level.SEVERE, "System model not found: " + systemModelPath);
 				}
 			}
 		}
-		
+
 		Activator.getLogger().log(Level.INFO, "Finished");
 		return IApplication.EXIT_OK;
 	}
