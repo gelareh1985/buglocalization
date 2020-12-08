@@ -16,12 +16,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Interface;
+import org.eclipse.uml2.uml.Model;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.util.BugFixIterator;
@@ -37,8 +37,6 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
-
-import eu.artist.migration.mdt.javaee.java.uml.traces.Model2CodeTrace;
 
 /**
  * Generates some statistical information tables form a data set.
@@ -339,11 +337,10 @@ public class StatisticsApplication implements IApplication {
 	
 	private void measureUMLModel(SystemModel umlSystemModel, ProjectStatistic projectStatistic) {
 		View classDiagramView = umlSystemModel.getViewByKind(ViewDescriptions.UML_CLASS_DIAGRAM);
-		Model2CodeTrace trace = new Model2CodeTrace(classDiagramView.getModel().eResource());
 		
 		classDiagramView.getModel().eAllContents().forEachRemaining(element -> {
 			if (element instanceof Classifier) {
-				if (isTraceableElement(element, trace)) {
+				if (isInProject((Classifier) element)) {
 					if (element instanceof Class) {
 						++projectStatistic.umlClassifiers;
 						projectStatistic.umlOperations += ((Class) element).getOwnedOperations().size();
@@ -368,8 +365,9 @@ public class StatisticsApplication implements IApplication {
 		});
 	}
 
-	private boolean isTraceableElement(EObject element, Model2CodeTrace trace) {
-		return trace.getJavaFile(element, false) != null;
+	private boolean isInProject(Classifier element) {
+		Model projectModel = element.getModel();
+		return !projectModel.getName().equalsIgnoreCase("library");
 	}
 
 	private ProjectStatistic getProjectStatistic(Project project) {
