@@ -19,7 +19,7 @@ class WordDictionary:
         with open(filename) as f:
             for i, line in enumerate(f):
                 columns = line.strip().split('\t')
-                self.dictionary_words[columns[0]] = columns[1]
+                self.dictionary_words[columns[0]] = int(columns[1])
         f.close()
         
     def save(self, dictionary_file_name):
@@ -48,7 +48,7 @@ class WordDictionary:
 
     def text_to_words(self, text):
         if self.unescape:
-            text = text.encode().decode("unicode-escape")
+            text = text.encode().decode("unicode-escape", "ignore")
         words_array = []
         tokenizer = RegexpTokenizer('[A-Za-z]+')
         words = tokenizer.tokenize(text)

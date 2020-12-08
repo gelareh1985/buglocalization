@@ -9,7 +9,7 @@ from IPython.display import display
 from word_dictionary import WordDictionary
 
 dataset_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\buglocations_1000/"
-dictionary_path = "D:\\files_MDEAI_original\\Data_sets\\buglocations_dataset\\saved files\\"
+dictionary_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\dictionaries\main dictionaries\complete_dict_stopwords_removed.dictionary_shrinked.dictionary"
 feature_node_save_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\nodelist_features/"
 
 
@@ -91,12 +91,11 @@ def node_to_vector(node_data, dictionary_words, dictionary_types):
 # *******************************************************************************************
 # Initialize dictionaries:
 dictionary_words = WordDictionary()
-filename_words = dictionary_path + "complete_dict.dictionary"
-dictionary_words.load(filename_words)
+dictionary_words.load(dictionary_path)
 
 dictionary_types = WordDictionary()
-filename_types = dictionary_path + "complete_version_of_dictionary.dictionary"
-dictionary_types.load(filename_types)
+#filename_types = dictionary_path + "complete_version_of_dictionary.dictionary"
+#dictionary_types.load(filename_types)
                  
 # Encode all graphs from the given folder:
 nodes_data, node_features = dataset_to_vector(dataset_path, dictionary_words, dictionary_types, log=True)

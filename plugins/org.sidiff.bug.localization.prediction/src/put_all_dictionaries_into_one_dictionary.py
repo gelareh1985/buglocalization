@@ -4,11 +4,13 @@ Created on Dec 7, 2020
 @author: Gelareh_mp
 '''
 import os
+from nltk.corpus import stopwords
 
 dictionary_path =  r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\dictionaries\main dictionaries/"
 
+stop_words = set(stopwords.words('english'))
 
-def load_dictionaries(dict_path,dictionary):
+def merge_wordcount(dict_path,dictionary):
     with open(dict_path) as f:
         #contents = f.read()
         for i, line in enumerate(f):
@@ -23,7 +25,7 @@ def save_dictionaries(dictionary_file_name,list_of_dicts):
     
     for dictionary in list_of_dicts:  
         for key, value in dictionary.items():
-            if key not in output_dict:
+            if key not in output_dict and key not in stop_words:
                 output_dict.update({key:dictionary_words_size})
                 dictionary_words_size += 1
     
@@ -44,11 +46,11 @@ for filename in os.listdir(dictionary_path):
             dict_list_path = dictionary_path  + graph_filename + ".dictionary"
             dict_number = graph_filename[0:graph_filename.find("_")]
             
-            dictionary=load_dictionaries(dict_list_path,complete_dictionary)
+            dictionary=merge_wordcount(dict_list_path,complete_dictionary)
             list_dictionaries.append(dictionary)
             print('Dictionary: ',dict_number)
     
-filename=dictionary_path+"complete_dict"    
+filename=dictionary_path+"complete_dict_stopwords_removed"    
 save_dictionaries(filename,list_dictionaries)
 
 

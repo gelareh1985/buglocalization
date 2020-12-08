@@ -6,10 +6,14 @@ import os
 from stellargraph.layer import GraphSAGE, link_classification
 from stellargraph.mapper import GraphSAGELinkGenerator
 from tensorflow import keras
+from sklearn.model_selection import train_test_split
+from IPython.display import display, HTML
 
 
-dataset_path = r"D:\files_MDEAI_original\Datasets\buglocations_dataset\buglocations_5000/"
+#dataset_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\buglocations_1000/"
+#feature_node_save_path=r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\nodelist_features/"
 
+dataset_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/"
 
 def load_dataset(dataset_path, log=False):
 
@@ -21,10 +25,10 @@ def load_dataset(dataset_path, log=False):
     feature_size = None
     
     for filename in os.listdir(dataset_path):
-        if filename.endswith(".featurenodelist"):
+        if filename.endswith(".edgelist"):
             graph_filename = filename[:filename.rfind(".")]
-            node_list_path = dataset_path + graph_filename + ".featurenodelist"
             edge_list_path = dataset_path + graph_filename + ".edgelist"
+            node_list_path = dataset_path + "/features/" + graph_filename + ".featurenodelist"
             graph_number = graph_filename[0:graph_filename.find("_")]
     
             if (feature_size == None):
@@ -47,7 +51,10 @@ def load_dataset(dataset_path, log=False):
             
             if log:
                 print("Graph: ", graph_number)
-            
+    
+    if(not dataset_nodes or not dataset_edges or not dataset_bug_locations):
+        raise Exception('No samples found')
+    #df=dataset_nodes[["index","text", "type"]]
     return dataset_nodes, dataset_edges, dataset_bug_locations
 
 # Assumes Tables: index, n-feature, tag
@@ -108,6 +115,7 @@ def extract_bug_locations(node_data):
     if (bug_report_node is None):
         raise Exception("Error: Bug report node not found!")
     
+    # Remove the column 'tag' - it is not a numerical column:
     node_data.drop("tag", inplace=True, axis=1)
     return bug_locations
 
@@ -139,82 +147,116 @@ def unpack(packed_list):
 # Collect all graphs from the given folder:
 dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(dataset_path, log=True)
 
-# Positive training set:
-nodes_train = pd.concat(dataset_nodes[1::2]) # split 50% odd
-edges_train = pd.concat(dataset_edges[1::2]) # split 50% odd
-bug_locations_train = unpack(dataset_bug_locations[1::2]) # split 50% odd
-edge_labels_train = np.ones(len(bug_locations_train))
+#display(dataset_nodes)
 
+# TODO: Negative samples!
+# TODO: Check this -> Use 50% from historic versions and 50% from newer versions
+split_data = len(dataset_nodes) / 2
+
+# Positive training set:
+nodes_train = pd.concat(dataset_nodes[0:split_data])
+edges_train = pd.concat(dataset_edges[0:split_data])
+bug_locations_train = unpack(dataset_bug_locations[0:split_data])
+edge_labels_train = np.ones(len(bug_locations_train))
+ 
 # Positive test set:
-nodes_test = pd.concat(dataset_nodes[::2]) # split 50% even
-edges_test = pd.concat(dataset_edges[::2]) # split 50% even
-bug_locations_test = unpack(dataset_bug_locations[::2]) # split 50% even
+nodes_test = pd.concat(dataset_nodes[split_data:len(dataset_nodes)])
+edges_test = pd.concat(dataset_edges[split_data:len(dataset_nodes)])
+bug_locations_test = unpack(dataset_bug_locations[split_data:len(dataset_nodes)])
 edge_labels_test = np.ones(len(bug_locations_test))
 
-# Create Stellar graphs:       
+# listreport=nodes_train[nodes_train.isin(['# REPORT'])].stack()
+# display(listreport)
+# nodes_train.replace(listreport,np.ones(len(listreport)))
+
+# display('size of nodes_train:    [',nodes_train.size, 'x',nodes_train.ndim,']')
+# display(nodes_train)
+# display('size of edges_train:    [',edges_train.size, 'x',edges_train.ndim,']')
+# display(edges_train)
+# display(dataset_bug_locations)
+
+# Create Stellar graphs:
+
+# for nodes_row in nodes_train.iterrows():
+#     for nodes_column in nodes_row:
+#         if isinstance(nodes_column, pd.Series):
+#             if nodes_column.eq("# REPORT").any():
+#                 indexCol = 0
+#                 
+#                 for value in nodes_column:
+#                     indexCol += 1
+#                     if value == "# REPORT":
+#                         print(indexCol)
+#                         print(value)
+
+#print(nodes_train.eq("# REPORT").any(1))
+    
+
 G_train = sg.StellarGraph(nodes_train, edges_train)
-G_test = sg.StellarGraph(nodes_test, edges_test)
+print(G_train.info())
+G_test = sg.StellarGraph(nodes_train, edges_test)
+print(G_test.info())
 
 ###################################################################################################
 # Create AI Model:
 ###################################################################################################
-
-batch_size = 20
-epochs = 20
-num_samples = [20, 10]
-
-train_gen = GraphSAGELinkGenerator(G_train, batch_size, num_samples)
-train_flow = train_gen.flow(bug_locations_train, edge_labels_train, shuffle=True)
-
-test_gen = GraphSAGELinkGenerator(G_test, batch_size, num_samples)
-test_flow = test_gen.flow(bug_locations_test, edge_labels_test)
-
-layer_sizes = [20, 20]
-
-graphsage = GraphSAGE(
-    layer_sizes=layer_sizes, generator=train_gen, bias=True, dropout=0.3
-)
-
-# Build the model and expose input and output sockets of GraphSAGE model for link prediction
-x_inp, x_out = graphsage.in_out_tensors()
-
-prediction = link_classification(
-    output_dim=1, output_act="relu", edge_embedding_method="ip"
-)(x_out)
-
-model = keras.Model(inputs=x_inp, outputs=prediction)
-
-model.compile(
-    optimizer=keras.optimizers.Adam(lr=1e-3),
-    loss=keras.losses.binary_crossentropy,
-    metrics=["acc"],
-)
-
-###################################################################################################
-# Train and Evaluate AI Model:
-###################################################################################################
-
-init_train_metrics = model.evaluate(train_flow)
-init_test_metrics = model.evaluate(test_flow)
-
-print("\nTrain Set Metrics of the initial (untrained) model:")
-for name, val in zip(model.metrics_names, init_train_metrics):
-    print("\t{}: {:0.4f}".format(name, val))
-
-print("\nTest Set Metrics of the initial (untrained) model:")
-for name, val in zip(model.metrics_names, init_test_metrics):
-    print("\t{}: {:0.4f}".format(name, val))
-    
-history = model.fit(train_flow, epochs=epochs, validation_data=test_flow, verbose=2)
-sg.utils.plot_history(history)
-
-train_metrics = model.evaluate(train_flow)
-test_metrics = model.evaluate(test_flow)
-
-print("\nTrain Set Metrics of the trained model:")
-for name, val in zip(model.metrics_names, train_metrics):
-    print("\t{}: {:0.4f}".format(name, val))
-
-print("\nTest Set Metrics of the trained model:")
-for name, val in zip(model.metrics_names, test_metrics):
-    print("\t{}: {:0.4f}".format(name, val))
+# 
+# batch_size = 20
+# epochs = 20
+# num_samples = [20, 10]
+# 
+# train_gen = GraphSAGELinkGenerator(G_train, batch_size, num_samples)
+# train_flow = train_gen.flow(bug_locations_train, edge_labels_train, shuffle=True)
+# 
+# test_gen = GraphSAGELinkGenerator(G_test, batch_size, num_samples)
+# test_flow = test_gen.flow(bug_locations_test, edge_labels_test)
+# 
+# layer_sizes = [20, 20]
+# 
+# graphsage = GraphSAGE(
+#     layer_sizes=layer_sizes, generator=train_gen, bias=True, dropout=0.3
+# )
+# 
+# # Build the model and expose input and output sockets of GraphSAGE model for link prediction
+# x_inp, x_out = graphsage.in_out_tensors()
+# 
+# prediction = link_classification(
+#     output_dim=1, output_act="relu", edge_embedding_method="ip"
+# )(x_out)
+# 
+# model = keras.Model(inputs=x_inp, outputs=prediction)
+# 
+# model.compile(
+#     optimizer=keras.optimizers.Adam(lr=1e-3),
+#     loss=keras.losses.binary_crossentropy,
+#     metrics=["acc"],
+# )
+# 
+# ###################################################################################################
+# # Train and Evaluate AI Model:
+# ###################################################################################################
+# 
+# init_train_metrics = model.evaluate(train_flow)
+# init_test_metrics = model.evaluate(test_flow)
+# 
+# print("\nTrain Set Metrics of the initial (untrained) model:")
+# for name, val in zip(model.metrics_names, init_train_metrics):
+#     print("\t{}: {:0.4f}".format(name, val))
+# 
+# print("\nTest Set Metrics of the initial (untrained) model:")
+# for name, val in zip(model.metrics_names, init_test_metrics):
+#     print("\t{}: {:0.4f}".format(name, val))
+#     
+# history = model.fit(train_flow, epochs=epochs, validation_data=test_flow, verbose=2)
+# sg.utils.plot_history(history)
+# 
+# train_metrics = model.evaluate(train_flow)
+# test_metrics = model.evaluate(test_flow)
+# 
+# print("\nTrain Set Metrics of the trained model:")
+# for name, val in zip(model.metrics_names, train_metrics):
+#     print("\t{}: {:0.4f}".format(name, val))
+# 
+# print("\nTest Set Metrics of the trained model:")
+# for name, val in zip(model.metrics_names, test_metrics):
+#     print("\t{}: {:0.4f}".format(name, val))
