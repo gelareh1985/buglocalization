@@ -1,135 +1,105 @@
 package org.sidiff.bug.localization.dataset.database.query;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 
-public class ModelCypherEdgeDelta extends ModelCypherNodeDelta {
+public class ModelCypherEdgeDelta extends ModelCypherDelta {
+	
+	/**
+	 * Edge-Label -> Source-Label -> Target-Label -> Batch[{Parameter -> Value}]
+	 */
+	private Map<String, Map<String, Map<String, List<Map<String, Object>>>>> createdEdgesBatches;
+	
+	/**
+	 * Edge-Label -> Source-Label -> Target-Label -> Batch[{Parameter -> Value}]
+	 */
+	private Map<String, Map<String, Map<String, List<Map<String, Object>>>>> removedEdgesBatches;
 	
 	public ModelCypherEdgeDelta(
 			int oldVersion, Map<XMLResource, XMLResource> oldResourcesMatch, 
-			int newVersion, Map<XMLResource, XMLResource> newResourcesMatch) {
-		super(oldVersion, oldResourcesMatch, newVersion, newResourcesMatch);
-	}
-
-	public String clearEdges() {
-		return "MATCH (a) -[r] -> () delete a, r";
-	}
-
-	public String createEdgesDelta() {
-		internal_createEdgesDeltas();
-		return compileQuery();
+			int newVersion, Map<XMLResource, XMLResource> newResourcesMatch, 
+			URI baseURI) {
+		super(oldVersion, oldResourcesMatch, newVersion, newResourcesMatch, baseURI);
+		this.createdEdgesBatches = new HashMap<>();
+		this.removedEdgesBatches = new HashMap<>();
+		deriveEdgeDeltas();
 	}
 	
-	protected void internal_createEdgesDeltas() {
+	private void deriveEdgeDeltas() {
 		
 		// Process matched resources:
 		for (Entry<XMLResource, XMLResource> resourceMatch : getOldResourcesMatch().entrySet()) {
 			if ((resourceMatch.getKey() != null) && (resourceMatch.getValue() != null)) {
-				internal_createEdgesDelta(resourceMatch.getKey(), resourceMatch.getValue());
+				deriveEdgeDelta(resourceMatch.getKey(), resourceMatch.getValue());
 			}
 		}
 		
 		// Process unmatched old resources:
 		for (Entry<XMLResource, XMLResource> resourceMatch : getOldResourcesMatch().entrySet()) {
 			if ((resourceMatch.getKey() != null) && (resourceMatch.getValue() == null)) {
-				internal_createEdgesDelta(resourceMatch.getKey(), resourceMatch.getValue());
+				deriveEdgeDelta(resourceMatch.getKey(), resourceMatch.getValue());
 			}
 		}
 		
 		// Process unmatched new resources:
 		for (Entry<XMLResource, XMLResource> resourceMatch : getNewResourcesMatch().entrySet()) {
 			if ((resourceMatch.getKey() != null) && (resourceMatch.getValue() == null)) {
-				internal_createEdgesDelta(resourceMatch.getValue(), resourceMatch.getKey());
+				deriveEdgeDelta(resourceMatch.getValue(), resourceMatch.getKey());
 			}
 		}
 	}
-	
-	protected void internal_createEdgesDelta(XMLResource oldResource, XMLResource newResource) {
+
+	private void deriveEdgeDelta(XMLResource oldResource, XMLResource newResource) {
 		
 		// Process old nodes to be removed:
 		if (oldResource != null) { // initial version?
-			for (EObject oldModelElement : (Iterable<EObject>) () -> oldResource.getAllContents()) {
-				String modelElementID = oldResource.getID(oldModelElement);
-				EObject newModelElement = (newResource != null) ? newResource.getEObject(modelElementID) : null;
-				removedEdges(modelElementID, newModelElement, oldModelElement);
+			for (EObject oldModelElement : (Iterable<EObject>) () -> EcoreUtil.getAllProperContents(oldResource, true)) {
+				String modelElementID = getModelElementID(oldResource, oldModelElement);
+				EObject newModelElement = (newResource != null) ? getModelElement(newResource, modelElementID) : null;
+				deriveRemovedEdges(modelElementID, newModelElement, oldModelElement);
 			}
 		}
 		
 		// Process new/changed edges to be created:
 		if (newResource != null) { // removed resource?
-			for (EObject newModelElement : (Iterable<EObject>) () -> newResource.getAllContents()) {
-				String modelElementID = newResource.getID(newModelElement);
-				EObject oldModelElement = (oldResource != null) ? oldResource.getEObject(modelElementID) : null;
-				updateEdges(modelElementID, oldModelElement, newModelElement);
+			for (EObject newModelElement : (Iterable<EObject>) () -> EcoreUtil.getAllProperContents(newResource, true)) {
+				String modelElementID = getModelElementID(newResource, newModelElement);
+				EObject oldModelElement = (oldResource != null) ? getModelElement(oldResource, modelElementID) : null;
+				deriveCreatedEdges(modelElementID, oldModelElement, newModelElement);
 			}
 		}
 	}
-	
-	protected Integer getEdge(EObject source, String sourceID, EReference reference, EObject target, String targetID) {
-		Integer cypherVariable = createNewVariable();
-		getMatchQueries().put(toCypherEdgeMatch(source, sourceID, reference, target, targetID, cypherVariable), cypherVariable);
-		return cypherVariable;
-	}
-	
-	private String toCypherEdgeMatch(EObject source, String sourceID, EReference reference, EObject target, String targetID, int cypherVariable) {
-		StringBuffer query = new StringBuffer();
-		query.append("MATCH ");
-		
-		// source:
-		query.append("(");
-		query.append(" : ");
-		query.append(toCypherLabel(source.eClass()));
-		query.append(" { ");
-		query.append("__model__element__id__: '");
-		query.append(sourceID);
-		query.append("' })");
-		
-		// edge variable:
-		query.append("-[");
-		query.append("v");
-		query.append(cypherVariable);
-		query.append(":");
-		query.append(toCypherLabel(reference));
-		query.append("]->");
-		
-		// target:
-		query.append("(");
-		query.append(" : ");
-		query.append(toCypherLabel(target.eClass()));
-		query.append(" { ");
-		query.append("__model__element__id__: '");
-		query.append(targetID);
-		query.append("' })");
-		
-		return query.toString();
-	}
-	
-	protected String toCypherLabel(EReference type) {
-		return type.getName();
-	}
 
-	private void removedEdges(String modelElementID, EObject newModelElement, EObject oldModelElement) {
+	private void deriveRemovedEdges(String modelElementID, EObject newModelElement, EObject oldModelElement) {
 		for (EReference reference : oldModelElement.eClass().getEAllReferences()) {
-			if (reference.isMany()) {
-				@SuppressWarnings("unchecked")
-				Collection<Object> targets = (Collection<Object>) oldModelElement.eGet(reference);
-
-				for (Object target : targets) {
+			if (isConsideredFeature(reference)) {
+				if (reference.isMany()) {
+					@SuppressWarnings("unchecked")
+					Collection<Object> targets = (Collection<Object>) oldModelElement.eGet(reference);
+					
+					for (Object target : targets) {
+						if (target instanceof EObject) {
+							setLastVersionIfDeltedEdge(modelElementID, newModelElement, oldModelElement, reference, (EObject) target);
+						}
+					}
+				} else {
+					Object target = oldModelElement.eGet(reference);
+					
 					if (target instanceof EObject) {
 						setLastVersionIfDeltedEdge(modelElementID, newModelElement, oldModelElement, reference, (EObject) target);
 					}
-				}
-			} else {
-				Object target = oldModelElement.eGet(reference);
-				
-				if (target instanceof EObject) {
-					setLastVersionIfDeltedEdge(modelElementID, newModelElement, oldModelElement, reference, (EObject) target);
 				}
 			}
 		}
@@ -137,39 +107,29 @@ public class ModelCypherEdgeDelta extends ModelCypherNodeDelta {
 
 	private void setLastVersionIfDeltedEdge(
 			String sourceID, EObject sourceNew, EObject sourceOld, EReference reference, EObject targetOld) {
-
+	
 		Resource targetResourceOld = targetOld.eResource();
-
+	
 		if (targetResourceOld instanceof XMLResource) {
-			String targetID = ((XMLResource) targetResourceOld).getID(targetOld);
+			String targetID = getModelElementID((XMLResource) targetResourceOld, targetOld);
 			XMLResource targetResourceNew = getNewResource(targetResourceOld);
-
+	
 			if (isRemovedEdge(sourceNew, reference, targetResourceNew, targetID)) {
-				removeEdge(sourceOld, sourceID, reference, targetOld, targetID);
+				Map<String, Object> properties = new HashMap<>();
+				properties.put("__last__version__", getOldVersion());
+				
+				addEdgeToBatch(sourceID, sourceOld, reference, targetID, targetOld, properties, removedEdgesBatches);
 			}
 		}
-	}
-	
-	private void removeEdge(EObject sourceOld, String sourceID, EReference reference, EObject targetOld, String targetID) {
-		Integer cypherVariable = getEdge(sourceOld, sourceID, reference, targetOld, targetID);
-		
-		StringBuilder query = new StringBuilder();
-		query.append("SET ");
-		query.append("v");
-		query.append(cypherVariable);
-		query.append(".__last__version__ = ");
-		query.append(getOldVersion());
-		
-		getSetQueries().add(query.toString());
 	}
 
 	private boolean isRemovedEdge(EObject sourceNew, EReference reference, XMLResource targetResourceNew, String targetID) {
 		
 		// removed source node?
-		if (sourceNew == null) {
+		if ((sourceNew == null) || (targetResourceNew == null)) {
 			return true; // all edges are removed
 		} else {
-			EObject targetNew = targetResourceNew.getEObject(targetID);
+			EObject targetNew = getModelElement(targetResourceNew, targetID);
 			
 			// removed target node?
 			if (targetNew == null) {
@@ -180,70 +140,56 @@ public class ModelCypherEdgeDelta extends ModelCypherNodeDelta {
 		}
 	}
 
-	private void updateEdges(String modelElementID, EObject oldModelElement, EObject newModelElement) {
-		StringBuffer query = new StringBuffer();
-		
+	private void deriveCreatedEdges(String modelElementID, EObject oldModelElement, EObject newModelElement) {
 		for (EReference reference : newModelElement.eClass().getEAllReferences()) {
-			if (reference.isMany()) {
-				@SuppressWarnings("unchecked")
-				Collection<Object> targets = (Collection<Object>) newModelElement.eGet(reference);
-
-				for (Object target : targets) {
-					if (target instanceof EObject) {
-						String newEdgeQuery = createIfNewEdge(modelElementID, oldModelElement, newModelElement, reference, (EObject) target);
-						
-						if (newEdgeQuery != null) {
-							query.append(newEdgeQuery);
-							query.append(", ");
+			if (isConsideredFeature(reference)) {
+				if (reference.isMany()) {
+					@SuppressWarnings("unchecked")
+					Collection<Object> targets = (Collection<Object>) newModelElement.eGet(reference);
+					
+					for (Object target : targets) {
+						if (target instanceof EObject) {
+							createIfNewEdge(modelElementID, oldModelElement, newModelElement, reference, (EObject) target);
 						}
 					}
-				}
-			} else {
-				Object target = newModelElement.eGet(reference);
-				
-				if (target instanceof EObject) {
-					String newEdgeQuery = createIfNewEdge(modelElementID, oldModelElement, newModelElement, reference, (EObject) target);
+				} else {
+					Object target = newModelElement.eGet(reference);
 					
-					if (newEdgeQuery != null) {
-						query.append(newEdgeQuery);
-						query.append(", ");
+					if (target instanceof EObject) {
+						createIfNewEdge(modelElementID, oldModelElement, newModelElement, reference, (EObject) target);
 					}
 				}
 			}
-		}
-		
-		if (query.length() > 0) {
-			query.deleteCharAt(query.length() - 1); // last ,~
-			query.deleteCharAt(query.length() - 1);
-			
-			getCreateQueries().add(query.toString());
 		}
 	}
 
-	private String createIfNewEdge(
-			String sourceID, EObject sourceOld, EObject sourceNew, EReference reference, EObject targetNew) {
-
+	private void createIfNewEdge(String sourceID, EObject sourceOld, EObject sourceNew, EReference reference, EObject targetNew) {
 		Resource targetResourceNew = targetNew.eResource();
-
+	
 		if (targetResourceNew instanceof XMLResource) {
-			String targetID = ((XMLResource) targetResourceNew).getID(targetNew);
+			String targetID = getModelElementID((XMLResource) targetResourceNew, targetNew);
 			XMLResource targetResourceOld = getOldResource(targetResourceNew);
-
+	
 			if (isNewEdge(sourceOld, reference, targetResourceOld, targetID)) {
-				return createEdge(sourceID, sourceNew, reference, targetID, targetNew);
+				
+				Map<String, Object> createEdgeProperties = new HashMap<>();
+				createEdgeProperties.put("__containment__", reference.isContainment());
+				createEdgeProperties.put("__container__", reference.isContainer());
+				createEdgeProperties.put("__initial__version__", getNewVersion());
+				createEdgeProperties.put("__last__version__", getNewVersion());
+				
+				addEdgeToBatch(sourceID, sourceNew, reference, targetID, targetNew, createEdgeProperties, createdEdgesBatches);
 			}
 		}
-		
-		return null;
 	}
 
 	private boolean isNewEdge(EObject sourceOld, EReference reference, XMLResource targetResourceOld, String targetID) {
 		
 		// new source node?
-		if (sourceOld == null) {
+		if ((sourceOld == null) || (targetResourceOld == null)) {
 			return true; // all edges are new
 		} else {
-			EObject targetOld = targetResourceOld.getEObject(targetID);
+			EObject targetOld = getModelElement(targetResourceOld, targetID);
 			
 			// new target node?
 			if (targetOld == null) {
@@ -264,37 +210,114 @@ public class ModelCypherEdgeDelta extends ModelCypherNodeDelta {
 		}
 	}
 
-	private String createEdge(String sourceID, EObject source, EReference reference, String targetID, EObject target) {
-		StringBuffer query = new StringBuffer();
+	private void addEdgeToBatch(String sourceID, EObject source, EReference reference, String targetID, EObject target, 
+			Map<String, Object> properties, Map<String, Map<String, Map<String, List<Map<String, Object>>>>> edgesBatch) {
 		
-		// source
-		query.append("(v");
-		query.append(getNode(sourceID, source));
-		query.append(")-[:");
-		query.append(toCypherLabel(reference));
-		
-		// version:
-		query.append(" { ");
-		query.append("__initial__version__: ");
-		query.append(getNewVersion());
-		query.append(", ");
-		
-		// derived:
-		query.append("__derived__: ");
-		query.append(reference.isDerived());
-		query.append(", ");
-		
-		// containment:
-		query.append("__containment__: ");
-		query.append(reference.isContainment());
-		query.append("} ");
-		
-		// target
-		query.append("]->(");
-		query.append("v");
-		query.append(getNode(targetID, target));
-		query.append(")");
+		// source target:
+		Map<String, Object> createEdge = new HashMap<>();
+		createEdge.put("from", sourceID);
+		createEdge.put("to", targetID);
 	
+		// properties:
+		createEdge.put("properties", properties);
+		
+		// labels:
+		String sourceLabel = toCypherLabel(source.eClass());
+		String targetLabel = toCypherLabel(target.eClass());
+		String edgelabel = toCypherLabel(reference);
+	
+		// store query by labels:
+		Map<String, Map<String, List<Map<String, Object>>>> edgeLabel2SourceLabel = edgesBatch.getOrDefault(edgelabel, new HashMap<>());
+		edgesBatch.put(edgelabel, edgeLabel2SourceLabel);
+		
+		Map<String, List<Map<String, Object>>> sourceLabel2TargetLabel = edgeLabel2SourceLabel.getOrDefault(sourceLabel, new HashMap<>());
+		edgeLabel2SourceLabel.put(sourceLabel, sourceLabel2TargetLabel);
+		
+		List<Map<String, Object>> targetLabel2Parameter = sourceLabel2TargetLabel.getOrDefault(targetLabel, new ArrayList<>());
+		sourceLabel2TargetLabel.put(targetLabel, targetLabel2Parameter);
+		
+		targetLabel2Parameter.add(createEdge);
+	}
+
+	public String increaseVersion() {
+		return "MATCH (from)-[rel {__last__version__: " + getOldVersion() + "}]->(to) SET rel.__last__version__ = " + getNewVersion();
+	}
+
+	public Map<String, Map<String, Object>> createdEdgesDelta() {
+		return computeEdgeBatchQueries(false, createdEdgesBatches);
+	}
+	
+	public Map<String, Map<String, Object>> removedEdgesDelta() {
+		return computeEdgeBatchQueries(true, removedEdgesBatches);
+	}
+	
+	private Map<String, Map<String, Object>> computeEdgeBatchQueries(boolean match, Map<String, Map<String, Map<String, List<Map<String, Object>>>>> edges) {
+		if (!edges.isEmpty()) {
+			Map<String, Map<String, Object>> createEdgeQueriesByLabel = new HashMap<>();
+			
+			for (Entry<String, Map<String, Map<String, List<Map<String, Object>>>>> edgeLabel2SourceLabel : edges.entrySet()) {
+				for (Entry<String, Map<String, List<Map<String, Object>>>> sourceLabel2TargetLabel : edgeLabel2SourceLabel.getValue().entrySet()) {
+					for (Entry<String, List<Map<String, Object>>> targetLabel2Parameter : sourceLabel2TargetLabel.getValue().entrySet()) {
+						List<Map<String, Object>> parameterBatch = targetLabel2Parameter.getValue();
+						String query = computeEdgeBatchQuery(sourceLabel2TargetLabel.getKey(), edgeLabel2SourceLabel.getKey(), targetLabel2Parameter.getKey(), match);
+						
+						Map<String, Object> createEdgesBatch = new HashMap<>(1);
+						createEdgesBatch.put("batch", parameterBatch);
+						
+						createEdgeQueriesByLabel.put(query, createEdgesBatch);
+					}
+				}
+			}
+			
+			return createEdgeQueriesByLabel;
+		} else {
+			return Collections.emptyMap();
+		}
+	}	
+	
+	private String computeEdgeBatchQuery(String sourceLabel, String edgeLabel, String targetLabel, boolean match) {
+		StringBuilder query = new StringBuilder();
+		query.append("UNWIND $batch as entry ");
+		
+		// TODO: Combine labels: MATCH n-[r:LABEL1|LABEL2]->t !?
+		query.append("MATCH (from:");
+		query.append(sourceLabel);
+		query.append(" {__model__element__id__: entry.from, __last__version__: ");
+		query.append(getNewVersion());
+		query.append("}) ");
+		
+		query.append("USING INDEX from:");
+		query.append(sourceLabel);
+		query.append("(__model__element__id__) ");
+		
+		query.append("MATCH (to:");
+		query.append(targetLabel);
+		query.append(" {__model__element__id__: entry.to, __last__version__: ");
+		query.append(getNewVersion());
+		query.append("}) ");
+		
+		query.append("USING INDEX to:");
+		query.append(targetLabel);
+		query.append("(__model__element__id__) ");
+		
+		if (match) {
+			query.append("MATCH (from)-[rel:");
+			query.append(edgeLabel);
+			query.append("]->(to) ");
+		} else {
+			query.append("CREATE (from)-[rel:");
+			query.append(edgeLabel);
+			query.append(" { __last__version__: ");
+			query.append(getNewVersion());
+			query.append("}]->(to) "); 
+		}
+		
+		query.append("SET rel += entry.properties");
+				
 		return query.toString();
+	}
+	
+	public static String clearEdges() {
+		return "MATCH (a) -[r] -> () DELETE a, r";
 	}
 }
