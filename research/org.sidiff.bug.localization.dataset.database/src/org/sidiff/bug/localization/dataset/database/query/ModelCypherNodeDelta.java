@@ -35,10 +35,9 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 	private Set<String> nodeLabels = new HashSet<>();
 	
 	public ModelCypherNodeDelta(
-			int oldVersion, Map<XMLResource, XMLResource> oldResourcesMatch, 
-			int newVersion, Map<XMLResource, XMLResource> newResourcesMatch, 
-			URI baseURI) {
-		super(oldVersion, oldResourcesMatch, newVersion, newResourcesMatch, baseURI);
+			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch, 
+			int newVersion, URI newBaseURI,Map<XMLResource, XMLResource> newResourcesMatch) {
+		super(oldVersion, oldBaseURI, oldResourcesMatch, newVersion, newBaseURI, newResourcesMatch);
 		this.createdNodesBatches = new HashMap<>();
 		this.removedNodesBatches = new HashMap<>();
 		deriveNodeDeltas();
@@ -103,35 +102,26 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 	}
 
 	private void deriveCreatedNode(EObject modelElementOld, EObject modelElementNew, String modelElementID) {
-		Map<String, Object> createNodeProperties = new HashMap<>();
-		
-		// model attributes:
-		boolean hasChanged = false;
-		
-		for (EAttribute attribute : modelElementNew.eClass().getEAllAttributes()) {
-			if (isConsideredFeature(attribute)) {
-				String oldValue = toCypherValue(modelElementOld, attribute);
-				String newValue = toCypherValue(modelElementNew, attribute);
-				
-				// compare values:
-				if (hasValueChanged(modelElementOld, oldValue, newValue)) {
-					hasChanged = true;
-				}
-				
-				if (newValue != null) {
-					createNodeProperties.put(attribute.getName(), newValue);
-				}
-			}
-		}
 		
 		// new/changed node?
-		if (hasChanged) {
+		if (hasValueChanges(modelElementOld, modelElementNew)) {
+			Map<String, Object> createNodeProperties = new HashMap<>();
 			
 			// meta-attributes:
 			createNodeProperties.put("__model__ns__uri__", modelElementNew.eClass().getEPackage().getNsURI());
 			createNodeProperties.put("__model__element__id__", modelElementID);
 			createNodeProperties.put("__initial__version__", getNewVersion());
 			createNodeProperties.put("__last__version__", getNewVersion()); // initialize
+			
+			for (EAttribute attribute : modelElementNew.eClass().getEAllAttributes()) {
+				if (isConsideredFeature(attribute)) {
+					String newValue = toCypherValue(modelElementNew, attribute);
+					
+					if (newValue != null) {
+						createNodeProperties.put(attribute.getName(), newValue);
+					}
+				}
+			}
 			
 			// label:
 			String label = toCypherLabel(modelElementNew.eClass());
@@ -144,12 +134,32 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 			nodeLabels.add(label);
 		}
 	}
+	
+	private boolean hasValueChanges(EObject objOld, EObject objNew) {
+		if (objOld == null) {
+			return true; // all attributes are new
+		} else {
+			for (EAttribute attribute : objOld.eClass().getEAllAttributes()) {
+				if (isConsideredFeature(attribute)) {
+					Object oldValue = objOld.eGet(attribute);
+					Object newValue = objNew.eGet(attribute);
+					
+					// compare values:
+					if (hasValueChanged(oldValue, newValue)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
 
-	private boolean hasValueChanged(EObject objOld, String oldValue, String newValue) {
-		return (objOld == null) 
-				|| ((oldValue == null) && (newValue != null))
-				|| ((newValue == null) && (oldValue != null))
-				|| ((oldValue != null) && !oldValue.equals(newValue));
+	private boolean hasValueChanged(Object oldValue, Object newValue) {
+		if (oldValue == newValue) {
+			return false; // includes null == null
+		} else {
+			return (oldValue == null) || !oldValue.equals(newValue);
+		}
 	}
 
 	private void deriveRemovedNodes(XMLResource oldResource, EObject oldModelElement) {
@@ -190,7 +200,7 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 			for (String label : nodeLabels) {
 				
 				// NOTE: None unique index -> A node is identified by model element ID and its initial version:
-				nodeIndex.add("CREATE INDEX IF NOT EXISTS FOR (n:" + label + ") ON (n.__model__element__id__)");
+				nodeIndex.add("CREATE INDEX " + label + "___model__element__id__ IF NOT EXISTS FOR (n:" + label + ") ON (n.__model__element__id__)");
 				
 				// NOTE: Key attributes with multiple attributes are only allowed in Neo4j enterprise edition.
 				//       With this solution it is not needed to add index hints and node labels on the edge queries...

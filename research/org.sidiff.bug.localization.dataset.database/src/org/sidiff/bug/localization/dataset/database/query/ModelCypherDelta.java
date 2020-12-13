@@ -1,6 +1,5 @@
 package org.sidiff.bug.localization.dataset.database.query;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -14,13 +13,14 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.sidiff.bug.localization.dataset.database.model.ModelDeltaUtil;
 
 public class ModelCypherDelta {
 	
 	/**
 	 * URI protocol for model IDs generated from URIs.
 	 */
-	private static final String URI_PROTOCOL = "uri:/";
+	private static final String URI_PROTOCOL = "file:/";
 
 	private int oldVersion;
 	
@@ -31,28 +31,58 @@ public class ModelCypherDelta {
 	private Map<XMLResource, XMLResource> newResourcesMatch;
 	
 	/**
-	 * Path to the common model folder.
+	 * Path to the model folder of the old version.
 	 */
-	private URI baseURI;
+	private URI oldBaseURI;
+	
+	/**
+	 * Path to the model folder of the new version.
+	 */
+	private URI newBaseURI;
+	
+	/**
+	 * Path to the model folder of the new version.
+	 */
+	private URI commonBaseURI;
 	
 	public ModelCypherDelta(
-			int oldVersion, Map<XMLResource, XMLResource> oldResourcesMatch,
-			int newVersion, Map<XMLResource, XMLResource> newResourcesMatch,
-			URI baseURI) {
+			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch,
+			int newVersion, URI newBaseURI, Map<XMLResource, XMLResource> newResourcesMatch) {
 		this.oldVersion = oldVersion;
 		this.oldResourcesMatch = oldResourcesMatch;
 		this.newVersion = newVersion;
 		this.newResourcesMatch = newResourcesMatch;
-		this.baseURI = baseURI;
+		this.oldBaseURI = oldBaseURI;
+		this.newBaseURI = newBaseURI;
+		
+		if ((oldBaseURI != null) && oldBaseURI.equals(newBaseURI)) {
+			this.commonBaseURI = newBaseURI;
+		}
+	}
+	
+	private URI getBaseURI(XMLResource resource) {
+		if (commonBaseURI != null) {
+			return commonBaseURI;
+		} else {
+			if (oldResourcesMatch.containsKey(resource)) {
+				if (oldBaseURI != null) {
+					return oldBaseURI;
+				}
+			} else if (newResourcesMatch.containsKey(resource)) {
+				if (newBaseURI != null) {
+					return newBaseURI;
+				}
+			}
+		}
+		return null;
 	}
 	
 	public String getModelElementID(XMLResource resource, EObject modelElement) {
 		String id = resource.getID(modelElement);
 		
 		if (id == null) {
-			URI relativeURI = EcoreUtil.getURI(modelElement).deresolve(baseURI);
-			String[] shortRelativePath = Arrays.copyOfRange(relativeURI.segments(), 1, relativeURI.segmentCount());
-			id = URI.createURI(URI_PROTOCOL).appendSegments(shortRelativePath).appendFragment(relativeURI.fragment()).toString();
+			URI relativeURI = ModelDeltaUtil.getRelativeURI(getBaseURI(resource), EcoreUtil.getURI(modelElement));
+			id = URI_PROTOCOL + relativeURI.toString();
 		}
 		
 		return id;
@@ -112,7 +142,7 @@ public class ModelCypherDelta {
 					EDataType valueType = attribute.getEAttributeType();
 					EFactory converter = valueType.getEPackage().getEFactoryInstance();
 					String stringValue = converter.convertToString(attribute.getEAttributeType(), value);
-					return "\"" + stringValue + "\"";
+					return stringValue;
 				}
 			}
 		}

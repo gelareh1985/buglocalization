@@ -28,10 +28,9 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	private Map<String, Map<String, Map<String, List<Map<String, Object>>>>> removedEdgesBatches;
 	
 	public ModelCypherEdgeDelta(
-			int oldVersion, Map<XMLResource, XMLResource> oldResourcesMatch, 
-			int newVersion, Map<XMLResource, XMLResource> newResourcesMatch, 
-			URI baseURI) {
-		super(oldVersion, oldResourcesMatch, newVersion, newResourcesMatch, baseURI);
+			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch, 
+			int newVersion, URI newBaseURI,Map<XMLResource, XMLResource> newResourcesMatch) {
+		super(oldVersion, oldBaseURI, oldResourcesMatch, newVersion, newBaseURI, newResourcesMatch);
 		this.createdEdgesBatches = new HashMap<>();
 		this.removedEdgesBatches = new HashMap<>();
 		deriveEdgeDeltas();
