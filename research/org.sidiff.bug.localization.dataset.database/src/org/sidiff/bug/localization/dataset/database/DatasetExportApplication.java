@@ -1,7 +1,7 @@
 package org.sidiff.bug.localization.dataset.database;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.Collections;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -9,53 +9,102 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.sidiff.bug.localization.dataset.database.query.ModelCypherGraphDelta;
+import org.sidiff.bug.localization.dataset.database.model.ModelDelta;
+import org.sidiff.bug.localization.dataset.database.model.ModelHistory2Neo4j;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
+import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
+import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
+import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
 public class DatasetExportApplication implements IApplication {
 
+	public static final String ARGUMENT_DATASET = "-dataset";
+
+	public static final String ARGUMENT_MODEL_REPOSITORY = "-modelrepository";
+	
+	public static final String ARGUMENT_DATABASE_CONNECTION = "-databaseconnection";
+	
+	public static final String ARGUMENT_DATABASE_NAMES = "-databasename";
+	
+	public static final String ARGUMENT_DATABASE_PASSWORD = "-databasepassword";
+	
+	public static final String ARGUMENT_DATABASE_CLEAR = "-clear";
+
+	private Path datasetPath;
+
+	private DataSet dataset;
+
+	private GitRepository modelRepository;
+	
+	// TODO: Save version number to Git identification mapping
+	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
-		ResourceSet resourceSetV0 = new ResourceSetImpl();
-		XMLResource umlResourceV0 = (XMLResource) resourceSetV0.getResource(URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/test/1/testdi.uml", true), true);
 		
-		Map<XMLResource, XMLResource> oldResourcesMatch = new HashMap<>();
-		Map<XMLResource, XMLResource> newResourcesMatch = new HashMap<>();
-		newResourcesMatch.put(umlResourceV0, null);
+		// bolt://localhost:7687 , neo4j , password
+		String databaseConnection = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_CONNECTION);
+		String databaseName = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_NAMES);
+		String databasePassword = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_PASSWORD);
 		
-		ModelCypherGraphDelta graphDeltaV0 = new ModelCypherGraphDelta(-1, oldResourcesMatch, 0, newResourcesMatch);
-		String graphV0 = graphDeltaV0.createGraphDelta();
-		System.out.println(graphV0);
+//		if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
+//			test();
+//			return IApplication.EXIT_OK;
+//		}
 		
-		try (Neo4jTransaction transaction = new Neo4jTransaction("bolt://localhost:7687", "neo4j", "password")) {
-			transaction.execute(graphDeltaV0.clearEdges());
-			transaction.execute(graphDeltaV0.clearNodes());
-			transaction.execute(graphV0);
-		}
+		this.datasetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
+		this.dataset = DataSetStorage.load(datasetPath);
+
+		Path modelRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_MODEL_REPOSITORY);
+		this.modelRepository = new GitRepository(modelRepositoryPath.toFile()); 
 		
-		System.out.println("############################## NEW VERSION ##############################");
-		
-		ResourceSet resourceSetV1 = new ResourceSetImpl();
-		XMLResource umlResourceV1 = (XMLResource) resourceSetV1.getResource(URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/test/2/testdi.uml", true), true);
-		
-		oldResourcesMatch = new HashMap<>();
-		oldResourcesMatch.put(umlResourceV0, umlResourceV1);
-		newResourcesMatch = new HashMap<>();
-		newResourcesMatch.put(umlResourceV1, umlResourceV0);
-		
-		ModelCypherGraphDelta graphDeltaV1 = new ModelCypherGraphDelta(0, oldResourcesMatch, 1, newResourcesMatch);
-		String graphV1 = graphDeltaV1.createGraphDelta();
-		System.out.println(graphV1);
-		
-		try (Neo4jTransaction transaction = new Neo4jTransaction("bolt://localhost:7687", "neo4j", "password")) {
-			transaction.execute(graphV1);
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseConnection, databaseName, databasePassword)) {
+			ModelHistory2Neo4j modelHistory2Neo4j = new ModelHistory2Neo4j(modelRepository, transaction);
+			
+			// Initially clear Neo4j database?
+			if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
+				modelHistory2Neo4j.clearDatabase();
+			}
+			
+			// Write model repository history to Neo4j:
+			modelHistory2Neo4j.commitHistory(dataset);
 		}
 		
 		return IApplication.EXIT_OK;
 	}
 
+	public Path getRepositoryFile(Path localPath) {
+		return modelRepository.getWorkingDirectory().resolve(localPath);
+	}
+	
 	@Override
 	public void stop() {
+	}
+
+	@SuppressWarnings("unused")
+	private void test() throws Exception {
+		String databaseURI = "bolt://localhost:7687";
+		String databaseName = "neo4j";
+		String databasePassword = "password";
+		
+		URI baseUriV0 = URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/test/1", true);
+		ResourceSet resourceSetV0 = new ResourceSetImpl();
+		XMLResource umlResourceV0 = (XMLResource) resourceSetV0.getResource(baseUriV0.appendSegment("testdi.uml"), true);
+
+		URI baseUriV1 = URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/test/2", true);
+		ResourceSet resourceSetV1 = new ResourceSetImpl();
+		XMLResource umlResourceV1 = (XMLResource) resourceSetV1.getResource(baseUriV1.appendSegment("testdi.uml"), true);
+		
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
+			ModelDelta modelDelta = new ModelDelta(transaction);
+			modelDelta.clearDatabase();
+			
+			System.out.println("######################################## VERSION V0 ########################################");
+			modelDelta.commitDelta(0, null, null, baseUriV0, Collections.singletonList(umlResourceV0));
+			
+			System.out.println("######################################## VERSION V1 ########################################");
+			modelDelta.commitDelta(1, baseUriV0, Collections.singletonList(umlResourceV0), baseUriV1, Collections.singletonList(umlResourceV1));
+		}
 	}
 
 }

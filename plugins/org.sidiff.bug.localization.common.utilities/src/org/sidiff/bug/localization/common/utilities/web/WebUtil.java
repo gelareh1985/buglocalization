@@ -15,12 +15,24 @@ public class WebUtil {
 		return StringEscapeUtils.unescapeHtml4(response);
 	}
 	
+	public static String escapeHtml4(String response) {
+		return StringEscapeUtils.escapeHtml4(response);
+	}
+	
 	public static String unescapeJson(String response) {
 		return StringEscapeUtils.unescapeJson(response);
 	}
 	
 	public static String escapeJson(String response) {
 		return StringEscapeUtils.escapeJson(response);
+	}
+	
+	public static String unescapeJava(String response) {
+		return StringEscapeUtils.unescapeJava(response);
+	}
+	
+	public static String escapeJava(String response) {
+		return StringEscapeUtils.escapeJava(response);
 	}
 	
 	public static String request(String requestURL) throws IOException {

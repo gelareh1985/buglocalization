@@ -8,7 +8,19 @@ import java.nio.file.Paths;
 import org.eclipse.equinox.app.IApplicationContext;
 
 public class ApplicationUtil {
-
+	
+	public static String getStringFromProgramArguments(IApplicationContext context, String argumentName) {
+		String[] args = (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
+		
+		for (int i = 0; i < args.length - 1; i++) {
+			if (args[i].equalsIgnoreCase(argumentName)) {
+				return args[i + 1];
+			}
+		}
+		
+		return null;
+	}
+	
 	public static Path getPathFromProgramArguments(IApplicationContext context, String argumentName) throws FileNotFoundException {
 		return getPathFromProgramArguments(context, argumentName, true);
 	}

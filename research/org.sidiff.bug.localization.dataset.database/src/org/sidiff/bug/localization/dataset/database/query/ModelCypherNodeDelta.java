@@ -1,231 +1,275 @@
 package org.sidiff.bug.localization.dataset.database.query;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 
 public class ModelCypherNodeDelta extends ModelCypherDelta {
 	
-	private Map<String, Integer> modelElementIDToCypherVariable;
+	// https://medium.com/neo4j/5-tips-tricks-for-fast-batched-updates-of-graph-structures-with-neo4j-and-cypher-73c7f693c8cc
+	
+	/**
+	 * Node-Label -> Batch[{Parameter -> Value}]
+	 */
+	private Map<String, List<Map<String, Object>>> createdNodesBatches;
+
+	/**
+	 * Node-Label -> Batch[{Parameter -> Value}]
+	 */
+	private Map<String, List<Map<String, Object>>> removedNodesBatches;
+	
+	/**
+	 * Label to be indexed for edge generation.
+	 */
+	private Set<String> nodeLabels = new HashSet<>();
 	
 	public ModelCypherNodeDelta(
-			int oldVersion, Map<XMLResource, XMLResource> oldResourcesMatch,
-			int newVersion, Map<XMLResource, XMLResource> newResourcesMatch) {
-		super(oldVersion, oldResourcesMatch, newVersion, newResourcesMatch);
-		this.modelElementIDToCypherVariable = new HashMap<>();
+			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch, 
+			int newVersion, URI newBaseURI,Map<XMLResource, XMLResource> newResourcesMatch) {
+		super(oldVersion, oldBaseURI, oldResourcesMatch, newVersion, newBaseURI, newResourcesMatch);
+		this.createdNodesBatches = new HashMap<>();
+		this.removedNodesBatches = new HashMap<>();
+		deriveNodeDeltas();
 	}
 	
-	public String clearNodes() {
-		return "MATCH (a) delete a";
-	}
-	
-	public String createNodesDelta() {
-		internal_createNodesDeltas();
-		return compileQuery();
-	}
-	
-	protected void internal_createNodesDeltas() {
+	private void deriveNodeDeltas() {
 		
 		// Process matched resources:
 		for (Entry<XMLResource, XMLResource> resourceMatch : getOldResourcesMatch().entrySet()) {
 			if ((resourceMatch.getKey() != null) && (resourceMatch.getValue() != null)) {
-				internal_createNodesDelta(resourceMatch.getKey(), resourceMatch.getValue());
+				deriveNodeDelta(resourceMatch.getKey(), resourceMatch.getValue());
 			}
 		}
 		
 		// Process unmatched old resources:
 		for (Entry<XMLResource, XMLResource> resourceMatch : getOldResourcesMatch().entrySet()) {
 			if ((resourceMatch.getKey() != null) && (resourceMatch.getValue() == null)) {
-				internal_createNodesDelta(resourceMatch.getKey(), resourceMatch.getValue());
+				deriveNodeDelta(resourceMatch.getKey(), resourceMatch.getValue());
 			}
 		}
 		
 		// Process unmatched new resources:
 		for (Entry<XMLResource, XMLResource> resourceMatch : getNewResourcesMatch().entrySet()) {
 			if ((resourceMatch.getKey() != null) && (resourceMatch.getValue() == null)) {
-				internal_createNodesDelta(resourceMatch.getValue(), resourceMatch.getKey());
+				deriveNodeDelta(resourceMatch.getValue(), resourceMatch.getKey());
 			}
 		}
 	}
 
-	private void internal_createNodesDelta(XMLResource oldResource, XMLResource newResource) {
+	private void deriveNodeDelta(XMLResource oldResource, XMLResource newResource) {
 		
 		// Process old nodes to be removed:
 		if (oldResource != null) { // initial version?
-			for (EObject oldModelElement : (Iterable<EObject>) () -> oldResource.getAllContents()) {
-				removedNodes(oldResource, oldModelElement);
+			for (EObject oldModelElement : (Iterable<EObject>) () -> EcoreUtil.getAllProperContents(oldResource, true)) {
+				deriveRemovedNodes(oldResource, oldModelElement);
 			}
 		}
 		
 		// Process new/changed nodes to be created:
 		if (newResource != null) { // removed resource?
-			for (EObject newModelElement : (Iterable<EObject>) () -> newResource.getAllContents()) {
-				updateNodes(newResource, newModelElement);
+			for (EObject newModelElement : (Iterable<EObject>) () -> EcoreUtil.getAllProperContents(newResource, true)) {
+				deriveCreatedNodes(newResource, newModelElement);
 			}
 		}
 	}
-	
-	protected Integer getNode(String modelElementID, EObject modelElement) {
-		Integer cypherVariable = modelElementIDToCypherVariable.get(modelElementID);
-		
-		if (cypherVariable == null) {
-			cypherVariable = createNewVariable();
-			getMatchQueries().put(toCypherNodeMatch(modelElement, modelElementID, cypherVariable), cypherVariable);
-		}
-		
-		return cypherVariable;
-	}
-	
-	private String toCypherNodeMatch(EObject modelElement, String modelElementID, int cypherVariable) {
-		StringBuffer query = new StringBuffer();
-		query.append("MATCH (");
-		query.append("v");
-		query.append(cypherVariable);
-		query.append(":");
-		query.append(toCypherLabel(modelElement.eClass()));
-		
-		// model ID:
-		query.append(" { ");
-		query.append("__model__element__id__: '");
-		query.append(modelElementID);
-		query.append("' }");
-		
-		query.append(")");
-		
-		modelElementIDToCypherVariable.put(modelElementID, cypherVariable);
-		return query.toString();
-	}
 
-	protected String toCypherLabel(EClass type) {
-		return type.getName();
-	}
-	
-	private void removedNodes(XMLResource oldResource, EObject oldModelElement) {
-		
-		// model ID of the old version node:
-		String modelElementID = oldResource.getID(oldModelElement);
-		
-		// Is removed model element?
-		XMLResource newResource = getNewResource(oldResource);
-		
-		if ((newResource == null) || newResource.getEObject(modelElementID) == null) {
-			int cypherVariable = getNode(modelElementID, oldModelElement);
-			
-			// Set last version:
-			StringBuilder setQuery = new StringBuilder();
-			setQuery.append("SET ");
-			setQuery.append("v");
-			setQuery.append(cypherVariable);
-			setQuery.append(".__last__version__ = ");
-			setQuery.append(getOldVersion());
-			
-			getSetQueries().add(setQuery.toString());
-		}
-	}
-	
-	private void updateNodes(XMLResource newResource, EObject newModelElement) {
+	private void deriveCreatedNodes(XMLResource newResource, EObject newModelElement) {
 		
 		// model ID of the new version node:
-		String modelElementID = newResource.getID(newModelElement);
+		String modelElementID = getModelElementID(newResource, newModelElement);
 		
 		// model element of the old version node:
 		EObject modelElementOld = null;
 		XMLResource oldResource = getOldResource(newResource);
 		
 		if (oldResource != null) {
-			modelElementOld = oldResource.getEObject(modelElementID);
+			modelElementOld = getModelElement(oldResource, modelElementID);
 		}
 		
 		// create query for new node:
-		createNode(modelElementOld, newModelElement, modelElementID);
+		deriveCreatedNode(modelElementOld, newModelElement, modelElementID);
 	}
 
-	/**
-	 * @return A create-query if the object is new or has changed attributes; <code>null</code> otherwise.
-	 */
-	private void createNode(EObject modelElementOld, EObject modelElementNew, String modelElementID) {
-		StringBuffer query = new StringBuffer();
-		
-		// type:
-		query.append(":");
-		query.append(toCypherLabel(modelElementNew.eClass()));
-		
-		// attributes:
-		query.append("{ ");
-		
-		/// model namespace:
-		query.append("__model__ns__uri__: '");
-		query.append(modelElementNew.eClass().getEPackage().getNsURI());
-		query.append("', ");
-		
-		// model ID:
-		query.append("__model__element__id__: '");
-		query.append(modelElementID);
-		query.append("', ");
-		
-		// version:
-		query.append("__initial__version__: ");
-		query.append(getNewVersion());
-		query.append(", ");
-		
-		// model attributes:
-		boolean hasChanged = false;
-		
-		for (EAttribute attribute : modelElementNew.eClass().getEAllAttributes()) {
-			String oldValue = toCypherValue(modelElementOld, attribute);
-			String newValue = toCypherValue(modelElementNew, attribute);
-			
-			if (hasValueChanged(modelElementOld, oldValue, newValue)) {
-				hasChanged = true;
-			}
-			
-			query.append(attribute.getName());
-			query.append(": ");
-			query.append(newValue);
-			query.append(", ");
-		}
-		
-		query.deleteCharAt(query.length() - 2); // last ,~
-		query.append("}");
-		query.append(")");
+	private void deriveCreatedNode(EObject modelElementOld, EObject modelElementNew, String modelElementID) {
 		
 		// new/changed node?
-		if (hasChanged) {
+		if (hasValueChanges(modelElementOld, modelElementNew)) {
+			Map<String, Object> createNodeProperties = new HashMap<>();
 			
-			// variable:
-			Integer cypherVariable = createNewVariable(); // the associated query variable
-			query.insert(0, "(v" + cypherVariable);
+			// meta-attributes:
+			createNodeProperties.put("__model__ns__uri__", modelElementNew.eClass().getEPackage().getNsURI());
+			createNodeProperties.put("__model__element__id__", modelElementID);
+			createNodeProperties.put("__initial__version__", getNewVersion());
+			createNodeProperties.put("__last__version__", getNewVersion()); // initialize
 			
-			modelElementIDToCypherVariable.put(modelElementID, cypherVariable);
-			getCreateQueries().add(query.toString());
-		}
-	}
-
-	private boolean hasValueChanged(EObject objOld, String oldValue, String newValue) {
-		return (objOld == null) 
-				|| ((oldValue == null) && (newValue != null))
-				|| ((newValue == null) && (oldValue != null))
-				|| ((oldValue != null) && !oldValue.equals(newValue));
-	}
-
-	private String toCypherValue(EObject obj, EAttribute attribute) {
-		if (obj != null) {
-			Object value = obj.eGet(attribute);
-			
-			if (value != null) {
-				if ((value instanceof Boolean) || (value instanceof Number)) {
-					return value.toString();
-				} else {
-					return "'" + value.toString() + "'";
+			for (EAttribute attribute : modelElementNew.eClass().getEAllAttributes()) {
+				if (isConsideredFeature(attribute)) {
+					String newValue = toCypherValue(modelElementNew, attribute);
+					
+					if (newValue != null) {
+						createNodeProperties.put(attribute.getName(), newValue);
+					}
 				}
 			}
+			
+			// label:
+			String label = toCypherLabel(modelElementNew.eClass());
+			
+			// store:
+			List<Map<String, Object>> createNodesOfLabel = createdNodesBatches.getOrDefault(label, new ArrayList<>());
+			createNodesOfLabel.add(createNodeProperties);
+			createdNodesBatches.put(label, createNodesOfLabel);
+			
+			nodeLabels.add(label);
 		}
-		return null;
+	}
+	
+	private boolean hasValueChanges(EObject objOld, EObject objNew) {
+		if (objOld == null) {
+			return true; // all attributes are new
+		} else {
+			for (EAttribute attribute : objOld.eClass().getEAllAttributes()) {
+				if (isConsideredFeature(attribute)) {
+					Object oldValue = objOld.eGet(attribute);
+					Object newValue = objNew.eGet(attribute);
+					
+					// compare values:
+					if (hasValueChanged(oldValue, newValue)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+
+	private boolean hasValueChanged(Object oldValue, Object newValue) {
+		if (oldValue == newValue) {
+			return false; // includes null == null
+		} else {
+			return (oldValue == null) || !oldValue.equals(newValue);
+		}
+	}
+
+	private void deriveRemovedNodes(XMLResource oldResource, EObject oldModelElement) {
+		
+		// model ID of the old version node:
+		String modelElementID = getModelElementID(oldResource, oldModelElement);
+		
+		// Is removed model element?
+		XMLResource newResource = getNewResource(oldResource);
+		
+		if ((newResource == null) || (getModelElement(newResource, modelElementID) == null)) {
+			Map<String, Object> removeNode = new HashMap<>(2);
+			removeNode.put("id", modelElementID);
+			
+			Map<String, Object> removeNodeProperties = new HashMap<>(1);
+			removeNode.put("properties", removeNodeProperties);
+			removeNodeProperties.put("__last__version__", getOldVersion());
+			
+			String label = toCypherLabel(oldModelElement.eClass());
+			List<Map<String, Object>> removeNodesOfLabel = removedNodesBatches.getOrDefault(label, new ArrayList<>());
+			removeNodesOfLabel.add(removeNode);
+			removedNodesBatches.put(label, removeNodesOfLabel);
+		}
+	}
+
+	public String increaseVersion() {
+		StringBuffer query = new StringBuffer();
+		query.append("MATCH (n {__last__version__: ");
+		query.append(getOldVersion());
+		query.append("}) SET n.__last__version__ = ");
+		query.append(getNewVersion());
+		return query.toString();
+	}
+
+	public List<String> createKeyAttributes() {
+			List<String> nodeIndex = new ArrayList<>();
+			
+			for (String label : nodeLabels) {
+				
+				// NOTE: None unique index -> A node is identified by model element ID and its initial version:
+				nodeIndex.add("CREATE INDEX " + label + "___model__element__id__ IF NOT EXISTS FOR (n:" + label + ") ON (n.__model__element__id__)");
+				
+				// NOTE: Key attributes with multiple attributes are only allowed in Neo4j enterprise edition.
+				//       With this solution it is not needed to add index hints and node labels on the edge queries...
+				// nodeIndex.add("CREATE CONSTRAINT IF NOT EXISTS ON (n:" + label + ") ASSERT (n.__model__element__id__, n.__initial__version__) IS NODE KEY");
+			}
+			
+			return nodeIndex;
+		}
+
+	public Map<String, Map<String, Object>> createdNodesBatchQueries() {
+		if (!createdNodesBatches.isEmpty()) {
+			Map<String, Map<String, Object>> createNodeQueriesByLabel = new HashMap<>();
+			
+			for (Entry<String, List<Map<String, Object>>> createNodesForLabel : createdNodesBatches.entrySet()) {
+				String query = computeCreatedNodesBatchQuery(createNodesForLabel.getKey());
+				
+				Map<String, Object> createNodesBatch = new HashMap<>(1);
+				createNodesBatch.put("batch", createNodesForLabel.getValue());
+				
+				createNodeQueriesByLabel.put(query, createNodesBatch);
+			}
+			
+			return createNodeQueriesByLabel;
+		} else {
+			return Collections.emptyMap();
+		}
+	}
+
+	private String computeCreatedNodesBatchQuery(String label) {
+		StringBuffer query = new StringBuffer();
+		query.append("UNWIND $batch as entry CREATE (n:");
+		query.append(label);
+		query.append(") SET n += entry");
+		return query.toString();
+	}
+
+	public Map<String, Map<String, Object>> removedNodesBatchQueries() {
+		if (!removedNodesBatches.isEmpty()) {
+			Map<String, Map<String, Object>> removeNodeQueriesByLabel = new HashMap<>();
+			
+			for (Entry<String, List<Map<String, Object>>> removeNodesForLabel : removedNodesBatches.entrySet()) {
+				String query = computeRemovedNodesBatchQuery(removeNodesForLabel.getKey());
+				
+				Map<String, Object> removeNodesBatch = new HashMap<>();
+				removeNodesBatch.put("batch", removeNodesForLabel.getValue());
+				
+				removeNodeQueriesByLabel.put(query, removeNodesBatch);
+			}
+			
+			return removeNodeQueriesByLabel;
+		} else {
+			return Collections.emptyMap();
+		}
+	}
+
+	private String computeRemovedNodesBatchQuery(String label) {
+		StringBuffer query = new StringBuffer();
+		query.append("UNWIND $batch as entry MATCH (n:");
+		query.append(label);
+		query.append(" {__model__element__id__: entry.id}) SET n += entry.properties");
+		return query.toString();
+	}
+
+	public static String clearNodes() {
+		return "MATCH (a) DELETE a";
+	}
+
+	public static String showIndex() {
+		return ":schema";
 	}
 	
 }

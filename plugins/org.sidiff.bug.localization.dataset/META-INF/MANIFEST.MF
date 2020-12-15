@@ -7,8 +7,10 @@ Bundle-Activator: org.sidiff.bug.localization.dataset.Activator
 Export-Package: org.sidiff.bug.localization.dataset,
  org.sidiff.bug.localization.dataset.configuration,
  org.sidiff.bug.localization.dataset.model,
+ org.sidiff.bug.localization.dataset.model.util,
  org.sidiff.bug.localization.dataset.retrieval,
- org.sidiff.bug.localization.dataset.retrieval.storage
+ org.sidiff.bug.localization.dataset.retrieval.storage,
+ org.sidiff.bug.localization.dataset.retrieval.util
 Require-Bundle: org.eclipse.core.runtime,
  org.sidiff.bug.localization.common.utilities,
  org.sidiff.bug.localization.dataset.history,
