@@ -3,6 +3,8 @@ import pandas as pd
 import stellargraph as sg
 import os
 import ntpath
+import libarchive
+import io
 
 from stellargraph.layer import GraphSAGE, link_classification
 from stellargraph.mapper import GraphSAGELinkGenerator
@@ -14,15 +16,22 @@ from IPython.display import display, HTML
 #positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\buglocations_1000/"
 #feature_node_save_path=r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\nodelist_features/"
 
-positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/"
-negative_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/negative/"
+# positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest\positive/"
+# negative_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest\negative/"
 
-# positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
-# negative_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/negative/"
+positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000\positive/"
+negative_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000\negative/"
 
-
-def load_dataset(positve_samples_path, negative_samples_path, log=False):
-
+#feats_files_negative_samples
+def load_dataset(positve_samples_path, negative_samples_path,table1, table2, log=False):
+    
+    
+#     while index < len(positives_table) and index < len(negatives_table):
+#         if index < len(positives_table):
+#             all_tables.append(positives_table[index])
+#         if index < len(negatives_table):
+#             all_tables.append(negatives_table[index])
+    
     # Collect all graphs from the given folder:
     dataset_nodes = []
     dataset_edges = []
@@ -37,22 +46,33 @@ def load_dataset(positve_samples_path, negative_samples_path, log=False):
     # that can be split to create a training and validation set of samples:
     all_samples = []
     index = 0
-    
     while index < len(files_positive_samples) and index < len(files_negative_samples):
         if index < len(files_positive_samples):
             all_samples.append(files_positive_samples[index])
         if index < len(files_negative_samples):
             all_samples.append(files_negative_samples[index])
-            
+        index += 1
+    
+    all_samples_tables = []
+    index = 0
+    while index < len(table1) and index < len(table2):
+        if index < len(table1):
+            all_samples_tables.append(table1[index])
+        if index < len(table2):
+            all_samples_tables.append(table2[index])
         index += 1
     
     # Read all samples and create unique node IDs:
+    i=0
     for filepath in all_samples:
         if filepath.endswith(".edgelist"):
+            
             graph_path, filename = ntpath.split(filepath)
+            #print('file_path: ', graph_path, '    ',filename)
             graph_filename = filename[:filename.rfind(".")]
             edge_list_path = graph_path + "/" + graph_filename + ".edgelist"
-            node_list_path = graph_path + "/features/" + graph_filename + ".featurenodelist"
+            #node_list_path = graph_path + "/features/" + graph_filename + ".featurenodelist"
+            node_list_path = all_samples_tables[i]
             graph_number = graph_filename[0:graph_filename.find("_")]
             
             # different prefixes for positive and negative samples:
@@ -63,12 +83,12 @@ def load_dataset(positve_samples_path, negative_samples_path, log=False):
     
             if (feature_size == None):
                 feature_size = get_feature_size(node_list_path)
-    
+            
             # nodes:
             nodes_data = load_nodes(node_list_path, feature_size, graph_number)
             display(nodes_data.shape)
             dataset_nodes.append(nodes_data)
-            
+        
             # edges:
             edge_data = load_edges(edge_list_path, graph_number)
             dataset_edges.append(edge_data)
@@ -82,7 +102,9 @@ def load_dataset(positve_samples_path, negative_samples_path, log=False):
             
             if log:
                 print("Graph: ", graph_number)
-    
+            
+            i=i+1     
+
     if(not dataset_nodes or not dataset_edges or not dataset_bug_locations):
         raise Exception('No samples found')
     
@@ -90,18 +112,47 @@ def load_dataset(positve_samples_path, negative_samples_path, log=False):
 
 def get_sample_paths(folder):
     files_samples = []
-    
     for filename in os.listdir(folder):
         if filename.endswith(".edgelist"):
             edge_list_path = folder + filename
             files_samples.append(edge_list_path)
-    
     return files_samples
+
+def create_table_features(folder):
+    nodefeats=folder + "features/" 
+    feats_files_samples=[]       
+    for nodefeatsfilename in os.listdir(nodefeats):
+        if nodefeatsfilename.endswith(".7z"): 
+            path=nodefeats+nodefeatsfilename
+            print('path: ', path)
+            for file,text in read_archive(path,load_text):
+                print('node list features file: ', file)
+                line_list=[]
+                for line in text.splitlines():
+                    columns = line.split("\t")
+                    line_list.append(columns)  
+                feats_files_samples.append(line_list)
+    return  feats_files_samples
+
+def read_archive(path, factory):
+    with libarchive.file_reader(path) as reader:
+        for entry in reader:
+            if entry.name.endswith(".featurenodelist"):
+                data = b""
+                
+                for block in entry.get_blocks():
+                    data += block
+                    
+                yield factory(entry.name, io.BytesIO(data))
+
+def load_text(file, buffer):
+    return file, buffer.read().decode('UTF-8')
 
 # Assumes Tables: index, n-feature, tag
 
 def get_feature_size(node_list_path):
-    return len(pd.read_table(node_list_path).columns) - 2
+    #return len(pd.read_table(node_list_path).columns) - 2
+    return len(pd.DataFrame(np.array(node_list_path)).columns) - 2
 
 def load_nodes(node_list_path, feature_size, graph_number):
     
@@ -115,7 +166,10 @@ def load_nodes(node_list_path, feature_size, graph_number):
     node_data_columns.append("tag")
     
     # Load data:
-    node_data = pd.read_table(node_list_path, names=node_data_columns)
+    #node_data = pd.read_table(node_list_path, names=node_data_columns)
+    arr = np.array(node_list_path)
+    #print('arr dims: ', len(node_list_path), '    ', len(node_list_path[0]))
+    node_data = pd.DataFrame(arr,columns=node_data_columns)
     
     # Create index:
     node_data.set_index("index", inplace=True)
@@ -185,8 +239,15 @@ def unpack(packed_list):
 # Create Training and Test Data:
 ###################################################################################################
 
+positives_table=create_table_features(positve_samples_path)
+negatives_table=create_table_features(negative_samples_path)
+
+print('dims of positive table:', len(positives_table), '    ', len(positives_table[0]))
+
+print('dims of negative table:', len(negatives_table), '    ', len(negatives_table[0]))
+
 # Collect all graphs from the given folder:
-dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(positve_samples_path, negative_samples_path, log=True)
+dataset_nodes, dataset_edges, dataset_bug_locations = load_dataset(positve_samples_path, negative_samples_path,positives_table, negatives_table, log=True)
 
 # Split training set:
 nodes_train = pd.concat(dataset_nodes[:len(dataset_nodes)//2])
