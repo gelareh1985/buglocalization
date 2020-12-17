@@ -164,6 +164,144 @@ public class SystemModelItemProviderAdapterFactory extends SystemModelAdapterFac
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.sidiff.bug.localization.dataset.systemmodel.Version} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected VersionItemProvider versionItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.sidiff.bug.localization.dataset.systemmodel.Version}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createVersionAdapter() {
+		if (versionItemProvider == null) {
+			versionItemProvider = new VersionItemProvider(this);
+		}
+
+		return versionItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.sidiff.bug.localization.dataset.systemmodel.BugReport} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected BugReportItemProvider bugReportItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.sidiff.bug.localization.dataset.systemmodel.BugReport}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createBugReportAdapter() {
+		if (bugReportItemProvider == null) {
+			bugReportItemProvider = new BugReportItemProvider(this);
+		}
+
+		return bugReportItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.sidiff.bug.localization.dataset.systemmodel.TracedVersion} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected TracedVersionItemProvider tracedVersionItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.sidiff.bug.localization.dataset.systemmodel.TracedVersion}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createTracedVersionAdapter() {
+		if (tracedVersionItemProvider == null) {
+			tracedVersionItemProvider = new TracedVersionItemProvider(this);
+		}
+
+		return tracedVersionItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.sidiff.bug.localization.dataset.systemmodel.BugReportComment} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected BugReportCommentItemProvider bugReportCommentItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.sidiff.bug.localization.dataset.systemmodel.BugReportComment}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createBugReportCommentAdapter() {
+		if (bugReportCommentItemProvider == null) {
+			bugReportCommentItemProvider = new BugReportCommentItemProvider(this);
+		}
+
+		return bugReportCommentItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.sidiff.bug.localization.dataset.systemmodel.FileChange} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected FileChangeItemProvider fileChangeItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.sidiff.bug.localization.dataset.systemmodel.FileChange}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createFileChangeAdapter() {
+		if (fileChangeItemProvider == null) {
+			fileChangeItemProvider = new FileChangeItemProvider(this);
+		}
+
+		return fileChangeItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.sidiff.bug.localization.dataset.systemmodel.TracedBugReport} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected TracedBugReportItemProvider tracedBugReportItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.sidiff.bug.localization.dataset.systemmodel.TracedBugReport}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createTracedBugReportAdapter() {
+		if (tracedBugReportItemProvider == null) {
+			tracedBugReportItemProvider = new TracedBugReportItemProvider(this);
+		}
+
+		return tracedBugReportItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -272,6 +410,12 @@ public class SystemModelItemProviderAdapterFactory extends SystemModelAdapterFac
 		if (viewItemProvider != null) viewItemProvider.dispose();
 		if (changeItemProvider != null) changeItemProvider.dispose();
 		if (viewDescriptionItemProvider != null) viewDescriptionItemProvider.dispose();
+		if (versionItemProvider != null) versionItemProvider.dispose();
+		if (bugReportItemProvider != null) bugReportItemProvider.dispose();
+		if (tracedVersionItemProvider != null) tracedVersionItemProvider.dispose();
+		if (bugReportCommentItemProvider != null) bugReportCommentItemProvider.dispose();
+		if (fileChangeItemProvider != null) fileChangeItemProvider.dispose();
+		if (tracedBugReportItemProvider != null) tracedBugReportItemProvider.dispose();
 	}
 
 }

@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
  * </p>
  * <ul>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.SystemModel#getViews <em>Views</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.SystemModel#getVersion <em>Version</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getSystemModel()
@@ -54,6 +55,28 @@ public interface SystemModel extends DescribableElement {
 	 * @generated
 	 */
 	EList<View> getViews();
+
+	/**
+	 * Returns the value of the '<em><b>Version</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Version</em>' containment reference.
+	 * @see #setVersion(Version)
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getSystemModel_Version()
+	 * @model containment="true"
+	 * @generated
+	 */
+	Version getVersion();
+
+	/**
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.SystemModel#getVersion <em>Version</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Version</em>' containment reference.
+	 * @see #getVersion()
+	 * @generated
+	 */
+	void setVersion(Version value);
 
 	/**
 	 * <!-- begin-user-doc -->

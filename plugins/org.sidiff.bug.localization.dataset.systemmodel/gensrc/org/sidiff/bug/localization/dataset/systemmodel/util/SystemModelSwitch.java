@@ -99,6 +99,44 @@ public class SystemModelSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case SystemModelPackage.VERSION: {
+				Version version = (Version)theEObject;
+				T result = caseVersion(version);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.BUG_REPORT: {
+				BugReport bugReport = (BugReport)theEObject;
+				T result = caseBugReport(bugReport);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.TRACED_VERSION: {
+				TracedVersion tracedVersion = (TracedVersion)theEObject;
+				T result = caseTracedVersion(tracedVersion);
+				if (result == null) result = caseVersion(tracedVersion);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.BUG_REPORT_COMMENT: {
+				BugReportComment bugReportComment = (BugReportComment)theEObject;
+				T result = caseBugReportComment(bugReportComment);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.FILE_CHANGE: {
+				FileChange fileChange = (FileChange)theEObject;
+				T result = caseFileChange(fileChange);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SystemModelPackage.TRACED_BUG_REPORT: {
+				TracedBugReport tracedBugReport = (TracedBugReport)theEObject;
+				T result = caseTracedBugReport(tracedBugReport);
+				if (result == null) result = caseBugReport(tracedBugReport);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -175,6 +213,96 @@ public class SystemModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseViewDescription(ViewDescription object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Version</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Version</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseVersion(Version object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Bug Report</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Bug Report</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBugReport(BugReport object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Traced Version</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Traced Version</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTracedVersion(TracedVersion object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Bug Report Comment</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Bug Report Comment</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBugReportComment(BugReportComment object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>File Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>File Change</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFileChange(FileChange object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Traced Bug Report</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Traced Bug Report</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTracedBugReport(TracedBugReport object) {
 		return null;
 	}
 

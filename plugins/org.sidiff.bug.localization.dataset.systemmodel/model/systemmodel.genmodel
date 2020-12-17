@@ -17,6 +17,7 @@
     </genEnums>
     <genClasses ecoreClass="systemmodel.ecore#//SystemModel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//SystemModel/views"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//SystemModel/version"/>
       <genOperations ecoreOperation="systemmodel.ecore#//SystemModel/addView">
         <genParameters ecoreParameter="systemmodel.ecore#//SystemModel/addView/resource"/>
         <genParameters ecoreParameter="systemmodel.ecore#//SystemModel/addView/viewDescription"/>
@@ -54,6 +55,44 @@
     </genClasses>
     <genClasses ecoreClass="systemmodel.ecore#//ViewDescription">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//ViewDescription/viewKind"/>
+    </genClasses>
+    <genClasses ecoreClass="systemmodel.ecore#//Version">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/modelVersionID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/date"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/author"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/commitMessage"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/fixedVersion"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/buggyVersion"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//Version/bugreport"/>
+    </genClasses>
+    <genClasses ecoreClass="systemmodel.ecore#//BugReport">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/product"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/component"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/creationTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/creator"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/assignedTo"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/severity"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/resolution"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/status"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/summary"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//BugReport/comments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//BugReport/modelLocations"/>
+    </genClasses>
+    <genClasses ecoreClass="systemmodel.ecore#//TracedVersion">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//TracedVersion/codeVersionID"/>
+    </genClasses>
+    <genClasses ecoreClass="systemmodel.ecore#//BugReportComment">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReportComment/creationTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReportComment/creator"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReportComment/text"/>
+    </genClasses>
+    <genClasses ecoreClass="systemmodel.ecore#//FileChange">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//FileChange/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//FileChange/location"/>
+    </genClasses>
+    <genClasses ecoreClass="systemmodel.ecore#//TracedBugReport">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//TracedBugReport/codeLocations"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

@@ -63,6 +63,7 @@ public class SystemModelItemProvider extends DescribableElementItemProvider {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(SystemModelPackage.Literals.SYSTEM_MODEL__VIEWS);
+			childrenFeatures.add(SystemModelPackage.Literals.SYSTEM_MODEL__VERSION);
 		}
 		return childrenFeatures;
 	}
@@ -119,6 +120,7 @@ public class SystemModelItemProvider extends DescribableElementItemProvider {
 
 		switch (notification.getFeatureID(SystemModel.class)) {
 			case SystemModelPackage.SYSTEM_MODEL__VIEWS:
+			case SystemModelPackage.SYSTEM_MODEL__VERSION:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 				return;
 		}
@@ -140,6 +142,16 @@ public class SystemModelItemProvider extends DescribableElementItemProvider {
 			(createChildParameter
 				(SystemModelPackage.Literals.SYSTEM_MODEL__VIEWS,
 				 SystemModelFactory.eINSTANCE.createView()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(SystemModelPackage.Literals.SYSTEM_MODEL__VERSION,
+				 SystemModelFactory.eINSTANCE.createVersion()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(SystemModelPackage.Literals.SYSTEM_MODEL__VERSION,
+				 SystemModelFactory.eINSTANCE.createTracedVersion()));
 	}
 
 }

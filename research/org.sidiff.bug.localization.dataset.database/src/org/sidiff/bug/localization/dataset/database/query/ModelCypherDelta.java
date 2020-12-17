@@ -106,6 +106,10 @@ public class ModelCypherDelta {
 	public Map<XMLResource, XMLResource> getOldResourcesMatch() {
 		return oldResourcesMatch;
 	}
+	
+	public boolean containsOldResource(Resource oldResource) {
+		return oldResourcesMatch.containsKey(oldResource);
+	}
 
 	public int getOldVersion() {
 		return oldVersion;
@@ -113,6 +117,10 @@ public class ModelCypherDelta {
 
 	public XMLResource getNewResource(Resource oldResource) {
 		return oldResourcesMatch.get(oldResource);
+	}
+	
+	public boolean containsNewResource(Resource newResource) {
+		return newResourcesMatch.containsKey(newResource);
 	}
 	
 	public Map<XMLResource, XMLResource> getNewResourcesMatch() {

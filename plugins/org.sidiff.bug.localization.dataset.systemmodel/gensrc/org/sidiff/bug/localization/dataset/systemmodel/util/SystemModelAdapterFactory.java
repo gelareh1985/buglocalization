@@ -88,6 +88,30 @@ public class SystemModelAdapterFactory extends AdapterFactoryImpl {
 				return createViewDescriptionAdapter();
 			}
 			@Override
+			public Adapter caseVersion(Version object) {
+				return createVersionAdapter();
+			}
+			@Override
+			public Adapter caseBugReport(BugReport object) {
+				return createBugReportAdapter();
+			}
+			@Override
+			public Adapter caseTracedVersion(TracedVersion object) {
+				return createTracedVersionAdapter();
+			}
+			@Override
+			public Adapter caseBugReportComment(BugReportComment object) {
+				return createBugReportCommentAdapter();
+			}
+			@Override
+			public Adapter caseFileChange(FileChange object) {
+				return createFileChangeAdapter();
+			}
+			@Override
+			public Adapter caseTracedBugReport(TracedBugReport object) {
+				return createTracedBugReportAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -174,6 +198,90 @@ public class SystemModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createViewDescriptionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.Version <em>Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.Version
+	 * @generated
+	 */
+	public Adapter createVersionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport <em>Bug Report</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.BugReport
+	 * @generated
+	 */
+	public Adapter createBugReportAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.TracedVersion <em>Traced Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.TracedVersion
+	 * @generated
+	 */
+	public Adapter createTracedVersionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReportComment <em>Bug Report Comment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.BugReportComment
+	 * @generated
+	 */
+	public Adapter createBugReportCommentAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.FileChange <em>File Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.FileChange
+	 * @generated
+	 */
+	public Adapter createFileChangeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.sidiff.bug.localization.dataset.systemmodel.TracedBugReport <em>Traced Bug Report</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.TracedBugReport
+	 * @generated
+	 */
+	public Adapter createTracedBugReportAdapter() {
 		return null;
 	}
 

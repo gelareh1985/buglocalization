@@ -1,5 +1,8 @@
 package org.sidiff.bug.localization.dataset.database.model;
 
+import java.nio.file.Path;
+
+import org.eclipse.emf.common.util.URI;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jUtil;
 import org.sidiff.bug.localization.dataset.history.model.Version;
@@ -28,17 +31,21 @@ public class ModelHistory2Neo4j {
 	
 	public void commitHistory(DataSet dataset) {
 		HistoryIterator historyIterator = new HistoryIterator(dataset.getHistory());
-		int historyVersion = -1;
+		int databaseVersion = -1;
+		
+		Path systemModelPath = getRepositoryFile(dataset.getSystemModel());
+		URI systemModelURI = URI.createFileURI(systemModelPath.toString());
 
-		IncrementalModelDelta incrementalModelDelta = new IncrementalModelDelta(modelRepository, transaction);
+		IncrementalModelDelta incrementalModelDelta = new IncrementalModelDelta(modelRepository, systemModelURI, transaction);
 
 		while (historyIterator.hasNext()) {
-			++historyVersion;
+			++databaseVersion;
 
 			if (LOGGING) {
-				System.out.println("Remaining Versions: " + (historyIterator.nextIndex() + 1));
+				System.out.println("> Remaining Versions: " + (historyIterator.nextIndex() + 1));
 			}
 
+			// Check out the next version from the repositoy:
 			Version currentVersion = historyIterator.next();
 			Version nextVersion = historyIterator.getNewerVersion();
 
@@ -46,12 +53,13 @@ public class ModelHistory2Neo4j {
 			modelRepository.checkout(dataset.getHistory(), currentVersion);
 			time = stopTime(time, "Checkout");
 
-			try {
-				incrementalModelDelta.commitDelta(currentVersion, nextVersion, historyVersion);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			// Database: Compute and make an atomic commit of the new model version:
+			incrementalModelDelta.commitDelta(currentVersion, nextVersion, databaseVersion);
 		}
+	}
+	
+	private Path getRepositoryFile(Path localPath) {
+		return modelRepository.getWorkingDirectory().resolve(localPath);
 	}
 
 	private long stopTime(long startTime, String text) {

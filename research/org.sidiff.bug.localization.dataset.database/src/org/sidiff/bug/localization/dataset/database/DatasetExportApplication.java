@@ -37,8 +37,6 @@ public class DatasetExportApplication implements IApplication {
 
 	private GitRepository modelRepository;
 	
-	// TODO: Save version number to Git identification mapping
-	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		

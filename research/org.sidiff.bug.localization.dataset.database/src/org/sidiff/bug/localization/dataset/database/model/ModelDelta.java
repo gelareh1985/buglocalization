@@ -39,17 +39,18 @@ public class ModelDelta {
 				version - 1, oldBaseURI, oldResourcesMatch,
 				version, newBaseURI, newResourcesMatch);
 		
-		Map<String, Map<String, Object>> removedNodeQueries = nodeDeltaDerivation.removedNodesBatchQueries();
-		Map<String, Map<String, Object>> createdNodeQueries = nodeDeltaDerivation.createdNodesBatchQueries();
+		Map<String, Map<String, Object>> removedNodeQueries = nodeDeltaDerivation.constructRemovedNodesQueries();
+		Map<String, Map<String, Object>> createdNodeQueries = nodeDeltaDerivation.constructCreatedNodesQueries();
 		
 		ModelCypherEdgeDelta edgeDeltaDerivation = new ModelCypherEdgeDelta(
 				version - 1, oldBaseURI, oldResourcesMatch,
-				version, newBaseURI, newResourcesMatch);
+				version, newBaseURI, newResourcesMatch, 
+				nodeDeltaDerivation.getModifiedNodes());
 		
-		Map<String, Map<String, Object>> removedEdgeQueries = edgeDeltaDerivation.removedEdgesDelta();
-		Map<String, Map<String, Object>> createdEdgeQueries = edgeDeltaDerivation.createdEdgesDelta();
+		Map<String, Map<String, Object>> removedEdgeQueries = edgeDeltaDerivation.constructRemovedEdgesQuery();
+		Map<String, Map<String, Object>> createdEdgeQueries = edgeDeltaDerivation.constructCreatedEdgesQuery();
 		
-		time = stopTime(time, "Compute Queries");
+		time = stopTime(time, "Compute Delta Queries");
 		
 		/*
 		 * Make sure all nodes have an index for creation of edges.
@@ -59,7 +60,8 @@ public class ModelDelta {
 		/*
 		 *  Increase all latest version IDs and remove nodes in the next step.
 		 */
-		transaction.execute(nodeDeltaDerivation.increaseVersion());
+		transaction.execute(nodeDeltaDerivation.constructIncreaseVersionQuery());
+		transaction.execute(edgeDeltaDerivation.constructIncreaseVersionQuery());
 		
 		/*
 		 * NOTE: Remove edges before removing nodes, otherwise source and target nodes
@@ -74,7 +76,7 @@ public class ModelDelta {
 		transaction.execute(removedNodeQueries);
 		transaction.execute(createdNodeQueries);
 		transaction.execute(createdEdgeQueries);
-		time = stopTime(time, "Write Transaction");
+		time = stopTime(time, "Execute Transaction");
 		
 		/*
 		 * Atomic commit of new model version.
@@ -118,7 +120,7 @@ public class ModelDelta {
 	private void createNodeKeyAttributes(Neo4jTransaction transaction, ModelCypherNodeDelta nodeDeltaDerivation) {
 		transaction.commit();
 		
-		List<String> nodeKeyAttributes = nodeDeltaDerivation.createKeyAttributes();
+		List<String> nodeKeyAttributes = nodeDeltaDerivation.constructKeyAttributesQuery();
 		
 		for (String string : nodeKeyAttributes) {
 			transaction.execute(string);

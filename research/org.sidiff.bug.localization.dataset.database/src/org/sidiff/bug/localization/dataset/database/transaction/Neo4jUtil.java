@@ -7,8 +7,8 @@ import org.sidiff.bug.localization.dataset.database.query.ModelCypherNodeDelta;
 public class Neo4jUtil {
 
 	public static void clearDatabase(Neo4jTransaction transaction) {
-		transaction.execute(ModelCypherEdgeDelta.clearEdges());
-		transaction.execute(ModelCypherNodeDelta.clearNodes());
+		transaction.execute(ModelCypherEdgeDelta.constructClearEdgesQuery());
+		transaction.execute(ModelCypherNodeDelta.constructClearNodesQuery());
 		transaction.commit();
 	
 		for (Record record : transaction.execute("SHOW CONSTRAINTS").list()) {

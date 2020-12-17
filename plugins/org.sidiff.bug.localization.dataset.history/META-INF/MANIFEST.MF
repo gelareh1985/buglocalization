@@ -6,10 +6,10 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.sidiff.bug.localization.dataset.history.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jgit,
- org.sidiff.bug.localization.dataset.reports,
- org.sidiff.bug.localization.dataset.workspace,
  org.sidiff.bug.localization.common.utilities,
- org.sidiff.bug.localization.dataset.changes
+ org.sidiff.bug.localization.dataset.changes,
+ org.sidiff.bug.localization.dataset.reports,
+ org.sidiff.bug.localization.dataset.workspace
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.sidiff.bug.localization.retrival.history
 Bundle-ActivationPolicy: lazy

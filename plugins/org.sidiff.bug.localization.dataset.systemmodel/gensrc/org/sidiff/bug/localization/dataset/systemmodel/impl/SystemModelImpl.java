@@ -11,12 +11,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -26,6 +28,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
+import org.sidiff.bug.localization.dataset.systemmodel.Version;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
 
@@ -38,6 +41,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.ViewDescription;
  * </p>
  * <ul>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.SystemModelImpl#getViews <em>Views</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.SystemModelImpl#getVersion <em>Version</em>}</li>
  * </ul>
  *
  * @generated
@@ -52,6 +56,16 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 	 * @ordered
 	 */
 	protected EList<View> views;
+
+	/**
+	 * The cached value of the '{@link #getVersion() <em>Version</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected Version version;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -83,6 +97,51 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 			views = new EObjectContainmentWithInverseEList<View>(View.class, this, SystemModelPackage.SYSTEM_MODEL__VIEWS, SystemModelPackage.VIEW__SYSTEM);
 		}
 		return views;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Version getVersion() {
+		return version;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetVersion(Version newVersion, NotificationChain msgs) {
+		Version oldVersion = version;
+		version = newVersion;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, SystemModelPackage.SYSTEM_MODEL__VERSION, oldVersion, newVersion);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setVersion(Version newVersion) {
+		if (newVersion != version) {
+			NotificationChain msgs = null;
+			if (version != null)
+				msgs = ((InternalEObject)version).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - SystemModelPackage.SYSTEM_MODEL__VERSION, null, msgs);
+			if (newVersion != null)
+				msgs = ((InternalEObject)newVersion).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - SystemModelPackage.SYSTEM_MODEL__VERSION, null, msgs);
+			msgs = basicSetVersion(newVersion, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.SYSTEM_MODEL__VERSION, newVersion, newVersion));
 	}
 
 	/**
@@ -192,6 +251,8 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 		switch (featureID) {
 			case SystemModelPackage.SYSTEM_MODEL__VIEWS:
 				return ((InternalEList<?>)getViews()).basicRemove(otherEnd, msgs);
+			case SystemModelPackage.SYSTEM_MODEL__VERSION:
+				return basicSetVersion(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -206,6 +267,8 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 		switch (featureID) {
 			case SystemModelPackage.SYSTEM_MODEL__VIEWS:
 				return getViews();
+			case SystemModelPackage.SYSTEM_MODEL__VERSION:
+				return getVersion();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -223,6 +286,9 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 				getViews().clear();
 				getViews().addAll((Collection<? extends View>)newValue);
 				return;
+			case SystemModelPackage.SYSTEM_MODEL__VERSION:
+				setVersion((Version)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -238,6 +304,9 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 			case SystemModelPackage.SYSTEM_MODEL__VIEWS:
 				getViews().clear();
 				return;
+			case SystemModelPackage.SYSTEM_MODEL__VERSION:
+				setVersion((Version)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -252,6 +321,8 @@ public class SystemModelImpl extends DescribableElementImpl implements SystemMod
 		switch (featureID) {
 			case SystemModelPackage.SYSTEM_MODEL__VIEWS:
 				return views != null && !views.isEmpty();
+			case SystemModelPackage.SYSTEM_MODEL__VERSION:
+				return version != null;
 		}
 		return super.eIsSet(featureID);
 	}

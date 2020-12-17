@@ -15,6 +15,9 @@ import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeTy
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.TracedVersion;
+import org.sidiff.bug.localization.dataset.systemmodel.discovery.DataSet2SystemModel;
 
 public class IncrementalModelDelta {
 
@@ -28,10 +31,16 @@ public class IncrementalModelDelta {
 	
 	private List<Resource> previousResources;
 	
-	public IncrementalModelDelta(Repository modelRepository, Neo4jTransaction transaction) {
+	protected URI systemModelURI;
+	
+	protected DataSet2SystemModel dataSet2SystemModel;
+	
+	public IncrementalModelDelta(Repository modelRepository, URI systemModelURI, Neo4jTransaction transaction) {
 		this.modelRepository = modelRepository;
 		this.repositoryBaseURI = URI.createFileURI(modelRepository.getWorkingDirectory().toString());
 		this.modelDelta = new ModelDelta(transaction);
+		this.systemModelURI = systemModelURI;
+		this.dataSet2SystemModel = new DataSet2SystemModel();
 	}
 	
 	public void clearDatabase() {
@@ -60,6 +69,9 @@ public class IncrementalModelDelta {
 			}
 		}
 		
+		// TODO: Introduce some general interface for patching of model versions.
+		Resource systemModelResource = patchModelVersion(newResourceSet, newResources, newModelVersion, nextModelVersion);
+		
 		// Get old versions of models:
 		List<Resource> oldResources = previousResources;
 		
@@ -84,11 +96,46 @@ public class IncrementalModelDelta {
 				previousResources.add(previousModel);
 			}
 		}
+		
+		if (!previousResources.contains(systemModelResource)) {
+			previousResources.add(systemModelResource);
+		}
 	}
 
 	private Resource loadModel(FileChange fileChange, ResourceSet newResourceSet) {
 		URI relativeModelURI = URI.createFileURI(fileChange.getLocation().toString());
 		URI modelURI = repositoryBaseURI.appendSegments(relativeModelURI.segments());
 		return newResourceSet.getResource(modelURI, true);
+	}
+	
+	/**
+	 * Append model version and bug report information from data set.
+	 */
+	protected Resource patchModelVersion(
+			ResourceSet newResourceSet, List<Resource> newResources, 
+			Version newModelVersion,  Version nextModelVersion) {
+		
+		if (newResourceSet.getURIConverter().exists(systemModelURI, null)) {
+			Resource systemModelResource = newResourceSet.getResource(systemModelURI, true);
+			
+			if (!systemModelResource.getContents().isEmpty()) {
+				SystemModel patchedSystemModel = (SystemModel) systemModelResource.getContents().get(0);
+				
+				TracedVersion modelVersion = dataSet2SystemModel.convertVersion(newModelVersion, nextModelVersion);
+				patchedSystemModel.setVersion(modelVersion);
+				
+				if (modelVersion.getBugreport() != null) {
+					dataSet2SystemModel.relocateModelChanges(patchedSystemModel, modelVersion.getBugreport());
+				}
+				
+				if (!newResources.contains(systemModelResource)) {
+					newResources.add(systemModelResource);
+				}
+				
+				return systemModelResource;
+			}
+		}
+		
+		return null;
 	}
 }

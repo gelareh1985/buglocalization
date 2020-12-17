@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.sidiff.bug.localization.dataset.fixes;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.sidiff.bug.localization.dataset.fixes.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.sidiff.bug.localization.dataset.reports,
- org.sidiff.bug.localization.dataset.history,
  org.junit;resolution:=optional,
- org.sidiff.bug.localization.common.utilities
+ org.sidiff.bug.localization.common.utilities,
+ org.sidiff.bug.localization.dataset.history,
+ org.sidiff.bug.localization.dataset.reports
 Automatic-Module-Name: org.sidiff.bug.localization.dataset.history.report
 Bundle-ActivationPolicy: lazy
 Export-Package: org.sidiff.bug.localization.dataset.fixes,

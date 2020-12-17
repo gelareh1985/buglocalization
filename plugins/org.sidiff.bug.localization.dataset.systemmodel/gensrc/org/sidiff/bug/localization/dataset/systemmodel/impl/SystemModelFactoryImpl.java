@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.sidiff.bug.localization.dataset.systemmodel.*;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
@@ -71,6 +72,12 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 			case SystemModelPackage.VIEW: return createView();
 			case SystemModelPackage.CHANGE: return createChange();
 			case SystemModelPackage.VIEW_DESCRIPTION: return createViewDescription();
+			case SystemModelPackage.VERSION: return createVersion();
+			case SystemModelPackage.BUG_REPORT: return createBugReport();
+			case SystemModelPackage.TRACED_VERSION: return createTracedVersion();
+			case SystemModelPackage.BUG_REPORT_COMMENT: return createBugReportComment();
+			case SystemModelPackage.FILE_CHANGE: return createFileChange();
+			case SystemModelPackage.TRACED_BUG_REPORT: return createTracedBugReport();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -191,6 +198,72 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 		return viewDescription;
 	}
 	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Version createVersion() {
+		VersionImpl version = new VersionImpl();
+		return version;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public BugReport createBugReport() {
+		BugReportImpl bugReport = new BugReportImpl();
+		return bugReport;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public TracedVersion createTracedVersion() {
+		TracedVersionImpl tracedVersion = new TracedVersionImpl();
+		return tracedVersion;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public BugReportComment createBugReportComment() {
+		BugReportCommentImpl bugReportComment = new BugReportCommentImpl();
+		return bugReportComment;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public FileChange createFileChange() {
+		FileChangeImpl fileChange = new FileChangeImpl();
+		return fileChange;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public TracedBugReport createTracedBugReport() {
+		TracedBugReportImpl tracedBugReport = new TracedBugReportImpl();
+		return tracedBugReport;
+	}
+
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -95,6 +95,60 @@ public interface SystemModelFactory extends EFactory {
 	ViewDescription createViewDescription();
 	
 	/**
+	 * Returns a new object of class '<em>Version</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Version</em>'.
+	 * @generated
+	 */
+	Version createVersion();
+
+	/**
+	 * Returns a new object of class '<em>Bug Report</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Bug Report</em>'.
+	 * @generated
+	 */
+	BugReport createBugReport();
+
+	/**
+	 * Returns a new object of class '<em>Traced Version</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Traced Version</em>'.
+	 * @generated
+	 */
+	TracedVersion createTracedVersion();
+
+	/**
+	 * Returns a new object of class '<em>Bug Report Comment</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Bug Report Comment</em>'.
+	 * @generated
+	 */
+	BugReportComment createBugReportComment();
+
+	/**
+	 * Returns a new object of class '<em>File Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>File Change</em>'.
+	 * @generated
+	 */
+	FileChange createFileChange();
+
+	/**
+	 * Returns a new object of class '<em>Traced Bug Report</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Traced Bug Report</em>'.
+	 * @generated
+	 */
+	TracedBugReport createTracedBugReport();
+
+	/**
 	 * Returns a new object of class '<em>View Description</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

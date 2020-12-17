@@ -62,8 +62,11 @@ public class JavaProject2SystemModel {
 	
 	private Set<Resource> modelResources;
 	
+	protected DataSet2SystemModel dataSet2SystemModel;
+	
 	public JavaProject2SystemModel(Path modelRepository, String name, boolean includeMethodBodies, SystemModel systemModel) {
 		this.modelRepository = modelRepository;
+		this.dataSet2SystemModel = new DataSet2SystemModel();
 		
 		// Remember created/modified resources:
 		this.codeToModel = new CodeLinesToModelTrace();
@@ -255,36 +258,8 @@ public class JavaProject2SystemModel {
 		change.setOriginalResource(workspaceResource.toString());
 		change.setLocation(modelElement);
 		change.setQuantification(quantification);
-		change.setType(getChange(lineChange));
+		change.setType(dataSet2SystemModel.convertChange(lineChange));
 		return change;
-	}
-
-	private ChangeType getChange(LineChange lineChange) {
-		switch (lineChange.getType()) {
-		case DELETE:
-			return ChangeType.DELETE;
-		case EMPTY:
-			return ChangeType.DELETE;
-		case INSERT:
-			return ChangeType.ADD;
-		case REPLACE:
-			return ChangeType.MODIFY;
-		default:
-			return ChangeType.MODIFY;
-		}
-	}
-	
-	private ChangeType getChange(FileChange fileChange) {
-		switch (fileChange.getType()) {
-		case DELETE:
-			return ChangeType.DELETE;
-		case ADD:
-			return ChangeType.ADD;
-		case MODIFY:
-			return ChangeType.MODIFY;
-		default:
-			return ChangeType.MODIFY;
-		}
 	}
 
 	private EObject findClosestPackage(FileChange fileChange, Model workspaceRoot) {
@@ -351,7 +326,7 @@ public class JavaProject2SystemModel {
 						bugLocation.setOriginalResource(workspaceResource.toString());
 						bugLocation.setLocation(modelElement);
 						bugLocation.setQuantification(1);
-						bugLocation.setType(getChange(fileChange));
+						bugLocation.setType(dataSet2SystemModel.convertChange(fileChange));
 					}
 				}
 				
