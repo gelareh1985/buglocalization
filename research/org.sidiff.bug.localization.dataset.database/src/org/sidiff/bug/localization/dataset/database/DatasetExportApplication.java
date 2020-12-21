@@ -45,10 +45,10 @@ public class DatasetExportApplication implements IApplication {
 		String databaseName = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_NAMES);
 		String databasePassword = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_PASSWORD);
 		
-//		if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
-//			test();
-//			return IApplication.EXIT_OK;
-//		}
+		if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
+			test();
+			return IApplication.EXIT_OK;
+		}
 		
 		this.datasetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		this.dataset = DataSetStorage.load(datasetPath);
@@ -136,6 +136,7 @@ public class DatasetExportApplication implements IApplication {
 		
 		System.out.println("######################################## VERSION V" + version + " ########################################");
 		System.out.println(description);
+		System.out.println("############################################################################################");
 		
 		if (oldUMLResource == null) { // initial resource?
 			modelDelta.commitDelta(version, null, null, baseUri, Collections.singletonList(newUMLResource));
