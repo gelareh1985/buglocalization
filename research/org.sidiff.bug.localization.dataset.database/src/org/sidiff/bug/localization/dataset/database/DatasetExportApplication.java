@@ -85,24 +85,67 @@ public class DatasetExportApplication implements IApplication {
 		String databaseName = "neo4j";
 		String databasePassword = "password";
 		
-		URI baseUriV0 = URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/test/1", true);
-		ResourceSet resourceSetV0 = new ResourceSetImpl();
-		XMLResource umlResourceV0 = (XMLResource) resourceSetV0.getResource(baseUriV0.appendSegment("testdi.uml"), true);
-
-		URI baseUriV1 = URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/test/2", true);
-		ResourceSet resourceSetV1 = new ResourceSetImpl();
-		XMLResource umlResourceV1 = (XMLResource) resourceSetV1.getResource(baseUriV1.appendSegment("testdi.uml"), true);
+		URI baseUri = URI.createPlatformPluginURI("org.sidiff.bug.localization.dataset.database/testdata", true);
 		
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
 			ModelDelta modelDelta = new ModelDelta(transaction);
 			modelDelta.clearDatabase();
+			XMLResource lastUMLResource = null;
+			int version = 0;
 			
-			System.out.println("######################################## VERSION V0 ########################################");
-			modelDelta.commitDelta(0, null, null, baseUriV0, Collections.singletonList(umlResourceV0));
+			// Version 0:
+			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
+					"# The initial model verison.");
 			
-			System.out.println("######################################## VERSION V1 ########################################");
-			modelDelta.commitDelta(1, baseUriV0, Collections.singletonList(umlResourceV0), baseUriV1, Collections.singletonList(umlResourceV1));
+			// Version 1:
+			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
+					  "# Remove class B with property attrB:String (String is external reference, not in scope).\n"
+					+ "# Create data type M\n"
+					+ "# Create operation opA2() in class A.");
+			
+			// Version 2:
+			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
+					  "# 'Undo' (including UUIDs!) the removing of class B and attrB (with new datatype M).");
+			
+			// Version 3:
+			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
+					  "# Add paramOpA:B to opA() in class A.");
+			
+			// Version 4:
+			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
+					  "# Rename opA() to operationA().\n"
+					+ "# Rename opA2() to operationA2().");
+			
+			// Version 5:
+			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
+					  "# Copy operationA(paramOpA:B) from class A to class B.\n"
+					+ "# Copy operationA2() from class A to class B.");
 		}
+	}
+
+	private XMLResource test_getResource(URI baseUri, int version) {
+		URI modelUri = baseUri.appendSegment("" + version).appendSegment("model.uml");
+		ResourceSet resourceSet = new ResourceSetImpl();
+		XMLResource umlResource = (XMLResource) resourceSet.getResource(modelUri, true);
+		return umlResource;
+	}
+
+	private XMLResource test_commitDelta(Neo4jTransaction transaction, URI baseUri, int version, XMLResource oldUMLResource, String description) {
+		XMLResource newUMLResource = test_getResource(baseUri, version);
+		ModelDelta modelDelta = new ModelDelta(transaction);
+		
+		System.out.println("######################################## VERSION V" + version + " ########################################");
+		System.out.println(description);
+		
+		if (oldUMLResource == null) { // initial resource?
+			modelDelta.commitDelta(version, null, null, baseUri, Collections.singletonList(newUMLResource));
+		} else {
+			modelDelta.commitDelta(version, 
+					oldUMLResource.getURI().trimSegments(1), Collections.singletonList(oldUMLResource), 
+					newUMLResource.getURI().trimSegments(1), Collections.singletonList(newUMLResource));
+		}
+		
+		return newUMLResource;
 	}
 
 }

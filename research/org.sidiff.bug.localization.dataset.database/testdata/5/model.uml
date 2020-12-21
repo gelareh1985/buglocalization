@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_vmDKoDZ1EeuIGbvfr_Jdpw" name="model">
+  <packageImport xmi:id="_vpQ2sDZ1EeuIGbvfr_Jdpw">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_3eEPwDZ1EeuIGbvfr_Jdpw" name="A">
+    <ownedOperation xmi:id="_Z4juADZ2EeuIGbvfr_Jdpw" name="operationA">
+      <ownedParameter xmi:id="_D4-80EOyEeuWFaMdl2-ucw" name="paramOpA" type="_mcwvYEOxEeuWFaMdl2-ucw"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_ZnIgwEOxEeuWFaMdl2-ucw" name="operationA2"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_mcwvYEOxEeuWFaMdl2-ucw" name="B">
+    <ownedAttribute xmi:id="_sl-wYEOxEeuWFaMdl2-ucw" name="attrB" type="_oBTWEDaREeuIGbvfr_Jdpw"/>
+    <ownedOperation xmi:id="_QlFcAEOyEeuWFaMdl2-ucw" name="operationA">
+      <ownedParameter xmi:id="_QlFcAUOyEeuWFaMdl2-ucw" name="paramOpA" type="_mcwvYEOxEeuWFaMdl2-ucw"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_QlGDEEOyEeuWFaMdl2-ucw" name="operationA2"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_oBTWEDaREeuIGbvfr_Jdpw" name="M"/>
+</uml:Model>

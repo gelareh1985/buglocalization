@@ -33,6 +33,8 @@ public class IncrementalModelDelta {
 	
 	protected URI systemModelURI;
 	
+	protected String systemModelName;
+	
 	protected DataSet2SystemModel dataSet2SystemModel;
 	
 	public IncrementalModelDelta(Repository modelRepository, URI systemModelURI, Neo4jTransaction transaction) {
@@ -40,6 +42,7 @@ public class IncrementalModelDelta {
 		this.repositoryBaseURI = URI.createFileURI(modelRepository.getWorkingDirectory().toString());
 		this.modelDelta = new ModelDelta(transaction);
 		this.systemModelURI = systemModelURI;
+		this.systemModelName = systemModelURI.lastSegment().substring(0, systemModelURI.lastSegment().lastIndexOf("."));
 		this.dataSet2SystemModel = new DataSet2SystemModel();
 	}
 	
@@ -70,7 +73,7 @@ public class IncrementalModelDelta {
 		}
 		
 		// TODO: Introduce some general interface for patching of model versions.
-		Resource systemModelResource = patchModelVersion(newResourceSet, newResources, newModelVersion, nextModelVersion);
+		Resource systemModelResource = patchSystemModelVersion(newResourceSet, newResources, newModelVersion, nextModelVersion);
 		
 		// Get old versions of models:
 		List<Resource> oldResources = previousResources;
@@ -111,7 +114,7 @@ public class IncrementalModelDelta {
 	/**
 	 * Append model version and bug report information from data set.
 	 */
-	protected Resource patchModelVersion(
+	protected Resource patchSystemModelVersion(
 			ResourceSet newResourceSet, List<Resource> newResources, 
 			Version newModelVersion,  Version nextModelVersion) {
 		
@@ -120,6 +123,7 @@ public class IncrementalModelDelta {
 			
 			if (!systemModelResource.getContents().isEmpty()) {
 				SystemModel patchedSystemModel = (SystemModel) systemModelResource.getContents().get(0);
+				patchedSystemModel.setName(systemModelName);
 				
 				TracedVersion modelVersion = dataSet2SystemModel.convertVersion(newModelVersion, nextModelVersion);
 				patchedSystemModel.setVersion(modelVersion);
