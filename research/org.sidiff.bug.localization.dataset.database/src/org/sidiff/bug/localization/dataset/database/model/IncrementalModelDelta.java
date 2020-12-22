@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.database.model.util.UMLResourceIDPreserving;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
@@ -51,6 +52,14 @@ public class IncrementalModelDelta {
 	}
 	
 	public void commitDelta(Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
+		internal_commitDelta(newModelVersion, nextModelVersion, newDatabaseVersion, true);
+	}
+	
+	public void initialize(Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
+		internal_commitDelta(newModelVersion, nextModelVersion, newDatabaseVersion, false);
+	}
+	
+	private void internal_commitDelta(Version newModelVersion, Version nextModelVersion, int newDatabaseVersion, boolean writeToDatabase) {
 		
 		// Get models which changed in this version:
 		List<FileChange> newModelVersionChanges = nextModelVersionChanges;
@@ -60,7 +69,7 @@ public class IncrementalModelDelta {
 			newModelVersionChanges = modelRepository.getChanges(newModelVersion, false);
 		}
 		
-		ResourceSet newResourceSet = new ResourceSetImpl();
+		ResourceSet newResourceSet = createResourceSet();
 		List<Resource> newResources = new ArrayList<>();
 		Map<Path, Resource> newResourcesLocations = new HashMap<>();
 		
@@ -72,14 +81,16 @@ public class IncrementalModelDelta {
 			}
 		}
 		
-		// TODO: Introduce some general interface for patching of model versions.
+		// FIXME[WORKAROUND]: Introduce some general interface for patching of model versions.
 		Resource systemModelResource = patchSystemModelVersion(newResourceSet, newResources, newModelVersion, nextModelVersion);
 		
 		// Get old versions of models:
 		List<Resource> oldResources = previousResources;
 		
-		// Compute model delta:
-		modelDelta.commitDelta(newDatabaseVersion, repositoryBaseURI, oldResources, repositoryBaseURI, newResources);
+		// Compute and commit model delta:
+		if (writeToDatabase) {
+			modelDelta.commitDelta(newDatabaseVersion, repositoryBaseURI, oldResources, repositoryBaseURI, newResources);
+		}
 		
 		// Prepare for next version:
 		this.nextModelVersionChanges = modelRepository.getChanges(nextModelVersion, false);
@@ -103,6 +114,22 @@ public class IncrementalModelDelta {
 		if (!previousResources.contains(systemModelResource)) {
 			previousResources.add(systemModelResource);
 		}
+	}
+
+	protected ResourceSet createResourceSet() {
+		ResourceSet resourceSet = new ResourceSetImpl();
+		
+		// FIXME[WORKAROUND]: Do not assign IDs while loading! Generalize this put("*", ...)? 
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("uml",
+				new org.eclipse.emf.ecore.resource.Resource.Factory() {
+
+					@Override
+					public Resource createResource(URI uri) {
+						return new UMLResourceIDPreserving(uri);
+					}
+				});
+		
+		return resourceSet;
 	}
 
 	private Resource loadModel(FileChange fileChange, ResourceSet newResourceSet) {

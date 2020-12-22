@@ -25,7 +25,7 @@ public class DatasetExportApplication implements IApplication {
 	
 	public static final String ARGUMENT_DATABASE_CONNECTION = "-databaseconnection";
 	
-	public static final String ARGUMENT_DATABASE_NAMES = "-databasename";
+	public static final String ARGUMENT_DATABASE_USER = "-databaseuser";
 	
 	public static final String ARGUMENT_DATABASE_PASSWORD = "-databasepassword";
 	
@@ -37,12 +37,16 @@ public class DatasetExportApplication implements IApplication {
 
 	private GitRepository modelRepository;
 	
+	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
+	//       -> Last Version + 1
+	private int startRepositoryVersion = -1; // next version number or -1
+	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		
 		// bolt://localhost:7687 , neo4j , password
 		String databaseConnection = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_CONNECTION);
-		String databaseName = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_NAMES);
+		String databaseUser = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_USER);
 		String databasePassword = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_PASSWORD);
 		
 //		if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
@@ -56,12 +60,17 @@ public class DatasetExportApplication implements IApplication {
 		Path modelRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_MODEL_REPOSITORY);
 		this.modelRepository = new GitRepository(modelRepositoryPath.toFile()); 
 		
-		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseConnection, databaseName, databasePassword)) {
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseConnection, databaseUser, databasePassword)) {
 			ModelHistory2Neo4j modelHistory2Neo4j = new ModelHistory2Neo4j(modelRepository, transaction);
 			
-			// Initially clear Neo4j database?
-			if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
-				modelHistory2Neo4j.clearDatabase();
+			if (startRepositoryVersion != -1) {
+				// Restart conversion...
+				modelHistory2Neo4j.setStartDatabaseVersion(startRepositoryVersion);
+			} else {
+				// Initially clear Neo4j database?
+				if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
+					modelHistory2Neo4j.clearDatabase();
+				}
 			}
 			
 			// Write model repository history to Neo4j:
@@ -103,7 +112,7 @@ public class DatasetExportApplication implements IApplication {
 					+ "# Create data type M\n"
 					+ "# Create operation opA2() in class A.");
 			
-			// Version 2:
+			// Version 2: A node is identified by its UUID and its version number!
 			lastUMLResource = test_commitDelta(transaction, baseUri, version++, lastUMLResource, 
 					  "# 'Undo' (including UUIDs!) the removing of class B and attrB (with new datatype M).");
 			

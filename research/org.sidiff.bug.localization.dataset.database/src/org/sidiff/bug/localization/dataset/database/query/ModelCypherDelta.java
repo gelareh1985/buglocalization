@@ -88,14 +88,28 @@ public class ModelCypherDelta {
 		return id;
 	}
 	
-	public EObject getModelElement(XMLResource resource, String modelElementID) {
+	public EObject getModelElement(XMLResource resource, EClass type, String modelElementID) {
 		if (resource == null) {
 			return null;
 		}
+		
+		EObject modelElement = null;
+		
 		if (modelElementID.startsWith(URI_PROTOCOL)) {
-			return resource.getEObject(URI.createURI(modelElementID).fragment());
+			try {
+				modelElement = resource.getEObject(URI.createURI(modelElementID).fragment());
+			} catch (IllegalArgumentException e) {
+				// e.g. if no value for //parameterTypes/@upperValue URI
+				return null;
+			}
 		} else {
-			return resource.getEObject(modelElementID);
+			modelElement = resource.getEObject(modelElementID);
+		}
+		
+		if ((modelElement != null) && (modelElement.eClass() == type)) {
+			return modelElement;
+		} else {
+			return null;
 		}
 	}
 	

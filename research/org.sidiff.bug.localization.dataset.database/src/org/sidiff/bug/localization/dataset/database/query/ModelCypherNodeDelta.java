@@ -104,7 +104,7 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 		XMLResource oldResource = getOldResource(newResource);
 		
 		if (oldResource != null) {
-			modelElementOld = getModelElement(oldResource, modelElementID);
+			modelElementOld = getModelElement(oldResource, modelElementNew.eClass(), modelElementID);
 		}
 		
 		// Create query for new node:
@@ -186,8 +186,9 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 		
 		// Is removed model element?
 		XMLResource newResource = getNewResource(oldResource);
+		EObject modelElementNew = getModelElement(newResource, oldModelElement.eClass(), modelElementID);
 		
-		if ((newResource == null) || (getModelElement(newResource, modelElementID) == null)) {
+		if ((newResource == null) || (modelElementNew == null)) {
 			deriveRemovedNodeBatchQuery(oldModelElement, modelElementID);
 		}
 	}

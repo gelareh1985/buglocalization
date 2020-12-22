@@ -15,20 +15,36 @@ public class Neo4jTransaction implements AutoCloseable {
 	
 	public static boolean LOGGING = true; 
 	
-	private final Driver driver;
+	private String uri;
 	
-	private final Session session;
+	private String user;
+	
+	private String password;
+	
+	private Driver driver;
+	
+	private Session session;
 	
 	private Transaction transaction;
 	
 	public Neo4jTransaction(String uri, String user, String password) {
+		this.uri = uri;
+		this.user = user;
+		this.password = password;
+		open();
+	}
+	
+	public void open() {
+		if (driver != null) {
+			close();
+		}
 		this.driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
 		this.session = driver.session();
 		this.transaction = session.beginTransaction();
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		transaction.commit();
 		transaction.close();
 		session.close();
