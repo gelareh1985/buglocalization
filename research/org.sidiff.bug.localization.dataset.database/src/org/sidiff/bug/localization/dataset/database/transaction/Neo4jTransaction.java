@@ -13,7 +13,9 @@ import org.neo4j.driver.Transaction;
 
 public class Neo4jTransaction implements AutoCloseable {
 	
-	public static boolean LOGGING = true; 
+	public static boolean LOGGING = true;
+	
+	public static boolean PROFILE_WITH_COMMIT = false; 
 	
 	private String uri;
 	
@@ -59,6 +61,7 @@ public class Neo4jTransaction implements AutoCloseable {
 		if (!queries.isEmpty()) {
 			for (Entry<String, Map<String, Object>> parameterizedQuery : queries.entrySet()) {
 				transaction.run(parameterizedQuery.getKey(), parameterizedQuery.getValue());
+				commitAndStopTime(parameterizedQuery.getKey());
 			}
 		}
 	}
@@ -114,4 +117,13 @@ public class Neo4jTransaction implements AutoCloseable {
 //		}
 	}
 
+	private long commitAndStopTime(String query) {
+		if (PROFILE_WITH_COMMIT) {
+			long startTime = System.currentTimeMillis();
+			commit();
+			System.out.println("Commit " + (System.currentTimeMillis() - startTime) + "ms: " + query);
+			return System.currentTimeMillis();
+		}
+		return -1;
+	}
 }

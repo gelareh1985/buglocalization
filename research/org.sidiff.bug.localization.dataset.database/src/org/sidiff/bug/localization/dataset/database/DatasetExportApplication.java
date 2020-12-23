@@ -37,9 +37,15 @@ public class DatasetExportApplication implements IApplication {
 
 	private GitRepository modelRepository;
 	
+	/*
+	 *  Experimental Flags:
+	 */
+	
 	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
 	//       -> Last Version + 1
-	private int startRepositoryVersion = -1; // next version number or -1
+	private int restartWithVersion = 9787; // next version number or -1
+	private boolean startWithFullVersion = true;
+	private boolean runTestCases = true;
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
@@ -49,10 +55,10 @@ public class DatasetExportApplication implements IApplication {
 		String databaseUser = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_USER);
 		String databasePassword = ApplicationUtil.getStringFromProgramArguments(context, ARGUMENT_DATABASE_PASSWORD);
 		
-//		if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {
-//			test();
-//			return IApplication.EXIT_OK;
-//		}
+		if (runTestCases) {
+			test();
+			return IApplication.EXIT_OK;
+		}
 		
 		this.datasetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		this.dataset = DataSetStorage.load(datasetPath);
@@ -63,9 +69,14 @@ public class DatasetExportApplication implements IApplication {
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseConnection, databaseUser, databasePassword)) {
 			ModelHistory2Neo4j modelHistory2Neo4j = new ModelHistory2Neo4j(modelRepository, transaction);
 			
-			if (startRepositoryVersion != -1) {
+			if (restartWithVersion != -1) {
 				// Restart conversion...
-				modelHistory2Neo4j.setStartDatabaseVersion(startRepositoryVersion);
+				modelHistory2Neo4j.setRestartWithVersion(restartWithVersion);
+				modelHistory2Neo4j.setStartWithFullVersion(startWithFullVersion);
+				
+				if (startWithFullVersion) {
+					modelHistory2Neo4j.clearDatabase();
+				}
 			} else {
 				// Initially clear Neo4j database?
 				if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATABASE_CLEAR)) {

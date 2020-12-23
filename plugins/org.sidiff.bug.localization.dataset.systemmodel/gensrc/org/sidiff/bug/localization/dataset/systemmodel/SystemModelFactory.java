@@ -6,6 +6,7 @@ import java.nio.file.Path;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
  * <!-- begin-user-doc -->
@@ -36,7 +37,7 @@ public interface SystemModelFactory extends EFactory {
 	/**
 	 * <!-- begin-user-doc -->
 	 * 
-	 * @param file             The system model file. If the file exists it will be
+	 * @param uri              The system model file. If the file exists it will be
 	 *                         loaded; otherwise a new resource will be created.
 	 * @param resolveResources <code>true</code> if all contained resources should
 	 *                         be loaded; <code>false</code> if not. This is
@@ -49,6 +50,24 @@ public interface SystemModelFactory extends EFactory {
 	 * @generated NOT
 	 */
 	SystemModel createSystemModel(URI uri, boolean resolveResources);
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * 
+	 * @param resourceSet      The resource set used for loading all resources.
+	 * @param uri              The system model file. If the file exists it will be
+	 *                         loaded; otherwise a new resource will be created.
+	 * @param resolveResources <code>true</code> if all contained resources should
+	 *                         be loaded; <code>false</code> if not. This is
+	 *                         important if a system model consist of multiple
+	 *                         models that are stored by cross-resource
+	 *                         containments. For example, change locations might
+	 *                         point into a resource but its parent resource will
+	 *                         not be loaded automatically.
+	 * @return <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	SystemModel createSystemModel(ResourceSet resourceSet, URI uri, boolean resolveResources);
 
 	/**
 	 * <!-- begin-user-doc -->

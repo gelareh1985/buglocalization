@@ -1,13 +1,13 @@
 ﻿[
   {
     "n": {
-"identity": 46801,
+"identity": 204544,
 "labels": [
         "Property"
       ],
 "properties": {
-"isStatic": "false",
 "isDerived": "false",
+"isStatic": "false",
 "__last__version__": 0,
 "visibility": "public",
 "isUnique": "true",
@@ -26,7 +26,7 @@
   },
   {
     "n": {
-"identity": 46802,
+"identity": 204545,
 "labels": [
         "Model"
       ],
@@ -42,7 +42,7 @@
   },
   {
     "n": {
-"identity": 46803,
+"identity": 204546,
 "labels": [
         "Class"
       ],
@@ -51,8 +51,8 @@
 "visibility": "public",
 "name": "A",
 "isActive": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_3eEPwDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -62,7 +62,7 @@
   },
   {
     "n": {
-"identity": 46804,
+"identity": 204547,
 "labels": [
         "Class"
       ],
@@ -71,8 +71,8 @@
 "visibility": "public",
 "name": "B",
 "isActive": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_4e9sEDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -82,7 +82,7 @@
   },
   {
     "n": {
-"identity": 46805,
+"identity": 204548,
 "labels": [
         "PackageImport"
       ],
@@ -97,7 +97,7 @@
   },
   {
     "n": {
-"identity": 46806,
+"identity": 204549,
 "labels": [
         "Operation"
       ],
@@ -110,15 +110,15 @@
 "isLeaf": "false",
 "isAbstract": "false",
 "__model__element__id__": "_Z4juADZ2EeuIGbvfr_Jdpw",
-"__initial__version__": 0,
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"concurrency": "sequential"
+"concurrency": "sequential",
+"__initial__version__": 0
       }
     }
   },
   {
     "n": {
-"identity": 46807,
+"identity": 204550,
 "labels": [
         "DataType"
       ],
@@ -130,14 +130,14 @@
 "isLeaf": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_oBTWEDaREeuIGbvfr_Jdpw",
-"__initial__version__": 1,
-"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML"
+"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
+"__initial__version__": 1
       }
     }
   },
   {
     "n": {
-"identity": 46808,
+"identity": 204551,
 "labels": [
         "Operation"
       ],
@@ -151,21 +151,21 @@
 "isAbstract": "false",
 "__model__element__id__": "_ZnIgwEOxEeuWFaMdl2-ucw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"__initial__version__": 1,
-"concurrency": "sequential"
+"concurrency": "sequential",
+"__initial__version__": 1
       }
     }
   },
   {
     "n": {
-"identity": 46809,
+"identity": 204552,
 "labels": [
         "Property"
       ],
 "properties": {
-"isStatic": "false",
 "isDerived": "false",
-"__last__version__": 2,
+"isStatic": "false",
+"__last__version__": 5,
 "visibility": "public",
 "isUnique": "true",
 "aggregation": "none",
@@ -183,17 +183,17 @@
   },
   {
     "n": {
-"identity": 46810,
+"identity": 204553,
 "labels": [
         "Class"
       ],
 "properties": {
-"__last__version__": 2,
+"__last__version__": 5,
 "visibility": "public",
 "name": "B",
 "isActive": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_4e9sEDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -203,52 +203,7 @@
   },
   {
     "n": {
-"identity": 46811,
-"labels": [
-        "Property"
-      ],
-"properties": {
-"isStatic": "false",
-"isDerived": "false",
-"__last__version__": 5,
-"visibility": "public",
-"isUnique": "true",
-"aggregation": "none",
-"isLeaf": "false",
-"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"isReadOnly": "false",
-"isID": "false",
-"isDerivedUnion": "false",
-"name": "attrB",
-"isOrdered": "false",
-"__model__element__id__": "_sl-wYEOxEeuWFaMdl2-ucw",
-"__initial__version__": 3
-      }
-    }
-  },
-  {
-    "n": {
-"identity": 46812,
-"labels": [
-        "Class"
-      ],
-"properties": {
-"__last__version__": 5,
-"visibility": "public",
-"name": "B",
-"isActive": "false",
-"isAbstract": "false",
-"isLeaf": "false",
-"isFinalSpecialization": "false",
-"__model__element__id__": "_mcwvYEOxEeuWFaMdl2-ucw",
-"__initial__version__": 3,
-"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML"
-      }
-    }
-  },
-  {
-    "n": {
-"identity": 46813,
+"identity": 204554,
 "labels": [
         "Parameter"
       ],
@@ -270,7 +225,7 @@
   },
   {
     "n": {
-"identity": 46814,
+"identity": 204555,
 "labels": [
         "Operation"
       ],
@@ -280,18 +235,18 @@
 "visibility": "public",
 "name": "operationA",
 "isQuery": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "__model__element__id__": "_Z4juADZ2EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"__initial__version__": 4,
-"concurrency": "sequential"
+"concurrency": "sequential",
+"__initial__version__": 4
       }
     }
   },
   {
     "n": {
-"identity": 46815,
+"identity": 204556,
 "labels": [
         "Operation"
       ],
@@ -301,18 +256,18 @@
 "visibility": "public",
 "name": "operationA2",
 "isQuery": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "__model__element__id__": "_ZnIgwEOxEeuWFaMdl2-ucw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"__initial__version__": 4,
-"concurrency": "sequential"
+"concurrency": "sequential",
+"__initial__version__": 4
       }
     }
   },
   {
     "n": {
-"identity": 46816,
+"identity": 204557,
 "labels": [
         "Parameter"
       ],
@@ -334,7 +289,7 @@
   },
   {
     "n": {
-"identity": 46817,
+"identity": 204558,
 "labels": [
         "Operation"
       ],
@@ -344,18 +299,18 @@
 "visibility": "public",
 "name": "operationA",
 "isQuery": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "__model__element__id__": "_QlFcAEOyEeuWFaMdl2-ucw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"__initial__version__": 5,
-"concurrency": "sequential"
+"concurrency": "sequential",
+"__initial__version__": 5
       }
     }
   },
   {
     "n": {
-"identity": 46818,
+"identity": 204559,
 "labels": [
         "Operation"
       ],
@@ -365,12 +320,12 @@
 "visibility": "public",
 "name": "operationA2",
 "isQuery": "false",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "__model__element__id__": "_QlGDEEOyEeuWFaMdl2-ucw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"__initial__version__": 5,
-"concurrency": "sequential"
+"concurrency": "sequential",
+"__initial__version__": 5
       }
     }
   }

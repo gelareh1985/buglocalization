@@ -132,8 +132,16 @@ public class SystemModelFactoryImpl extends EFactoryImpl implements SystemModelF
 	 */
 	@Override
 	public SystemModel createSystemModel(URI uri, boolean resolveResources) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		
+		return createSystemModel(new ResourceSetImpl(), uri, resolveResources);
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
+	public SystemModel createSystemModel(ResourceSet resourceSet, URI uri, boolean resolveResources) {
 		if (!resourceSet.getURIConverter().exists(uri, Collections.emptyMap())) {
 			SystemModelImpl systemModel = new SystemModelImpl();
 			Resource multiViewResource = resourceSet.createResource(uri);

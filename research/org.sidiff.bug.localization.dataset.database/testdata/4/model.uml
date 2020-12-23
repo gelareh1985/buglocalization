@@ -5,12 +5,12 @@
   </packageImport>
   <packagedElement xmi:type="uml:Class" xmi:id="_3eEPwDZ1EeuIGbvfr_Jdpw" name="A">
     <ownedOperation xmi:id="_Z4juADZ2EeuIGbvfr_Jdpw" name="operationA">
-      <ownedParameter xmi:id="_D4-80EOyEeuWFaMdl2-ucw" name="paramOpA" type="_mcwvYEOxEeuWFaMdl2-ucw"/>
+      <ownedParameter xmi:id="_D4-80EOyEeuWFaMdl2-ucw" name="paramOpA" type="_4e9sEDZ1EeuIGbvfr_Jdpw"/>
     </ownedOperation>
     <ownedOperation xmi:id="_ZnIgwEOxEeuWFaMdl2-ucw" name="operationA2"/>
   </packagedElement>
-  <packagedElement xmi:type="uml:Class" xmi:id="_mcwvYEOxEeuWFaMdl2-ucw" name="B">
-    <ownedAttribute xmi:id="_sl-wYEOxEeuWFaMdl2-ucw" name="attrB" type="_oBTWEDaREeuIGbvfr_Jdpw"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_4e9sEDZ1EeuIGbvfr_Jdpw" name="B">
+    <ownedAttribute xmi:id="_-VnWYDZ1EeuIGbvfr_Jdpw" name="attrB" type="_oBTWEDaREeuIGbvfr_Jdpw"/>
   </packagedElement>
   <packagedElement xmi:type="uml:DataType" xmi:id="_oBTWEDaREeuIGbvfr_Jdpw" name="M"/>
 </uml:Model>

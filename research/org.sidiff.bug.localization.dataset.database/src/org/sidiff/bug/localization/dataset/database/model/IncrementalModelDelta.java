@@ -17,8 +17,10 @@ import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.TracedVersion;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.DataSet2SystemModel;
+import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
 
 public class IncrementalModelDelta {
 
@@ -51,22 +53,33 @@ public class IncrementalModelDelta {
 		modelDelta.clearDatabase();
 	}
 	
-	public void commitDelta(Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
-		internal_commitDelta(newModelVersion, nextModelVersion, newDatabaseVersion, true);
+	public void initialize(Version previousVersion, Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
+		internal_commitDelta(previousVersion, newModelVersion, nextModelVersion, newDatabaseVersion, false);
+	}
+
+	public void commitInitial(Version previousVersion, Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
+		ResourceSet newResourceSet = createResourceSet();
+		
+		// TODO: Generalize this!?
+		if (newResourceSet.getURIConverter().exists(systemModelURI, null)) {
+			internal_commitDelta(previousVersion, newModelVersion, nextModelVersion, newDatabaseVersion, false);
+			SystemModelFactory.eINSTANCE.createSystemModel(newResourceSet, systemModelURI, true); // load all resources...
+			modelDelta.commitDelta(newDatabaseVersion, null, null, repositoryBaseURI, newResourceSet.getResources());
+		}
 	}
 	
-	public void initialize(Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
-		internal_commitDelta(newModelVersion, nextModelVersion, newDatabaseVersion, false);
+	public void commitDelta(Version previousVersion, Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
+		internal_commitDelta(previousVersion, newModelVersion, nextModelVersion, newDatabaseVersion, true);
 	}
 	
-	private void internal_commitDelta(Version newModelVersion, Version nextModelVersion, int newDatabaseVersion, boolean writeToDatabase) {
+	private void internal_commitDelta(Version previousVersion, Version newModelVersion, Version nextModelVersion, int newDatabaseVersion, boolean commitToDatabase) {
 		
 		// Get models which changed in this version:
 		List<FileChange> newModelVersionChanges = nextModelVersionChanges;
 		
 		// Initial version?
 		if (newModelVersionChanges == null) {
-			newModelVersionChanges = modelRepository.getChanges(newModelVersion, false);
+			newModelVersionChanges = modelRepository.getChanges(previousVersion, newModelVersion, false);
 		}
 		
 		ResourceSet newResourceSet = createResourceSet();
@@ -76,8 +89,11 @@ public class IncrementalModelDelta {
 		for (FileChange fileChange : newModelVersionChanges) {
 			if (!fileChange.getType().equals(FileChangeType.DELETE)) {
 				Resource newResource = loadModel(fileChange, newResourceSet);
-				newResources.add(newResource);
-				newResourcesLocations.put(fileChange.getLocation(), newResource);
+				
+				if (newResource != null) {
+					newResources.add(newResource);
+					newResourcesLocations.put(fileChange.getLocation(), newResource);
+				}
 			}
 		}
 		
@@ -88,12 +104,14 @@ public class IncrementalModelDelta {
 		List<Resource> oldResources = previousResources;
 		
 		// Compute and commit model delta:
-		if (writeToDatabase) {
+		if (commitToDatabase) {
 			modelDelta.commitDelta(newDatabaseVersion, repositoryBaseURI, oldResources, repositoryBaseURI, newResources);
 		}
 		
 		// Prepare for next version:
-		this.nextModelVersionChanges = modelRepository.getChanges(nextModelVersion, false);
+		this.nextModelVersionChanges = modelRepository.getChanges(newModelVersion, nextModelVersion, false);
+		
+		UMLUtil.unloadUMLModels(previousResources);
 		this.previousResources = new ArrayList<>();
 		
 		for (FileChange fileChange : nextModelVersionChanges) {
@@ -133,9 +151,14 @@ public class IncrementalModelDelta {
 	}
 
 	private Resource loadModel(FileChange fileChange, ResourceSet newResourceSet) {
-		URI relativeModelURI = URI.createFileURI(fileChange.getLocation().toString());
-		URI modelURI = repositoryBaseURI.appendSegments(relativeModelURI.segments());
-		return newResourceSet.getResource(modelURI, true);
+		try {
+			URI relativeModelURI = URI.createFileURI(fileChange.getLocation().toString());
+			URI modelURI = repositoryBaseURI.appendSegments(relativeModelURI.segments());
+			return newResourceSet.getResource(modelURI, true);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

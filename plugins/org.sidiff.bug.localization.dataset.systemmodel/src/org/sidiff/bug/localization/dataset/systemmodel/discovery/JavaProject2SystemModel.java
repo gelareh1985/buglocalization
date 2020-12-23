@@ -1,13 +1,11 @@
 package org.sidiff.bug.localization.dataset.systemmodel.discovery;
 
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,8 +15,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
-import org.eclipse.uml2.common.util.CacheAdapter;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageableElement;
@@ -30,6 +26,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
+import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.reverseengineering.java.IncrementalReverseEngineering;
 import org.sidiff.reverseengineering.java.TransformationListener;
@@ -120,7 +117,7 @@ public class JavaProject2SystemModel {
 			modelResources.add(trace.getTypeModel());
 			
 			// Unload models for garbage collection -> prevent resource leaks:
-			unloadUMLModels(Collections.singleton(trace.getTypeModel()));
+			UMLUtil.unloadUMLModels(Collections.singleton(trace.getTypeModel()));
 		}
 	
 		@Override
@@ -349,55 +346,4 @@ public class JavaProject2SystemModel {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void unloadUMLModels(Set<Resource> resources) {
-		// Unload models for garbage collection -> prevent resource leaks:
-		try {
-			// CacheAdapter/ECrossReferenceAdapter resource leak: remove adapter, clear caches, unload all resources 
-			for (Iterator<Resource> iterator = resources.iterator(); iterator.hasNext();) {
-				Resource resource = (Resource) iterator.next();
-				ECrossReferenceAdapter crossReferenceAdapter = ECrossReferenceAdapter.getCrossReferenceAdapter(resource);
-
-				if (crossReferenceAdapter != null) {
-					crossReferenceAdapter.unsetTarget(resource);
-				}
-
-				if (CacheAdapter.getInstance() != null) {
-					CacheAdapter.getInstance().clear(resource);
-				}
-
-				resource.unload();
-			}
-		} catch (Throwable e) {
-			// e.printStackTrace(); // FIXME Index-Out-Of-Bounds on resource.unload();
-		}
-
-		// WORKAROUND: Clear resource leaks of UML CacheAdapter:
-		try {
-			CacheAdapter cacheAdapter = CacheAdapter.getInstance();
-			cacheAdapter.clear();
-
-			// Clear inverseCrossReferencer map:
-			Field inverseCrossReferencerField = ECrossReferenceAdapter.class.getDeclaredField("inverseCrossReferencer");
-			inverseCrossReferencerField.setAccessible(true);
-			Object inverseCrossReferencerValue = inverseCrossReferencerField.get(cacheAdapter);
-
-			if (inverseCrossReferencerValue instanceof Map) {
-				((Map) inverseCrossReferencerValue).clear();
-			}
-
-			// Clear proxyMap map:
-			Class<?> inverseCrossReferencerClass = Class.forName("org.eclipse.emf.ecore.util.ECrossReferenceAdapter$InverseCrossReferencer");
-			Field proxyMapField = inverseCrossReferencerClass.getDeclaredField("proxyMap");
-			proxyMapField.setAccessible(true);
-			Object proxyMapValue = proxyMapField.get(inverseCrossReferencerValue);
-
-			if (proxyMapValue instanceof Map) {
-				((Map) proxyMapValue).clear();
-			}
-
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
 }

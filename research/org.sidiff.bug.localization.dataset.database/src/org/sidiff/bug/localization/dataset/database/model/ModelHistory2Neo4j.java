@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import org.eclipse.emf.common.util.URI;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jUtil;
+import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
@@ -20,7 +21,9 @@ public class ModelHistory2Neo4j {
 	
 	private Neo4jTransaction transaction;
 	
-	private int startDatabaseVersion = -1;
+	private int restartWithVersion = -1;
+	
+	private boolean startWithFullVersion = false;
 	
 	private int reopenSession = 200; // prevent resource leaks...
 
@@ -29,14 +32,22 @@ public class ModelHistory2Neo4j {
 		this.transaction = transaction;
 	}
 
-	public int getStartDatabaseVersion() {
-		return startDatabaseVersion;
+	public int getRestartWithVersion() {
+		return restartWithVersion;
 	}
 
-	public void setStartDatabaseVersion(int startDatabaseVersion) {
-		this.startDatabaseVersion = startDatabaseVersion;
+	public void setRestartWithVersion(int restartWithVersion) {
+		this.restartWithVersion = restartWithVersion;
 	}
-	
+
+	public boolean isStartWithFullVersion() {
+		return startWithFullVersion;
+	}
+
+	public void setStartWithFullVersion(boolean startWithFullVersion) {
+		this.startWithFullVersion = startWithFullVersion;
+	}
+
 	public int getReopenSession() {
 		return reopenSession;
 	}
@@ -51,30 +62,21 @@ public class ModelHistory2Neo4j {
 
 	public void commitHistory(DataSet dataset) {
 		HistoryIterator historyIterator = new HistoryIterator(dataset.getHistory());
-		int databaseVersion = -1;
 		
 		Path systemModelPath = getRepositoryFile(dataset.getSystemModel());
 		URI systemModelURI = URI.createFileURI(systemModelPath.toString());
 
 		IncrementalModelDelta incrementalModelDelta = new IncrementalModelDelta(modelRepository, systemModelURI, transaction);
-
+		int databaseVersion = initializeHistoryIteration(dataset.getHistory(), historyIterator, incrementalModelDelta);
+		
+		// Create history incrementally:
 		while (historyIterator.hasNext()) {
 			++databaseVersion;
 			
 			// Check out the next version from the repositoy:
+			Version previousVersion = historyIterator.getOlderVersion();
 			Version currentVersion = historyIterator.next();
 			Version nextVersion = historyIterator.getNewerVersion();
-			
-			if ((startDatabaseVersion != -1) && (databaseVersion < startDatabaseVersion)) {
-				
-				// Initialize incremental delta computation one version earlier:
-				if (databaseVersion == (startDatabaseVersion - 1)) {
-					modelRepository.checkout(dataset.getHistory(), currentVersion);
-					incrementalModelDelta.initialize(currentVersion, nextVersion, databaseVersion);
-				}
-				
-				continue;
-			}
 			
 			// reopen transaction to prevent resource leaks.
 			if (databaseVersion % reopenSession == 0) {
@@ -91,10 +93,38 @@ public class ModelHistory2Neo4j {
 			time = stopTime(time, "Checkout");
 
 			// Database: Compute and make an atomic commit of the new model version:
-			incrementalModelDelta.commitDelta(currentVersion, nextVersion, databaseVersion);
+			if (startWithFullVersion && (databaseVersion == restartWithVersion)) {
+				incrementalModelDelta.commitInitial(previousVersion, currentVersion, nextVersion, databaseVersion);
+			} else {
+				incrementalModelDelta.commitDelta(previousVersion, currentVersion, nextVersion, databaseVersion);
+			}
 		}
 	}
 	
+	private int initializeHistoryIteration(History history, HistoryIterator historyIterator, IncrementalModelDelta incrementalModelDelta) {
+		int databaseVersion = -1;
+		
+		if (restartWithVersion != -1)  {
+			while (historyIterator.hasNext()) {
+				++databaseVersion;
+				
+				// Check out the next version from the repositoy:
+				Version previousVersion = historyIterator.getOlderVersion();
+				Version currentVersion = historyIterator.next();
+				Version nextVersion = historyIterator.getNewerVersion();
+				
+				// Initialize incremental delta computation one version earlier:
+				if (databaseVersion == (restartWithVersion - 1)) {
+					modelRepository.checkout(history, currentVersion);
+					incrementalModelDelta.initialize(previousVersion, currentVersion, nextVersion, databaseVersion);
+					break;
+				}
+			}
+		}
+		
+		return databaseVersion;
+	}
+
 	private Path getRepositoryFile(Path localPath) {
 		return modelRepository.getWorkingDirectory().resolve(localPath);
 	}

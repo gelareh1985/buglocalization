@@ -40,6 +40,7 @@ import org.sidiff.reverseengineering.java.util.JavaParser;
 import com.google.inject.Inject;
 
 // FIXME: Some model elements (without a Java binding name) are stored without a generated UUID.
+// FIXME: Created/Removed project ...annotation_v1: 262ea77ae957f8d7dab24f1acde74cdb537e3922
 // FIXME: Avoid moving modified model elements that are regenerated.
 // TODO: Update strategy for references to operations -> call to signature binding depends on inheritance.
 

@@ -239,7 +239,6 @@
 <setEntry value="org.w3c.dom.svg@default:default"/>
 </setAttribute>
 <setAttribute key="selected_workspace_bundles">
-<setEntry value="eu.artist.migration.mdt.javaee.java.uml@default:default"/>
 <setEntry value="org.sidiff.bug.localization.common.utilities@default:default"/>
 <setEntry value="org.sidiff.bug.localization.dataset.changes@default:default"/>
 <setEntry value="org.sidiff.bug.localization.dataset.fixes@default:default"/>
