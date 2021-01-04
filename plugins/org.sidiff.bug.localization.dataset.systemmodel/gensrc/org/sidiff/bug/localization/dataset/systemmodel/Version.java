@@ -17,8 +17,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getDate <em>Date</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getAuthor <em>Author</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getCommitMessage <em>Commit Message</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#isFixedVersion <em>Fixed Version</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#isBuggyVersion <em>Buggy Version</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getBugreport <em>Bugreport</em>}</li>
  * </ul>
  *
@@ -114,50 +112,6 @@ public interface Version extends EObject {
 	 * @generated
 	 */
 	void setCommitMessage(String value);
-
-	/**
-	 * Returns the value of the '<em><b>Fixed Version</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Fixed Version</em>' attribute.
-	 * @see #setFixedVersion(boolean)
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getVersion_FixedVersion()
-	 * @model
-	 * @generated
-	 */
-	boolean isFixedVersion();
-
-	/**
-	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.Version#isFixedVersion <em>Fixed Version</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Fixed Version</em>' attribute.
-	 * @see #isFixedVersion()
-	 * @generated
-	 */
-	void setFixedVersion(boolean value);
-
-	/**
-	 * Returns the value of the '<em><b>Buggy Version</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Buggy Version</em>' attribute.
-	 * @see #setBuggyVersion(boolean)
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getVersion_BuggyVersion()
-	 * @model
-	 * @generated
-	 */
-	boolean isBuggyVersion();
-
-	/**
-	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.Version#isBuggyVersion <em>Buggy Version</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Buggy Version</em>' attribute.
-	 * @see #isBuggyVersion()
-	 * @generated
-	 */
-	void setBuggyVersion(boolean value);
 
 	/**
 	 * Returns the value of the '<em><b>Bugreport</b></em>' containment reference.

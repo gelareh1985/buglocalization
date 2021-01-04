@@ -176,7 +176,7 @@ public class DescribableElementItemProvider
 	 */
 	@Override
 	public ResourceLocator getResourceLocator() {
-		return MultiviewEditPlugin.INSTANCE;
+		return SystemModelEditPlugin.INSTANCE;
 	}
 
 }

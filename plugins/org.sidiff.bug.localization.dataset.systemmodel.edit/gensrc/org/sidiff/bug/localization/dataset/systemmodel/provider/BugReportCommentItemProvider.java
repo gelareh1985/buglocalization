@@ -200,7 +200,7 @@ public class BugReportCommentItemProvider
 	 */
 	@Override
 	public ResourceLocator getResourceLocator() {
-		return MultiviewEditPlugin.INSTANCE;
+		return SystemModelEditPlugin.INSTANCE;
 	}
 
 }

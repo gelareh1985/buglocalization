@@ -251,13 +251,13 @@ public interface SystemModelPackage extends EPackage {
 	int VIEW__SYSTEM = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Document Type</b></em>' attribute.
+	 * The feature id for the '<em><b>Document Types</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int VIEW__DOCUMENT_TYPE = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 1;
+	int VIEW__DOCUMENT_TYPES = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -470,31 +470,13 @@ public interface SystemModelPackage extends EPackage {
 	int VERSION__COMMIT_MESSAGE = 3;
 
 	/**
-	 * The feature id for the '<em><b>Fixed Version</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int VERSION__FIXED_VERSION = 4;
-
-	/**
-	 * The feature id for the '<em><b>Buggy Version</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int VERSION__BUGGY_VERSION = 5;
-
-	/**
 	 * The feature id for the '<em><b>Bugreport</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int VERSION__BUGREPORT = 6;
+	int VERSION__BUGREPORT = 4;
 
 	/**
 	 * The number of structural features of the '<em>Version</em>' class.
@@ -503,7 +485,7 @@ public interface SystemModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int VERSION_FEATURE_COUNT = 7;
+	int VERSION_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Version</em>' class.
@@ -695,24 +677,6 @@ public interface SystemModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TRACED_VERSION__COMMIT_MESSAGE = VERSION__COMMIT_MESSAGE;
-
-	/**
-	 * The feature id for the '<em><b>Fixed Version</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TRACED_VERSION__FIXED_VERSION = VERSION__FIXED_VERSION;
-
-	/**
-	 * The feature id for the '<em><b>Buggy Version</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TRACED_VERSION__BUGGY_VERSION = VERSION__BUGGY_VERSION;
 
 	/**
 	 * The feature id for the '<em><b>Bugreport</b></em>' containment reference.
@@ -1111,15 +1075,15 @@ public interface SystemModelPackage extends EPackage {
 	EReference getView_System();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentType <em>Document Type</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentTypes <em>Document Types</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Document Type</em>'.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentType()
+	 * @return the meta object for the attribute list '<em>Document Types</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentTypes()
 	 * @see #getView()
 	 * @generated
 	 */
-	EAttribute getView_DocumentType();
+	EAttribute getView_DocumentTypes();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.View#getKind <em>Kind</em>}'.
@@ -1314,28 +1278,6 @@ public interface SystemModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getVersion_CommitMessage();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.Version#isFixedVersion <em>Fixed Version</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Fixed Version</em>'.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.Version#isFixedVersion()
-	 * @see #getVersion()
-	 * @generated
-	 */
-	EAttribute getVersion_FixedVersion();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.Version#isBuggyVersion <em>Buggy Version</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Buggy Version</em>'.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.Version#isBuggyVersion()
-	 * @see #getVersion()
-	 * @generated
-	 */
-	EAttribute getVersion_BuggyVersion();
 
 	/**
 	 * Returns the meta object for the containment reference '{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getBugreport <em>Bugreport</em>}'.
@@ -1725,12 +1667,12 @@ public interface SystemModelPackage extends EPackage {
 		EReference VIEW__SYSTEM = eINSTANCE.getView_System();
 
 		/**
-		 * The meta object literal for the '<em><b>Document Type</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Document Types</b></em>' attribute list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute VIEW__DOCUMENT_TYPE = eINSTANCE.getView_DocumentType();
+		EAttribute VIEW__DOCUMENT_TYPES = eINSTANCE.getView_DocumentTypes();
 
 		/**
 		 * The meta object literal for the '<em><b>Kind</b></em>' attribute feature.
@@ -1883,22 +1825,6 @@ public interface SystemModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute VERSION__COMMIT_MESSAGE = eINSTANCE.getVersion_CommitMessage();
-
-		/**
-		 * The meta object literal for the '<em><b>Fixed Version</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute VERSION__FIXED_VERSION = eINSTANCE.getVersion_FixedVersion();
-
-		/**
-		 * The meta object literal for the '<em><b>Buggy Version</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute VERSION__BUGGY_VERSION = eINSTANCE.getVersion_BuggyVersion();
 
 		/**
 		 * The meta object literal for the '<em><b>Bugreport</b></em>' containment reference feature.

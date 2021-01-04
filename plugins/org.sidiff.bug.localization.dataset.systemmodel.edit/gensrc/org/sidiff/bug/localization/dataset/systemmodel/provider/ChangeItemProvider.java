@@ -222,7 +222,7 @@ public class ChangeItemProvider
 	 */
 	@Override
 	public ResourceLocator getResourceLocator() {
-		return MultiviewEditPlugin.INSTANCE;
+		return SystemModelEditPlugin.INSTANCE;
 	}
 	
 	/**

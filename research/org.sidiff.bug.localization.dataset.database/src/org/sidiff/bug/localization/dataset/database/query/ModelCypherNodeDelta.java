@@ -126,14 +126,13 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 		Map<String, Object> createNodeProperties = new HashMap<>();
 
 		// meta-attributes:
-		createNodeProperties.put("__model__ns__uri__", modelElementNew.eClass().getEPackage().getNsURI());
+//		createNodeProperties.put("__model__ns__uri__", modelElementNew.eClass().getEPackage().getNsURI());
 		createNodeProperties.put("__model__element__id__", modelElementID);
 		createNodeProperties.put("__initial__version__", getNewVersion());
-		createNodeProperties.put("__last__version__", getNewVersion()); // initialize
 
 		for (EAttribute attribute : modelElementNew.eClass().getEAllAttributes()) {
 			if (isConsideredFeature(attribute)) {
-				String newValue = toCypherValue(modelElementNew, attribute);
+				Object newValue = toCypherValue(modelElementNew, attribute);
 
 				if (newValue != null) {
 					createNodeProperties.put(attribute.getName(), newValue);
@@ -207,15 +206,6 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 		removedNodesBatches.put(label, removeNodesOfLabel);
 	}
 
-	public String constructIncreaseVersionQuery() {
-		StringBuffer query = new StringBuffer();
-		query.append("MATCH (n {__last__version__: ");
-		query.append(getOldVersion());
-		query.append("}) SET n.__last__version__ = ");
-		query.append(getNewVersion());
-		return query.toString();
-	}
-
 	public List<String> constructKeyAttributesQuery() {
 		List<String> nodeIndex = new ArrayList<>();
 
@@ -280,15 +270,22 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 
 	private String constructRemovedNodesBatchQuery(String label) {
 		StringBuffer query = new StringBuffer();
-		query.append("UNWIND $batch as entry MATCH (n:");
+		query.append("UNWIND $batch as entry ");
+		
+//		query.append("CALL { WITH entry ");
+		query.append("MATCH (n:");
 		query.append(label);
 		
 		// NOTE: Assuming that version number is already increased constructIncreaseVersionQuery():
-		query.append(" {__model__element__id__: entry.id, __last__version__: " + getNewVersion() + "}) ");
+		query.append(" {__model__element__id__: entry.id}) ");
 		
 		query.append("USING INDEX n:");
 		query.append(label);
 		query.append("(__model__element__id__) ");
+		
+		query.append("WHERE NOT EXISTS(n.__last__version__) "); // not removed
+		
+//		query.append("RETURN n LIMIT 1} ");
 		
 		query.append("SET n += entry.properties");
 		

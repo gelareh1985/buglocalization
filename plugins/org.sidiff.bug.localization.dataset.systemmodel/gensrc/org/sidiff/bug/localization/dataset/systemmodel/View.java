@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * <ul>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getSystem <em>System</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentType <em>Document Type</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentTypes <em>Document Types</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getKind <em>Kind</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getModel <em>Model</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getChanges <em>Changes</em>}</li>
@@ -52,26 +52,16 @@ public interface View extends DescribableElement {
 	void setSystem(SystemModel value);
 
 	/**
-	 * Returns the value of the '<em><b>Document Type</b></em>' attribute.
+	 * Returns the value of the '<em><b>Document Types</b></em>' attribute list.
+	 * The list contents are of type {@link java.lang.String}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Document Type</em>' attribute.
-	 * @see #setDocumentType(String)
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getView_DocumentType()
+	 * @return the value of the '<em>Document Types</em>' attribute list.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getView_DocumentTypes()
 	 * @model
 	 * @generated
 	 */
-	String getDocumentType();
-
-	/**
-	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentType <em>Document Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Document Type</em>' attribute.
-	 * @see #getDocumentType()
-	 * @generated
-	 */
-	void setDocumentType(String value);
+	EList<String> getDocumentTypes();
 
 	/**
 	 * Returns the value of the '<em><b>Kind</b></em>' attribute.

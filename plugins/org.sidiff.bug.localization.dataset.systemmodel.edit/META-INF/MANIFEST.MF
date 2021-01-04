@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.sidiff.bug.localization.dataset.systemmodel.edit;single
 Automatic-Module-Name: org.sidiff.bug.localization.dataset.systemmodel.edit
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
-Bundle-Activator: org.sidiff.bug.localization.dataset.systemmodel.provider.MultiviewEditPlugin$Implementation
+Bundle-Activator: org.sidiff.bug.localization.dataset.systemmodel.provider.SystemModelEditPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

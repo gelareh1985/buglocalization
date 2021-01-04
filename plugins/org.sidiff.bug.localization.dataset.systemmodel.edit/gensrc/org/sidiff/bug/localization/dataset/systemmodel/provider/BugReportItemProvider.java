@@ -414,7 +414,7 @@ public class BugReportItemProvider
 	 */
 	@Override
 	public ResourceLocator getResourceLocator() {
-		return MultiviewEditPlugin.INSTANCE;
+		return SystemModelEditPlugin.INSTANCE;
 	}
 
 }

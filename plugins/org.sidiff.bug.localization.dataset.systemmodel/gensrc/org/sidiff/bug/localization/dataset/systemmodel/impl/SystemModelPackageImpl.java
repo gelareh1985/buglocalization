@@ -288,7 +288,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 	 * @generated
 	 */
 	@Override
-	public EAttribute getView_DocumentType() {
+	public EAttribute getView_DocumentTypes() {
 		return (EAttribute)viewEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -478,28 +478,8 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 	 * @generated
 	 */
 	@Override
-	public EAttribute getVersion_FixedVersion() {
-		return (EAttribute)versionEClass.getEStructuralFeatures().get(4);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getVersion_BuggyVersion() {
-		return (EAttribute)versionEClass.getEStructuralFeatures().get(5);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EReference getVersion_Bugreport() {
-		return (EReference)versionEClass.getEStructuralFeatures().get(6);
+		return (EReference)versionEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -792,7 +772,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 
 		viewEClass = createEClass(VIEW);
 		createEReference(viewEClass, VIEW__SYSTEM);
-		createEAttribute(viewEClass, VIEW__DOCUMENT_TYPE);
+		createEAttribute(viewEClass, VIEW__DOCUMENT_TYPES);
 		createEAttribute(viewEClass, VIEW__KIND);
 		createEReference(viewEClass, VIEW__MODEL);
 		createEReference(viewEClass, VIEW__CHANGES);
@@ -815,8 +795,6 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		createEAttribute(versionEClass, VERSION__DATE);
 		createEAttribute(versionEClass, VERSION__AUTHOR);
 		createEAttribute(versionEClass, VERSION__COMMIT_MESSAGE);
-		createEAttribute(versionEClass, VERSION__FIXED_VERSION);
-		createEAttribute(versionEClass, VERSION__BUGGY_VERSION);
 		createEReference(versionEClass, VERSION__BUGREPORT);
 
 		bugReportEClass = createEClass(BUG_REPORT);
@@ -912,7 +890,7 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 
 		initEClass(viewEClass, View.class, "View", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getView_System(), this.getSystemModel(), this.getSystemModel_Views(), "system", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getView_DocumentType(), ecorePackage.getEString(), "documentType", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getView_DocumentTypes(), ecorePackage.getEString(), "documentTypes", null, 0, -1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getView_Kind(), ecorePackage.getEString(), "kind", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getView_Model(), theEcorePackage.getEObject(), null, "model", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getView_Changes(), this.getChange(), null, "changes", null, 0, -1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -935,8 +913,6 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		initEAttribute(getVersion_Date(), theEcorePackage.getEString(), "date", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getVersion_Author(), theEcorePackage.getEString(), "author", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getVersion_CommitMessage(), theEcorePackage.getEString(), "commitMessage", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getVersion_FixedVersion(), theEcorePackage.getEBoolean(), "fixedVersion", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getVersion_BuggyVersion(), theEcorePackage.getEBoolean(), "buggyVersion", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getVersion_Bugreport(), this.getBugReport(), null, "bugreport", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(bugReportEClass, BugReport.class, "BugReport", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

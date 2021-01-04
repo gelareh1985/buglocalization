@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.sidiff.bug.localization.dataset.history,
  org.sidiff.bug.localization.dataset.changes,
  org.sidiff.bug.localization.dataset,
- org.eclipse.uml2.uml
+ org.eclipse.uml2.uml,
+ org.sidiff.bug.localization.dataset.reports
 Automatic-Module-Name: org.sidiff.bug.localization.dataset.database
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

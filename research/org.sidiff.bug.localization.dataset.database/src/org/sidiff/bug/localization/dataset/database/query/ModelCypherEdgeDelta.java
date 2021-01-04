@@ -206,7 +206,6 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 				}
 				
 				createEdgeProperties.put("__initial__version__", getNewVersion());
-				createEdgeProperties.put("__last__version__", getNewVersion());
 				
 				addEdgeToBatch(sourceID, sourceNew, reference, targetID, targetNew, createEdgeProperties, createdEdgesBatches);
 			}
@@ -291,10 +290,6 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 		targetLabel2Parameter.add(createEdge);
 	}
 
-	public String constructIncreaseVersionQuery() {
-		return "MATCH (from)-[rel {__last__version__: " + getOldVersion() + "}]->(to) SET rel.__last__version__ = " + getNewVersion();
-	}
-
 	public Map<String, Map<String, Object>> constructCreatedEdgesQuery() {
 		return constructEdgeBatchQueries(false, createdEdgesBatches);
 	}
@@ -333,12 +328,16 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 		 * TODO: Combine multiple source and target labels!? Fewer queries, but less efficient index search.
 		 * 
 			CALL {
-				MATCH (from:Package {__model__element__id__: 'workspace::eclipse.jdt.core', __last__version__: 994}) USING INDEX from:Package(__model__element__id__) RETURN from 
-				UNION MATCH (from:Model {__model__element__id__: 'workspace::eclipse.jdt.core', __last__version__: 994}) USING INDEX from:Model(__model__element__id__) RETURN from 
+				MATCH (from:Package {__model__element__id__: 'workspace::eclipse.jdt.core', __last__version__: 994}) USING INDEX from:Package(__model__element__id__) 
+				RETURN from 
+				UNION MATCH (from:Model {__model__element__id__: 'workspace::eclipse.jdt.core', __last__version__: 994}) USING INDEX from:Model(__model__element__id__) 
+				RETURN from 
 			}
 			CALL {
-				MATCH (to:Package {__model__element__id__: 'project/P/org.eclipse.jdt.core.tests.builder', __last__version__: 994}) USING INDEX to:Package (__model__element__id__) RETURN to
-				UNION MATCH (to:Model {__model__element__id__: 'project/P/org.eclipse.jdt.core.tests.builder', __last__version__: 994}) USING INDEX to:Model(__model__element__id__) RETURN to
+				MATCH (to:Package {__model__element__id__: 'project/P/org.eclipse.jdt.core.tests.builder', __last__version__: 994}) USING INDEX to:Package (__model__element__id__) 
+				RETURN to
+				UNION MATCH (to:Model {__model__element__id__: 'project/P/org.eclipse.jdt.core.tests.builder', __last__version__: 994}) USING INDEX to:Model(__model__element__id__) 
+				RETURN to
 			}
 			RETURN from, to
 		 */
@@ -346,36 +345,51 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 		StringBuilder query = new StringBuilder();
 		query.append("UNWIND $batch as entry ");
 		
+		// Source:
+//		query.append("CALL { WITH entry ");
+		
 		query.append("MATCH (from:");
 		query.append(sourceLabel);
-		query.append(" {__model__element__id__: entry.from, __last__version__: ");
-		query.append(getNewVersion());
-		query.append("}) ");
+		query.append(" {__model__element__id__: entry.from}) ");
 		
 		query.append("USING INDEX from:");
 		query.append(sourceLabel);
 		query.append("(__model__element__id__) ");
 		
+		query.append("WHERE NOT EXISTS(from.__last__version__) ");
+		
+//		query.append("RETURN from LIMIT 1} ");
+		
+		// Target:
+//		query.append("CALL { WITH entry ");
+		
 		query.append("MATCH (to:");
 		query.append(targetLabel);
-		query.append(" {__model__element__id__: entry.to, __last__version__: ");
-		query.append(getNewVersion());
-		query.append("}) ");
+		query.append(" {__model__element__id__: entry.to}) ");
 		
 		query.append("USING INDEX to:");
 		query.append(targetLabel);
 		query.append("(__model__element__id__) ");
 		
+		query.append("WHERE NOT EXISTS(to.__last__version__) "); // not removed
+		
+//		query.append("RETURN to LIMIT 1} ");
+		
+		// Reference:
 		if (match) {
+//			query.append("CALL { ");
+			
 			query.append("MATCH (from)-[rel:");
 			query.append(edgeLabel);
 			query.append("]->(to) ");
+			
+			query.append("WHERE NOT EXISTS(to.__last__version__) "); // not removed
+			
+//			query.append("RETURN rel LIMIT 1} ");
 		} else {
 			query.append("CREATE (from)-[rel:");
 			query.append(edgeLabel);
-			query.append(" { __last__version__: ");
-			query.append(getNewVersion());
-			query.append("}]->(to) "); 
+			query.append("]->(to) "); 
 		}
 		
 		query.append("SET rel += entry.properties");

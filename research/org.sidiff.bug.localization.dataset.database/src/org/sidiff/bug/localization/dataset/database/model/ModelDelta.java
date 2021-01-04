@@ -58,21 +58,10 @@ public class ModelDelta {
 		createNodeKeyAttributes(transaction, nodeDeltaDerivation);
 		
 		/*
-		 *  Increase all latest version IDs and remove nodes in the next step.
-		 */
-		transaction.execute(nodeDeltaDerivation.constructIncreaseVersionQuery());
-		transaction.execute(edgeDeltaDerivation.constructIncreaseVersionQuery());
-		
-		/*
-		 * NOTE: Remove edges before removing nodes, otherwise source and target nodes
-		 * might have different version number.
-		 */
-		transaction.execute(removedEdgeQueries);
-		
-		/*
 		 * NOTE: Remove old nodes before creating new nodes, e.g., to correctly match
 		 * node with same ID but changed attribute values.
 		 */
+		transaction.execute(removedEdgeQueries);
 		transaction.execute(removedNodeQueries);
 		transaction.execute(createdNodeQueries);
 		transaction.execute(createdEdgeQueries);

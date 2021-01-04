@@ -1,14 +1,14 @@
 ﻿[
   {
     "n": {
-"identity": 204544,
+"identity": 199503,
 "labels": [
         "Property"
       ],
 "properties": {
-"isDerived": "false",
-"isStatic": "false",
 "__last__version__": 0,
+"isStatic": "false",
+"isDerived": "false",
 "visibility": "public",
 "isUnique": "true",
 "aggregation": "none",
@@ -26,14 +26,13 @@
   },
   {
     "n": {
-"identity": 204545,
+"identity": 199504,
 "labels": [
         "Model"
       ],
 "properties": {
-"__last__version__": 5,
-"visibility": "public",
 "name": "model",
+"visibility": "public",
 "__model__element__id__": "_vmDKoDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
 "__initial__version__": 0
@@ -42,17 +41,16 @@
   },
   {
     "n": {
-"identity": 204546,
+"identity": 199505,
 "labels": [
         "Class"
       ],
 "properties": {
-"__last__version__": 5,
 "visibility": "public",
 "name": "A",
 "isActive": "false",
-"isLeaf": "false",
 "isAbstract": "false",
+"isLeaf": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_3eEPwDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -62,7 +60,7 @@
   },
   {
     "n": {
-"identity": 204547,
+"identity": 199506,
 "labels": [
         "Class"
       ],
@@ -71,8 +69,8 @@
 "visibility": "public",
 "name": "B",
 "isActive": "false",
-"isLeaf": "false",
 "isAbstract": "false",
+"isLeaf": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_4e9sEDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -82,12 +80,11 @@
   },
   {
     "n": {
-"identity": 204548,
+"identity": 199507,
 "labels": [
         "PackageImport"
       ],
 "properties": {
-"__last__version__": 5,
 "visibility": "public",
 "__model__element__id__": "_vpQ2sDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -97,13 +94,13 @@
   },
   {
     "n": {
-"identity": 204549,
+"identity": 199508,
 "labels": [
         "Operation"
       ],
 "properties": {
-"isStatic": "false",
 "__last__version__": 3,
+"isStatic": "false",
 "visibility": "public",
 "name": "opA",
 "isQuery": "false",
@@ -118,16 +115,15 @@
   },
   {
     "n": {
-"identity": 204550,
+"identity": 199509,
 "labels": [
         "DataType"
       ],
 "properties": {
-"__last__version__": 5,
 "visibility": "public",
 "name": "M",
-"isAbstract": "false",
 "isLeaf": "false",
+"isAbstract": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_oBTWEDaREeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -137,13 +133,13 @@
   },
   {
     "n": {
-"identity": 204551,
+"identity": 199510,
 "labels": [
         "Operation"
       ],
 "properties": {
-"isStatic": "false",
 "__last__version__": 3,
+"isStatic": "false",
 "visibility": "public",
 "name": "opA2",
 "isQuery": "false",
@@ -158,14 +154,13 @@
   },
   {
     "n": {
-"identity": 204552,
+"identity": 199511,
 "labels": [
         "Property"
       ],
 "properties": {
-"isDerived": "false",
 "isStatic": "false",
-"__last__version__": 5,
+"isDerived": "false",
 "visibility": "public",
 "isUnique": "true",
 "aggregation": "none",
@@ -183,17 +178,16 @@
   },
   {
     "n": {
-"identity": 204553,
+"identity": 199512,
 "labels": [
         "Class"
       ],
 "properties": {
-"__last__version__": 5,
 "visibility": "public",
 "name": "B",
 "isActive": "false",
-"isLeaf": "false",
 "isAbstract": "false",
+"isLeaf": "false",
 "isFinalSpecialization": "false",
 "__model__element__id__": "_4e9sEDZ1EeuIGbvfr_Jdpw",
 "__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
@@ -203,21 +197,20 @@
   },
   {
     "n": {
-"identity": 204554,
+"identity": 199513,
 "labels": [
         "Parameter"
       ],
 "properties": {
-"__last__version__": 5,
 "visibility": "public",
+"effect": "create",
 "isUnique": "true",
+"name": "paramOpA",
 "isException": "false",
 "isStream": "false",
-"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"effect": "create",
-"name": "paramOpA",
 "isOrdered": "false",
 "__model__element__id__": "_D4-80EOyEeuWFaMdl2-ucw",
+"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
 "__initial__version__": 3,
 "direction": "in"
       }
@@ -225,13 +218,12 @@
   },
   {
     "n": {
-"identity": 204555,
+"identity": 199514,
 "labels": [
         "Operation"
       ],
 "properties": {
 "isStatic": "false",
-"__last__version__": 5,
 "visibility": "public",
 "name": "operationA",
 "isQuery": "false",
@@ -246,13 +238,12 @@
   },
   {
     "n": {
-"identity": 204556,
+"identity": 199515,
 "labels": [
         "Operation"
       ],
 "properties": {
 "isStatic": "false",
-"__last__version__": 5,
 "visibility": "public",
 "name": "operationA2",
 "isQuery": "false",
@@ -267,21 +258,20 @@
   },
   {
     "n": {
-"identity": 204557,
+"identity": 199516,
 "labels": [
         "Parameter"
       ],
 "properties": {
-"__last__version__": 5,
 "visibility": "public",
+"effect": "create",
 "isUnique": "true",
+"name": "paramOpA",
 "isException": "false",
 "isStream": "false",
-"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
-"effect": "create",
-"name": "paramOpA",
 "isOrdered": "false",
 "__model__element__id__": "_QlFcAUOyEeuWFaMdl2-ucw",
+"__model__ns__uri__": "http://www.eclipse.org/uml2/5.0.0/UML",
 "__initial__version__": 5,
 "direction": "in"
       }
@@ -289,13 +279,12 @@
   },
   {
     "n": {
-"identity": 204558,
+"identity": 199517,
 "labels": [
         "Operation"
       ],
 "properties": {
 "isStatic": "false",
-"__last__version__": 5,
 "visibility": "public",
 "name": "operationA",
 "isQuery": "false",
@@ -310,13 +299,12 @@
   },
   {
     "n": {
-"identity": 204559,
+"identity": 199518,
 "labels": [
         "Operation"
       ],
 "properties": {
 "isStatic": "false",
-"__last__version__": 5,
 "visibility": "public",
 "name": "operationA2",
 "isQuery": "false",

@@ -27,8 +27,6 @@ import org.sidiff.bug.localization.dataset.systemmodel.Version;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getDate <em>Date</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getAuthor <em>Author</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getCommitMessage <em>Commit Message</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#isFixedVersion <em>Fixed Version</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#isBuggyVersion <em>Buggy Version</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getBugreport <em>Bugreport</em>}</li>
  * </ul>
  *
@@ -114,46 +112,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 	 * @ordered
 	 */
 	protected String commitMessage = COMMIT_MESSAGE_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #isFixedVersion() <em>Fixed Version</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isFixedVersion()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean FIXED_VERSION_EDEFAULT = false;
-
-	/**
-	 * The cached value of the '{@link #isFixedVersion() <em>Fixed Version</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isFixedVersion()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean fixedVersion = FIXED_VERSION_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #isBuggyVersion() <em>Buggy Version</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isBuggyVersion()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean BUGGY_VERSION_EDEFAULT = false;
-
-	/**
-	 * The cached value of the '{@link #isBuggyVersion() <em>Buggy Version</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isBuggyVersion()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean buggyVersion = BUGGY_VERSION_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getBugreport() <em>Bugreport</em>}' containment reference.
@@ -282,52 +240,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 	 * @generated
 	 */
 	@Override
-	public boolean isFixedVersion() {
-		return fixedVersion;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setFixedVersion(boolean newFixedVersion) {
-		boolean oldFixedVersion = fixedVersion;
-		fixedVersion = newFixedVersion;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.VERSION__FIXED_VERSION, oldFixedVersion, fixedVersion));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean isBuggyVersion() {
-		return buggyVersion;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setBuggyVersion(boolean newBuggyVersion) {
-		boolean oldBuggyVersion = buggyVersion;
-		buggyVersion = newBuggyVersion;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.VERSION__BUGGY_VERSION, oldBuggyVersion, buggyVersion));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public BugReport getBugreport() {
 		return bugreport;
 	}
@@ -397,10 +309,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 				return getAuthor();
 			case SystemModelPackage.VERSION__COMMIT_MESSAGE:
 				return getCommitMessage();
-			case SystemModelPackage.VERSION__FIXED_VERSION:
-				return isFixedVersion();
-			case SystemModelPackage.VERSION__BUGGY_VERSION:
-				return isBuggyVersion();
 			case SystemModelPackage.VERSION__BUGREPORT:
 				return getBugreport();
 		}
@@ -426,12 +334,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 				return;
 			case SystemModelPackage.VERSION__COMMIT_MESSAGE:
 				setCommitMessage((String)newValue);
-				return;
-			case SystemModelPackage.VERSION__FIXED_VERSION:
-				setFixedVersion((Boolean)newValue);
-				return;
-			case SystemModelPackage.VERSION__BUGGY_VERSION:
-				setBuggyVersion((Boolean)newValue);
 				return;
 			case SystemModelPackage.VERSION__BUGREPORT:
 				setBugreport((BugReport)newValue);
@@ -460,12 +362,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 			case SystemModelPackage.VERSION__COMMIT_MESSAGE:
 				setCommitMessage(COMMIT_MESSAGE_EDEFAULT);
 				return;
-			case SystemModelPackage.VERSION__FIXED_VERSION:
-				setFixedVersion(FIXED_VERSION_EDEFAULT);
-				return;
-			case SystemModelPackage.VERSION__BUGGY_VERSION:
-				setBuggyVersion(BUGGY_VERSION_EDEFAULT);
-				return;
 			case SystemModelPackage.VERSION__BUGREPORT:
 				setBugreport((BugReport)null);
 				return;
@@ -489,10 +385,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 				return AUTHOR_EDEFAULT == null ? author != null : !AUTHOR_EDEFAULT.equals(author);
 			case SystemModelPackage.VERSION__COMMIT_MESSAGE:
 				return COMMIT_MESSAGE_EDEFAULT == null ? commitMessage != null : !COMMIT_MESSAGE_EDEFAULT.equals(commitMessage);
-			case SystemModelPackage.VERSION__FIXED_VERSION:
-				return fixedVersion != FIXED_VERSION_EDEFAULT;
-			case SystemModelPackage.VERSION__BUGGY_VERSION:
-				return buggyVersion != BUGGY_VERSION_EDEFAULT;
 			case SystemModelPackage.VERSION__BUGREPORT:
 				return bugreport != null;
 		}
@@ -517,10 +409,6 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 		result.append(author);
 		result.append(", commitMessage: ");
 		result.append(commitMessage);
-		result.append(", fixedVersion: ");
-		result.append(fixedVersion);
-		result.append(", buggyVersion: ");
-		result.append(buggyVersion);
 		result.append(')');
 		return result.toString();
 	}

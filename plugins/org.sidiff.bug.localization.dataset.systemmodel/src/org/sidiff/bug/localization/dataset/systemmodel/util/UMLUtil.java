@@ -15,7 +15,7 @@ public class UMLUtil {
 	 * @param resources Unloads the given resources to prevent resource leaks.
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void unloadUMLModels(Collection<Resource> resources) {
+	public static void unloadUMLModels(final Collection<Resource> resources) {
 		// Unload models for garbage collection -> prevent resource leaks:
 		try {
 			// CacheAdapter/ECrossReferenceAdapter resource leak: remove adapter, clear caches, unload all resources 

@@ -67,8 +67,6 @@ public class VersionItemProvider
 			addDatePropertyDescriptor(object);
 			addAuthorPropertyDescriptor(object);
 			addCommitMessagePropertyDescriptor(object);
-			addFixedVersionPropertyDescriptor(object);
-			addBuggyVersionPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -162,50 +160,6 @@ public class VersionItemProvider
 	}
 
 	/**
-	 * This adds a property descriptor for the Fixed Version feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addFixedVersionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Version_fixedVersion_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_Version_fixedVersion_feature", "_UI_Version_type"),
-				 SystemModelPackage.Literals.VERSION__FIXED_VERSION,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Buggy Version feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addBuggyVersionPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Version_buggyVersion_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_Version_buggyVersion_feature", "_UI_Version_type"),
-				 SystemModelPackage.Literals.VERSION__BUGGY_VERSION,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -277,8 +231,6 @@ public class VersionItemProvider
 			case SystemModelPackage.VERSION__DATE:
 			case SystemModelPackage.VERSION__AUTHOR:
 			case SystemModelPackage.VERSION__COMMIT_MESSAGE:
-			case SystemModelPackage.VERSION__FIXED_VERSION:
-			case SystemModelPackage.VERSION__BUGGY_VERSION:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case SystemModelPackage.VERSION__BUGREPORT:
@@ -318,7 +270,7 @@ public class VersionItemProvider
 	 */
 	@Override
 	public ResourceLocator getResourceLocator() {
-		return MultiviewEditPlugin.INSTANCE;
+		return SystemModelEditPlugin.INSTANCE;
 	}
 
 }

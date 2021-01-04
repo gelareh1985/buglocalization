@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.history.util;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -25,8 +26,17 @@ public class HistoryIterator implements Iterator<Version> {
 	 * @param history A history with a list of versions, listed from newer to older versions.
 	 */
 	public HistoryIterator(History history) {
-		this.size = history.getVersions().size();
-		this.versionIterator = history.getVersions().listIterator(size);
+		this(history.getVersions());
+	}
+	
+	/**
+	 * Iterate from old to newer versions.
+	 * 
+	 * @param history A history with a list of versions, listed from newer to older versions.
+	 */
+	public HistoryIterator(List<Version> history) {
+		this.size = history.size();
+		this.versionIterator = history.listIterator(size);
 		
 		if (versionIterator.hasPrevious()) {
 			this.newerVersion = versionIterator.previous();

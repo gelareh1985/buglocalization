@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.database.model.util;
+package org.sidiff.bug.localization.dataset.database.systemmodel;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceImpl;

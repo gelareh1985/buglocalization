@@ -1,5 +1,6 @@
 package org.sidiff.bug.localization.dataset.database.query;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -153,22 +154,41 @@ public class ModelCypherDelta {
 		return type.getName();
 	}
 
-	protected String toCypherValue(EObject modelElement, EAttribute attribute) {
+	protected Object toCypherValue(EObject modelElement, EAttribute attribute) {
 		if (modelElement != null) {
 			Object value = modelElement.eGet(attribute);
 			
 			if (value != null) {
 				if ((value instanceof Boolean) || (value instanceof Number)) {
-					return value.toString();
+					return value;
 				} else {
-					EDataType valueType = attribute.getEAttributeType();
-					EFactory converter = valueType.getEPackage().getEFactoryInstance();
-					String stringValue = converter.convertToString(attribute.getEAttributeType(), value);
-					return stringValue;
+					if (attribute.isMany()) {
+						@SuppressWarnings("unchecked")
+						List<Object> values = (List<Object>) value;
+						Object[] cypherValues = new Object[values.size()];
+						
+						for (int i = 0; i < values.size(); i++) {
+							cypherValues[i] = toCypherValue(values.get(i), attribute);
+						}
+						
+						return cypherValues;
+					} else {
+						return toCypherValue(value, attribute);
+					}
 				}
 			}
 		}
 		return null;
+	}
+	
+	protected Object toCypherValue(Object value, EAttribute attribute) {
+		if ((value instanceof Boolean) || (value instanceof Number)) {
+			return value;
+		} else {
+			EDataType valueType = attribute.getEAttributeType();
+			EFactory converter = valueType.getEPackage().getEFactoryInstance();
+			return converter.convertToString(attribute.getEAttributeType(), value);
+		}
 	}
 	
 	protected boolean isConsideredFeature(EStructuralFeature feature) {

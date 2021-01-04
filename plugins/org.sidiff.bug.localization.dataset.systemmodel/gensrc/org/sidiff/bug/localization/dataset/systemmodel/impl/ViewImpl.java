@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
@@ -33,7 +34,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.View;
  * </p>
  * <ul>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getSystem <em>System</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getDocumentType <em>Document Type</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getDocumentTypes <em>Document Types</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getKind <em>Kind</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getModel <em>Model</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getChanges <em>Changes</em>}</li>
@@ -43,24 +44,14 @@ import org.sidiff.bug.localization.dataset.systemmodel.View;
  */
 public class ViewImpl extends DescribableElementImpl implements View {
 	/**
-	 * The default value of the '{@link #getDocumentType() <em>Document Type</em>}' attribute.
+	 * The cached value of the '{@link #getDocumentTypes() <em>Document Types</em>}' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDocumentType()
+	 * @see #getDocumentTypes()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String DOCUMENT_TYPE_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getDocumentType() <em>Document Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDocumentType()
-	 * @generated
-	 * @ordered
-	 */
-	protected String documentType = DOCUMENT_TYPE_EDEFAULT;
+	protected EList<String> documentTypes;
 
 	/**
 	 * The default value of the '{@link #getKind() <em>Kind</em>}' attribute.
@@ -170,21 +161,11 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	 * @generated
 	 */
 	@Override
-	public String getDocumentType() {
-		return documentType;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setDocumentType(String newDocumentType) {
-		String oldDocumentType = documentType;
-		documentType = newDocumentType;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.VIEW__DOCUMENT_TYPE, oldDocumentType, documentType));
+	public EList<String> getDocumentTypes() {
+		if (documentTypes == null) {
+			documentTypes = new EDataTypeUniqueEList<String>(String.class, this, SystemModelPackage.VIEW__DOCUMENT_TYPES);
+		}
+		return documentTypes;
 	}
 
 	/**
@@ -319,8 +300,8 @@ public class ViewImpl extends DescribableElementImpl implements View {
 		switch (featureID) {
 			case SystemModelPackage.VIEW__SYSTEM:
 				return getSystem();
-			case SystemModelPackage.VIEW__DOCUMENT_TYPE:
-				return getDocumentType();
+			case SystemModelPackage.VIEW__DOCUMENT_TYPES:
+				return getDocumentTypes();
 			case SystemModelPackage.VIEW__KIND:
 				return getKind();
 			case SystemModelPackage.VIEW__MODEL:
@@ -344,8 +325,9 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			case SystemModelPackage.VIEW__SYSTEM:
 				setSystem((SystemModel)newValue);
 				return;
-			case SystemModelPackage.VIEW__DOCUMENT_TYPE:
-				setDocumentType((String)newValue);
+			case SystemModelPackage.VIEW__DOCUMENT_TYPES:
+				getDocumentTypes().clear();
+				getDocumentTypes().addAll((Collection<? extends String>)newValue);
 				return;
 			case SystemModelPackage.VIEW__KIND:
 				setKind((String)newValue);
@@ -372,8 +354,8 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			case SystemModelPackage.VIEW__SYSTEM:
 				setSystem((SystemModel)null);
 				return;
-			case SystemModelPackage.VIEW__DOCUMENT_TYPE:
-				setDocumentType(DOCUMENT_TYPE_EDEFAULT);
+			case SystemModelPackage.VIEW__DOCUMENT_TYPES:
+				getDocumentTypes().clear();
 				return;
 			case SystemModelPackage.VIEW__KIND:
 				setKind(KIND_EDEFAULT);
@@ -398,8 +380,8 @@ public class ViewImpl extends DescribableElementImpl implements View {
 		switch (featureID) {
 			case SystemModelPackage.VIEW__SYSTEM:
 				return getSystem() != null;
-			case SystemModelPackage.VIEW__DOCUMENT_TYPE:
-				return DOCUMENT_TYPE_EDEFAULT == null ? documentType != null : !DOCUMENT_TYPE_EDEFAULT.equals(documentType);
+			case SystemModelPackage.VIEW__DOCUMENT_TYPES:
+				return documentTypes != null && !documentTypes.isEmpty();
 			case SystemModelPackage.VIEW__KIND:
 				return KIND_EDEFAULT == null ? kind != null : !KIND_EDEFAULT.equals(kind);
 			case SystemModelPackage.VIEW__MODEL:
@@ -420,8 +402,8 @@ public class ViewImpl extends DescribableElementImpl implements View {
 		if (eIsProxy()) return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (documentType: ");
-		result.append(documentType);
+		result.append(" (documentTypes: ");
+		result.append(documentTypes);
 		result.append(", kind: ");
 		result.append(kind);
 		result.append(')');

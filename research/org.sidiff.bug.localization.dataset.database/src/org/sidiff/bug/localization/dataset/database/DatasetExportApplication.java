@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.dataset.database.model.ModelDelta;
-import org.sidiff.bug.localization.dataset.database.model.ModelHistory2Neo4j;
+import org.sidiff.bug.localization.dataset.database.systemmodel.ModelHistory2Neo4j;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
@@ -43,9 +43,9 @@ public class DatasetExportApplication implements IApplication {
 	
 	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
 	//       -> Last Version + 1
-	private int restartWithVersion = 9787; // next version number or -1
-	private boolean startWithFullVersion = true;
-	private boolean runTestCases = true;
+	private int restartWithVersion = -1; // next version number or -1
+	private boolean startWithFullVersion = false;
+	private boolean runTestCases = false;
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
@@ -68,6 +68,7 @@ public class DatasetExportApplication implements IApplication {
 		
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseConnection, databaseUser, databasePassword)) {
 			ModelHistory2Neo4j modelHistory2Neo4j = new ModelHistory2Neo4j(modelRepository, transaction);
+			modelHistory2Neo4j.setOnlyBuggyVersions(true);
 			
 			if (restartWithVersion != -1) {
 				// Restart conversion...
@@ -99,7 +100,6 @@ public class DatasetExportApplication implements IApplication {
 	public void stop() {
 	}
 
-	@SuppressWarnings("unused")
 	private void test() throws Exception {
 		String databaseURI = "bolt://localhost:7687";
 		String databaseName = "neo4j";

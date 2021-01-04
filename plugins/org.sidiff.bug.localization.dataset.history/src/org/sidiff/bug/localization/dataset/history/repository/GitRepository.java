@@ -310,7 +310,12 @@ public class GitRepository implements Repository {
 	@Override
 	public List<FileChange> getChanges(Version versionA, Version versionB, boolean lines) {
 		try (Git git = openGitRepository()) {
-			ObjectId idA = git.getRepository().resolve(versionA.getIdentification() + "^{tree}");
+			ObjectId idA = null;
+			
+			if (versionA != null) {
+				idA = git.getRepository().resolve(versionA.getIdentification() + "^{tree}");
+			}
+			
 			ObjectId idB = git.getRepository().resolve(versionB.getIdentification() + "^{tree}");
 			return getChanges(idA, idB, lines);
 		} catch (IOException e) {

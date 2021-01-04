@@ -42,20 +42,16 @@ public class DataSet2SystemModel {
 		}
 	}
 	
-	public org.sidiff.bug.localization.dataset.systemmodel.TracedVersion convertVersion(Version version, Version newerVersion) {
+	public org.sidiff.bug.localization.dataset.systemmodel.TracedVersion convertVersion(Version version, BugReport bugReport) {
 		org.sidiff.bug.localization.dataset.systemmodel.TracedVersion eVersion = SystemModelFactory.eINSTANCE.createTracedVersion();
 		eVersion.setCodeVersionID(version.getIdentificationTrace());
 		eVersion.setModelVersionID(version.getIdentification());
 		eVersion.setDate(convertDate(version.getDate()));
 		eVersion.setAuthor(version.getAuthor());
 		eVersion.setCommitMessage(version.getCommitMessage());
-		eVersion.setFixedVersion(version.hasBugReport());
-		eVersion.setBuggyVersion(newerVersion.hasBugReport());
 
 		// Save bug report for 'buggy version':
-		if (newerVersion.hasBugReport()) {
-			BugReport bugReport = newerVersion.getBugReport();
-			
+		if (bugReport != null) {
 			org.sidiff.bug.localization.dataset.systemmodel.TracedBugReport eBugReport = SystemModelFactory.eINSTANCE.createTracedBugReport();
 			eBugReport.setId(bugReport.getId());
 			eBugReport.setProduct(bugReport.getProduct());
@@ -81,7 +77,7 @@ public class DataSet2SystemModel {
 			}
 			
 			// Git changes of bug fix commit:
-			for (FileChange fileChange : newerVersion.getBugReport().getBugLocations()) {
+			for (FileChange fileChange : bugReport.getBugLocations()) {
 				org.sidiff.bug.localization.dataset.systemmodel.FileChange eFileChange = SystemModelFactory.eINSTANCE.createFileChange();
 				eFileChange.setLocation(fileChange.getLocation().toString().replace("\\", "/"));
 				eFileChange.setType(convertChange(fileChange));
