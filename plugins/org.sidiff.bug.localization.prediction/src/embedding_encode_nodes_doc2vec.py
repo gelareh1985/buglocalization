@@ -4,15 +4,12 @@ Created on Dec 23, 2020
 @author: Gelareh_mp
 '''
 import pandas as pd
-import numpy as np
 import os
 from IPython.display import display
 from preprocess_word_dictionary import WordDictionary
 from nltk.corpus import stopwords
 from gensim import corpora
-from gensim.models import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from nltk.tokenize import word_tokenize
 
 
 stop_words = set(stopwords.words('english'))
@@ -131,35 +128,35 @@ for file_corpus in list_of_file_corpus_single_string_per_line:
     model = Doc2Vec(vector_size=50, min_count=1)  
     model.build_vocab(tagged_data)
     
-    #model.train(file_corpus, total_examples=model.corpus_count, epochs=20)
-    
-    max_epochs = 20
-    model.epochs=10
-    for epoch in range(max_epochs):
-        print('iteration {0}'.format(epoch))
-        model.train(tagged_data, total_examples=model.corpus_count, epochs=model.epochs)
-#         # decrease the learning rate
-#         model.alpha -= 0.0002
-#         # fix the learning rate, no decay
-#         model.min_alpha = model.alpha
-
-    #     model.save("d2v.model")
-    #     print("Model Saved")
-
-    #to find the vector of a document which is not in training data
-    test_data = word_tokenize("compiler file class".lower())
-    vec1 = model.infer_vector(test_data)
-
-    # to find most similar doc using tags
-    similar_doc = model.docvecs.most_similar('1')
-    print('similar doc: ',similar_doc)
-    
-    
-    # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
-    print('find the vector: ',model.docvecs['1'])
-    
-    #print(f"Word 'compile' appeared {model.wv.get_vecattr('compile', 'count')} times in the training corpus.")
-    
+#     #model.train(file_corpus, total_examples=model.corpus_count, epochs=20)
+#     
+#     max_epochs = 20
+#     model.epochs=10
+#     for epoch in range(max_epochs):
+#         print('iteration {0}'.format(epoch))
+#         model.train(tagged_data, total_examples=model.corpus_count, epochs=model.epochs)
+# #         # decrease the learning rate
+# #         model.alpha -= 0.0002
+# #         # fix the learning rate, no decay
+# #         model.min_alpha = model.alpha
+# 
+#     #     model.save("d2v.model")
+#     #     print("Model Saved")
+# 
+#     #to find the vector of a document which is not in training data
+#     test_data = word_tokenize("compiler file class".lower())
+#     vec1 = model.infer_vector(test_data)
+# 
+#     # to find most similar doc using tags
+#     similar_doc = model.docvecs.most_similar('1')
+#     print('similar doc: ',similar_doc)
+#     
+#     
+#     # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
+#     print('find the vector: ',model.docvecs['1'])
+#     
+#     #print(f"Word 'compile' appeared {model.wv.get_vecattr('compile', 'count')} times in the training corpus.")
+#     
     print('vectors: ',model.docvecs)
     vocab=model.wv.index2word
     print('vocabulary',' , (length): ', len(vocab), '    ', vocab)
