@@ -13,10 +13,10 @@ from pandas.api.types import CategoricalDtype
 
 stop_words = set(stopwords.words('english'))
 
-positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/"
-dictionary_path =           r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/complete_dictionary_set_smalltest_positive.dictionary"
-
-# positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
+#positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/"
+#dictionary_path =           r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/complete_dictionary_set_smalltest_positive.dictionary"
+dictionary_path =           r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\dictionaries\main dictionaries/complete_dict_stopwords_removed.dictionary_shrinked.dictionary"
+positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
 # dictionary1_path =           r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/complete_dictionary_set_5000_positive.dictionary"
 # dictionary2_path =           r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/complete_dictionary_set_5000_negative.dictionary"
 
@@ -149,10 +149,11 @@ for table in list_of_list_nodes:
 # f.close()
 
 complete_dictionary = load_dict(dictionary_path)
+#complete_dictionary=dictionary_words
 list_words=[]
 for key , value in complete_dictionary.items():
-    list_words.append(value)
-
+    list_words.append(key)
+#print("dictionary: ",list_words)
 ###############################################################################
 #df=pd.DataFrame(list_words,columns=["vocabulary"]) 
 

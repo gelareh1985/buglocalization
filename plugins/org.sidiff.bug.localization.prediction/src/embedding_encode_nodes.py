@@ -6,10 +6,10 @@ Created on Nov 30, 2020
 import pandas as pd
 import os
 from IPython.display import display
-from word_dictionary import WordDictionary
+from preprocess_word_dictionary import WordDictionary
 from pathlib import Path
 
-positve_samples_path =      r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_6000/positive/"
+positve_samples_path =      r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
 feature_node_save_path =    positve_samples_path + "/features/"
 dictionary_path =           r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\saved files\dictionaries\main dictionaries/complete_dict_stopwords_removed.dictionary_shrinked.dictionary"
 

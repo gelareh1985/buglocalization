@@ -42,8 +42,8 @@ print('new file rows (list of lists): \n', wordslist,'\n')
 
 #print('word lists new: ',wordslist_new)    
 
-positiveFile=[wordslist[0]]
-negativeFile=[wordslist[1]]
+positiveFile=[file[0]]#[wordslist[0]]
+negativeFile=[file[1]]#[wordslist[1]]
 
 print('row1: \n', len(positiveFile),'    ',positiveFile,'\n')
 print('row2: \n', len(negativeFile),'    ',negativeFile,'\n')
@@ -52,6 +52,7 @@ positive_set = [word.split() for sentence in positiveFile for word in sentence]
 negative_set = [word.split() for sentence in negativeFile for word in sentence]
 total = positive_set + negative_set
 print('length of positive: ', len(positive_set),'    ', 'length of negative: ', len(negative_set),'\n')
+print(positive_set,'    ',negative_set)
 print('length of total: ', len(total),'\n')
  
 print('*************************************************************************')  
@@ -99,14 +100,17 @@ print('*************************************************************************
 # -------------------------------------------------------------------------------
 # Get vectors and infer them from created doc embedding model 
 # -------------------------------------------------------------------------------
-wv=model.wv['have']
-similars=model.wv.most_similar(positive=[wv,])
-print('sample word vector: ', wv , '    ' ,similars,'\n')
-print('infer and find: ',positiveFile[0],'\n')
-inferred_vector = model.infer_vector(positiveFile[0])
-sims_found=model.docvecs.most_similar(positive=[inferred_vector])
-print('sample doc vector: ', model.docvecs["positive0"] , '    ' ,[sims_found[0]],'\n')
-print(sims_found[0][0],'    ')#, taggedPositiveFiles["positive0"])
+if 'havgfgffd' not in vocab:
+    print("word not exist in dictionary! ")
+elif 'havgfgffd' in vocab:    
+    wv=model.wv['havgfgffd']
+    similars=model.wv.most_similar(positive=[wv,])
+    print('sample word vector: ', wv , '    ' ,similars,'\n')
+    print('infer and find: ',positiveFile[0],'\n')
+    inferred_vector = model.infer_vector(positiveFile[0])
+    sims_found=model.docvecs.most_similar(positive=[inferred_vector])
+    print('sample doc vector: ', model.docvecs["positive0"] , '    ' ,[sims_found[0]],'\n')
+    print(sims_found[0][0],'    ')#, taggedPositiveFiles["positive0"])
 
 print('*************************************************************************')
 print('**************  Get ranked list of the inferred vector  *****************')

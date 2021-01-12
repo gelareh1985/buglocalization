@@ -5,14 +5,13 @@ Created on Jan 4, 2021
 '''
 import os
 import pandas as pd
-import re
 from IPython.display import display
-import stellargraph as sg
 
-#positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
-positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/"
+positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
+feature_path=r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000\positive\data_frames/"
 
-feature_path=r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest\positive\data_frames/"    
+# positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest/positive/"
+# feature_path=r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\smalltest\positive\data_frames/"    
 
 def load_dataset(path1,path2):
     
@@ -36,18 +35,19 @@ def load_dataset(path1,path2):
             edge_data = load_edges(edge_list_path, graph_number)
             dataset_edges.append(edge_data)
             print("Graph: ", graph_number)
-             
+    df_num=0         
     for filename in os.listdir(path2):        
         if filename.endswith(".csv"):
             dataframe_filename = filename[:filename.rfind(".")]
             dataframe_list_path = path2 + dataframe_filename + ".csv"
-            match_str = re.match('.+([0-9])[^0-9]*$', dataframe_filename)
-            dataframe_number=match_str.group(1)
+            
+            dataframe_number=str(df_num)
             dataframe_features= load_features(dataframe_list_path)
             
             dataset_features.append(dataframe_features)
             
             print("DataFrame: ", dataframe_number)
+            df_num=df_num+1
             
     if(not dataset_nodes):
         raise Exception('No samples found')
@@ -58,15 +58,18 @@ def load_nodes(node_list_path,graph_number):
    
     # Column names:
     node_data_columns = []
-    node_data_columns.append("col_index")
-    node_data_columns.append("node")
-    node_data_columns.append("meta_type")
+    node_data_columns.append("__col_index__")
+    node_data_columns.append("__node__")
+    node_data_columns.append("__meta_type__")
+    node_data_columns.append("__tag__")
+    
+#     table.fillna(value="", inplace=True)
      
     # Load data:
     node_data = pd.read_table(node_list_path,names=node_data_columns)
   
     # Create index:
-    node_data.set_index("col_index", inplace=True)
+    node_data.set_index("__col_index__", inplace=True)
     node_data = node_data.rename(index=lambda index: add_prefix(graph_number, index))
     node_data = node_data.fillna("")
     
@@ -96,6 +99,22 @@ def load_features(dataframe_list_path):
         
     return df
     
+def add_tag_types(table1,table2):    
+    
+    print('length of table1: ',len(table1["__tag__"]), '    length of table2: ', len(table2["__tag__"]))
+    table2["__tag__"]=table1["__tag__"]
+    
+    metatype=table1["__meta_type__"].values.tolist()
+    locations_tag=table1["__tag__"].values.tolist() 
+    
+    for typ_indx in range(len(metatype)):
+        if(metatype[typ_indx]=="BugReportNode"):
+            table2.loc[typ_indx,"__tag__"]="# REPORT"
+    for loc_indx in range(len(locations_tag)):
+        if(locations_tag[loc_indx]=="# LOCATION"):
+            table2.loc[loc_indx,"__tag__"]="# LOCATION"
+
+    return table2
 #***********************************************************************************************
 dataset_nodes,dataset_edges,dataset_features= load_dataset(positve_samples_path,feature_path)   
 
@@ -104,19 +123,22 @@ print('length of dataset features: ', len(dataset_features))
 list_of_list_nodes=[]
 list_graph_index=[]
 
+table_list=[]
 for table in dataset_nodes:
+    
     print('nodes table: ')
     display(table)
     list_graph_index.append(table.index.values.tolist())
+    table_list.append(table)
 
 list_features_df=[]
+
 for feat_table in dataset_features:
     feat_table.drop(feat_table.columns[feat_table.columns.str.contains('unnamed',case = False)],axis = 1, inplace = True)
     feat_table.dropna(how='all',inplace=True)
     print('features table: ')
     display(feat_table)
     list_features_df.append(feat_table)
-
     
     #feat_table=feat_table.notnull().astype('int')
     #feat_table=feat_table.fillna("0")
@@ -132,13 +154,19 @@ for list_index in list_graph_index:
 concatenated_df_list=[]    
 for idx in range(len(list_features_df)):
     concatenated_df=pd.concat([list_nodes_df[idx],list_features_df[idx].notnull().astype('int')],axis=1)
+    
     #concatenated_df.set_index(concatenated_df["index"],inplace=True)
-    concatenated_df_list.append(concatenated_df)
+    concatenated_df["__tag__"]="" # add new empty column
+    concatenated_df_new=add_tag_types(dataset_nodes[idx],concatenated_df)
+    #concatenated_df_new=concatenated_df_new.fillna("")
+    concatenated_df_list.append(concatenated_df_new)
 
 i=0
 for df in concatenated_df_list:
-    filename=positve_samples_path+'data_frame_for_Graph/df_graph_'+str(i)+'.csv'
-    df.to_csv(filename, chunksize=1000)
+    df.drop(columns=["index"],inplace=True)
+    filename=positve_samples_path+'features/file_'+str(i)+'.featurenodelist'
+    df.to_csv(filename, header=False,sep="\t", index=True,chunksize=1000)
+    print('one_hot encoded table: ')
     display(df)
     i=i+1
      
