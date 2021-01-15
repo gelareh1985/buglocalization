@@ -14,9 +14,10 @@ import pandas as pd
 from word_dictionary import WordDictionary
 import concurrent.futures
 
-positve_samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
-feature_node_save_path = positve_samples_path + "/features/"
-type_dictionary_path = r"C:\Users\Gelareh_mp\workspaces\buglocalization\org.sidiff.bug.localization.embedding.properties\src\type_dictionary.dictionary"
+# samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000/positive/"
+samples_path = r"D:\files_MDEAI_original\Data_sets\buglocations_dataset\set_5000\negative/"
+feature_node_save_path = samples_path + "/features/"
+type_dictionary_path = r"C:\Users\Gelareh_mp\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\type_dictionary.dictionary"
 pretrained_dictionary_path = r"D:\files_MDEAI_original\Data_sets\GoogleNews-vectors-negative300.bin"
 
 
@@ -162,6 +163,6 @@ node_property_embedding = NodePropertyEmbedding(
     dictionary_words, dictionary_words_length,
     dictionary_types, len(dictionary_types.get_dictionary()))
 dataset_property_embedding = DatasetPropertyEmbedding(node_property_embedding)
-dataset_property_embedding.dataset_to_vector(positve_samples_path, log=True)
+dataset_property_embedding.dataset_to_vector(samples_path, log=True)
 
 print('Finished encoding nodes!')
