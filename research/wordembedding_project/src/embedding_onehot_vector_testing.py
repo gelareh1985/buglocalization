@@ -9,7 +9,6 @@ from numpy import argmax
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 from IPython.display import display
-from collections import defaultdict
 
 from nltk.corpus import stopwords
 

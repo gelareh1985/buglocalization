@@ -6,7 +6,7 @@ Created on Nov 30, 2020
 import pandas as pd
 import os
 from IPython.display import display
-from word_dictionary import WordDictionary
+from preprocess_word_dictionary import WordDictionary
 from nltk.corpus import stopwords
 from gensim import corpora
 from gensim.models import Word2Vec
