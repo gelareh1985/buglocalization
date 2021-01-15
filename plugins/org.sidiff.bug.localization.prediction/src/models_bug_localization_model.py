@@ -149,7 +149,8 @@ class DataSetLoader:
         node_data_columns.append("tag")
         
         # Load data:
-        node_data = pd.read_table(node_list_path, names=node_data_columns)
+        # node_data = pd.read_table(node_list_path, names=node_data_columns)
+        node_data = pd.load_pickle(node_list_path, names=node_data_columns) # TODO: TEST ME..
         
         # Create index:
         node_data.set_index("index", inplace=True)
