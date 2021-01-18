@@ -1,7 +1,6 @@
 import ntpath
 import os
 
-from IPython.display import display
 from stellargraph.layer import GraphSAGE, link_classification
 from stellargraph.mapper import GraphSAGELinkGenerator
 from tensorflow import keras
@@ -10,11 +9,18 @@ import numpy as np
 import pandas as pd
 import stellargraph as sg
 
+positve_samples_path = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\positivesamples_5000/"
+negative_samples_path = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\negativesamples_5000/"
 
-positve_samples_path = r"C:\Users\Gelareh_mp\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\positive/"
-negative_samples_path = r"C:\Users\Gelareh_mp\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\negative/"
-
-
+class DataSetSample:
+    
+    def __init__(self):
+        self.sample_nodes = None
+        self.sample_edges = None
+        self.sample_bug_location_pairs = None
+        self.sample_testcase_labels = None
+        
+        
 class DataSetLoader:
     
     def __init__(self, positve_samples_path, negative_samples_path):
@@ -27,12 +33,6 @@ class DataSetLoader:
     def load_dataset(self, start_with_sample=0, number_of_sample=None, log=False):
     
         # Collect all graphs from the given folder:
-        dataset_nodes = []
-        dataset_edges = []
-        dataset_bug_location_pairs = []
-        
-        # 1 for positive samples; 0 for negative samples
-        testcase_labels = np.zeros(0)
         
         # Read directory:        
         files_positive_samples = self.get_sample_paths(self.positve_samples_path)
@@ -56,6 +56,8 @@ class DataSetLoader:
                 break
         
         # Read all samples and create unique node IDs:
+        dataset_samples = []
+        
         for filepath in all_samples:
             if filepath.endswith(".edgelist"):
                 graph_path, filename = ntpath.split(filepath)
@@ -73,38 +75,32 @@ class DataSetLoader:
                 else:
                     graph_number = "n" + graph_number
                     is_positive_sample = False
-        
-                # nodes:
-                nodes_data = self.load_nodes(node_list_path, graph_number)
-                display(nodes_data.shape)
-                dataset_nodes.append(nodes_data)
-                
-                # edges:
-                edge_data = self.load_edges(edge_list_path, graph_number)
-                dataset_edges.append(edge_data)
-                
-                # bug locations:
-                bug_location_pairs = self.extract_bug_locations(nodes_data)
-                
-                for bug_location_pair in bug_location_pairs:
-                    dataset_bug_location_pairs.append(bug_location_pair)
+                    
+                # create new sample:
+                dataset_sample = DataSetSample()
+                dataset_sample.sample_nodes = self.load_nodes(node_list_path, graph_number)
+                dataset_sample.sample_edges = self.load_edges(edge_list_path, graph_number)
+                dataset_sample.sample_bug_location_pairs = self.extract_bug_locations(dataset_sample.sample_nodes)
                 
                 # 1 for positive samples; 0 for negative samples:
                 if is_positive_sample:
-                    testcase_labels = np.concatenate((testcase_labels, np.ones(len(bug_location_pairs))), axis=None)
+                    dataset_sample.sample_testcase_labels = np.ones(len(dataset_sample.sample_bug_location_pairs))
                 else:
-                    testcase_labels = np.concatenate((testcase_labels, np.zeros(len(bug_location_pairs))), axis=None)
+                    dataset_sample.sample_testcase_labels = np.zeros(len(dataset_sample.sample_bug_location_pairs))
                 
                 # remove bug location edges:
-                self.remove_bug_location_edges(edge_data, bug_location_pairs)
+                self.remove_bug_location_edges(dataset_sample.sample_edges, dataset_sample.sample_bug_location_pairs)
+                
+                # add new sample:
+                dataset_samples.append(dataset_sample)
                 
                 if log:
                     print("Graph: ", graph_number)
         
-        if(not dataset_nodes or not dataset_edges or not dataset_bug_location_pairs):
+        if not dataset_samples:
             raise Exception('No samples found')
         
-        return dataset_nodes, dataset_edges, dataset_bug_location_pairs, testcase_labels
+        return dataset_samples
     
     def get_sample_paths(self, folder, count=None):
         files_samples = []
@@ -220,20 +216,17 @@ class DataSetSplitter:
         self.dataset_loader = dataset_loader
         
     def load_samples(self, start_with_sample=0, number_of_sample=None, log=False):
-        dataset_nodes, dataset_edges, dataset_bug_location_pairs, testcase_labels = dataset_loader.load_dataset(start_with_sample, number_of_sample, log)
+        dataset_samples = dataset_loader.load_dataset(start_with_sample, number_of_sample, log)
         
-        # Split training set:
-        nodes_train = pd.concat(dataset_nodes[:len(dataset_nodes) // 2])
-        edges_train = pd.concat(dataset_edges[:len(dataset_edges) // 2])
-        bug_location_pairs_train = dataset_bug_location_pairs[:len(dataset_bug_location_pairs) // 2]
-        edge_labels_train = testcase_labels[:len(testcase_labels) // 2]
-         
-        # Split test set:
-        nodes_test = pd.concat(dataset_nodes[len(dataset_nodes) // 2:])
-        edges_test = pd.concat(dataset_edges[len(dataset_edges) // 2:])
-        bug_location_pairs_test = dataset_bug_location_pairs[len(dataset_bug_location_pairs) // 2:]
-        edge_labels_test = testcase_labels[len(testcase_labels) // 2:]
+        # Split training and test data:
+        dataset_samples_train = dataset_samples[:len(dataset_samples) // 2]
+        dataset_samples_test = dataset_samples[len(dataset_samples) // 2:]
         
+        # Concatenate all  samples:
+        nodes_train, edges_train, bug_location_pairs_train, testcase_labels_train = self.concat_samples(dataset_samples_train)
+        nodes_test, edges_test, bug_location_pairs_test, testcase_labels_test = self.concat_samples(dataset_samples_test)
+
+        # Create integrated graph:
         G_train = sg.StellarGraph(nodes_train, edges_train)
         if log:
             print(G_train.info())
@@ -243,7 +236,27 @@ class DataSetSplitter:
             print(G_test.info())
         
         # Train/Test -> Graph, Node-Pairs, Edge-Exists-Label (positive=1/negative=0 sample)
-        return G_train, bug_location_pairs_train, edge_labels_train, G_test, bug_location_pairs_test, edge_labels_test
+        return G_train, bug_location_pairs_train, testcase_labels_train, G_test, bug_location_pairs_test, testcase_labels_test
+
+    def concat_samples(self, dataset_samples):
+        nodes= []
+        edges = []
+        bug_location_pairs = []
+        testcase_labels = np.zeros(0)
+        
+        for dataset_sample in dataset_samples:
+            nodes.append(dataset_sample.sample_nodes)
+            edges.append(dataset_sample.sample_edges)
+            
+            for bug_location_pair in dataset_sample.sample_bug_location_pairs:
+                bug_location_pairs.append(bug_location_pair)
+            
+            testcase_labels = np.concatenate((testcase_labels, dataset_sample.sample_testcase_labels), axis=0)
+        
+        pd_nodes = pd.concat(nodes)
+        pd_edges = pd.concat(edges)
+        
+        return pd_nodes, pd_edges, bug_location_pairs, testcase_labels
 
     
 class BugLocalizationAIModelBuilder:
