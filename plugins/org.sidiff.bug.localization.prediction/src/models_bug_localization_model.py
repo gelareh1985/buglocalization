@@ -343,8 +343,7 @@ class BugLocalizationAIModelBuilder:
         if checkpoints:
             latest_checkpoint = max(checkpoints, key=os.path.getctime)
             print('Restoring from', latest_checkpoint)
-            # return keras.models.load_model(latest_checkpoint)
-            return "Hallo"
+            return keras.models.load_model(latest_checkpoint)
         
         print('Creating a new model')
         return self.create_model(num_samples, layer_sizes, feature_size)
