@@ -12,6 +12,7 @@ from tensorflow import keras  # type: ignore
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 import stellargraph as sg  # type: ignore
+from tensorflow.keras.utils import Sequence  # type: ignore
 
 ###################################################################################################
 # Environmental Information
@@ -338,8 +339,8 @@ class BugLocalizationAIModelBuilder:
         Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
        
         # Either restore the latest model, or create a fresh one if there is no checkpoint available.
-        checkpoints = [checkpoint_dir + '/' + name
-                       for name in os.listdir(checkpoint_dir)]
+        checkpoints = [checkpoint_dir + '/' + name for name in os.listdir(checkpoint_dir)]
+        
         if checkpoints:
             latest_checkpoint = max(checkpoints, key=os.path.getctime)
             print('Restoring from', latest_checkpoint)
@@ -351,12 +352,10 @@ class BugLocalizationAIModelBuilder:
     
 class BugLocalizationAIModelTrainer:
     
-    def __init__(self, dataset_splitter:DataSetSplitter, model:keras.Model, num_samples:List[int], batch_size:int, epochs:int, checkpoint_dir:str):
-        self.dataset_splitter = dataset_splitter
-        self.model = model
-        self.num_samples = num_samples
-        self.batch_size = batch_size
-        self.epochs = epochs
+    def __init__(self, dataset_splitter:DataSetSplitter, model:keras.Model, num_samples:List[int], checkpoint_dir:str):
+        self.dataset_splitter:DataSetSplitter = dataset_splitter
+        self.model:keras.Model = model
+        self.num_samples:List[int] = num_samples
         
         # This callback saves a SavedModel every 100 batches.
         # We include the training loss in the folder name.
@@ -365,44 +364,63 @@ class BugLocalizationAIModelTrainer:
                 filepath=checkpoint_dir,  # + '/ckpt-loss={loss:.2f}',
                 save_freq=100)
         ]
-    
-    def train_model(self, start_with_sample:int=0, number_of_sample:int=-1, evaluate_before:bool=True, evaluate_after:bool=True, log:bool=True):
+        
+    def load_bug_samples_batch(self, start_with_sample:int=0, number_of_sample:int=-1, log:bool=True) -> Union[Sequence, Sequence]:
         G_train, bug_location_pairs_train, edge_labels_train, G_test, bug_location_pairs_test, edge_labels_test = self.dataset_splitter.load_samples(start_with_sample, number_of_sample, log)
         
-        train_gen = GraphSAGELinkGenerator(G_train, self.batch_size, self.num_samples)
+        train_gen = GraphSAGELinkGenerator(G_train, number_of_sample, self.num_samples)
         train_flow = train_gen.flow(bug_location_pairs_train, edge_labels_train, shuffle=True)
          
-        test_gen = GraphSAGELinkGenerator(G_test, self.batch_size, self.num_samples)
+        test_gen = GraphSAGELinkGenerator(G_test, number_of_sample, self.num_samples)
         test_flow = test_gen.flow(bug_location_pairs_test, edge_labels_test)
         
-        if evaluate_before:
-            init_train_metrics = model.evaluate(train_flow)
-            init_test_metrics = model.evaluate(test_flow)
-             
-            print("\nTrain Set Metrics of the initial model:")
-            for name, val in zip(model.metrics_names, init_train_metrics):
-                print("\t{}: {:0.4f}".format(name, val))
-             
-            print("\nTest Set Metrics of the initial model:")
-            for name, val in zip(model.metrics_names, init_test_metrics):
-                print("\t{}: {:0.4f}".format(name, val))
-             
-        history = model.fit(train_flow, epochs=self.epochs, validation_data=test_flow, verbose=2, callbacks=self.callbacks)
+        return train_flow, test_flow
+    
+    def train(self, epochs:int, batch_size:int, log:bool=True):
         
-        if log:
-            sg.utils.plot_history(history)
+        # Note: A sample is pair of a bug report and model location, each "bug sample" contains one bug report and multiple locations.
+        # TODO: Shuffle samples during global epochs?
+        bug_samples_per_training = 20
+        bug_sample_number = len(dataset_loader.bug_sample_sequence)
         
-        if evaluate_after:
-            train_metrics = model.evaluate(train_flow)
-            test_metrics = model.evaluate(test_flow)
-             
-            print("\nTrain Set Metrics of the trained model:")
-            for name, val in zip(model.metrics_names, train_metrics):
-                print("\t{}: {:0.4f}".format(name, val))
-             
-            print("\nTest Set Metrics of the trained model:")
-            for name, val in zip(model.metrics_names, test_metrics):
-                print("\t{}: {:0.4f}".format(name, val))
+        # Load first batch:
+        train_flow, test_flow = self.load_bug_samples_batch(0, batch_size, log)
+        self.evaluate(train_flow, test_flow)
+        
+        for epoch in range(epochs):
+            current_sample = 0
+            
+            if log:
+                print("Epoch:", epoch)
+            
+            while current_sample < bug_sample_number:
+                
+                # # Fit Model # #
+                history = model.fit(train_flow, epochs=1, validation_data=test_flow, verbose=2, callbacks=self.callbacks)
+        
+                if log:
+                    sg.utils.plot_history(history)
+            
+                # Load next batch:
+                current_sample += bug_samples_per_training
+                
+                if current_sample < bug_sample_number:
+                    train_flow, test_flow = self.load_bug_samples_batch(current_sample, batch_size, log)
+                
+        model.save(model_training_save_dir)
+        self.evaluate(train_flow, test_flow)
+    
+    def evaluate(self, train_flow:Sequence, test_flow:Sequence):
+        train_metrics = model.evaluate(train_flow)
+        test_metrics = model.evaluate(test_flow)
+
+        print("\nTrain Set Metrics of the model:")
+        for name, val in zip(model.metrics_names, train_metrics):
+            print("\t{}: {:0.4f}".format(name, val))
+         
+        print("\nTest Set Metrics of the model:")
+        for name, val in zip(model.metrics_names, test_metrics):
+            print("\t{}: {:0.4f}".format(name, val))
 
 
 if __name__ == '__main__':
@@ -419,44 +437,25 @@ if __name__ == '__main__':
     # Create AI Model:
     ###################################################################################################
     
+    # GraphSAGE Settings:
     num_samples = [20, 10]
     layer_sizes = [20, 20]
     
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
     model = bug_localization_model_builder.create_or_restore_model(num_samples, layer_sizes, dataset_loader.feature_size, model_training_checkpoint_dir)
     
-    model.save(model_training_save_dir)
-     
     ###################################################################################################
     # Train and Evaluate AI Model:
     ###################################################################################################
     
-    batch_size_per_training = 20  # see bug_samples_per_training
-    epochs_per_training = 1  # see global_epochs 
+    # Training Settings:
+    epochs = 20
+    batch_size = 20
     
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
         dataset_splitter=dataset_splitter,
         model=model,
         num_samples=num_samples,
-        batch_size=batch_size_per_training,
-        epochs=epochs_per_training,
         checkpoint_dir=model_training_checkpoint_dir)
     
-    # TODO: Shuffle samples during global epochs?
-    global_epochs = 20
-    
-    # Note: A sample is pair of a bug report and model location, each "bug sample" contains one bug report and multiple locations.
-    bug_samples_per_training = 20
-    bug_sample_number = len(dataset_loader.bug_sample_sequence)
-    
-    for global_epoch in range(global_epochs):
-        current_sample = 0
-        
-        while (current_sample < bug_sample_number):
-            bug_localization_model_trainer.train_model(
-                start_with_sample=current_sample,
-                number_of_sample=bug_samples_per_training,
-                evaluate_before=(global_epoch == 0),  # first epoch?
-                evaluate_after=(global_epoch == global_epochs),  # last epoch?
-                log=True)
-            current_sample += bug_samples_per_training      
+    bug_localization_model_trainer.train(epochs, batch_size, log=True)
