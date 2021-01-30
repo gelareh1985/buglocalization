@@ -240,16 +240,16 @@ class DataSetLoader:
         return bug_locations
     
     def remove_bug_location_edges(self, edge_data:DataFrame, bug_locations:List[Tuple[str, str]]):
-        bug_location_edges = []
-        
-        for bug_location in bug_locations:
-            for edge_index, edge_row in edge_data.iterrows():
-                if edge_row[0] == bug_location[0] and edge_row[1] == bug_location[1]:
-                    bug_location_edges.append(edge_index)
-                    break
-            
-        edge_data.drop(index=bug_location_edges, inplace=True)
+        bug_location_source = set()
+        bug_location_target = set()
 
+        for bug_location in bug_locations:
+            bug_location_source.add(bug_location[0])
+            bug_location_target.add(bug_location[1])
+            
+        bug_location_edges = edge_data.loc[edge_data["source"].isin(bug_location_source) & edge_data["target"].isin(bug_location_target)]
+        edge_data.drop(bug_location_edges.index, inplace=True)
+        
     
 class DataSetSplitter:
     
@@ -343,7 +343,8 @@ class BugLocalizationAIModelBuilder:
         if checkpoints:
             latest_checkpoint = max(checkpoints, key=os.path.getctime)
             print('Restoring from', latest_checkpoint)
-            return keras.models.load_model(latest_checkpoint)
+            # return keras.models.load_model(latest_checkpoint)
+            return "Hallo"
         
         print('Creating a new model')
         return self.create_model(num_samples, layer_sizes, feature_size)
