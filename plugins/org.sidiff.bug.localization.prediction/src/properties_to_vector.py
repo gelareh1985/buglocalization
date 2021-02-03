@@ -32,9 +32,9 @@ class DatasetPropertyEmbedding:
         dataset = DataSet(positve_samples_path, negative_samples_path)
        
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            #for positive_bug_sample in dataset.positive_bug_samples:
-                ## self.sample_embedding(positve_samples_path, positive_bug_sample, log)
-                #executor.submit(self.sample_embedding, positve_samples_path, positive_bug_sample, log)
+            for positive_bug_sample in dataset.positive_bug_samples:
+                # self.sample_embedding(positve_samples_path, positive_bug_sample, log)
+                executor.submit(self.sample_embedding, positve_samples_path, positive_bug_sample, log)
             for negative_bug_sample in dataset.negative_bug_samples:
                 # self.sample_embedding(negative_samples_path, negative_bug_sample, log)
                 executor.submit(self.sample_embedding, negative_samples_path, negative_bug_sample, log)
