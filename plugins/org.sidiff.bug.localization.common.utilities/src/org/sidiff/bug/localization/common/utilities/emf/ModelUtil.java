@@ -1,7 +1,9 @@
 package org.sidiff.bug.localization.common.utilities.emf;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.EAttribute;
@@ -76,7 +78,6 @@ public class ModelUtil {
 	}
 	
 	/**
-	 * @param collected        Returns all collected elements.
 	 * @param model            The root element of the model to be considered.
 	 * @param modelElements    All initial elements serving as target elements.
 	 * @param incomingDistance The number of references in term of the distance from
@@ -84,21 +85,59 @@ public class ModelUtil {
 	 * @param edgeTest         Return <code>true</code> for all incoming references
 	 *                         that should considered.
 	 */
-	public static void collectIncomingReferences(Set<EObject> collected, EObject model, Set<EObject> modelElements, int incomingDistance, Predicate<EReference> edgeTest) {
-		Set<EObject> currentModelElements = new HashSet<>(modelElements);
+	public static Set<EObject> collectIncomingReferences(EObject model, Set<EObject> modelElements, Function<EClass, Integer> incomingDistance, Predicate<EReference> edgeTest) {
 		
-		for (int i = 0; i < incomingDistance; i++) {
+		// Collect all model elements within the maximum distance from the full model:
+		int maxIncomingDistance = 0;
+		
+		for (EObject modelElement : modelElements) {
+			Integer modelElementIncomingDistance = incomingDistance.apply(modelElement.eClass());
 			
-			for (EObject modelElement : (Iterable<EObject>) () -> model.eAllContents()) {
-				if ((modelElement != null) && !collected.contains(modelElement)) {
+			if (modelElementIncomingDistance != null) {
+				if (modelElementIncomingDistance > maxIncomingDistance) {
+					maxIncomingDistance = modelElementIncomingDistance;
+				}
+			}
+		}
+
+		Set<EObject> maxDistanceCollected  = collectIncomingReferences(
+				(Iterable<EObject>) () -> model.eAllContents(), modelElements, maxIncomingDistance, edgeTest);
+		
+		// Collect all model elements within the type specific distance from the model elements within maximum distance:
+		Set<EObject> collected  = new HashSet<>(modelElements);
+		
+		for (EObject modelElement : modelElements) {
+			int currentDistance = incomingDistance.apply(modelElement.eClass());
+			
+			if (currentDistance > 0) {
+				collected.addAll(collectIncomingReferences(
+						maxDistanceCollected, Collections.singleton(modelElement), currentDistance, edgeTest));
+			}
+		}
+		
+		return collected;
+	}
+	
+	private static Set<EObject> collectIncomingReferences(Iterable<EObject> model, Set<EObject> modelElements, int incomingDistance, Predicate<EReference> edgeTest) {
+		Set<EObject> collected  = new HashSet<>();
+		Set<EObject> currentModelElements = new HashSet<>();
+		
+		for (int distance = 1; distance <= incomingDistance; distance++) {
+			Set<EObject> nextModelElements = new HashSet<>();
+			
+			for (EObject modelElement : model) {
+				if ((modelElement != null) && !collected.contains(modelElement)) { //no loops
 					if (ModelUtil.isAdjacent(modelElement, currentModelElements, edgeTest)) {
 						collected.add(modelElement);
+						nextModelElements.add(modelElement);
 					}
 				}
 			}
 			
-			currentModelElements.addAll(collected);
+			currentModelElements = nextModelElements;
 		}
+		
+		return collected;
 	}
 	
 	/**

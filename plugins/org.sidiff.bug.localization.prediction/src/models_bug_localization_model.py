@@ -1,5 +1,4 @@
 import datetime
-import ntpath
 import os
 from pathlib import Path
 import random
@@ -14,14 +13,17 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 import stellargraph as sg  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow.keras.utils import Sequence  # type: ignore
+from tensorflow.keras.utils import Sequence, plot_model  # type: ignore
 
+from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding
 
 #===============================================================================
 # Environmental Information
 #===============================================================================
-positve_samples_path:str = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\positivesamples_5000/"
-negative_samples_path:str = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\negativesamples_5000/"
+#positve_samples_path:str = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\positivesamples_5000/"
+#negative_samples_path:str = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.embedding.properties\testdata\negativesamples_5000/"
+positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples/"
+negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples/"
 
 model_training_save_dir = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
@@ -30,206 +32,6 @@ model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 # Data Processing
 #===============================================================================
 
-
-class DataSet:
-
-    def __init__(self, positve_samples_path:str, negative_samples_path:str):
-        self.positve_samples_path:str = positve_samples_path
-        self.negative_samples_path:str = negative_samples_path
-        
-        # Collect all graphs from the given folder:
-        self.positive_bug_samples = self.get_samples(self.positve_samples_path)
-        self.negative_bug_samples = self.get_samples(self.negative_samples_path, sample_is_negative=True)
-        
-        self.load_feature_size()
-        self.column_names:List[str]
-    
-    def get_sample(self, edge_list_path:str, sample_is_negative:bool):
-        return DataSetBugSample(self, edge_list_path, sample_is_negative)
-    
-    def get_samples(self, folder:str, sample_is_negative=False, count:int=-1):
-        samples = []
-        
-        for filename in os.listdir(folder):
-            if filename.endswith(".edgelist"):
-                edge_list_path = folder + filename
-                samples.append(self.get_sample(edge_list_path, sample_is_negative))
-            if count != -1 and len(samples) == count:
-                break
-        
-        return samples
-    
-    def load_feature_size(self):
-        if self.positive_bug_samples:
-            self.feature_size = self.positive_bug_samples[0].load_feature_size()
-        else:
-            raise Exception('No samples found')
-        
-    def get_column_names(self) -> List[str]:
-        if not self.column_names:
-            self.column_names = []
-            self.column_names.append("index")
-            
-            for feature_num in range(0, self.feature_size):
-                self.column_names.append("feature" + str(feature_num))
-            
-            self.column_names.append("tag")
-        
-        return self.column_names
-
-
-class DataSetBugSample:
-    
-    def __init__(self, dataset:DataSet, sample_file_path:str, sample_is_negative=False):
-        self.dataset:DataSet = dataset
-        
-        # File naming pattern PATH/NUMBER_NAME.EXTENSION
-        self.path, filename = ntpath.split(sample_file_path)
-        self.name = filename[:filename.rfind(".")]
-        self.number = filename[0:filename.find("_")]
-        
-        # Positive Sample = False, Negative Sample = True
-        self.is_negative = sample_is_negative
-        
-        # Nodes of the bug localization graph.
-        self.nodes:DataFrame
-        
-        # Edges of the bug localization graph.
-        self.edges:DataFrame
-        
-    # # Path/File Naming Conventions # #
-    
-    def get_nodes_path(self) -> str:
-        return self.path + "/" + self.name + ".nodelist"
-        
-    def get_edges_path(self) -> str:
-        return self.path + "/" + self.name + ".edgelist"
-    
-    def load(self):
-        self.load_nodes()
-        self.load_edges()
-    
-    def load_nodes(self, name_prefix:str=None):
-        self.nodes = pd.read_table(self.get_nodes_path(), names=self.dataset.get_column_names())
-        self.nodes.set_index("index", inplace=True)
-        
-        if name_prefix:
-            self.nodes = self.nodes.rename(index=lambda index: self.add_prefix(name_prefix, index))
-
-        self.nodes = self.nodes.fillna("")
-        
-    def load_feature_size(self) -> int:
-        # Load without header
-        tmp_nodes = pd.read_table(self.get_nodes_path())
-        # subtract: index and tag column
-        return len(tmp_nodes.columns) - 2
-    
-    def load_edges(self, name_prefix:str=None):
-        edge_list_col_names = ["source", "target"]
-        self.edges = pd.read_table(self.get_edges_path(), names=edge_list_col_names)
-        
-        if name_prefix:
-            self.edges['source'] = self.edges['source'].apply(lambda index: self.add_prefix(name_prefix, index))
-            self.edges['target'] = self.edges['target'].apply(lambda index: self.add_prefix(name_prefix, index))
-            self.edges = self.edges.rename(index=lambda index: self.add_prefix(name_prefix, index))
-    
-    def add_prefix(self, prefix:str, index:int) -> str:
-        return str(prefix) + "_" + str(index)
-
-
-class DataSetEmbedding(DataSet):
-    
-    def __init__(self, positve_samples_path:str, negative_samples_path:str):
-        super().__init__(positve_samples_path, negative_samples_path)
-        
-    def get_sample(self, edge_list_path:str, sample_is_negative:bool):
-        return DataSetBugSampleEmbedding(self, edge_list_path, sample_is_negative)    
-
-
-class DataSetBugSampleEmbedding(DataSetBugSample):
-    
-    def __init__(self, dataset:DataSet, sample_file_path:str, sample_is_negative=False):
-        super().__init__(dataset, sample_file_path, sample_is_negative)
-        
-        # Pairs of node IDs: (Bug Report, Location)
-        self.bug_location_pairs:List[Tuple[str, str]]
-        
-        # 0 or 1 for each bug location pair: 0 -> positive sample, 1 -> negative sample
-        self.testcase_labels:np.ndarray
-    
-    # # Path/File Naming Conventions # #
-    
-    def get_nodes_path(self) -> str:
-        return self.path + "/features/" + self.name + ".featurenodelist"
-    
-    def load(self):
-        
-        # Read sample and create unique node IDs:
-        bug_sample_name = self.number
-        
-        # different prefixes for positive and negative samples:
-        if self.is_negative:
-            bug_sample_name = "n" + bug_sample_name
-        else:
-            bug_sample_name = "p" + bug_sample_name
-            
-        # create new sample:
-        self.load_nodes(bug_sample_name)
-        self.load_edges(bug_sample_name)
-        self.extract_bug_locations()
-        
-        # Remove the column 'tag' - it is not a numerical column:
-        self.nodes.drop("tag", inplace=True, axis=1)
-        
-        # 1 for positive samples; 0 for negative samples:
-        if self.is_negative:
-            self.testcase_labels = np.zeros(len(self.bug_location_pairs))
-        else:
-            self.testcase_labels = np.ones(len(self.bug_location_pairs))
-        
-        # remove bug location edges:
-        self.remove_bug_location_edges()
-        
-    def load_nodes(self, name_prefix:str=None) -> DataFrame:
-        self.nodes = pd.read_pickle(self.get_nodes_path(), compression="zip")
-        
-        if name_prefix:
-            self.nodes = self.nodes.rename(index=lambda index: self.add_prefix(name_prefix, index))
-            
-    def load_feature_size(self) -> int:
-        # subtract: tag column
-        tmp_nodes = pd.read_pickle(self.get_nodes_path(), compression="zip")
-        return len(tmp_nodes.columns) - 1
-    
-    def extract_bug_locations(self):
-        self.bug_location_pairs = []
-        bug_report_node:str = ""
-        
-        for node_index, node_row in self.nodes.iterrows():
-            tag = node_row["tag"]
-            
-            if (tag == "# REPORT"):
-                bug_report_node = node_index
-            elif (tag == "# LOCATION"):
-                bug_location_node:str = node_index
-                bug_location_pair:Tuple[str, str] = (bug_report_node, bug_location_node)
-                self.bug_location_pairs.append(bug_location_pair)
-        
-        if not bug_report_node:
-            raise Exception("Error: Bug report node not found!")
-    
-    def remove_bug_location_edges(self):
-        bug_location_source = set()
-        bug_location_target = set()
-
-        for bug_location in self.bug_location_pairs:
-            bug_location_source.add(bug_location[0])
-            bug_location_target.add(bug_location[1])
-            
-        bug_location_edges = self.edges.loc[self.edges["source"].isin(bug_location_source) & self.edges["target"].isin(bug_location_target)]
-        self.edges.drop(bug_location_edges.index, inplace=True)   
-
-    
 class DataSetSplitter:
     
     def __init__(self, dataset:DataSetEmbedding):
@@ -362,14 +164,15 @@ class BugLocalizationGenerator(Sequence):
     
 class BugLocalizationAIModelBuilder:
     
-    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int) -> keras.Model:
+    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, dropout:float=0.0, normalize="l2") -> keras.Model:
         graphsage = GraphSAGE(
             n_samples=num_samples,
             layer_sizes=layer_sizes,
             input_dim=feature_size,
-            multiplicity=2,  # link inference
+            multiplicity=2,  # Link inference!
             bias=True,
-            dropout=0.3
+            dropout=dropout,  # Dropout supplied to each layer: 0 < dropout < 1, 0 means no dropout. Dropout refers to ignoring units (i.e. neurons) during the training phase of certain set of neurons which is chosen at random, to prevent over-fitting.
+            normalize=normalize  # l2 or None
         )
          
         # Build the model and expose input and output sockets of GraphSAGE model for link prediction
@@ -389,7 +192,7 @@ class BugLocalizationAIModelBuilder:
         
         return model
     
-    def create_or_restore_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str) -> keras.Model:
+    def create_or_restore_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str, dropout:float=0.0, normalize="l2") -> keras.Model:
        
         Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
        
@@ -402,7 +205,7 @@ class BugLocalizationAIModelBuilder:
             return keras.models.load_model(latest_checkpoint)
         
         print('Creating a new model')
-        return self.create_model(num_samples, layer_sizes, feature_size)
+        return self.create_model(num_samples, layer_sizes, feature_size, dropout, normalize)
 
     
 class BugLocalizationAIModelTrainer:
@@ -484,11 +287,28 @@ if __name__ == '__main__':
     #===========================================================================
     
     # GraphSAGE Settings:
-    num_samples = [20, 10]
-    layer_sizes = [20, 20]
+    num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
+    layer_sizes = [20, 20]  # Size of GraphSAGE hidden layers
+    
+    assert len(num_samples) == len(layer_sizes), "The number of neighbor node samples need to be specified per GraphSAGE layer!"
+    
+    # Regularization:
+    
+    # Dropout supplied to each GraphSAGE layer: 0 < dropout < 1, 0 means no dropout. 
+    # Dropout refers to ignoring neurons during the training phase which are chosen at random to prevent over-fitting.
+    # [https://medium.com/@amarbudhiraja/https-medium-com-amarbudhiraja-learning-less-to-learn-better-dropout-in-deep-machine-learning-74334da4bfc5]
+    dropout = 0.0  # 0.3
+    
+    # GraphSAGE input normalization: l2 or None
+    normalize = "l2"
     
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
-    model = bug_localization_model_builder.create_or_restore_model(num_samples, layer_sizes, dataset.feature_size, model_training_checkpoint_dir)
+    model = bug_localization_model_builder.create_or_restore_model(
+        num_samples, layer_sizes, dataset.feature_size, model_training_checkpoint_dir, dropout, normalize)
+    
+    # Plot model:
+    # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]
+    # plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot 
     
     #===========================================================================
     # Train and Evaluate AI Model:

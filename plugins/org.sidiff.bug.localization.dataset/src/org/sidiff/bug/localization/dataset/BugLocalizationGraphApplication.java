@@ -36,19 +36,24 @@ public class BugLocalizationGraphApplication implements IApplication {
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-repository";
 	
+	// Need to set both AFTER_VERSION_ID and AFTER_VERSION_NO:
 	public static final String SETTINGS_START_AFTER_VERSION_ID = null; // e.g. "f722ea23e3caf3bc3d51d10558e3e3fea80cbcc5" or null
 	
-	public static final int SETTINGS_START_AFTER_VERSION_NO = 0;
+	public static final int SETTINGS_START_AFTER_VERSION_NO = -1; // or -1
 	
 	public static final int SETTINGS_COUNT_OF_BUG_REPORTS = -1; // or -1
 	
 	public static final boolean SETTINGS_FULL_VERSION = false;
 	
-	public static final boolean SETTINGS_POSITIVE_SAMPLES = false;
+	public static final boolean SETTINGS_POSITIVE_SAMPLES = true;
 	
 	public static final boolean SETTINGS_NEGATIVE_SAMPLES = true;
 	
 	public static final boolean SETTINGS_ADD_BUG_REPORT_COMMENTS = true;
+	
+	public String POSITIVE_SAMPLE_FOLDER = "positivesamples";
+	
+	public String NEGATIVE_SAMPLE_FOLDER = "negativesamples";
 	
 	private Path datasetPath;
 
@@ -68,7 +73,7 @@ public class BugLocalizationGraphApplication implements IApplication {
 		HistoryIterator historyIterator = new HistoryIterator(dataset.getHistory());
 		int bugFixCounter = 0;
 		
-		if (SETTINGS_START_AFTER_VERSION_ID != null) {
+		if ((SETTINGS_START_AFTER_VERSION_ID != null) && (SETTINGS_START_AFTER_VERSION_NO > 0)) {
 			while (historyIterator.hasNext()) {
 				Version version = historyIterator.next();
 				
@@ -112,13 +117,13 @@ public class BugLocalizationGraphApplication implements IApplication {
 
 						if (SETTINGS_POSITIVE_SAMPLES) {
 							Iterable<EObject> positiveSampleBugLocalizationGraph = graphConstructor.createPositiveSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS);
-							save(positiveSampleBugLocalizationGraph, bugLocations, "buglocations", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+							save(positiveSampleBugLocalizationGraph, bugLocations, POSITIVE_SAMPLE_FOLDER, bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 						}
 						
 						if (SETTINGS_NEGATIVE_SAMPLES) {
-							Set<EObject> negativeSampleBugLocations = graphConstructor.selectNegativeSamples(bugLocations, 10, 100, 50, 1, 1000);
+							Set<EObject> negativeSampleBugLocations = graphConstructor.selectNegativeSamples(bugLocations, 1, 10, 50, 1, 1000);
 							Iterable<EObject> negativeSampleBugLocalizationGraph = graphConstructor.createNegativeSampleBugLocalizationGraph(SETTINGS_ADD_BUG_REPORT_COMMENTS, negativeSampleBugLocations);
-							save(negativeSampleBugLocalizationGraph, negativeSampleBugLocations, "negativesamples", bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
+							save(negativeSampleBugLocalizationGraph, negativeSampleBugLocations, NEGATIVE_SAMPLE_FOLDER, bugFixCounter, bugReport.getId(), buggyVersion.getIdentification());
 						}
 
 						if ((bugFixCounter > 0) && ((bugFixCounter >= SETTINGS_COUNT_OF_BUG_REPORTS) && (SETTINGS_COUNT_OF_BUG_REPORTS != -1))) {
