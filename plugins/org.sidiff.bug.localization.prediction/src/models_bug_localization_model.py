@@ -15,6 +15,8 @@ import stellargraph as sg  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
 from tensorflow.keras.utils import Sequence, plot_model  # type: ignore
 
+from tqdm.keras import TqdmCallback  # type: ignore
+
 from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding
 
 #===============================================================================
@@ -108,7 +110,12 @@ class BugLocalizationGenerator(Sequence):
         
         # Create Keras sequence:
         test_gen = GraphSAGELinkGenerator(graph, len(bug_location_pairs), self.num_samples)
-        flow = test_gen.flow(bug_location_pairs, testcase_labels)   
+        flow = test_gen.flow(bug_location_pairs, testcase_labels)
+        
+        # Free memory:
+        for bug_sample_idx in range(start_bug_sample, end_bug_sample):
+            bug_sample = self.bug_samples[bug_sample_idx]
+            bug_sample.unload()
         
         return flow
 
@@ -239,6 +246,7 @@ class BugLocalizationAIModelTrainer:
         # https://github.com/tensorflow/tensorflow/issues/35911
         self.callbacks.append(self.ShuffleCallback(train_flow))
         self.callbacks.append(self.ShuffleCallback(test_flow))
+        #self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
         
         #=======================================================================
         # Note that our implementation enables the use of the multiprocessing argument of fit(),
@@ -262,7 +270,9 @@ class BugLocalizationAIModelTrainer:
         # # Save Final Trained Model # #     
         self.model.save(model_training_save_dir)
         
-    # TODO: Evaluation for multiple full model versions: bug, all model elements ...
+        # # Evaluate Trained Model # #
+        self.evaluate(test_flow)
+        
     def evaluate(self, evaluation_flow:Sequence):
         evaluation_metrics = self.model.evaluate(evaluation_flow)
 

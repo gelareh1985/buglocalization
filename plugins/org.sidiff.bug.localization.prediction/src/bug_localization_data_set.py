@@ -71,6 +71,10 @@ class DataSetBugSample:
     def get_edges_path(self) -> str:
         return self.path + "/" + self.name + ".edgelist"
     
+    def unload(self):
+        self.nodes = None
+        self.edges = None
+    
     def load(self):
         self.load_nodes()
         self.load_edges()
@@ -160,6 +164,12 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
     
     def get_nodes_path(self) -> str:
         return self.path + "/" + self.name + ".featurenodelist"
+    
+    def unload(self):
+        self.nodes = None
+        self.edges = None
+        self.bug_location_pairs = None
+        self.testcase_labels = None
     
     def load(self):
         
