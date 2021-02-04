@@ -1,3 +1,19 @@
+#===============================================================================
+# Configure GPU Device:
+#===============================================================================
+import tensorflow as tf
+
+# Only allocate needed memory needed by the application:
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+#===============================================================================
+
 import datetime
 import os
 from pathlib import Path
@@ -15,7 +31,7 @@ import stellargraph as sg  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
 from tensorflow.keras.utils import Sequence, plot_model  # type: ignore
 
-from tqdm.keras import TqdmCallback  # type: ignore
+# from tqdm.keras import TqdmCallback  # type: ignore
 
 from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding
 
@@ -23,15 +39,17 @@ from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbeddin
 # Environmental Information
 #===============================================================================
 
-positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples/"
-negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples/"
+positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"
+negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"
 
-model_training_save_dir = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
+# NOTE: Paths should not be too long, causes error (on Windows)!
+model_training_save_dir = r"D:\buglocalization_gelareh_home\training\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 #===============================================================================
 # Data Processing
 #===============================================================================
+
 
 class DataSetSplitter:
     
@@ -246,7 +264,7 @@ class BugLocalizationAIModelTrainer:
         # https://github.com/tensorflow/tensorflow/issues/35911
         self.callbacks.append(self.ShuffleCallback(train_flow))
         self.callbacks.append(self.ShuffleCallback(test_flow))
-        #self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
+        # self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
         
         #=======================================================================
         # Note that our implementation enables the use of the multiprocessing argument of fit(),
