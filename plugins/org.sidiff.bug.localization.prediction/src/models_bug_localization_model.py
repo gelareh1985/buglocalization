@@ -1,3 +1,19 @@
+#===============================================================================
+# Configure GPU Device:
+#===============================================================================
+import tensorflow as tf
+
+# Only allocate needed memory needed by the application:
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+#===============================================================================
+
 import datetime
 import os
 from pathlib import Path
@@ -19,10 +35,12 @@ from tensorflow.keras.utils import Sequence  # type: ignore
 #===============================================================================
 # Environmental Information
 #===============================================================================
-positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples/"
-negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples/"
 
-model_training_save_dir = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
+positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"
+negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"
+
+# NOTE: Paths should not be too long, causes error (on Windows)!
+model_training_save_dir = r"D:\buglocalization_gelareh_home\training\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 #===============================================================================
@@ -205,11 +223,11 @@ class BugLocalizationAIModelBuilder:
          
         # Build the model and expose input and output sockets of GraphSAGE model for link prediction
         x_inp, x_out = graphsage.in_out_tensors()
-        
+         
         prediction = link_classification(
             output_dim=1, output_act="relu", edge_embedding_method="ip"
         )(x_out)
-        
+         
         model = keras.Model(inputs=x_inp, outputs=prediction)
          
         model.compile(
@@ -268,6 +286,7 @@ class BugLocalizationAIModelTrainer:
             verbose=log_level,
             use_multiprocessing=True,
             workers=-generator_workers,
+            max_queue_size=prefetch,
             callbacks=self.callbacks)
 
         if log_level >= 1:
@@ -362,7 +381,7 @@ if __name__ == '__main__':
     
     # Training Settings:
     epochs = 20  # Number of training epochs. 
-    batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
+    batch_size = 50  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     
     # Technical Settings:

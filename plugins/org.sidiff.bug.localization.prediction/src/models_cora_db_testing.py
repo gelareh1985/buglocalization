@@ -5,21 +5,21 @@ Created on Dec 23, 2020
 '''
 import numpy as np
 import pandas as pd
+
 from tensorflow.python.keras.preprocessing.text import Tokenizer
+
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import one_hot
 from keras.preprocessing.text import text_to_word_sequence
- 
 from keras.models import Sequential
 from keras.layers.embeddings import Embedding
 from keras.layers import Dense, Embedding, LSTM, GRU
 from keras.layers import Flatten
 
-from stellargraph.data import BiasedRandomWalk
 from stellargraph import datasets
 from IPython.display import display, HTML
 
-from gensim.models import Word2Vec
+#from gensim.models import Word2Vec
 
 dataset = datasets.Cora()
 display(HTML(dataset.description))
@@ -35,7 +35,6 @@ print('node features    ','number of rows: ',str(len(node_feats)),'number of col
 print('Cora node features type: ', type(node_feats))
 print('node subjects: ',str(len(node_subjects)),'    ;    ',type(node_subjects))
 print(node_subjects)
-
 
 list_nodes=[]
 for node in G.nodes():
