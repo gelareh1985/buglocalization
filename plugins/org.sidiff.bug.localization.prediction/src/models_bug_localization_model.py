@@ -164,7 +164,7 @@ class BugLocalizationGenerator(Sequence):
     def __getitem__(self, batch_idx):
         """Generate one batch of data"""
         if self.log:
-            print("Get Batch:", batch_idx)
+            print("Get", self.name, "batch:", batch_idx)
         
         # Loading data in parallel to each training batch:
         flow = self.load_bug_samples_batch(batch_idx * self.batch_size)
@@ -278,8 +278,9 @@ class BugLocalizationAIModelTrainer:
             epochs=epochs,
             validation_data=test_flow,
             verbose=2,
-            use_multiprocessing=True,
+            use_multiprocessing=True, # True -> Workers as process, False -> Workers as threads
             workers=generator_workers,
+            max_queue_size=10,
             callbacks=self.callbacks)
 
         if log:
@@ -343,9 +344,9 @@ if __name__ == '__main__':
     
     # Training Settings:
     epochs = 20  # Number of training epochs. 
-    batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
+    batch_size = 50  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
-    generator_workers = 4  # Number of threads that load/generate the batches in parallel.
+    generator_workers = 2  # Number of threads that load/generate the batches in parallel.
     log = False  # Some console output for debugging...
     
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
