@@ -1,7 +1,7 @@
 #===============================================================================
 # Configure GPU Device:
 #===============================================================================
-import tensorflow as tf
+import tensorflow as tf # type: ignore
 
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -173,10 +173,11 @@ class BugLocalizationGenerator:
         
         # Load dataset from disk in separate threads:
         # print(self.sample_generator().__next__())
+        # tf.data.AUTOTUNE
         dataset = dataset.interleave(lambda path, name, number, is_negative: 
                                      Dataset.from_generator(self.sample_generator, output_types=model_input_types, output_shapes=model_input_shapes,
                                                             args=(path, name, number, is_negative)),
-                                     cycle_length=self.generator_workers, block_length=1, num_parallel_calls=self.generator_workers)        
+                                     cycle_length=self.generator_workers * 2, block_length=1, num_parallel_calls=self.generator_workers)        
         
         # Set the size of the batch to the data pipline:
         dataset = dataset.batch(self.batch_size)
@@ -381,12 +382,12 @@ if __name__ == '__main__':
     
     # Training Settings:
     epochs = 20  # Number of training epochs. 
-    batch_size = 50  # Number of bug location samples, please node that each sample has multiple location samples.
+    batch_size = 40  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     
     # Technical Settings:
-    generator_workers = 12  # Number of threads that load/generate the batches in parallel.
-    prefetch = 20  # Preload some data for fast (GPU) processing
+    generator_workers = 8  # Number of threads that load/generate the batches in parallel.
+    prefetch = batch_size * 2  # Preload some data for fast (GPU) processing
     log_level = 2  # Some console output for debugging...
     
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
