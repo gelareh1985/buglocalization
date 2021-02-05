@@ -1,28 +1,24 @@
 import datetime
 import os
 from pathlib import Path
-import random
-from typing import Union, List, Tuple
+from time import time
+from typing import List, Tuple
 
-from pandas.core.frame import DataFrame  # type: ignore
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from stellargraph.mapper import GraphSAGELinkGenerator  # type: ignore
 from tensorflow import keras  # type: ignore
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-import stellargraph as sg  # type: ignore
-from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow.keras.utils import Sequence, plot_model  # type: ignore
-
-from tqdm.keras import TqdmCallback  # type: ignore
-
 from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding
+import stellargraph as sg  # type: ignore
+import tensorflow as tf  # type: ignore
+from tensorflow.keras.callbacks import CSVLogger  # type: ignore
+from tensorflow.keras.utils import Sequence  # type: ignore
 
+# from tqdm.keras import TqdmCallback  # type: ignore
+# from tensorflow.keras.utils import plot_model # type: ignore
 #===============================================================================
 # Environmental Information
 #===============================================================================
-
 positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples/"
 negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples/"
 
@@ -32,6 +28,7 @@ model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 #===============================================================================
 # Data Processing
 #===============================================================================
+
 
 class DataSetSplitter:
     
@@ -71,103 +68,128 @@ class DataSetSplitter:
 #===============================================================================
 
 
-class BugLocalizationGenerator(Sequence):
+class BugLocalizationGenerator:
     
-    # https://www.tensorflow.org/guide/keras/train_and_evaluate#using_a_kerasutilssequence_object_as_input
+    #===========================================================================
+    # Adapts the GraphSAGE interface with our data and Tensorflow's tf.data.Dataset
+    #===========================================================================
+    
+    # https://cs230.stanford.edu/blog/datapipeline/
+    # https://sknadig.dev/TensorFlow2.0-dataset/
     
     # Note: A sample is pair of a bug report and model location, each "bug sample" contains one bug report and multiple locations.
-    
-    def __init__(self, name:str, batch_size:int, shuffle:bool, num_samples:List[int], bug_samples:List[DataSetBugSampleEmbedding], log:bool=False):
-        self.name:str = name  # e.g. train, eval for debugging
+
+    def __init__(self, name:str, model:keras.Model, batch_size:int, shuffle:bool, num_samples:List[int], bug_samples:List[DataSetBugSampleEmbedding], generator_workers:int=1, prefetch:int=10, log_level:int=0):
+        self.name:str = name  # e.g. train, evaluation for debugging
+        self.model:keras.Model = model
         self.batch_size:int = batch_size
         self.shuffle = shuffle
+        self.generator_workers = generator_workers
         self.num_samples:List[int] = num_samples
         self.bug_samples:List[DataSetBugSampleEmbedding] = bug_samples
-        self.log:bool = log
-        
-    def load_bug_samples_batch(self, start_bug_sample:int) -> Sequence:
-
-        # Load batch of bug samples:
-        batch_bug_samples = []
-        end_bug_sample = min(start_bug_sample + self.batch_size, len(self.bug_samples) - 1)
-        
-        for bug_sample_idx in range(start_bug_sample, end_bug_sample):
-            bug_sample = self.bug_samples[bug_sample_idx]
-            bug_sample.load()
-            batch_bug_samples.append(bug_sample)
+        self.prefetch = prefetch
+        self.log_level:int = log_level
+    
+    # TODO: Transfer sample object!?
+    def list_samples_generator(self) -> str:
+        for bug_sample in self.bug_samples:
+            yield bug_sample.path, bug_sample.name, bug_sample.number, bug_sample.is_negative
             
-            if self.log:
-                print("Loaded Sample:", bug_sample.number)
-
-        # Concatenate all  samples:
-        nodes, edges, bug_location_pairs, testcase_labels = self.concat_samples(batch_bug_samples)
-
-        # Create integrated graph:
-        graph = sg.StellarGraph(nodes, edges)
+    def sample_generator(self, path:bytes, name:bytes, number:bytes, is_negative:bool):
+        bug_sample = DataSetBugSampleEmbedding()
+        bug_sample.path = path.decode("utf-8")
+        bug_sample.name = name.decode("utf-8")
+        bug_sample.number = number.decode("utf-8")
+        bug_sample.is_negative = is_negative
         
-        if self.log:
+        # Load each bug sample:
+        bug_sample.load()
+        
+        if self.log_level >= 3:
+            print("Loaded", "negative" if bug_sample.is_negative else "positive", self.name, "sample:", bug_sample.number)
+
+        if (len(bug_sample.testcase_labels) <= 0):
+            return
+
+        # Convert to StellarGraph:
+        graph = sg.StellarGraph(bug_sample.nodes, bug_sample.edges)
+    
+        if self.log_level >= 4:
             print(graph.info())
-        
-        # Create Keras sequence:
-        test_gen = GraphSAGELinkGenerator(graph, len(bug_location_pairs), self.num_samples)
-        flow = test_gen.flow(bug_location_pairs, testcase_labels)
-        
+    
+        # Create Keras Sequence with batch size 1 for generator yield:
+        graph_sage_generator = GraphSAGELinkGenerator(graph, batch_size=len(bug_sample.testcase_labels), num_samples=self.num_samples)
+        flow = graph_sage_generator.flow(bug_sample.bug_location_pairs, bug_sample.testcase_labels)
+    
         # Free memory:
-        for bug_sample_idx in range(start_bug_sample, end_bug_sample):
-            bug_sample = self.bug_samples[bug_sample_idx]
-            bug_sample.unload()
-        
-        return flow
-
-    def concat_samples(self, batch_bug_samples:List[DataSetBugSampleEmbedding]) -> Union[List[DataFrame], List[DataFrame], List[Tuple[str, str]], np.ndarray]:
-        nodes = []
-        edges = []
-        bug_location_pairs = []
-        testcase_labels = np.zeros(0)
-        
-        for bug_sample in batch_bug_samples:
-            nodes.append(bug_sample.nodes)
-            edges.append(bug_sample.edges)
+        bug_sample.unload()
+    
+        # Convert Keras Sequence to generator:
+        for batch_num in range(len(flow)):
+            #=======================================================================
+            # [[Layer 0 sources], [Layer 0 targets], [Layer 1 sources], [Layer 1 targets], ...]
+            # ,
+            # [Binary label]
+            #=======================================================================
+            batch_feats, batch_targets = flow.__getitem__(batch_num)          
             
-            for bug_location_pair in bug_sample.bug_location_pairs:
-                bug_location_pairs.append(bug_location_pair)
-            
-            testcase_labels = np.concatenate((testcase_labels, bug_sample.testcase_labels), axis=0)
+            for sample_num in range(len(batch_targets)):
+                inputs = []
+                outputs = batch_targets[sample_num]
+                
+                for batch_feat in batch_feats:
+                    inputs.append(batch_feat[sample_num])
+                
+                yield tuple(inputs), outputs  # single sample
+       
+    def create_generator(self) -> tf.data.Dataset:
+        model_input_types, model_input_shapes = self.get_model_input_shape()
         
-        pd_nodes = pd.concat(nodes)
-        pd_edges = pd.concat(edges)
+        # Iterates over all samples (without loading)
+        Dataset = tf.data.Dataset
+        dataset = Dataset.from_generator(self.list_samples_generator, output_types=(tf.string, tf.string, tf.string, tf.bool))
         
-        return pd_nodes, pd_edges, bug_location_pairs, testcase_labels        
-    
-    def __len__(self):
-        """Denotes the number of batches per epoch"""
-        return int(np.ceil(len(self.bug_samples) / float(self.batch_size)))
-    
-    def __getitem__(self, batch_idx):
-        """Generate one batch of data"""
-        if self.log:
-            print("Get Batch:", batch_idx)
-        
-        # Loading data in parallel to each training batch:
-        flow = self.load_bug_samples_batch(batch_idx * self.batch_size)
-        
-        # Wrapping StellarGraph Sequence which contains one full loaded batch:
-        if len(flow) > 1:
-            assert len(flow) == 1
-            print("WARNING: Unexpected GraphSAGE Batch Count:", len(flow))
-        
-        return flow.__getitem__(0)
-    
-    # FIXME: Not calling on_epoch_end... Waiting for bug fix release... Workaround use callbacks
-    # https://github.com/tensorflow/tensorflow/issues/35911
-    def workaround_on_epoch_end(self):
-        """Prepare the data set for the next epoch"""
-        
-        # Shuffle samples:
+        # Shuffle dataset:
         if self.shuffle:
-            random.shuffle(self.bug_samples)
+            dataset = dataset.shuffle(len(self.bug_samples))
+        
+        # Load dataset from disk in separate threads:
+        # print(self.sample_generator().__next__())
+        dataset = dataset.interleave(lambda path, name, number, is_negative: 
+                                     Dataset.from_generator(self.sample_generator, output_types=model_input_types, output_shapes=model_input_shapes,
+                                                            args=(path, name, number, is_negative)),
+                                     cycle_length=self.generator_workers, block_length=1, num_parallel_calls=self.generator_workers)        
+        
+        # Set the size of the batch to the data pipline:
+        dataset = dataset.batch(self.batch_size)
+        
+        # Preload some samples (for GPU):
+        dataset = dataset.prefetch(self.prefetch)
+        
+        return dataset
 
-    
+    def get_model_input_shape(self):
+        # https://stackoverflow.com/questions/57175343/multiple-inputs-of-keras-model-with-tf-data-dataset-from-generator-in-tensorflow
+        # num_samples = [20, 10]
+        # layer_sizes = [20, 20]
+        # node feature size = 300 
+        # model_input_types = ((tf.float32, tf.float32, tf.float32, tf.float32, tf.float32, tf.float32), (tf.float32))
+        # model_input_shapes = (([1, 300], [1, 300], [20, 300], [20, 300], [200, 300], [200, 300]), ())
+        tmp_model_input_types = []
+        tmp_model_input_shapes = []
+        
+        for input_tensor in self.model.input:
+            tmp_model_input_types.append(tf.float32)
+            input_tensor_shape = [input_tensor.shape.dims[1].value, input_tensor.shape.dims[2].value]
+            tmp_model_input_shapes.append(input_tensor_shape)
+        
+        # model input + labels
+        model_input_types = (tuple(tmp_model_input_types), (tf.float32)) 
+        model_input_shapes = (tuple(tmp_model_input_shapes), ())
+        
+        return model_input_types, model_input_shapes
+
+        
 class BugLocalizationAIModelBuilder:
     
     def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, dropout:float=0.0, normalize="l2") -> keras.Model:
@@ -183,11 +205,11 @@ class BugLocalizationAIModelBuilder:
          
         # Build the model and expose input and output sockets of GraphSAGE model for link prediction
         x_inp, x_out = graphsage.in_out_tensors()
-         
+        
         prediction = link_classification(
             output_dim=1, output_act="relu", edge_embedding_method="ip"
         )(x_out)
-         
+        
         model = keras.Model(inputs=x_inp, outputs=prediction)
          
         model.compile(
@@ -224,47 +246,31 @@ class BugLocalizationAIModelTrainer:
         self.callbacks = []
         
         # This callback saves a SavedModel every epoch (or X batches).
+        self.callbacks.append(self.Timer())
         self.callbacks.append(keras.callbacks.ModelCheckpoint(filepath=checkpoint_dir, save_freq='epoch'))
         self.callbacks.append(CSVLogger(checkpoint_dir + "model_history_log.csv", append=True))
-        
-    class ShuffleCallback(keras.callbacks.Callback):
+        self.callbacks.append(self.BatchLogger())
     
-        def __init__(self, flow:BugLocalizationGenerator):
-            self.flow:BugLocalizationGenerator = flow
-        
-        def on_epoch_end(self, epoch, logs=None):  # @UnusedVariable
-            self.flow.workaround_on_epoch_end()
-
-    def train(self, epochs:int, batch_size:int, shuffle:bool, generator_workers:int=1, log:bool=True):
+    def train(self, epochs:int, batch_size:int, shuffle:bool, generator_workers:int=1, prefetch:int=10, log_level=0):
         
         # Initialize training data:
         bug_samples_train, bug_samples_test = dataset_splitter.split(2)
-        train_flow = BugLocalizationGenerator("training", batch_size, shuffle, self.num_samples, bug_samples_train, log)
-        test_flow = BugLocalizationGenerator("validation", batch_size, shuffle, self.num_samples, bug_samples_test, log)
+        train_flow = BugLocalizationGenerator("training", self.model, batch_size, shuffle, self.num_samples, bug_samples_train, generator_workers, prefetch, log_level)
+        test_flow = BugLocalizationGenerator("validation", self.model, batch_size, shuffle, self.num_samples, bug_samples_test, generator_workers, prefetch, log_level)
         
-        # FIXME: Not calling on_epoch_end... Waiting for bug fix release... Workaround use callbacks
-        # https://github.com/tensorflow/tensorflow/issues/35911
-        self.callbacks.append(self.ShuffleCallback(train_flow))
-        self.callbacks.append(self.ShuffleCallback(test_flow))
-        #self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
-        
-        #=======================================================================
-        # Note that our implementation enables the use of the multiprocessing argument of fit(),
-        # where the number of threads specified in  workers  are those that generate batches in parallel.
-        # [https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly]
-        #=======================================================================
+        # self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
         
         # # Train Model # #
         history = self.model.fit(
-            train_flow,
+            train_flow.create_generator(),
             epochs=epochs,
-            validation_data=test_flow,
-            verbose=2,
+            validation_data=test_flow.create_generator(),
+            verbose=log_level,
             use_multiprocessing=True,
-            workers=generator_workers,
+            workers=-generator_workers,
             callbacks=self.callbacks)
 
-        if log:
+        if log_level >= 1:
             sg.utils.plot_history(history)
         
         # # Save Final Trained Model # #     
@@ -272,13 +278,44 @@ class BugLocalizationAIModelTrainer:
         
         # # Evaluate Trained Model # #
         self.evaluate(test_flow)
-        
+    
+    # TODO: Write to file    
     def evaluate(self, evaluation_flow:Sequence):
         evaluation_metrics = self.model.evaluate(evaluation_flow)
 
         print("Evaluation metrics of the model:")
         for name, val in zip(self.model.metrics_names, evaluation_metrics):
             print("\t{}: {:0.4f}".format(name, val))
+
+    class Timer(keras.callbacks.Callback):
+
+        def __init__(self):
+            self.mark = time()
+
+        def on_epoch_begin(self, epoch, logs=None):  # @UnusedVariable
+            self.mark = time()
+
+        def on_epoch_end(self, epoch, logs=None):  # @UnusedVariable
+            duration = time() - self.mark
+            self.mark = time()
+            print("Epoch", epoch, "time:", duration)
+
+    class BatchLogger(keras.callbacks.Callback):
+
+        def __init__(self):
+            self.seen = 0
+    
+        def on_batch_end(self, batch, logs={}):  # @UnusedVariable
+            self.seen += logs.get('size', 0)
+            metrics_log = ''
+            for k in self.params['metrics']:
+                if k in logs:
+                    val = logs[k]
+                    if abs(val) > 1e-3:
+                        metrics_log += ' - %s: %.4f' % (k, val)
+                    else:
+                        metrics_log += ' - %s: %.4e' % (k, val)
+            print('{}{}'.format(self.seen, metrics_log))
 
 
 if __name__ == '__main__':
@@ -327,8 +364,11 @@ if __name__ == '__main__':
     epochs = 20  # Number of training epochs. 
     batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
-    generator_workers = 4  # Number of threads that load/generate the batches in parallel.
-    log = False  # Some console output for debugging...
+    
+    # Technical Settings:
+    generator_workers = 12  # Number of threads that load/generate the batches in parallel.
+    prefetch = 20  # Preload some data for fast (GPU) processing
+    log_level = 2  # Some console output for debugging...
     
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
         dataset_splitter=dataset_splitter,
@@ -336,4 +376,4 @@ if __name__ == '__main__':
         num_samples=num_samples,
         checkpoint_dir=model_training_checkpoint_dir)
     
-    bug_localization_model_trainer.train(epochs, batch_size, shuffle, generator_workers, log)
+    bug_localization_model_trainer.train(epochs, batch_size, shuffle, generator_workers, prefetch, log_level)

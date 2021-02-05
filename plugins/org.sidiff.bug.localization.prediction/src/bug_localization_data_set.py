@@ -150,9 +150,14 @@ class DataSetEmbedding(DataSet):
 
 class DataSetBugSampleEmbedding(DataSetBugSample):
     
-    def __init__(self, dataset:DataSet, sample_file_path:str, sample_is_negative=False):
+    def __init__(self, dataset:DataSet=None, sample_file_path:str=None, sample_is_negative=False):
         self.compression = "gzip"
-        super().__init__(dataset, sample_file_path, sample_is_negative)
+        
+        if dataset and sample_file_path:
+            super().__init__(dataset, sample_file_path, sample_is_negative)
+        
+        # Positive Sample = False, Negative Sample = True
+        self.is_negative = sample_is_negative
         
         # Pairs of node IDs: (Bug Report, Location)
         self.bug_location_pairs:List[Tuple[str, str]]
@@ -173,18 +178,9 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
     
     def load(self):
         
-        # Read sample and create unique node IDs:
-        bug_sample_name = self.number
-        
-        # different prefixes for positive and negative samples:
-        if self.is_negative:
-            bug_sample_name = "n" + bug_sample_name
-        else:
-            bug_sample_name = "p" + bug_sample_name
-            
         # create new sample:
-        self.load_nodes(bug_sample_name)
-        self.load_edges(bug_sample_name)
+        self.load_nodes()
+        self.load_edges()
         self.extract_bug_locations()
         
         # Remove the column 'tag' - it is not a numerical column:
@@ -192,9 +188,9 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
         
         # 1 for positive samples; 0 for negative samples:
         if self.is_negative:
-            self.testcase_labels = np.zeros(len(self.bug_location_pairs))
+            self.testcase_labels = np.zeros(len(self.bug_location_pairs), dtype=np.float32)
         else:
-            self.testcase_labels = np.ones(len(self.bug_location_pairs))
+            self.testcase_labels = np.ones(len(self.bug_location_pairs), dtype=np.float32)
         
         # remove bug location edges:
         self.remove_bug_location_edges()
