@@ -1,3 +1,7 @@
+'''
+@author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
+'''
+
 #===============================================================================
 # Configure GPU Device:
 #===============================================================================
@@ -26,7 +30,6 @@ from tensorflow import keras  # type: ignore
 
 from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding
 import stellargraph as sg  # type: ignore
-import tensorflow as tf  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
 from tensorflow.keras.utils import Sequence  # type: ignore
 
@@ -36,8 +39,12 @@ from tensorflow.keras.utils import Sequence  # type: ignore
 # Environmental Information
 #===============================================================================
 
-positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"
-negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"
+# positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"
+# negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"
+
+positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples" + "/"
+negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples" + "/"
+
 
 # NOTE: Paths should not be too long, causes error (on Windows)!
 model_training_save_dir = r"D:\buglocalization_gelareh_home\training\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
@@ -121,7 +128,7 @@ class BugLocalizationGenerator:
         bug_sample.is_negative = is_negative
         
         # Load each bug sample:
-        bug_sample.load()
+        bug_sample.load(add_prefix=False)
         
         if self.log_level >= 3:
             print("Loaded", "negative" if bug_sample.is_negative else "positive", self.name, "sample:", bug_sample.number)

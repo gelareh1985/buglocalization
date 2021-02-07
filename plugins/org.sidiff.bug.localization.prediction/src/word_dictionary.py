@@ -1,10 +1,7 @@
 '''
-Created on Dec 3, 2020
-
-@author: Gelareh_mp
+@author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
-from nltk.tokenize import RegexpTokenizer  # type: ignore
-import re
+from bug_localization_util import text_to_words
 
 
 class WordDictionary:
@@ -17,7 +14,7 @@ class WordDictionary:
     
     def load(self, filename):
         with open(filename) as f:
-            for i, line in enumerate(f):
+            for i, line in enumerate(f):  # @UnusedVariable
                 columns = line.strip().split('\t')
                 self.dictionary_words[columns[0]] = int(columns[1])
         f.close()
@@ -36,7 +33,7 @@ class WordDictionary:
         dictionary_words_size += 1
       
     def add_text(self, text):
-        words = self.text_to_words(text)
+        words = text_to_words(text, self.stopwords, self.unescape)
         dictionary_words_size = len(self.dictionary_words)
         
         for word in words:
@@ -45,18 +42,3 @@ class WordDictionary:
                 dictionary_words_size += 1
                     
         return words, self.dictionary_words
-
-    def text_to_words(self, text):
-        if self.unescape:
-            text = text.encode().decode("unicode-escape", "ignore")
-        words_array = []
-        tokenizer = RegexpTokenizer('[A-Za-z]+')
-        words = tokenizer.tokenize(text)
-        for word in words:
-            splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', word)).split()
-            for split_word in splitted:
-                split_word = split_word.lower()
-                
-                if len(split_word) > 1 and split_word not in self.stopwords:
-                    words_array.append(split_word)
-        return words_array 

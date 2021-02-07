@@ -1,9 +1,14 @@
+'''
+@author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
+'''
 import ntpath
 import os
-from typing import List, Tuple
 import threading
+from typing import List, Tuple, Optional, Any, Dict, Set  # @UnusedImport
 
 from pandas.core.frame import DataFrame  # type: ignore
+from py2neo import Graph  # type: ignore
+from stellargraph import StellarGraph  # type: ignore
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -150,9 +155,14 @@ class DataSetEmbedding(DataSet):
 
 class DataSetBugSampleEmbedding(DataSetBugSample):
     
-    def __init__(self, dataset:DataSet, sample_file_path:str, sample_is_negative=False):
+    def __init__(self, dataset:DataSet=None, sample_file_path:str=None, sample_is_negative=False):
         self.compression = "gzip"
-        super().__init__(dataset, sample_file_path, sample_is_negative)
+        
+        if dataset and sample_file_path:
+            super().__init__(dataset, sample_file_path, sample_is_negative)
+        else:
+            # Positive Sample = False, Negative Sample = True
+            self.is_negative = sample_is_negative
         
         # Pairs of node IDs: (Bug Report, Location)
         self.bug_location_pairs:List[Tuple[str, str]]
@@ -171,16 +181,19 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
         self.bug_location_pairs = None
         self.testcase_labels = None
     
-    def load(self):
+    def load(self, add_prefix:bool=False):
         
-        # Read sample and create unique node IDs:
-        bug_sample_name = self.number
+        # Create unique node IDs?
+        bug_sample_name = None
         
-        # different prefixes for positive and negative samples:
-        if self.is_negative:
-            bug_sample_name = "n" + bug_sample_name
-        else:
-            bug_sample_name = "p" + bug_sample_name
+        if add_prefix:
+            bug_sample_name = self.number
+            
+            # different prefixes for positive and negative samples:
+            if self.is_negative:
+                bug_sample_name = "n" + bug_sample_name
+            else:
+                bug_sample_name = "p" + bug_sample_name
             
         # create new sample:
         self.load_nodes(bug_sample_name)
@@ -192,9 +205,9 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
         
         # 1 for positive samples; 0 for negative samples:
         if self.is_negative:
-            self.testcase_labels = np.zeros(len(self.bug_location_pairs))
+            self.testcase_labels = np.zeros(len(self.bug_location_pairs), dtype=np.float32)
         else:
-            self.testcase_labels = np.ones(len(self.bug_location_pairs))
+            self.testcase_labels = np.ones(len(self.bug_location_pairs), dtype=np.float32)
         
         # remove bug location edges:
         self.remove_bug_location_edges()
@@ -248,3 +261,340 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
             
         bug_location_edges = self.edges.loc[self.edges["source"].isin(bug_location_source) & self.edges["target"].isin(bug_location_target)]
         self.edges.drop(bug_location_edges.index, inplace=True)
+
+
+class DataSetNeo4j:
+    
+    # https://py2neo.org/v4/database.html
+    # https://stellargraph.readthedocs.io/en/stable/demos/basics/loading-saving-neo4j.html
+
+    def __init__(self, host:str, port:int=None, user:str=None, password:str=None):
+        
+        # Connnection info:
+        self.host:str = host
+        self.port:Optional[int] = port
+        self.user:Optional[str] = user
+        self.password:Optional[str] = password
+        
+        # Opened Connection:
+        self.neo4j_graph = Graph(host=host, port=port, user=user, password=password)
+        
+        # Contained samples:
+        self.bug_samples:List[DataSetBugSampleNeo4j] = []
+        
+    class GraphSlicing:
+        
+        def __init__(self,
+                     dataset,  # : DataSetNeo4j
+                     parent_levels:int=2,
+                     parent_incoming:bool=False,
+                     parent_outgoing:bool=False,
+                     self_incoming:bool=True,
+                     self_outgoing:bool=True,
+                     child_levels:int=2,
+                     child_incoming:bool=True,
+                     child_outgoing:bool=True,
+                     outgoing_distance:int=2,
+                     incoming_distance:int=1):
+            self.parent_levels:int = parent_levels
+            self.parent_incoming:bool = parent_incoming
+            self.parent_outgoing:bool = parent_outgoing
+            self.parent_query:str = dataset.query_edges_to_parent_nodes(self.parent_levels)
+            
+            self.self_incoming:bool = self_incoming
+            self.self_outgoing:bool = self_outgoing
+            
+            self.child_levels:int = child_levels
+            self.child_incoming:bool = child_incoming
+            self.child_outgoing:bool = child_outgoing
+            self.child_query = dataset.query_edges_to_child_nodes(self.child_levels)
+            
+            self.outgoing_distance:int = outgoing_distance
+            self.outgoing_query = dataset.query_outgoing_cross_tree_edges(self.outgoing_distance)
+            
+            self.incoming_distance:int = incoming_distance
+            self.incoming_query = dataset.query_incoming_cross_tree_edges(self.incoming_distance)
+            
+    class TypbasedGraphSlicing:
+        
+        def __init__(self):
+            self.type_label_to_graph_slicing:Dict[str, DataSetNeo4j.GraphSlicing] = {}
+            
+        def add_type(self, type_label:str, graph_slicing):
+            self.type_label_to_graph_slicing[type_label] = graph_slicing
+            
+        def get_types(self) -> List[str]:
+            return list(self.type_label_to_graph_slicing.keys())
+            
+        def get_slicing(self, type_label:str):
+            return self.type_label_to_graph_slicing[type_label]
+        
+    class NodeSelfEmbedding:
+        
+        def filter_type(self, meta_type_label:str) -> bool:  # @UnusedVariable
+            return False
+        
+        def filter_node(self, node:pd.Series) -> bool:  # @UnusedVariable
+            return False
+        
+        def get_dimension(self) -> int:
+            pass
+        
+        def get_column_names(self):
+            pass
+        
+        def node_to_vector(self, node:pd.Series) -> np.ndarray:
+            pass
+        
+    def get_sample(self, repo_version:str):
+        new_sample = DataSetBugSampleNeo4j(self, repo_version)
+        self.bug_samples.append(new_sample)
+        return new_sample
+     
+    # # Send query to the Neo4j database and parse the result to a Pandas data frame # 
+     
+    def run_query(self, query:str, parameters:Dict[str, Any]=None) -> DataFrame:
+        return self.neo4j_graph.run(query, parameters).to_data_frame()
+    
+    def run_query_value(self, query:str, parameters:Dict[str, Any]=None) -> Any:
+        result = self.run_query(query, parameters)
+        
+        if len(result) > 0:
+            return result.iloc[0, 0]
+    
+    # # Subgraph Cypher queries # #
+    
+    def query_edge_containment(self, is_value:bool):
+        if is_value:
+            return '__containment__:true'
+        else:
+            return '__containment__:false'
+        
+    def query_edge_container(self, is_value:bool):
+        if is_value:
+            return '__container__:true'
+        else:
+            return '__container__:false'
+    
+    def query_edges_to_parent_nodes(self, k=2) -> str:
+        return self.query_path(self.query_edge_containment(True), 'b', k)
+    
+    def query_edges_to_child_nodes(self, k=2) -> str:
+        return self.query_path(self.query_edge_containment(True), 'a', k)
+    
+    def query_outgoing_cross_tree_edges(self, k=2) -> str:
+        return self.query_path(self.query_edge_containment(False) + ', ' + self.query_edge_container(False), 'a', k)
+    
+    def query_incoming_cross_tree_edges(self, k=1) -> str:
+        return self.query_path(self.query_edge_containment(False) + ', ' + self.query_edge_container(False), 'b', k)
+    
+    def query_path(self, edge_properties:str, start_variable:str, k=2):
+        input_nodes = 'UNWIND $node_ids AS node_id '
+        node_path_in_version = 'ID(' + start_variable + ')= node_id AND ' + self.query_edges_no_dangling('a', 'b')
+        edge_path_in_version = 'UNWIND [edge IN relationships(path) WHERE ' + self.query_by_version('edge') + '] AS edge'
+        return_id_source_target_edge = 'RETURN DISTINCT ID(edge) AS index, ID(a) AS source, ID(b) as target, edge AS edges'
+        
+        path_filter = 'WHERE ' + node_path_in_version + ' WITH DISTINCT a, b, path ' + edge_path_in_version + ' ' + return_id_source_target_edge
+        return input_nodes + ' MATCH path=(a)-[*0..' + str(k) + ' {' + edge_properties + '}]->(b) ' + path_filter
+
+    def query_edges_no_dangling(self, source_variable:str, target_variable:str):
+        # FIXME: Missing __last__version__ for removed nodes in data set
+        return self.query_by_version(source_variable) + ' AND ' + self.query_by_version(target_variable)
+    
+    def query_by_version(self, variable:str) -> str:
+        created_in_version = variable + '.__initial__version__ <= $db_version'
+        removed_in_version = variable + '.__last__version__ >= $db_version'
+        existing_in_latest_version = 'NOT EXISTS(' + variable + '.__last__version__)'
+        return created_in_version + ' AND ' + '(' + removed_in_version + ' OR ' + existing_in_latest_version + ')'
+
+    # # Some Cypher queries for testing # #
+    
+    def query_node_by_id(self, node_id:int) -> str:
+        return 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' RETURN n'
+    
+    def query_edge_by_id(self, edge_id:int) -> str:
+        return 'MATCH (s)-[r]-(t) WHERE ID(r)=' + str(edge_id) + ' RETURN s, r, t'
+    
+    def query_initial_repo_version(self, node_id:int) -> str:
+        node_version = 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' WITH n.__initial__version__ AS version'
+        version_node = 'MATCH (vn:TracedVersion {__initial__version__:version}) RETURN vn.modelVersionID'
+        return node_version + ' ' + version_node
+    
+    def query_last_repo_version(self, node_id:int) -> str:
+        node_version = 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' WITH n.__last__version__ AS version'
+        version_node = 'MATCH (vn:TracedVersion {__last__version__:version}) RETURN vn.modelVersionID'
+        return node_version + ' ' + version_node
+
+        
+class DataSetBugSampleNeo4j:
+    
+    def __init__(self, dataset:DataSetNeo4j, repo_version:str):
+        self.dataset = dataset
+        self.repo_version:str = repo_version
+        
+        query_parameters = {'repo_version' : self.repo_version}
+        self.db_version:int = self.dataset.run_query_value(self.query_db_version_by_model_repo_version(), query_parameters)
+        
+        if self.db_version is None:
+            self.db_version = self.dataset.run_query_value(self.query_db_version_by_code_repo_version(), query_parameters)
+            
+            if self.db_version is None:
+                raise Exception("Version not found in database: " + repo_version)
+        
+        if self.db_version is not None:
+            self.db_version = int(self.db_version)
+        
+        # Model graph nodes: meta_type -> embedding
+        self.model_nodes:Dict[str, DataFrame] = {}
+        
+        # Bug report graph:
+        self.bug_report_nodes:DataFrame = None
+        self.bug_report_edges:DataFrame = None
+        self.bug_location_model_node_index:Set[int] = set()
+        
+    # # Load graphs from Neo4j # #
+    
+    def load_model_nodes(self, model_meta_type_labels:List[str], embedding:DataSetNeo4j.NodeSelfEmbedding):
+        for model_meta_type_label in model_meta_type_labels:
+            model_nodes_by_type = self.load_node_embeddings([model_meta_type_label], embedding)
+            self.model_nodes[model_meta_type_label] = model_nodes_by_type
+        
+    def load_model_element_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> StellarGraph:
+        subgraph_edges = self.load_subgraph(node_id, slicing)
+        subgraph_edges.drop(['edges'], axis=1, inplace=True)
+        
+        # Select subgraph nodes:
+        subgraph_nodes_by_types = []
+        
+        for meta_type_label, model_nodes_by_type in self.model_nodes.items():  # @UnusedVariable
+            subgraph_nodes_by_type = model_nodes_by_type.loc[model_nodes_by_type.index.isin(subgraph_edges['source']) | model_nodes_by_type.index.isin(subgraph_edges['target'])]
+            subgraph_nodes_by_types.append(subgraph_nodes_by_type)
+        
+        subgraph_nodes = pd.concat(subgraph_nodes_by_types)
+        
+        # Filter dangling edges from the model nodes, e.g., bug report nodes, version node!
+        subgraph_edges.drop(subgraph_edges[~subgraph_edges['source'].isin(subgraph_nodes.index) | ~subgraph_edges['target'].isin(subgraph_nodes.index)].index, inplace=True)
+        
+        try:
+            graph = StellarGraph(nodes=subgraph_nodes, edges=subgraph_edges)
+        except:
+            print(subgraph_nodes)
+        return graph
+        
+    def load_bug_report(self, embedding:DataSetNeo4j.NodeSelfEmbedding):
+        
+        # Bug report graph:
+        bug_report_meta_type_labels = ['TracedBugReport', 'BugReportComment']
+        self.bug_report_nodes = self.load_node_embeddings(bug_report_meta_type_labels, embedding)
+        self.bug_report_edges = self.load_dataframe(self.query_edges_in_version('TracedBugReport', 'comments', 'BugReportComment'))
+        
+        # Bug locations:
+        bug_location_edges = self.load_dataframe(self.query_edges_in_version('TracedBugReport', 'location'))
+        
+        for index, edge in bug_location_edges.iterrows():  # @UnusedVariable
+            # location edges point at model elements:
+            self.bug_location_model_node_index.add(edge['target'])
+    
+    def load_node_embeddings(self, meta_type_labels:List[str], embedding:DataSetNeo4j.NodeSelfEmbedding) -> DataFrame:
+        nodes_embeddings = DataFrame(columns=embedding.get_column_names())
+                
+        for meta_type_label in meta_type_labels:
+            if not embedding.filter_type(meta_type_label):
+                nodes_in_version = self.load_dataframe(self.query_nodes_in_version(meta_type_label))
+                print(meta_type_label + ': ' + str(len(nodes_in_version.index)))
+                
+                if not nodes_in_version.empty:
+                    if not embedding.filter_node(nodes_in_version):
+                        for index, node in nodes_in_version.iterrows():
+                            nodes_embedding = embedding.node_to_vector(node)
+                            nodes_embeddings.loc[index] = nodes_embedding
+                
+        return nodes_embeddings
+    
+    def load_dataframe(self, query:str, parameters:dict=None) -> DataFrame:
+        default_parameter = {'db_version' : self.db_version}
+        
+        if parameters is not None:
+            for parameter_name, value in parameters.items():
+                default_parameter[parameter_name] = value
+        
+        df = self.dataset.run_query(query, default_parameter)
+        
+        if not df.empty:
+            df.set_index("index", inplace=True)
+            
+        return df
+    
+    def load_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> DataFrame:
+        if slicing is None:
+            slicing = DataSetNeo4j.GraphSlicing(self.dataset)
+            
+        # # Containment Tree # #
+        node_id_parameter = {'node_ids' : [node_id]}
+        
+        parent_edges = self.load_dataframe(slicing.parent_query, node_id_parameter)
+        child_edges = self.load_dataframe(slicing.child_query, node_id_parameter)
+        
+        # # Cross-Tree Outgoing Edges # #
+        tree_of_outgoing = set()
+        
+        if slicing.parent_outgoing and not parent_edges.empty:
+            for parent in parent_edges['target']:
+                tree_of_outgoing.add(parent)
+                
+        if slicing.self_outgoing:
+            tree_of_outgoing.add(node_id)
+        
+        if slicing.child_outgoing and not child_edges.empty:
+            for child in child_edges['target']:
+                tree_of_outgoing.add(child)
+        
+        tree_of_outgoing_parameter = {'node_ids' : list(tree_of_outgoing)}
+        outgoing_edges = self.load_dataframe(slicing.outgoing_query, tree_of_outgoing_parameter)
+        
+        # # Cross-Tree Incoming Edges # #
+        tree_of_incoming = set()
+        
+        if slicing.parent_incoming and not parent_edges.empty:
+            for parent in parent_edges['target']:
+                tree_of_incoming.add(parent)
+                
+        if slicing.self_incoming:
+            tree_of_incoming.add(node_id)
+        
+        if slicing.child_incoming and not child_edges.empty:
+            for child in child_edges['target']:
+                tree_of_incoming.add(child)
+        
+        tree_of_incoming_parameter = {'node_ids' : list(tree_of_incoming)}
+        incoming_eges = self.load_dataframe(slicing.incoming_query, tree_of_incoming_parameter)
+        
+        # # Combine Edges # #
+        subgraph = pd.concat([parent_edges, child_edges, outgoing_edges, incoming_eges])
+        subgraph = subgraph[~subgraph.index.duplicated(keep='first')]
+        return subgraph
+    
+    # # Read version information Cypher query # # 
+        
+    def query_db_version_by_code_repo_version(self) -> str:
+        return 'MATCH (n:TracedVersion {modelVersionID:$repo_version}) RETURN n.__initial__version__'
+    
+    def query_db_version_by_model_repo_version(self) -> str:
+        return 'MATCH (n:TracedVersion {codeVersionID:$repo_version}) RETURN n.__initial__version__'
+    
+    # # Full graph Cypher queries # #
+    
+    def query_nodes_in_version(self, meta_type_label:str='') -> str:
+        if meta_type_label != '':
+            meta_type_label = ':' + meta_type_label
+        return 'MATCH (n' + meta_type_label + ') WHERE ' + self.dataset.query_by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+    
+    def query_edges_in_version(self, source_meta_type_label:str='', edge_meta_type_label:str='', target_meta_type_label:str='') -> str:
+        if source_meta_type_label != '':
+            source_meta_type_label = ':' + source_meta_type_label
+        if edge_meta_type_label != '':
+            edge_meta_type_label = ':' + edge_meta_type_label
+        if target_meta_type_label != '':
+            target_meta_type_label = ':' + target_meta_type_label
+        is_in_version = 'WHERE ' + self.dataset.query_by_version('r') + ' AND ' + self.dataset.query_edges_no_dangling('s', 't')
+        return 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version + ' RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'

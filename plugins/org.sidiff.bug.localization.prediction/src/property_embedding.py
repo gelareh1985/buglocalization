@@ -1,7 +1,5 @@
 '''
-Created on Jan 14, 2021
-
-@author: Gelareh_mp
+@author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 import concurrent.futures  # type: ignore
 from pathlib import Path
@@ -47,7 +45,9 @@ class DatasetPropertyEmbedding:
         filtered_nodes = set()
         
         for index, node in bug_sample.nodes.iterrows():
-            if self.filter_node(node):
+            meta_type = node["type"]
+            
+            if self.node_feature_embedding.filter_type(meta_type) or self.node_feature_embedding.filter_node(node):
                 filtered_nodes.add(index)
             else:
                 feature_vector, tag = self.node_feature_embedding.node_to_vector(node)
@@ -82,15 +82,6 @@ class DatasetPropertyEmbedding:
         column_names.append("tag")
         return column_names
     
-    # FIXME: "unnamed" Literal... model elements
-    def filter_node(self, node) -> bool:
-        meta_type = node["type"]
-        
-        if meta_type == "LiteralString" or meta_type == "LiteralInteger" or meta_type == "LiteralBoolean" or meta_type == "LiteralUnlimitedNatural" or meta_type == "LiteralReal":
-            return True
-            
-        return False
-    
     def remove_node_edges(self, removed_nodes, edges):
         if removed_nodes:
             removed_edges = edges.loc[edges["source"].isin(removed_nodes) | edges["target"].isin(removed_nodes)]
@@ -106,7 +97,17 @@ class NodePropertyEmbedding:
         self.dictionary_types_length = dictionary_types_length
         # self.vector_dimension = dictionary_words_length + dictionary_types_length    # TODO: Make conversion configurable
         self.vector_dimension = dictionary_words_length
-        
+    
+    def filter_type(self, meta_type_label:str) -> bool:
+        # FIXME: "unnamed" Literal... model elements
+        if meta_type_label == "LiteralString" or meta_type_label == "LiteralInteger" or meta_type_label == "LiteralBoolean" or meta_type_label == "LiteralUnlimitedNatural" or meta_type_label == "LiteralReal":
+            return True
+            
+        return False
+    
+    def filter_node(self, node:pd.Series) -> bool:  # @UnusedVariable
+        return False
+
     def get_dimension(self):
         return self.vector_dimension
 

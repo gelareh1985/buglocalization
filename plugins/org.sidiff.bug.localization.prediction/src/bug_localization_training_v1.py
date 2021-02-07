@@ -1,7 +1,11 @@
+'''
+@author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
+'''
+
 #===============================================================================
 # Configure GPU Device:
 #===============================================================================
-import tensorflow as tf # type: ignore
+import tensorflow as tf  # type: ignore
 
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -33,7 +37,7 @@ from tensorflow.keras.utils import Sequence, plot_model  # type: ignore
 
 # from tqdm.keras import TqdmCallback  # type: ignore
 
-from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding # type: ignore
+from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding  # type: ignore
 
 #===============================================================================
 # Environmental Information
@@ -114,7 +118,7 @@ class BugLocalizationGenerator(Sequence):
         
         for bug_sample_idx in range(start_bug_sample, end_bug_sample):
             bug_sample = self.bug_samples[bug_sample_idx]
-            bug_sample.load()
+            bug_sample.load(add_prefix=True)
             batch_bug_samples.append(bug_sample)
             
             if self.log:
@@ -256,7 +260,7 @@ class BugLocalizationAIModelTrainer:
         def on_epoch_end(self, epoch, logs=None):  # @UnusedVariable
             self.flow.workaround_on_epoch_end()
 
-    def train(self, epochs:int, batch_size:int, shuffle:bool, generator_workers:int=1, log:bool=True):
+    def train(self, epochs:int, batch_size:int, shuffle:bool, generator_workers:int=1, multiprocessing:bool=False, log:bool=True):
         
         # Initialize training data:
         bug_samples_train, bug_samples_test = dataset_splitter.split(2)
@@ -281,7 +285,7 @@ class BugLocalizationAIModelTrainer:
             epochs=epochs,
             validation_data=test_flow,
             verbose=2,
-            use_multiprocessing=True, # True -> Workers as process, False -> Workers as threads
+            use_multiprocessing=multiprocessing,
             workers=generator_workers,
             max_queue_size=10,
             callbacks=self.callbacks)
@@ -339,7 +343,7 @@ if __name__ == '__main__':
     
     # Plot model:
     # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]
-    # plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot 
+    plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot 
     
     #===========================================================================
     # Train and Evaluate AI Model:
@@ -350,6 +354,7 @@ if __name__ == '__main__':
     batch_size = 50  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     generator_workers = 2  # Number of threads that load/generate the batches in parallel.
+    multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
     log = False  # Some console output for debugging...
     
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
@@ -358,4 +363,4 @@ if __name__ == '__main__':
         num_samples=num_samples,
         checkpoint_dir=model_training_checkpoint_dir)
     
-    bug_localization_model_trainer.train(epochs, batch_size, shuffle, generator_workers, log)
+    bug_localization_model_trainer.train(epochs, batch_size, shuffle, generator_workers, multiprocessing, log)
