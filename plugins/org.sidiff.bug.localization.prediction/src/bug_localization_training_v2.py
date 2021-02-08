@@ -4,6 +4,7 @@
 
 #===============================================================================
 # Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 #===============================================================================
 import tensorflow as tf # type: ignore
 
@@ -218,7 +219,10 @@ class BugLocalizationGenerator:
         
 class BugLocalizationAIModelBuilder:
     
-    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, dropout:float=0.0, normalize="l2") -> keras.Model:
+    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str, dropout:float=0.0, normalize="l2") -> keras.Model:
+        print('Creating a new model')
+        Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
+        
         graphsage = GraphSAGE(
             n_samples=num_samples,
             layer_sizes=layer_sizes,
@@ -246,20 +250,10 @@ class BugLocalizationAIModelBuilder:
         
         return model
     
-    def create_or_restore_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str, dropout:float=0.0, normalize="l2") -> keras.Model:
-       
-        Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
-       
-        # Either restore the latest model, or create a fresh one if there is no checkpoint available.
-        checkpoints = [checkpoint_dir + '/' + name for name in os.listdir(checkpoint_dir)]
-        
-        if checkpoints:
-            latest_checkpoint = max(checkpoints, key=os.path.getctime)
-            print('Restoring from', latest_checkpoint)
-            return keras.models.load_model(latest_checkpoint)
-        
-        print('Creating a new model')
-        return self.create_model(num_samples, layer_sizes, feature_size, dropout, normalize)
+    def restore_model(self, model_dir:str) -> keras.Model:
+        print('Restoring model from', model_dir)
+        # https://stellargraph.readthedocs.io/en/stable/api.html -> stellargraph.custom_keras_layers= {...}
+        return keras.models.load_model(model_dir, custom_objects=sg.custom_keras_layers)
 
     
 class BugLocalizationAIModelTrainer:
@@ -376,7 +370,7 @@ if __name__ == '__main__':
     normalize = "l2"
     
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
-    model = bug_localization_model_builder.create_or_restore_model(
+    model = bug_localization_model_builder.create_model(
         num_samples, layer_sizes, dataset.feature_size, model_training_checkpoint_dir, dropout, normalize)
     
     # Plot model:

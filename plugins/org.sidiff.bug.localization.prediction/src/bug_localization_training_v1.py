@@ -4,6 +4,7 @@
 
 #===============================================================================
 # Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 #===============================================================================
 import tensorflow as tf  # type: ignore
 
@@ -18,26 +19,23 @@ if gpus:
         print(e)
 #===============================================================================
 
-import datetime
-import os
-from pathlib import Path
-import random
-from typing import Union, List, Tuple
-
+# from tqdm.keras import TqdmCallback  # type: ignore
+from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding  # type: ignore
+from os import path
 from pandas.core.frame import DataFrame  # type: ignore
+from pathlib import Path
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from stellargraph.mapper import GraphSAGELinkGenerator  # type: ignore
 from tensorflow import keras  # type: ignore
-
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-import stellargraph as sg  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
 from tensorflow.keras.utils import Sequence, plot_model  # type: ignore
-
-# from tqdm.keras import TqdmCallback  # type: ignore
-
-from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding  # type: ignore
+from typing import Union, List, Tuple
+import datetime
+import numpy as np  # type: ignore
+import os
+import pandas as pd  # type: ignore
+import random
+import stellargraph as sg  # type: ignore
 
 #===============================================================================
 # Environmental Information
@@ -195,7 +193,10 @@ class BugLocalizationGenerator(Sequence):
     
 class BugLocalizationAIModelBuilder:
     
-    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, dropout:float=0.0, normalize="l2") -> keras.Model:
+    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str, dropout:float=0.0, normalize="l2") -> keras.Model:
+        print('Creating a new model')
+        Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
+        
         graphsage = GraphSAGE(
             n_samples=num_samples,
             layer_sizes=layer_sizes,
@@ -223,20 +224,11 @@ class BugLocalizationAIModelBuilder:
         
         return model
     
-    def create_or_restore_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str, dropout:float=0.0, normalize="l2") -> keras.Model:
-       
-        Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
-       
-        # Either restore the latest model, or create a fresh one if there is no checkpoint available.
-        checkpoints = [checkpoint_dir + '/' + name for name in os.listdir(checkpoint_dir)]
+    def restore_model(self, model_dir:str) -> keras.Model:
+        print('Restoring model from', model_dir)
         
-        if checkpoints:
-            latest_checkpoint = max(checkpoints, key=os.path.getctime)
-            print('Restoring from', latest_checkpoint)
-            return keras.models.load_model(latest_checkpoint)
-        
-        print('Creating a new model')
-        return self.create_model(num_samples, layer_sizes, feature_size, dropout, normalize)
+        # https://stellargraph.readthedocs.io/en/stable/api.html -> stellargraph.custom_keras_layers= {...}
+        return keras.models.load_model(model_dir, custom_objects=sg.custom_keras_layers)
 
     
 class BugLocalizationAIModelTrainer:
@@ -338,12 +330,12 @@ if __name__ == '__main__':
     normalize = "l2"
     
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
-    model = bug_localization_model_builder.create_or_restore_model(
+    model = bug_localization_model_builder.create_model(
         num_samples, layer_sizes, dataset.feature_size, model_training_checkpoint_dir, dropout, normalize)
     
     # Plot model:
     # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]
-    plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot 
+    plot_model(model, to_file=model_training_checkpoint_dir + "model.png")  # model_to_dot 
     
     #===========================================================================
     # Train and Evaluate AI Model:

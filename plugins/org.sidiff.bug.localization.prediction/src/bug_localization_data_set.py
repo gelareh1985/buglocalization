@@ -4,7 +4,7 @@
 import ntpath
 import os
 import threading
-from typing import List, Tuple, Optional, Any, Dict, Set  # @UnusedImport
+from typing import *  # @UnusedWildImport
 
 from pandas.core.frame import DataFrame  # type: ignore
 from py2neo import Graph  # type: ignore
@@ -12,6 +12,7 @@ from stellargraph import StellarGraph  # type: ignore
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
+from neo4j.graph import Node # type: ignore
 
 
 class DataSet:
@@ -448,9 +449,20 @@ class DataSetBugSampleNeo4j:
         self.model_nodes:Dict[str, DataFrame] = {}
         
         # Bug report graph:
+        self.bug_report_node:Node = None
+        self.bug_report_node_id:int = -1
         self.bug_report_nodes:DataFrame = None
         self.bug_report_edges:DataFrame = None
         self.bug_location_model_node_index:Set[int] = set()
+        
+    def load_bug_location_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> StellarGraph:
+        model_subgraph_nodes, model_subgraph_edges = self.load_model_subgraph(node_id, slicing)
+        
+        subgraph_nodes = pd.concat([self.bug_report_nodes, model_subgraph_nodes])
+        subgraph_edges = pd.concat([self.bug_report_edges, model_subgraph_edges])
+        
+        graph = StellarGraph(nodes=subgraph_nodes, edges=subgraph_edges)
+        return graph
         
     # # Load graphs from Neo4j # #
     
@@ -459,7 +471,7 @@ class DataSetBugSampleNeo4j:
             model_nodes_by_type = self.load_node_embeddings([model_meta_type_label], embedding)
             self.model_nodes[model_meta_type_label] = model_nodes_by_type
         
-    def load_model_element_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> StellarGraph:
+    def load_model_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> Union[DataFrame, DataFrame]:
         subgraph_edges = self.load_subgraph(node_id, slicing)
         subgraph_edges.drop(['edges'], axis=1, inplace=True)
         
@@ -475,13 +487,15 @@ class DataSetBugSampleNeo4j:
         # Filter dangling edges from the model nodes, e.g., bug report nodes, version node!
         subgraph_edges.drop(subgraph_edges[~subgraph_edges['source'].isin(subgraph_nodes.index) | ~subgraph_edges['target'].isin(subgraph_nodes.index)].index, inplace=True)
         
-        try:
-            graph = StellarGraph(nodes=subgraph_nodes, edges=subgraph_edges)
-        except:
-            print(subgraph_nodes)
-        return graph
+        return subgraph_nodes, subgraph_edges
         
     def load_bug_report(self, embedding:DataSetNeo4j.NodeSelfEmbedding):
+        
+        # Bug report node:
+        bug_report_node_frame = self.load_dataframe(self.query_nodes_in_version('TracedBugReport'))
+        assert len(bug_report_node_frame.index) == 1
+        self.bug_report_node_id = bug_report_node_frame.index[0]
+        self.bug_report_node = bug_report_node_frame.loc[self.bug_report_node_id]
         
         # Bug report graph:
         bug_report_meta_type_labels = ['TracedBugReport', 'BugReportComment']
