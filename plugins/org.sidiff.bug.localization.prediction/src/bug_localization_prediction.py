@@ -24,7 +24,7 @@ if __name__ == '__main__':
     
     print("Start Word Embedding ...")
     
-    bug_sample = dataset.get_sample("e52a21744a6b7352e6353bbcfaad99e2983dee38")
+    bug_sample = dataset.get_sample("b2873327a0ad6c3e445a79794e3d5c4301b2a19d") #199
     bug_sample.load_bug_report(embedding)
     bug_sample.load_model_nodes(meta_model.get_model_meta_type_labels(), embedding)
     
@@ -44,13 +44,13 @@ if __name__ == '__main__':
                 graph_sage_generator = GraphSAGELinkGenerator(subgraph, 1, num_samples=num_samples)
                 
                 bug_location_node = model_node_id
-                bug_report_node = bug_sample.bug_report_node
+                bug_report_node = bug_sample.bug_report_node_id
                 bug_location_pair = (bug_report_node, bug_location_node)
                 
                 print("Predicting:", bug_location_node, bug_report_node)
                 
                 flow = graph_sage_generator.flow([bug_location_pair])
-                prediction = model.predict(graph_sage_generator)
+                prediction = model.predict(flow)
                 
                 print("Prediction:", bug_location_node, bug_report_node, "Result:", prediction)
                 

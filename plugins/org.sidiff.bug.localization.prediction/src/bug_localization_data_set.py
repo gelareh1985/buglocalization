@@ -12,7 +12,7 @@ from stellargraph import StellarGraph  # type: ignore
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
-from neo4j.graph import Node # type: ignore
+from py2neo import Node # type: ignore
 
 
 class DataSet:
@@ -503,7 +503,8 @@ class DataSetBugSampleNeo4j:
         self.bug_report_edges = self.load_dataframe(self.query_edges_in_version('TracedBugReport', 'comments', 'BugReportComment'))
         
         # Bug locations:
-        bug_location_edges = self.load_dataframe(self.query_edges_in_version('TracedBugReport', 'location'))
+        bug_location_edges = self.load_dataframe(self.query_edges_in_version('Change', 'location'))
+        self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
         
         for index, edge in bug_location_edges.iterrows():  # @UnusedVariable
             # location edges point at model elements:

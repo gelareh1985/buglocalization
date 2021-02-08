@@ -141,7 +141,7 @@ class MetaModelUML:
         
         for bug_location_model_meta_type_label in bug_location_model_meta_type_labels:
             if bug_location_model_meta_type_label not in model_meta_type_labels:
-                raise Exception("Missing slicing configuration for model type: " + bug_location_model_meta_type_label)
+                raise Exception("Missing meta-type for bug location type: " + bug_location_model_meta_type_label)
         
         return bug_location_model_meta_type_labels
     
@@ -191,7 +191,7 @@ class UMLNodeSelfEmbedding(DataSetNeo4j.NodeSelfEmbedding):
         print('Begin Loading Dictionary ...')
 
         self.meta_type_to_properties:Dict[str, List[str]] = meta_type_to_properties        
-        self.dictionary_words:dict = KeyedVectors.load_word2vec_format(dictionary_path, binary=True)
+        self.dictionary_words:dict = KeyedVectors.load_word2vec_format(dictionary_path, binary=True) # use empty dict {} for testing
         self.dictionary_words_length = dictionary_words_length
         self.stopwords = stopwords
         self.unescape = unescape
