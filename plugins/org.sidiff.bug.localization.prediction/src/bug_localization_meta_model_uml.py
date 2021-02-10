@@ -16,10 +16,10 @@ import pandas as pd  # type: ignore
 class MetaModelUML:
     
     # Specifies the slicing of subgraph for embedding of model elements.
-    def get_slicing(self, dataset:DataSetNeo4j) -> DataSetNeo4j.TypbasedGraphSlicing:
+    def get_slicing(self, dataset:DataSetNeo4j, dnn_depth:int) -> DataSetNeo4j.TypbasedGraphSlicing:
         slicing = DataSetNeo4j.TypbasedGraphSlicing()
         
-        type_model = DataSetNeo4j.GraphSlicing(dataset,
+        type_model = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
                                   parent_levels=0,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -32,7 +32,7 @@ class MetaModelUML:
                                   incoming_distance=0)
         slicing.add_type('Model', type_model)
         
-        type_package = DataSetNeo4j.GraphSlicing(dataset,
+        type_package = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -45,7 +45,7 @@ class MetaModelUML:
                                   incoming_distance=0)
         slicing.add_type('Package', type_package)
         
-        type_classifier = DataSetNeo4j.GraphSlicing(dataset,
+        type_classifier = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -57,24 +57,44 @@ class MetaModelUML:
                                   outgoing_distance=1,
                                   incoming_distance=1)
         slicing.add_type('Class', type_classifier)
-        slicing.add_type('Interface', type_classifier)
-        slicing.add_type('Enumeration', type_classifier)
-        slicing.add_type('DataType', type_classifier)
         
-        type_operation = DataSetNeo4j.GraphSlicing(dataset,
+        #=======================================================================
+        # FIXME: Update training samples to match slicing configuration
+#         slicing.add_type('Interface', type_classifier)
+#         slicing.add_type('Enumeration', type_classifier)
+#         slicing.add_type('DataType', type_classifier)
+
+        type_classifier_to_be_fixed = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
+                                  parent_levels=0,
+                                  parent_incoming=False,
+                                  parent_outgoing=False,
+                                  self_incoming=False,
+                                  self_outgoing=False,
+                                  child_levels=0,
+                                  child_incoming=False,
+                                  child_outgoing=False,
+                                  outgoing_distance=0,
+                                  incoming_distance=0)
+        slicing.add_type('Interface', type_classifier_to_be_fixed)
+        slicing.add_type('Enumeration', type_classifier_to_be_fixed)
+        slicing.add_type('DataType', type_classifier_to_be_fixed)
+        
+        #=======================================================================
+        
+        type_operation = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
                                   self_incoming=True,
                                   self_outgoing=True,
-                                  child_levels=3,
+                                  child_levels=2,
                                   child_incoming=True,
                                   child_outgoing=True,
                                   outgoing_distance=2,
                                   incoming_distance=1)
         slicing.add_type('Operation', type_operation)
         
-        type_property = DataSetNeo4j.GraphSlicing(dataset,
+        type_property = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,

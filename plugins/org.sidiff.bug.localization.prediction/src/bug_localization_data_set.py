@@ -4,6 +4,7 @@
 import ntpath
 import os
 import threading
+import time  # @UnusedImport
 from typing import *  # @UnusedWildImport
 
 from pandas.core.frame import DataFrame  # type: ignore
@@ -12,7 +13,6 @@ from stellargraph import StellarGraph  # type: ignore
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
-from py2neo import Node # type: ignore
 
 
 class DataSet:
@@ -287,6 +287,7 @@ class DataSetNeo4j:
         
         def __init__(self,
                      dataset,  # : DataSetNeo4j
+                     dnn_depth:int, # depth of graphSAGE layers
                      parent_levels:int=2,
                      parent_incoming:bool=False,
                      parent_outgoing:bool=False,
@@ -297,7 +298,7 @@ class DataSetNeo4j:
                      child_outgoing:bool=True,
                      outgoing_distance:int=2,
                      incoming_distance:int=1):
-            self.parent_levels:int = parent_levels
+            self.parent_levels:int = min(parent_levels, dnn_depth)
             self.parent_incoming:bool = parent_incoming
             self.parent_outgoing:bool = parent_outgoing
             self.parent_query:str = dataset.query_edges_to_parent_nodes(self.parent_levels)
@@ -305,15 +306,15 @@ class DataSetNeo4j:
             self.self_incoming:bool = self_incoming
             self.self_outgoing:bool = self_outgoing
             
-            self.child_levels:int = child_levels
+            self.child_levels:int = min(child_levels, dnn_depth)
             self.child_incoming:bool = child_incoming
             self.child_outgoing:bool = child_outgoing
             self.child_query = dataset.query_edges_to_child_nodes(self.child_levels)
             
-            self.outgoing_distance:int = outgoing_distance
+            self.outgoing_distance:int = min(outgoing_distance, dnn_depth)
             self.outgoing_query = dataset.query_outgoing_cross_tree_edges(self.outgoing_distance)
             
-            self.incoming_distance:int = incoming_distance
+            self.incoming_distance:int = min(incoming_distance, dnn_depth)
             self.incoming_query = dataset.query_incoming_cross_tree_edges(self.incoming_distance)
             
     class TypbasedGraphSlicing:
@@ -445,51 +446,121 @@ class DataSetBugSampleNeo4j:
         if self.db_version is not None:
             self.db_version = int(self.db_version)
         
-        # Model graph nodes: meta_type -> embedding
-        self.model_nodes:Dict[str, DataFrame] = {}
+        self.nodes_columns = None  # -> load_model_nodes()
+        self.edge_columns = ['source', 'target']
+       
+        # Model graph nodes: index -> embedding
+        self.model_nodes:Dict[int, np.ndarray] = {}
+        
+        # Model graph nodes: meta_type -> index
+        self.model_nodes_types:Dict[str:List[int]] = {}
         
         # Bug report graph:
         self.bug_report_node:Node = None
         self.bug_report_node_id:int = -1
-        self.bug_report_nodes:DataFrame = None
-        self.bug_report_edges:DataFrame = None
+        self.bug_report_nodes:Dict[str, Dict[int, np.ndarray]] = None
+        self.bug_report_edges:DataFrame = None # StellarGraph requires Panda Data Frames as edges
         self.bug_location_model_node_index:Set[int] = set()
-        
-    def load_bug_location_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> StellarGraph:
-        model_subgraph_nodes, model_subgraph_edges = self.load_model_subgraph(node_id, slicing)
-        
-        subgraph_nodes = pd.concat([self.bug_report_nodes, model_subgraph_nodes])
-        subgraph_edges = pd.concat([self.bug_report_edges, model_subgraph_edges])
-        
-        graph = StellarGraph(nodes=subgraph_nodes, edges=subgraph_edges)
-        return graph
         
     # # Load graphs from Neo4j # #
     
     def load_model_nodes(self, model_meta_type_labels:List[str], embedding:DataSetNeo4j.NodeSelfEmbedding):
+        if self.nodes_columns is None:
+            self.nodes_columns = embedding.get_column_names()
+            
         for model_meta_type_label in model_meta_type_labels:
-            model_nodes_by_type = self.load_node_embeddings([model_meta_type_label], embedding)
-            self.model_nodes[model_meta_type_label] = model_nodes_by_type
+            node_ids_per_meta_type = []
+            self.load_node_embeddings([model_meta_type_label], embedding, nodes_embeddings=self.model_nodes, node_ids=node_ids_per_meta_type)
+            self.model_nodes_types[model_meta_type_label] = node_ids_per_meta_type
         
-    def load_model_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> Union[DataFrame, DataFrame]:
-        subgraph_edges = self.load_subgraph(node_id, slicing)
-        subgraph_edges.drop(['edges'], axis=1, inplace=True)
+    def load_bug_location_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> Union[StellarGraph, Tuple[int, int]]:
+        bug_localization_subgraph_edges = self.load_subgraph_edges(node_id, slicing)
+       
+        nodes_trace:Dict[int, int] = {} 
+        edges_ids = set()
         
-        # Select subgraph nodes:
-        subgraph_nodes_by_types = []
+        subgraph_nodes_model:List[np.ndarray] = []
+        subgraph_edges_model:List[Tuple] = []
         
-        for meta_type_label, model_nodes_by_type in self.model_nodes.items():  # @UnusedVariable
-            subgraph_nodes_by_type = model_nodes_by_type.loc[model_nodes_by_type.index.isin(subgraph_edges['source']) | model_nodes_by_type.index.isin(subgraph_edges['target'])]
-            subgraph_nodes_by_types.append(subgraph_nodes_by_type)
+        #=======================================================================
+        # Model Graph:
+        #=======================================================================
+        if not bug_localization_subgraph_edges.empty:
+            
+            for report_edge_index, report_edge in bug_localization_subgraph_edges.iterrows():
+                
+                # FIXME[Workaround]: Filter duplicated edges from Neo4j:
+                if report_edge_index not in edges_ids:
+                    edges_ids.add(report_edge_index)
+                    
+                    subgraph_source_node_id = None
+                    subgraph_target_node_id = None
+                    source_node_id = report_edge['source']
+                    target_node_id = report_edge['target']
+                        
+                    # Source:
+                    if subgraph_source_node_id is None:
+                        if source_node_id not in nodes_trace:
+                            if source_node_id in self.model_nodes:
+                                subgraph_source_node_id = len(subgraph_nodes_model)
+                                nodes_trace[source_node_id] = subgraph_source_node_id
+                                subgraph_nodes_model.append(self.model_nodes[source_node_id])
+                        else:    
+                            subgraph_source_node_id = nodes_trace[source_node_id]
+                    
+                    # Target:
+                    if subgraph_target_node_id is None:
+                        if target_node_id not in nodes_trace:
+                            if target_node_id in self.model_nodes:
+                                subgraph_target_node_id = len(subgraph_nodes_model)
+                                nodes_trace[target_node_id] = subgraph_target_node_id
+                                subgraph_nodes_model.append(self.model_nodes[target_node_id])
+                        else:    
+                            subgraph_target_node_id = nodes_trace[target_node_id]
+                    
+                    # Is report_edge included in subgraph?
+                    if subgraph_source_node_id is not None and subgraph_target_node_id is not None:
+                        subgraph_edges_model.append((subgraph_source_node_id, subgraph_target_node_id))
         
-        subgraph_nodes = pd.concat(subgraph_nodes_by_types)
+        # Only the initial given node is contained in subgraph:
+        if not subgraph_nodes_model:
+            if node_id in self.model_nodes:
+                subgraph_node_id = len(subgraph_nodes_model)
+                nodes_trace[node_id] = subgraph_node_id
+                subgraph_nodes_model.append(self.model_nodes[node_id])
         
-        # Filter dangling edges from the model nodes, e.g., bug report nodes, version node!
-        subgraph_edges.drop(subgraph_edges[~subgraph_edges['source'].isin(subgraph_nodes.index) | ~subgraph_edges['target'].isin(subgraph_nodes.index)].index, inplace=True)
+        if not subgraph_nodes_model:
+            raise Exception("No (subgraph) embedding found for node: ID " + str(node_id))
         
-        return subgraph_nodes, subgraph_edges
+        #=======================================================================
+        # Bug Report Graph: (append to model graph)
+        #=======================================================================
+        
+        for report_node_id, report_node_embedding in self.bug_report_nodes.items():
+            subgraph_node_id = len(subgraph_nodes_model)
+            nodes_trace[report_node_id] = subgraph_node_id
+            subgraph_nodes_model.append(report_node_embedding)
+                                    
+        for report_edge_index, report_edge in self.bug_report_edges.iterrows():
+            source_node_id = report_edge['source']
+            target_node_id = report_edge['target']
+            subgraph_node_source = nodes_trace[source_node_id]
+            subgraph_node_target = nodes_trace[target_node_id]
+            subgraph_edges_model.append((subgraph_node_source, subgraph_node_target))
+        
+        #=======================================================================
+        # StellarGraph of Bug Localization Subgraph:
+        #=======================================================================
+            
+        model_subgraph_edges_dataframe = pd.DataFrame(subgraph_edges_model, columns=self.edge_columns)
+        subgraph_nodes_model_array = np.asarray(subgraph_nodes_model)
+        graph = StellarGraph(nodes=subgraph_nodes_model_array, edges=model_subgraph_edges_dataframe)
+        
+        return graph, (nodes_trace[self.bug_report_node_id], nodes_trace[node_id])
         
     def load_bug_report(self, embedding:DataSetNeo4j.NodeSelfEmbedding):
+        if self.nodes_columns is None:
+            self.nodes_columns = embedding.get_column_names()
         
         # Bug report node:
         bug_report_node_frame = self.load_dataframe(self.query_nodes_in_version('TracedBugReport'))
@@ -510,9 +581,12 @@ class DataSetBugSampleNeo4j:
             # location edges point at model elements:
             self.bug_location_model_node_index.add(edge['target'])
     
-    def load_node_embeddings(self, meta_type_labels:List[str], embedding:DataSetNeo4j.NodeSelfEmbedding) -> DataFrame:
-        nodes_embeddings = DataFrame(columns=embedding.get_column_names())
-                
+    def load_node_embeddings(self, 
+                             meta_type_labels:List[str], 
+                             embedding:DataSetNeo4j.NodeSelfEmbedding, 
+                             nodes_embeddings:Dict[int,np.ndarray]={}, 
+                             node_ids=None) -> Dict[int, np.ndarray]:
+        
         for meta_type_label in meta_type_labels:
             if not embedding.filter_type(meta_type_label):
                 nodes_in_version = self.load_dataframe(self.query_nodes_in_version(meta_type_label))
@@ -522,9 +596,15 @@ class DataSetBugSampleNeo4j:
                     if not embedding.filter_node(nodes_in_version):
                         for index, node in nodes_in_version.iterrows():
                             nodes_embedding = embedding.node_to_vector(node)
-                            nodes_embeddings.loc[index] = nodes_embedding
+                            nodes_embeddings[index] = nodes_embedding
+                            
+                            if node_ids is not None:
+                                node_ids.append(index)
                 
         return nodes_embeddings
+    
+    def dict_to_data_frame(self, data:Dict[int, np.ndarray], columns:str):
+        return pd.DataFrame.from_dict(data, orient='index', columns=columns)
     
     def load_dataframe(self, query:str, parameters:dict=None) -> DataFrame:
         default_parameter = {'db_version' : self.db_version}
@@ -540,53 +620,67 @@ class DataSetBugSampleNeo4j:
             
         return df
     
-    def load_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> DataFrame:
+    def load_subgraph_edges(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> DataFrame:
+        # t = time.time()
+        
         if slicing is None:
             slicing = DataSetNeo4j.GraphSlicing(self.dataset)
-            
-        # # Containment Tree # #
-        node_id_parameter = {'node_ids' : [node_id]}
         
-        parent_edges = self.load_dataframe(slicing.parent_query, node_id_parameter)
-        child_edges = self.load_dataframe(slicing.child_query, node_id_parameter)
+        subgraph_edges = []    
+        node_id_query_parameter = {'node_ids' : [node_id]}
+        
+        # # Containment Tree # #
+        parent_edges = None
+        child_edges = None
+        
+        if slicing.parent_levels > 0:
+            parent_edges = self.load_dataframe(slicing.parent_query, node_id_query_parameter)
+            subgraph_edges.append(parent_edges)
+        
+        if slicing.child_levels > 0:
+            child_edges = self.load_dataframe(slicing.child_query, node_id_query_parameter)
+            subgraph_edges.append(child_edges)
         
         # # Cross-Tree Outgoing Edges # #
         tree_of_outgoing = set()
         
-        if slicing.parent_outgoing and not parent_edges.empty:
+        if slicing.parent_outgoing and not parent_edges is not None:
             for parent in parent_edges['target']:
                 tree_of_outgoing.add(parent)
                 
         if slicing.self_outgoing:
             tree_of_outgoing.add(node_id)
         
-        if slicing.child_outgoing and not child_edges.empty:
+        if slicing.child_outgoing and not child_edges is not None:
             for child in child_edges['target']:
                 tree_of_outgoing.add(child)
         
-        tree_of_outgoing_parameter = {'node_ids' : list(tree_of_outgoing)}
-        outgoing_edges = self.load_dataframe(slicing.outgoing_query, tree_of_outgoing_parameter)
+        tree_of_outgoing_query_parameter = {'node_ids' : list(tree_of_outgoing)}
+        outgoing_edges = self.load_dataframe(slicing.outgoing_query, tree_of_outgoing_query_parameter)
+        subgraph_edges.append(outgoing_edges)
         
         # # Cross-Tree Incoming Edges # #
         tree_of_incoming = set()
         
-        if slicing.parent_incoming and not parent_edges.empty:
+        if slicing.parent_incoming and not parent_edges is not None:
             for parent in parent_edges['target']:
                 tree_of_incoming.add(parent)
                 
         if slicing.self_incoming:
             tree_of_incoming.add(node_id)
         
-        if slicing.child_incoming and not child_edges.empty:
+        if slicing.child_incoming and not child_edges is not None:
             for child in child_edges['target']:
                 tree_of_incoming.add(child)
         
-        tree_of_incoming_parameter = {'node_ids' : list(tree_of_incoming)}
-        incoming_eges = self.load_dataframe(slicing.incoming_query, tree_of_incoming_parameter)
+        tree_of_incoming_query_parameter = {'node_ids' : list(tree_of_incoming)}
+        incoming_eges = self.load_dataframe(slicing.incoming_query, tree_of_incoming_query_parameter)
+        subgraph_edges.append(incoming_eges)
         
         # # Combine Edges # #
-        subgraph = pd.concat([parent_edges, child_edges, outgoing_edges, incoming_eges])
-        subgraph = subgraph[~subgraph.index.duplicated(keep='first')]
+        subgraph = pd.concat(subgraph_edges)
+        # print("Query Subgraph:", time.time() - t)
+        
         return subgraph
     
     # # Read version information Cypher query # # 
