@@ -390,11 +390,14 @@ class DataSetNeo4j:
     def query_incoming_cross_tree_edges(self, k=1) -> str:
         return self.query_path(self.query_edge_containment(False) + ', ' + self.query_edge_container(False), 'b', k)
     
-    def query_path(self, edge_properties:str, start_variable:str, k=2):
+    def query_path(self, edge_properties:str, start_variable:str, k=2, return_relationship_attributes=False):
         input_nodes = 'UNWIND $node_ids AS node_id '
         node_path_in_version = 'ID(' + start_variable + ')= node_id AND ' + self.query_edges_no_dangling('a', 'b')
         edge_path_in_version = 'UNWIND [edge IN relationships(path) WHERE ' + self.query_by_version('edge') + '] AS edge'
-        return_id_source_target_edge = 'RETURN DISTINCT ID(edge) AS index, ID(a) AS source, ID(b) as target, edge AS edges'
+        return_id_source_target_edge = 'RETURN DISTINCT ID(edge) AS index, ID(a) AS source, ID(b) as target'
+        
+        if return_relationship_attributes:
+            return_id_source_target_edge = return_id_source_target_edge + ', edge AS edges'
         
         path_filter = 'WHERE ' + node_path_in_version + ' WITH DISTINCT a, b, path ' + edge_path_in_version + ' ' + return_id_source_target_edge
         return input_nodes + ' MATCH path=(a)-[*0..' + str(k) + ' {' + edge_properties + '}]->(b) ' + path_filter

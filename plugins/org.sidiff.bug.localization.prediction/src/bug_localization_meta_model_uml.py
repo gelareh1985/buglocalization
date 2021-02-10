@@ -57,29 +57,9 @@ class MetaModelUML:
                                   outgoing_distance=1,
                                   incoming_distance=1)
         slicing.add_type('Class', type_classifier)
-        
-        #=======================================================================
-        # FIXME: Update training samples to match slicing configuration
-#         slicing.add_type('Interface', type_classifier)
-#         slicing.add_type('Enumeration', type_classifier)
-#         slicing.add_type('DataType', type_classifier)
-
-        type_classifier_to_be_fixed = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
-                                  parent_levels=0,
-                                  parent_incoming=False,
-                                  parent_outgoing=False,
-                                  self_incoming=False,
-                                  self_outgoing=False,
-                                  child_levels=0,
-                                  child_incoming=False,
-                                  child_outgoing=False,
-                                  outgoing_distance=0,
-                                  incoming_distance=0)
-        slicing.add_type('Interface', type_classifier_to_be_fixed)
-        slicing.add_type('Enumeration', type_classifier_to_be_fixed)
-        slicing.add_type('DataType', type_classifier_to_be_fixed)
-        
-        #=======================================================================
+        slicing.add_type('Interface', type_classifier)
+        slicing.add_type('Enumeration', type_classifier)
+        slicing.add_type('DataType', type_classifier)
         
         type_operation = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
                                   parent_levels=5,

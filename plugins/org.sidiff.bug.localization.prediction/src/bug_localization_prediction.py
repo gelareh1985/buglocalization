@@ -56,21 +56,21 @@ if __name__ == '__main__':
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(model_node_id, typebased_slicing.get_slicing(meta_type_label))
             
             # print(subgraph.info())
-            timer_subgraph_slicing = timer_subgraph_slicing + (time.time() - start_time_sub)
-            #print("Subgraph Computation: ", t(start_time_sub))
-            start_time_sub = time.time()
+            # timer_subgraph_slicing = timer_subgraph_slicing + (time.time() - start_time_sub)
+            # print("Subgraph Computation: ", t(start_time_sub))
+            # start_time_sub = time.time()
             
             graph_sage_generator = GraphSAGELinkGenerator(subgraph, 1, num_samples=num_samples)
             flow = graph_sage_generator.flow([bug_location_pair])
             prediction = model.predict(flow)
             
-            timer_prediction = timer_prediction + (time.time() - start_time_sub)
-            #print("DL Model Predict: ", t(start_time_sub))
+            # timer_prediction = timer_prediction + (time.time() - start_time_sub)
+            # print("DL Model Predict: ", t(start_time_sub))
             
             location_counter = location_counter + 1
-            bug_report_node = bug_location_pair[0]
-            bug_location_node = bug_location_pair[1]
-            print("Prediction: ", t(start_time_sub), bug_report_node, bug_location_node, "Result:", prediction)
+            bug_report_node = model_node_id
+            bug_location_node = bug_sample.bug_report_node_id
+            print("Prediction: ", t(start_time_sub), "Report", bug_report_node, "-> " "Location", bug_location_node, "Result:", prediction)
     
     print("Finished Prediction (Locations:", location_counter, "):", t(start_time))            
     print("Evaluation Finished:")
