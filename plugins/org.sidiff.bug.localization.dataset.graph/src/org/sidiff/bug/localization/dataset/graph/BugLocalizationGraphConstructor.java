@@ -34,8 +34,8 @@ public class BugLocalizationGraphConstructor {
 	
 	public static class KNeighbourSettings {
 		
-		public int parentLevels = 4;
-		public int childLevels = 3;
+		public int parentLevels = 2;
+		public int childLevels = 2;
 		public int outgoingDistance = 2; // on children
 		public int incomingDistance = 1; // on children
 		
@@ -58,7 +58,7 @@ public class BugLocalizationGraphConstructor {
 	
 	private KNeighbourSettings type_package = new KNeighbourSettings(5, 1, 0, 0);
 	
-	private KNeighbourSettings type_class = new KNeighbourSettings(5, 2, 1, 1);
+	private KNeighbourSettings type_classifier = new KNeighbourSettings(5, 2, 1, 1);
 	
 	private KNeighbourSettings type_operation = new KNeighbourSettings(5, 3, 2, 1);
 	
@@ -68,9 +68,28 @@ public class BugLocalizationGraphConstructor {
 	{
 		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getModel(), type_model);
 		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getPackage(), type_package);
-		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getClass_(), type_class);
+		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getClass_(), type_classifier);
+		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getInterface(), type_classifier);
+		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getEnumeration(), type_classifier);
+		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getDataType(), type_classifier);
 		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getOperation(), type_operation);
 		type2kNeighbourSettings.put(UMLPackage.eINSTANCE.getProperty(), type_property);
+	}
+	
+	public KNeighbourSettings findKNeighbourSettings(EObject element) {
+		KNeighbourSettings settings = type2kNeighbourSettings.get(element.eClass());
+		
+		while ((element.eContainer() != null) && (settings == null)) {
+			element = element.eContainer();
+			settings = type2kNeighbourSettings.get(element.eClass());
+		}
+		
+		if (settings == null) {
+			System.err.println("Missing slicing configuration (fallback to default): " + element.eClass());
+			return new KNeighbourSettings();
+		}
+		
+		return settings;
 	}
 	
 	public BugLocalizationGraphConstructor(BugReport bugReport, SystemModel buggySystemModel) {
@@ -337,7 +356,7 @@ public class BugLocalizationGraphConstructor {
 		 */
 		
 		for (EObject location : locations) {
-			KNeighbourSettings kNeighbourSettings = type2kNeighbourSettings.get(location.eClass());
+			KNeighbourSettings kNeighbourSettings = findKNeighbourSettings(location.eClass());
 			
 			if (kNeighbourSettings != null) {
 				ModelUtil.collectParents(modelElements, location, kNeighbourSettings.parentLevels);
@@ -351,7 +370,7 @@ public class BugLocalizationGraphConstructor {
 		 */
 		
 		for (EObject location : locations) {
-			KNeighbourSettings kNeighbourSettings = type2kNeighbourSettings.get(location.eClass());
+			KNeighbourSettings kNeighbourSettings = findKNeighbourSettings(location.eClass());
 			
 			if (kNeighbourSettings != null) {
 				ModelUtil.collectOutgoingReferences(childTree, location, 
@@ -369,7 +388,7 @@ public class BugLocalizationGraphConstructor {
 		 */
 		
 		for (EObject modelElement : childTree) {
-			KNeighbourSettings kNeighbourSettings = type2kNeighbourSettings.get(modelElement.eClass());
+			KNeighbourSettings kNeighbourSettings = findKNeighbourSettings(modelElement.eClass());
 			
 			if (kNeighbourSettings != null) {
 				ModelUtil.collectOutgoingReferences(modelElements, modelElement, 
@@ -386,7 +405,7 @@ public class BugLocalizationGraphConstructor {
 		
 		modelElements.addAll(ModelUtil.collectIncomingReferences(model, childTree, 
 				(type) -> {
-					KNeighbourSettings kNeighbourSettings = type2kNeighbourSettings.get(type);
+					KNeighbourSettings kNeighbourSettings = findKNeighbourSettings(type);
 					
 					if (kNeighbourSettings != null) {
 						return kNeighbourSettings.incomingDistance;
@@ -409,10 +428,6 @@ public class BugLocalizationGraphConstructor {
 	
 	public BugReportNode getBugReportNode() {
 		return bugReportNode;
-	}
-
-	public Map<EClass, KNeighbourSettings> getType2kNeighbourSettings() {
-		return type2kNeighbourSettings;
 	}
 
 	public void setType2kNeighbourSettings(Map<EClass, KNeighbourSettings> type2kNeighbourSettings) {
