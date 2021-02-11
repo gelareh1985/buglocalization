@@ -9,7 +9,7 @@ from gensim.models import KeyedVectors  # type: ignore
 from bug_localization_data_set import DataSet, DataSetBugSample
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
-from bug_localization_util_word_dictionary import WordDictionary
+from bug_localization_util import WordDictionary
 
 positve_samples_path = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\positivesamples/"
 negative_samples_path = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\negativesamples/"
