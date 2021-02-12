@@ -19,13 +19,13 @@ if gpus:
         print(e)
 #===============================================================================
 
-from bug_localization_data_set import DataSetEmbedding, DataSetBugSampleEmbedding  # type: ignore
+from bug_localization_data_set import IDataSet, ISample, DataSetTrainingTextGraphEmbedding
 from bug_localization_sample_generator import IBugLocalizationGenerator, BugLocalizationGenerator
 from pathlib import Path
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from tensorflow import keras  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow.keras.utils import Sequence, plot_model  # type: ignore @UnusedImport
+from tensorflow.keras.utils import Sequence, plot_model  # type: ignore # @UnusedImport
 from time import time
 from typing import List, Tuple
 import datetime
@@ -54,28 +54,29 @@ model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 class DataSetSplitter:
     
-    def __init__(self, dataset:DataSetEmbedding):
-        self.dataset:DataSetEmbedding = dataset
-        self.bug_sample_sequence = self.create_bug_sample_sequence()
+    def __init__(self, dataset_positive:IDataSet, dataset_negative:IDataSet):
+        self.dataset_positive:IDataSet = dataset_positive
+        self.dataset_negative:IDataSet = dataset_negative
+        self.bug_sample_sequence:List[ISample] = self.create_bug_sample_sequence()
         
-    def create_bug_sample_sequence(self) -> List[DataSetBugSampleEmbedding]:
+    def create_bug_sample_sequence(self) -> List[ISample]:
         
         # Mix positive and negative samples to create a full set of samples 
         # that can be split to create a training and validation set of samples:
         bug_sample_sequence = []
         index = 0
         
-        while index < len(self.dataset.positive_bug_samples) or index < len(self.dataset.negative_bug_samples):
-            if index < len(self.dataset.positive_bug_samples):
-                bug_sample_sequence.append(self.dataset.positive_bug_samples[index])
-            if index < len(self.dataset.negative_bug_samples):
-                bug_sample_sequence.append(self.dataset.negative_bug_samples[index])
+        while index < len(self.dataset_positive.bug_samples) or index < len(self.dataset_negative.bug_samples):
+            if index < len(self.dataset_positive.bug_samples):
+                bug_sample_sequence.append(self.dataset_positive.bug_samples[index])
+            if index < len(self.dataset_negative.bug_samples):
+                bug_sample_sequence.append(self.dataset_negative.bug_samples[index])
                      
             index += 1
             
         return bug_sample_sequence
         
-    def split(self, fraction:int) -> Tuple[List[DataSetBugSampleEmbedding], List[DataSetBugSampleEmbedding]]:
+    def split(self, fraction:int) -> Tuple[List[ISample], List[ISample]]:
         
         # Split training and test data:
         split_idx = len(self.bug_sample_sequence) // fraction
@@ -148,8 +149,8 @@ class BugLocalizationAIModelTrainer:
         
         # Initialize training data:
         bug_samples_train, bug_samples_eval = dataset_splitter.split(2)
-        train_flow, train_callbacks = sample_generator.get_evaluation_generator(bug_samples_train)
-        eval_flow, eval_callbacks = sample_generator.get_evaluation_generator(bug_samples_eval)
+        train_flow, train_callbacks = sample_generator.get_generator("training", bug_samples_train)
+        eval_flow, eval_callbacks = sample_generator.get_generator("evaluation", bug_samples_eval)
         
         self.callbacks.extend(train_callbacks)
         self.callbacks.extend(eval_callbacks)
@@ -227,8 +228,9 @@ if __name__ == '__main__':
     #===========================================================================
     
     # Collect all graphs from the given folder:
-    dataset = DataSetEmbedding(positve_samples_path, negative_samples_path)
-    dataset_splitter = DataSetSplitter(dataset)
+    dataset_positive = DataSetTrainingTextGraphEmbedding(positve_samples_path, is_negative=False)
+    dataset_negative = DataSetTrainingTextGraphEmbedding(negative_samples_path, is_negative=True)
+    dataset_splitter = DataSetSplitter(dataset_positive, dataset_negative)
     
     #===========================================================================
     # Create AI Model:
@@ -252,7 +254,7 @@ if __name__ == '__main__':
     
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
     model = bug_localization_model_builder.create_model(
-        num_samples, layer_sizes, dataset.feature_size, model_training_checkpoint_dir, dropout, normalize)
+        num_samples, layer_sizes, dataset_positive.feature_size, model_training_checkpoint_dir, dropout, normalize)
     
     # Plot model:
     # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]

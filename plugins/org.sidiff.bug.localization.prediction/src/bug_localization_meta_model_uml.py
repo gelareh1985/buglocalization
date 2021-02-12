@@ -1,25 +1,23 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
-from typing import List, Dict, Set
+
+from typing import Dict
 
 from gensim.models import KeyedVectors  # type: ignore
 from py2neo import Node  # type: ignore
 
-from bug_localization_data_set import DataSetNeo4j
+from bug_localization_meta_model import *
 from bug_localization_util import text_to_words
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
 
-# TODO: Consistency checks
 
-class MetaModelUML:
+class MetaModelUML(MetaModel):
     
     # Specifies the slicing of subgraph for embedding of model elements.
-    def get_slicing(self, dataset:DataSetNeo4j, dnn_depth:int) -> DataSetNeo4j.TypbasedGraphSlicing:
-        slicing = DataSetNeo4j.TypbasedGraphSlicing()
+    def get_slicing_criterion(self, dnn_depth:int) -> TypbasedGraphSlicing:
+        slicing = TypbasedGraphSlicing()
         
-        type_model = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
+        type_model = GraphSlicing(dnn_depth,
                                   parent_levels=0,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -32,7 +30,7 @@ class MetaModelUML:
                                   incoming_distance=0)
         slicing.add_type('Model', type_model)
         
-        type_package = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
+        type_package = GraphSlicing(dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -45,7 +43,7 @@ class MetaModelUML:
                                   incoming_distance=0)
         slicing.add_type('Package', type_package)
         
-        type_classifier = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
+        type_classifier = GraphSlicing(dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -61,7 +59,7 @@ class MetaModelUML:
         slicing.add_type('Enumeration', type_classifier)
         slicing.add_type('DataType', type_classifier)
         
-        type_operation = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
+        type_operation = GraphSlicing(dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -74,7 +72,7 @@ class MetaModelUML:
                                   incoming_distance=1)
         slicing.add_type('Operation', type_operation)
         
-        type_property = DataSetNeo4j.GraphSlicing(dataset, dnn_depth,
+        type_property = GraphSlicing(dnn_depth,
                                   parent_levels=5,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -181,25 +179,32 @@ class MetaModelUML:
             except:
                 raise Exception("Missing property configuration for type: " + model_meta_type_label)
         
-        
         return meta_type_to_properties
+    
+    def get_node_self_embedding(self):
+        return self.uml_node_self_embedding
 
 
-class UMLNodeSelfEmbedding(DataSetNeo4j.NodeSelfEmbedding):
+class UMLNodeSelfEmbedding(NodeSelfEmbedding):
     
     def __init__(self, meta_type_to_properties:Dict[str, List[str]], dictionary_path:str, dictionary_words_length:int, stopwords={}, unescape=True):
-        print('Begin Loading Dictionary ...')
-
-        self.meta_type_to_properties:Dict[str, List[str]] = meta_type_to_properties        
-        self.dictionary_words:dict = KeyedVectors.load_word2vec_format(dictionary_path, binary=True) # use empty dict {} for testing
+        self.meta_type_to_properties:Dict[str, List[str]] = meta_type_to_properties
+        
+        self.dictionary_path = dictionary_path     
         self.dictionary_words_length = dictionary_words_length
         self.stopwords = stopwords
         self.unescape = unescape
+        
+        self.dictionary_words:Dict[str,np.ndarray] = {}
+        self.unload() # mypy workaround
+        
         self.column_names = self.create_column_names()
         
-        print('Finished Loading Dictionary!')
-        
-    def unload_dictionary(self):
+    def load(self):
+        if self.dictionary_words is None:
+            self.dictionary_words:dict = KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)  # use empty dict {} for testing
+    
+    def unload(self):
         self.dictionary_words = None
         
     def create_column_names(self):

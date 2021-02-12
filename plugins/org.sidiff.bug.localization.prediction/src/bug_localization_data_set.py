@@ -1,73 +1,80 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
-import ntpath
-import os
-import threading
-import time  # @UnusedImport
-from typing import *  # @UnusedWildImport
 
+from bug_localization_meta_model import GraphSlicing, NodeSelfEmbedding, TypbasedGraphSlicing, MetaModel
+from bug_localization_util import t
 from pandas.core.frame import DataFrame  # type: ignore
-from py2neo import Graph  # type: ignore
+from py2neo import Graph, Node  # type: ignore  # @UnusedImport
 from stellargraph import StellarGraph  # type: ignore
-
+from stellargraph.mapper import GraphSAGELinkGenerator  # type: ignore
+from tensorflow.keras.utils import Sequence  # type: ignore # @UnusedImport
+from typing import *  # @UnusedWildImport
+import ntpath
 import numpy as np  # type: ignore
+import os
 import pandas as pd  # type: ignore
+import time  # @UnusedImport
 
 
-class DataSet:
+class IDataSet:
+    
+    def __init__(self, is_negative:bool=False):
+        self.bug_samples:List[ISample] = []
+        self.is_negative:bool = is_negative
 
-    def __init__(self, positve_samples_path:str, negative_samples_path:str):
-        self.positve_samples_path:str = positve_samples_path
-        self.negative_samples_path:str = negative_samples_path
+
+class ISample:
+    
+    def __init__(self, dataset:IDataSet, sample_id:str):
+        self.dataset:IDataSet = dataset
+        self.sample_id:str = sample_id
+    
+    def sample_generator(self, num_samples:List[int], log_level=0) -> Generator[Sequence, None, None]:
+        pass
+
+#===============================================================================
+# Text Graph Data Connector
+#===============================================================================
+
+        
+class DataSetTextGraph(IDataSet):
+
+    def __init__(self, samples_path:str, is_negative:bool=False):
+        super().__init__(is_negative)
+        self.samples_path:str = samples_path
         
         # Collect all graphs from the given folder:
-        self.positive_bug_samples = self.get_samples(self.positve_samples_path)
-        self.negative_bug_samples = self.get_samples(self.negative_samples_path, sample_is_negative=True)
-        
         self.nodes_column_names:List[str] = ["index", "text", "type", "tag"]
-        self.edges_column_names = ["source", "target"]
+        self.edges_column_names:List[str] = ["source", "target"]
+        self.list_samples(self.samples_path)
     
-    def get_nodes_column_names(self) -> List[str]:
-        return self.nodes_column_names
-    
-    def get_edges_column_names(self) -> List[str]:
-        return self.edges_column_names
-    
-    def get_sample(self, edge_list_path:str, sample_is_negative:bool):
-        return DataSetBugSample(self, edge_list_path, sample_is_negative)
-    
-    def get_samples(self, folder:str, sample_is_negative=False, count:int=-1):
-        samples = []
-        
+    def list_samples(self, folder:str):
         for filename in os.listdir(folder):
             if filename.endswith(".edgelist"):
                 edge_list_path = folder + filename
-                samples.append(self.get_sample(edge_list_path, sample_is_negative))
-            if count != -1 and len(samples) == count:
-                break
-        
-        return samples
+                self.bug_samples.append(self.create_sample(edge_list_path))
+                
+    def create_sample(self, edge_list_path:str):
+        return SampleTextGraph(self, edge_list_path)
 
 
-class DataSetBugSample:
+class SampleTextGraph(ISample):
     
-    def __init__(self, dataset:DataSet, sample_file_path:str, sample_is_negative=False):
-        self.dataset:DataSet = dataset
+    def __init__(self, dataset:DataSetTextGraph, sample_file_path:str):
+        super().__init__(dataset, sample_file_path)
         
         # File naming pattern PATH/NUMBER_NAME.EXTENSION
-        self.path, filename = ntpath.split(sample_file_path)
-        self.name = filename[:filename.rfind(".")]
-        self.number = filename[0:filename.find("_")]
-        
-        # Positive Sample = False, Negative Sample = True
-        self.is_negative = sample_is_negative
+        if sample_file_path is not None:
+            self.path, filename = ntpath.split(sample_file_path)
+            self.name = filename[:filename.rfind(".")]
+            self.number = filename[0:filename.find("_")]
         
         # Nodes of the bug localization graph.
-        self.nodes:DataFrame
+        self.nodes:DataFrame = None
         
         # Edges of the bug localization graph.
-        self.edges:DataFrame
+        self.edges:DataFrame = None
         
     # # Path/File Naming Conventions # #
     
@@ -77,112 +84,77 @@ class DataSetBugSample:
     def get_edges_path(self) -> str:
         return self.path + "/" + self.name + ".edgelist"
     
-    def unload(self):
-        self.nodes = None
-        self.edges = None
+    def sample_generator(self, num_samples:List[int], log_level=0) -> Generator[np.ndarray, np.array, None]:
+        pass  # TODO: On-the-fly embedding and graph construction.
     
     def load(self):
         self.load_nodes()
         self.load_edges()
     
     def load_nodes(self):
-        self.nodes = pd.read_table(self.get_nodes_path(), names=self.dataset.get_nodes_column_names(), index_col="index")
+        self.nodes = pd.read_table(self.get_nodes_path(), names=self.dataset.nodes_column_names, index_col="index")
         self.nodes = self.nodes.fillna("")
-        
-    def load_feature_size(self) -> int:
-        # Load without header
-        tmp_nodes = pd.read_table(self.get_nodes_path())
-        # subtract: index and tag column
-        return len(tmp_nodes.columns) - 2
     
     def load_edges(self):
-        self.edges = pd.read_table(self.get_edges_path(), names=self.dataset.get_edges_column_names())
+        self.edges = pd.read_table(self.get_edges_path(), names=self.dataset.edges_column_names)
+        
+    def unload(self):
+        super().unload()
+        self.nodes = None
+        self.edges = None
     
 
-class DataSetEmbedding(DataSet):
+class DataSetTextGraphEmbedding(DataSetTextGraph):
     
-    def __init__(self, positve_samples_path:str, negative_samples_path:str):
-        super().__init__(positve_samples_path, negative_samples_path)
-        self.feature_size = self.load_feature_size()
+    def __init__(self, samples_path:str, is_negative:bool=False):
+        super().__init__(samples_path, is_negative)
+        self.compression = "gzip"
+        self.load_feature_size()
+        self.create_nodes_column_names()
         
-    def load_feature_size(self) -> int:
-        if self.positive_bug_samples:
-            return self.positive_bug_samples[0].load_feature_size()
+    def load_feature_size(self):
+        if self.bug_samples:
+            self.feature_size = self.bug_samples[0].load_feature_size()
         else:
             raise Exception('No samples found')
         
-    def get_sample(self, edge_list_path:str, sample_is_negative:bool):
-        return DataSetBugSampleEmbedding(self, edge_list_path, sample_is_negative)
+    def create_sample(self, edge_list_path:str):
+        return SampleTextGraphEmbedding(self, edge_list_path)
     
-    def get_column_names(self) -> List[str]:
-        if not self.nodes_column_names:
-            self.nodes_column_names = []
-            self.nodes_column_names.append("index")
-            
-            for feature_num in range(0, self.feature_size):
-                self.nodes_column_names.append("feature" + str(feature_num))
-            
-            self.nodes_column_names.append("tag")
+    def create_nodes_column_names(self):
+        self.nodes_column_names = []
+        self.nodes_column_names.append("index")
         
-        return self.nodes_column_names
+        for feature_num in range(0, self.feature_size):
+            self.nodes_column_names.append("feature" + str(feature_num))
+        
+        self.nodes_column_names.append("tag")
     
-    def load_dataset_into_hdf(self):
-        
-        def save_positive_samples():
-            with pd.HDFStore(self.path + "positivesamples.h5", mode='w') as positive_bug_samples_database:
-                for positive_bug_sample in self.positive_bug_samples:
-                    self.load_into_hdf(positive_bug_samples_database, positive_bug_sample.name, positive_bug_sample)
-        
-        threading.Thread(target=save_positive_samples)
-        
-        def save_negative_samples():        
-            with pd.HDFStore(self.path + "negativesamples.h5", mode='w') as negative_bug_samples_database:
-                for negative_bug_sample in self.negative_bug_samples:
-                    self.load_into_hdf(negative_bug_samples_database, negative_bug_sample.name, negative_bug_sample)
-                    
-        threading.Thread(target=save_negative_samples)
-        
-    def load_sample_into_hdf(self, database:pd.HDFStore, key:str, bug_sample:DataSetBugSample):
-        bug_sample.load_nodes()
-        bug_sample.load_edges()
-        
-        # TODO: Optimize column types?
-        # bug_sample.nodes.convert_dtypes().dtypes
-        # bug_sample.edges.convert_dtypes().dtypes
-        
-        database.put(key=key, value=bug_sample.nodes, format='fixed', complevel=9, complib='zlib')
-        database.put(key=key, value=bug_sample.edges, format='fixed', formatcomplevel=9, complib='zlib')
+    def save_dataset_as_hdf(self, name:str):
+        with pd.HDFStore(self.samples_path + name + ".h5", mode='w') as database:
+            for bug_sample in self.bug_samples:
+                bug_sample_embeddig = cast(SampleTextGraphEmbedding, bug_sample)
+                database.put(key="nodes:" + bug_sample.sample_id, value=bug_sample_embeddig.nodes, format='fixed', complevel=9, complib='zlib')
+                database.put(key="edges:" + bug_sample.sample_id, value=bug_sample_embeddig.edges, format='fixed', formatcomplevel=9, complib='zlib')
 
 
-class DataSetBugSampleEmbedding(DataSetBugSample):
+class SampleTextGraphEmbedding(SampleTextGraph):
     
-    def __init__(self, dataset:DataSet=None, sample_file_path:str=None, sample_is_negative=False):
-        self.compression = "gzip"
-        
-        if dataset and sample_file_path:
-            super().__init__(dataset, sample_file_path, sample_is_negative)
-        else:
-            # Positive Sample = False, Negative Sample = True
-            self.is_negative = sample_is_negative
-        
-        # Pairs of node IDs: (Bug Report, Location)
-        self.bug_location_pairs:List[Tuple[str, str]]
+    def __init__(self, dataset:DataSetTextGraph, sample_file_path:str):
+        super().__init__(dataset, sample_file_path)
         
         # 0 or 1 for each bug location pair: 0 -> positive sample, 1 -> negative sample
-        self.testcase_labels:np.ndarray
+        self.testcase_labels:np.ndarray = None
+        
+        # Pairs of node IDs: (Bug Report, Location)
+        self.bug_location_pairs:List[Tuple[str, str]] = []
     
     # # Path/File Naming Conventions # #
     
     def get_nodes_path(self) -> str:
         return self.path + "/" + self.name + ".featurenodelist"
     
-    def unload(self):
-        self.nodes = None
-        self.edges = None
-        self.bug_location_pairs = None
-        self.testcase_labels = None
-    
-    def load(self, add_prefix:bool=False):
+    def load_bug_sample(self, add_prefix:bool=False):
         
         # Create unique node IDs?
         bug_sample_name = None
@@ -191,7 +163,7 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
             bug_sample_name = self.number
             
             # different prefixes for positive and negative samples:
-            if self.is_negative:
+            if self.dataset.is_negative:
                 bug_sample_name = "n" + bug_sample_name
             else:
                 bug_sample_name = "p" + bug_sample_name
@@ -205,7 +177,7 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
         self.nodes.drop("tag", inplace=True, axis=1)
         
         # 1 for positive samples; 0 for negative samples:
-        if self.is_negative:
+        if self.dataset.is_negative:
             self.testcase_labels = np.zeros(len(self.bug_location_pairs), dtype=np.float32)
         else:
             self.testcase_labels = np.ones(len(self.bug_location_pairs), dtype=np.float32)
@@ -214,7 +186,8 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
         self.remove_bug_location_edges()
         
     def load_nodes(self, name_prefix:str=None):
-        self.nodes = pd.read_pickle(self.get_nodes_path(), compression=self.compression)
+        dataset_embedding = cast(DataSetTextGraphEmbedding, self.dataset)
+        self.nodes = pd.read_pickle(self.get_nodes_path(), compression=dataset_embedding.compression)
         
         if name_prefix:
             self.nodes = self.nodes.rename(index=lambda index: self.add_prefix(name_prefix, index))
@@ -232,7 +205,8 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
             
     def load_feature_size(self) -> int:
         # subtract: tag column
-        tmp_nodes = pd.read_pickle(self.get_nodes_path(), compression=self.compression)
+        dataset_embedding = cast(DataSetTextGraphEmbedding, self.dataset)
+        tmp_nodes = pd.read_pickle(self.get_nodes_path(), compression=dataset_embedding.compression)
         return len(tmp_nodes.columns) - 1
     
     def extract_bug_locations(self):
@@ -263,13 +237,61 @@ class DataSetBugSampleEmbedding(DataSetBugSample):
         bug_location_edges = self.edges.loc[self.edges["source"].isin(bug_location_source) & self.edges["target"].isin(bug_location_target)]
         self.edges.drop(bug_location_edges.index, inplace=True)
 
+    def unload(self):
+        self.nodes = None
+        self.edges = None
+        self.bug_location_pairs = None
+        self.testcase_labels = None
 
-class DataSetNeo4j:
+
+class DataSetTrainingTextGraphEmbedding(DataSetTextGraphEmbedding):
+        
+    def create_sample(self, edge_list_path:str) -> ISample:
+        return SampleTrainingTextGraphEmbedding(self, edge_list_path)        
+
+
+class SampleTrainingTextGraphEmbedding(SampleTextGraphEmbedding):
+    
+    def sample_generator(self, num_samples:List[int], log_level=0) -> Generator[Sequence, None, None]:
+
+        # Load each bug sample:
+        self.load_bug_sample()
+        
+        if log_level >= 4:
+            print("Loaded", "negative" if self.dataset.is_negative else "positive", "sample:", self.sample_id)
+
+        if (len(self.testcase_labels) <= 0):
+            return
+
+        # Convert to StellarGraph:
+        graph = StellarGraph(nodes=self.nodes, edges=self.edges)
+        
+        if log_level >= 5:
+            print(graph.info())
+    
+        # Create Keras Sequence with batch size 1 for generator yield:
+        graph_sage_generator = GraphSAGELinkGenerator(graph, batch_size=len(self.testcase_labels), num_samples=num_samples)
+        flow = graph_sage_generator.flow(self.bug_location_pairs, self.testcase_labels)
+
+        # Free memory:
+        self.unload()
+        
+        yield flow
+        
+#===============================================================================
+# Neo4j Data Connector
+#===============================================================================
+
+        
+class DataSetNeo4j(IDataSet):
     
     # https://py2neo.org/v4/database.html
     # https://stellargraph.readthedocs.io/en/stable/demos/basics/loading-saving-neo4j.html
-
-    def __init__(self, host:str, port:int=None, user:str=None, password:str=None):
+    
+    def __init__(self, meta_model:MetaModel, node_self_embedding:NodeSelfEmbedding, typebased_slicing:TypbasedGraphSlicing,
+                 host:str, port:int=None, user:str=None, password:str=None, is_negative:bool=False):
+        
+        super().__init__(is_negative)
         
         # Connnection info:
         self.host:str = host
@@ -277,81 +299,53 @@ class DataSetNeo4j:
         self.user:Optional[str] = user
         self.password:Optional[str] = password
         
+        # Meta-model configuration 
+        self.meta_model = meta_model
+        self.node_self_embedding = node_self_embedding
+        self.typebased_slicing = self.translate_slicing_criterion(typebased_slicing)
+        
         # Opened Connection:
         self.neo4j_graph = Graph(host=host, port=port, user=user, password=password)
+        self.list_samples()
         
-        # Contained samples:
-        self.bug_samples:List[DataSetBugSampleNeo4j] = []
-        
-    class GraphSlicing:
-        
-        def __init__(self,
-                     dataset,  # : DataSetNeo4j
-                     dnn_depth:int, # depth of graphSAGE layers
-                     parent_levels:int=2,
-                     parent_incoming:bool=False,
-                     parent_outgoing:bool=False,
-                     self_incoming:bool=True,
-                     self_outgoing:bool=True,
-                     child_levels:int=2,
-                     child_incoming:bool=True,
-                     child_outgoing:bool=True,
-                     outgoing_distance:int=2,
-                     incoming_distance:int=1):
-            self.parent_levels:int = min(parent_levels, dnn_depth)
-            self.parent_incoming:bool = parent_incoming
-            self.parent_outgoing:bool = parent_outgoing
+    class GraphSlicingNeo4j(GraphSlicing):
+    
+        def __init__(self, dataset, slicing_criterion:GraphSlicing):
+            self.parent_levels:int = slicing_criterion.parent_levels
+            self.parent_incoming:bool = slicing_criterion.parent_incoming
+            self.parent_outgoing:bool = slicing_criterion.parent_outgoing
             self.parent_query:str = dataset.query_edges_to_parent_nodes(self.parent_levels)
             
-            self.self_incoming:bool = self_incoming
-            self.self_outgoing:bool = self_outgoing
+            self.self_incoming:bool = slicing_criterion.self_incoming
+            self.self_outgoing:bool = slicing_criterion.self_outgoing
             
-            self.child_levels:int = min(child_levels, dnn_depth)
-            self.child_incoming:bool = child_incoming
-            self.child_outgoing:bool = child_outgoing
+            self.child_levels:int = slicing_criterion.child_levels
+            self.child_incoming:bool = slicing_criterion.child_incoming
+            self.child_outgoing:bool = slicing_criterion.child_outgoing
             self.child_query = dataset.query_edges_to_child_nodes(self.child_levels)
             
-            self.outgoing_distance:int = min(outgoing_distance, dnn_depth)
+            self.outgoing_distance:int = slicing_criterion.outgoing_distance
             self.outgoing_query = dataset.query_outgoing_cross_tree_edges(self.outgoing_distance)
             
-            self.incoming_distance:int = min(incoming_distance, dnn_depth)
-            self.incoming_query = dataset.query_incoming_cross_tree_edges(self.incoming_distance)
+            self.incoming_distance:int = slicing_criterion.incoming_distance
+            self.incoming_query = dataset.query_incoming_cross_tree_edges(self.incoming_distance) 
             
-    class TypbasedGraphSlicing:
+    def translate_slicing_criterion(self, typebased_slicing:TypbasedGraphSlicing):
+        neo4j_typebased_slicing = TypbasedGraphSlicing()
         
-        def __init__(self):
-            self.type_label_to_graph_slicing:Dict[str, DataSetNeo4j.GraphSlicing] = {}
+        for type_label in typebased_slicing.get_types():
+            slicing_criterion = typebased_slicing.get_slicing(type_label)
+            neo4j_slicing = self.GraphSlicingNeo4j(self, slicing_criterion)
+            neo4j_typebased_slicing.add_type(type_label, neo4j_slicing)
             
-        def add_type(self, type_label:str, graph_slicing):
-            self.type_label_to_graph_slicing[type_label] = graph_slicing
-            
-        def get_types(self) -> List[str]:
-            return list(self.type_label_to_graph_slicing.keys())
-            
-        def get_slicing(self, type_label:str):
-            return self.type_label_to_graph_slicing[type_label]
+        return neo4j_typebased_slicing
+    
+    def list_samples(self):
+        for db_version in self.run_query(self.query_buggy_versions())['versions']:
+            self.bug_samples.append(self.create_sample(db_version))
         
-    class NodeSelfEmbedding:
-        
-        def filter_type(self, meta_type_label:str) -> bool:  # @UnusedVariable
-            return False
-        
-        def filter_node(self, node:pd.Series) -> bool:  # @UnusedVariable
-            return False
-        
-        def get_dimension(self) -> int:
-            pass
-        
-        def get_column_names(self):
-            pass
-        
-        def node_to_vector(self, node:pd.Series) -> np.ndarray:
-            pass
-        
-    def get_sample(self, repo_version:str):
-        new_sample = DataSetBugSampleNeo4j(self, repo_version)
-        self.bug_samples.append(new_sample)
-        return new_sample
+    def create_sample(self, db_version:int):
+        return SampleNeo4j(self, db_version)
      
     # # Send query to the Neo4j database and parse the result to a Pandas data frame # 
      
@@ -365,6 +359,9 @@ class DataSetNeo4j:
             return result.iloc[0, 0]
     
     # # Subgraph Cypher queries # #
+    
+    def query_buggy_versions(self):
+        return "MATCH (n:TracedBugReport) RETURN n.__initial__version__ AS versions"
     
     def query_edge_containment(self, is_value:bool):
         if is_value:
@@ -431,23 +428,11 @@ class DataSetNeo4j:
         return node_version + ' ' + version_node
 
         
-class DataSetBugSampleNeo4j:
+class SampleNeo4j(ISample):
     
-    def __init__(self, dataset:DataSetNeo4j, repo_version:str):
-        self.dataset = dataset
-        self.repo_version:str = repo_version
-        
-        query_parameters = {'repo_version' : self.repo_version}
-        self.db_version:int = self.dataset.run_query_value(self.query_db_version_by_model_repo_version(), query_parameters)
-        
-        if self.db_version is None:
-            self.db_version = self.dataset.run_query_value(self.query_db_version_by_code_repo_version(), query_parameters)
-            
-            if self.db_version is None:
-                raise Exception("Version not found in database: " + repo_version)
-        
-        if self.db_version is not None:
-            self.db_version = int(self.db_version)
+    def __init__(self, dataset:DataSetNeo4j, db_version:int):
+        super().__init__(dataset, "version:" + str(db_version))
+        self.db_version:int = db_version
         
         self.nodes_columns = None  # -> load_model_nodes()
         self.edge_columns = ['source', 'target']
@@ -456,27 +441,30 @@ class DataSetBugSampleNeo4j:
         self.model_nodes:Dict[int, np.ndarray] = {}
         
         # Model graph nodes: meta_type -> index
-        self.model_nodes_types:Dict[str:List[int]] = {}
+        self.model_nodes_types:Dict[str, List[int]] = {}
         
         # Bug report graph:
         self.bug_report_node:Node = None
         self.bug_report_node_id:int = -1
-        self.bug_report_nodes:Dict[str, Dict[int, np.ndarray]] = None
-        self.bug_report_edges:DataFrame = None # StellarGraph requires Panda Data Frames as edges
+        self.bug_report_nodes:Dict[int, Dict[int, np.ndarray]] = {}
+        self.bug_report_edges:DataFrame = None  # StellarGraph requires Panda Data Frames as edges
         self.bug_location_model_node_index:Set[int] = set()
+        
+    def get_dataset(self) -> DataSetNeo4j:
+        return cast(DataSetNeo4j, self.dataset)
         
     # # Load graphs from Neo4j # #
     
-    def load_model_nodes(self, model_meta_type_labels:List[str], embedding:DataSetNeo4j.NodeSelfEmbedding):
+    def load_model_nodes(self, model_meta_type_labels:List[str], embedding:NodeSelfEmbedding):
         if self.nodes_columns is None:
             self.nodes_columns = embedding.get_column_names()
             
         for model_meta_type_label in model_meta_type_labels:
-            node_ids_per_meta_type = []
+            node_ids_per_meta_type:List[int] = []
             self.load_node_embeddings([model_meta_type_label], embedding, nodes_embeddings=self.model_nodes, node_ids=node_ids_per_meta_type)
             self.model_nodes_types[model_meta_type_label] = node_ids_per_meta_type
         
-    def load_bug_location_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> Union[StellarGraph, Tuple[int, int]]:
+    def load_bug_location_subgraph(self, node_id:int, slicing:DataSetNeo4j.GraphSlicingNeo4j) -> Tuple[StellarGraph, Tuple[int, int]]:
         bug_localization_subgraph_edges = self.load_subgraph_edges(node_id, slicing)
        
         nodes_trace:Dict[int, int] = {} 
@@ -561,7 +549,7 @@ class DataSetBugSampleNeo4j:
         
         return graph, (nodes_trace[self.bug_report_node_id], nodes_trace[node_id])
         
-    def load_bug_report(self, embedding:DataSetNeo4j.NodeSelfEmbedding):
+    def load_bug_report(self, embedding:NodeSelfEmbedding):
         if self.nodes_columns is None:
             self.nodes_columns = embedding.get_column_names()
         
@@ -584,10 +572,10 @@ class DataSetBugSampleNeo4j:
             # location edges point at model elements:
             self.bug_location_model_node_index.add(edge['target'])
     
-    def load_node_embeddings(self, 
-                             meta_type_labels:List[str], 
-                             embedding:DataSetNeo4j.NodeSelfEmbedding, 
-                             nodes_embeddings:Dict[int,np.ndarray]={}, 
+    def load_node_embeddings(self,
+                             meta_type_labels:List[str],
+                             embedding:NodeSelfEmbedding,
+                             nodes_embeddings:Dict[int, np.ndarray]={},
                              node_ids=None) -> Dict[int, np.ndarray]:
         
         for meta_type_label in meta_type_labels:
@@ -616,25 +604,25 @@ class DataSetBugSampleNeo4j:
             for parameter_name, value in parameters.items():
                 default_parameter[parameter_name] = value
         
-        df = self.dataset.run_query(query, default_parameter)
+        df = self.get_dataset().run_query(query, default_parameter)
         
         if not df.empty:
             df.set_index("index", inplace=True)
             
         return df
     
-    def load_subgraph_edges(self, node_id:int, slicing:DataSetNeo4j.GraphSlicing=None) -> DataFrame:
+    def load_subgraph_edges(self, node_id:int, slicing:DataSetNeo4j.GraphSlicingNeo4j) -> DataFrame:
         # t = time.time()
         
         if slicing is None:
-            slicing = DataSetNeo4j.GraphSlicing(self.dataset)
+            raise Exception("Missing slicing configuration for node:", node_id)
         
         subgraph_edges = []    
         node_id_query_parameter = {'node_ids' : [node_id]}
         
         # # Containment Tree # #
-        parent_edges = None
-        child_edges = None
+        parent_edges:DataFrame
+        child_edges:DataFrame
         
         if slicing.parent_levels > 0:
             parent_edges = self.load_dataframe(slicing.parent_query, node_id_query_parameter)
@@ -648,14 +636,14 @@ class DataSetBugSampleNeo4j:
         tree_of_outgoing = set()
         
         if slicing.parent_outgoing and not parent_edges is not None:
-            for parent in parent_edges['target']:
+            for parent in cast(DataFrame, parent_edges)['target']:
                 tree_of_outgoing.add(parent)
                 
         if slicing.self_outgoing:
             tree_of_outgoing.add(node_id)
         
         if slicing.child_outgoing and not child_edges is not None:
-            for child in child_edges['target']:
+            for child in cast(DataFrame, child_edges)['target']:
                 tree_of_outgoing.add(child)
         
         tree_of_outgoing_query_parameter = {'node_ids' : list(tree_of_outgoing)}
@@ -666,14 +654,14 @@ class DataSetBugSampleNeo4j:
         tree_of_incoming = set()
         
         if slicing.parent_incoming and not parent_edges is not None:
-            for parent in parent_edges['target']:
+            for parent in cast(DataFrame, parent_edges)['target']:
                 tree_of_incoming.add(parent)
                 
         if slicing.self_incoming:
             tree_of_incoming.add(node_id)
         
         if slicing.child_incoming and not child_edges is not None:
-            for child in child_edges['target']:
+            for child in cast(DataFrame, child_edges)['target']:
                 tree_of_incoming.add(child)
         
         tree_of_incoming_query_parameter = {'node_ids' : list(tree_of_incoming)}
@@ -699,7 +687,7 @@ class DataSetBugSampleNeo4j:
     def query_nodes_in_version(self, meta_type_label:str='') -> str:
         if meta_type_label != '':
             meta_type_label = ':' + meta_type_label
-        return 'MATCH (n' + meta_type_label + ') WHERE ' + self.dataset.query_by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+        return 'MATCH (n' + meta_type_label + ') WHERE ' + self.get_dataset().query_by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
     
     def query_edges_in_version(self, source_meta_type_label:str='', edge_meta_type_label:str='', target_meta_type_label:str='') -> str:
         if source_meta_type_label != '':
@@ -708,5 +696,51 @@ class DataSetBugSampleNeo4j:
             edge_meta_type_label = ':' + edge_meta_type_label
         if target_meta_type_label != '':
             target_meta_type_label = ':' + target_meta_type_label
-        is_in_version = 'WHERE ' + self.dataset.query_by_version('r') + ' AND ' + self.dataset.query_edges_no_dangling('s', 't')
+        is_in_version = 'WHERE ' + self.get_dataset().query_by_version('r') + ' AND ' + self.get_dataset().query_edges_no_dangling('s', 't')
         return 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version + ' RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'
+
+
+class DataSetPredictionNeo4j(DataSetNeo4j):
+
+    def create_sample(self, db_version:int):
+        return SamplePredictionNeo4j(self, db_version)
+
+
+class SamplePredictionNeo4j(SampleNeo4j):
+    
+    def sample_generator(self, num_samples:List[int], log_level=0) -> Generator[Sequence, None, None]:
+        typebased_slicing = self.get_dataset().typebased_slicing
+        meta_model = self.get_dataset().meta_model
+        
+        print("Start Loading Dictionary...")
+        start_time = time.time()
+        
+        node_self_embedding = self.get_dataset().node_self_embedding
+        node_self_embedding.load()
+        
+        print("Finished Loading Dictionary:", t(start_time))
+        
+        print("Start Word Embedding ...")
+        start_time = time.time()
+        
+        self.load_bug_report(node_self_embedding)
+        self.load_model_nodes(meta_model.get_model_meta_type_labels(), node_self_embedding)
+        
+        # Free memory...
+        # node_self_embedding.unload()
+        
+        print("Finished Word Embedding:", t(start_time))
+    
+        for meta_type_label in meta_model.get_bug_location_model_meta_type_labels():
+            
+            if log_level >= 1:
+                print("Prediction for meta-type", len(self.model_nodes_types[meta_type_label]), meta_type_label)
+            
+            for model_node_id in self.model_nodes_types[meta_type_label]:
+                subgraph, bug_location_pair = self.load_bug_location_subgraph(model_node_id, typebased_slicing.get_slicing(meta_type_label))
+                
+                graph_sage_generator = GraphSAGELinkGenerator(subgraph, 1, num_samples=num_samples)
+                flow = graph_sage_generator.flow([bug_location_pair])
+            
+                yield flow
+    

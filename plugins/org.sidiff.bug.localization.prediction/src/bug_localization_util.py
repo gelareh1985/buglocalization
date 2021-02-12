@@ -3,9 +3,13 @@
 '''
 
 from nltk.tokenize import RegexpTokenizer  # type: ignore
+from time import time
 from typing import List
 import re
 
+
+def t(start_time:float) -> str:
+    return "{:.3f}".format(time() - start_time) + "s"
 
 def text_to_words(text:str, stopwords={}, unescape:bool=True) -> List[str]:
     if unescape:

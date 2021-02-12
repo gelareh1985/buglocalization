@@ -6,7 +6,7 @@ from pathlib import Path
 
 from gensim.models import KeyedVectors  # type: ignore
 
-from bug_localization_data_set import DataSet, DataSetBugSample
+from bug_localization_data_set import DataSetTextGraph, SampleTextGraph
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from bug_localization_util import WordDictionary
@@ -27,17 +27,18 @@ class DatasetPropertyEmbedding:
     def dataset_to_vector(self, positve_samples_path:str, negative_samples_path:str, log:bool=False):
         
         # Collect all graphs from the given folder:
-        dataset = DataSet(positve_samples_path, negative_samples_path)
+        dataset_positive = DataSetTextGraph(positve_samples_path, is_negative=False)
+        dataset_negative = DataSetTextGraph(positve_samples_path, is_negative=True)
        
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            for positive_bug_sample in dataset.positive_bug_samples:
+            for positive_bug_sample in dataset_positive.bug_samples:
                 # self.sample_embedding(positve_samples_path, positive_bug_sample, log)
                 executor.submit(self.sample_embedding, positve_samples_path, positive_bug_sample, log)
-            for negative_bug_sample in dataset.negative_bug_samples:
+            for negative_bug_sample in dataset_negative.bug_samples:
                 # self.sample_embedding(negative_samples_path, negative_bug_sample, log)
                 executor.submit(self.sample_embedding, negative_samples_path, negative_bug_sample, log)
                     
-    def sample_embedding(self, path:str, bug_sample:DataSetBugSample, log):
+    def sample_embedding(self, path:str, bug_sample:SampleTextGraph, log):
         bug_sample.load()
         
         # Encoded nodes:
