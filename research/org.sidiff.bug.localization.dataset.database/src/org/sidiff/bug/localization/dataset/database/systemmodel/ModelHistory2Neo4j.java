@@ -28,23 +28,33 @@ public class ModelHistory2Neo4j {
 	
 	private int restartWithVersion = -1;
 	
-	private boolean startWithFullVersion = false;
+	private String restartWithGitVersion = null;
 	
-	private int reopenSession = 200; // prevent resource leaks...
+	private boolean startWithFullVersion = true;
+	
+	private int reopenSession = 10; // prevent resource leaks...
 	
 	private boolean onlyBuggyVersions = false;
-
+	
 	public ModelHistory2Neo4j(Repository modelRepository, Neo4jTransaction transaction) {
 		this.modelRepository = modelRepository;
 		this.transaction = transaction;
 	}
-
+	
 	public int getRestartWithVersion() {
 		return restartWithVersion;
 	}
 
 	public void setRestartWithVersion(int restartWithVersion) {
 		this.restartWithVersion = restartWithVersion;
+	}
+
+	public String getRestartWithGitVersion() {
+		return restartWithGitVersion;
+	}
+
+	public void setRestartWithGitVersion(String restartWithGitVersion) {
+		this.restartWithGitVersion = restartWithGitVersion;
 	}
 
 	public boolean isStartWithFullVersion() {
@@ -90,7 +100,7 @@ public class ModelHistory2Neo4j {
 		while (historyIterator.hasNext()) {
 			++databaseVersion;
 			
-			// Check out the next version from the repositoy:
+			// Check out the next version from the repository:
 			Version previousVersion = historyIterator.getOlderVersion();
 			Version currentVersion = historyIterator.next();
 			Version nextVersion = historyIterator.getNewerVersion();
@@ -114,7 +124,7 @@ public class ModelHistory2Neo4j {
 			
 			if (startWithFullVersion && (databaseVersion == restartWithVersion)) {
 				incrementalModelDelta.commitInitial(
-						previousVersion, currentVersion, nextVersion, 
+						currentVersion, nextVersion, 
 						bugReport, databaseVersion);
 			} else {
 				incrementalModelDelta.commitDelta(
@@ -170,7 +180,7 @@ public class ModelHistory2Neo4j {
 	private int fastforwardHistoryIteration(History history, HistoryIterator historyIterator, ModelVersion2Neo4j incrementalModelDelta) {
 		int datasetVersion = -1;
 		
-		if (restartWithVersion != -1)  {
+		if ((restartWithVersion != -1) || (restartWithGitVersion != null))  {
 			while (historyIterator.hasNext()) {
 				++datasetVersion;
 				
@@ -180,12 +190,21 @@ public class ModelHistory2Neo4j {
 				Version nextVersion = historyIterator.getNewerVersion();
 				
 				// Initialize incremental delta computation one version earlier:
-				if (datasetVersion == (restartWithVersion - 1)) {
+				if ((datasetVersion == (restartWithVersion - 1)) 
+						|| (nextVersion.getIdentification().equals(restartWithGitVersion))) {
+					
 					modelRepository.checkout(history, currentVersion);
 					BugReport bugReport = (nextVersion != null) ? nextVersion.getBugReport() : null;
-					incrementalModelDelta.initialize(
-							previousVersion, currentVersion, nextVersion, 
-							bugReport, datasetVersion);
+					
+					if (!startWithFullVersion) {
+						incrementalModelDelta.initialize(
+								previousVersion, currentVersion, nextVersion, 
+								bugReport, datasetVersion);
+					}
+					
+					if (restartWithVersion == -1) {
+						restartWithVersion = datasetVersion + 1; 
+					}
 					break;
 				}
 			}

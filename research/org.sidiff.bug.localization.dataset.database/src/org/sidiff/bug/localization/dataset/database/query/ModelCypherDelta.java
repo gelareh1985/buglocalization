@@ -2,6 +2,7 @@ package org.sidiff.bug.localization.dataset.database.query;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -12,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.sidiff.bug.localization.dataset.database.model.ModelDeltaUtil;
@@ -23,13 +25,35 @@ public class ModelCypherDelta {
 	 */
 	private static final String URI_PROTOCOL = "file:/";
 
+	/**
+	 * Neo4J database version of old model
+	 */
 	private int oldVersion;
 	
+	/**
+	 * Neo4J database version of new model
+	 */
 	private int newVersion;
 	
+	/**
+	 * Match: Resource Old -> Resource New/Null
+	 */
 	private Map<XMLResource, XMLResource> oldResourcesMatch;
 	
+	/**
+	 * Match: Resource New -> Resource Old/Null
+	 */
 	private Map<XMLResource, XMLResource> newResourcesMatch;
+	
+	/**
+	 * If given, limits the scope for edge changes.
+	 */
+	private Set<Resource> newResourcesScope;
+
+	/**
+	 * If given, limits the scope for edge changes.
+	 */
+	private Set<Resource> oldResourcesScope;
 	
 	/**
 	 * Path to the model folder of the old version.
@@ -45,7 +69,7 @@ public class ModelCypherDelta {
 	 * Path to the model folder of the new version.
 	 */
 	private URI commonBaseURI;
-	
+
 	public ModelCypherDelta(
 			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch,
 			int newVersion, URI newBaseURI, Map<XMLResource, XMLResource> newResourcesMatch) {
@@ -115,15 +139,36 @@ public class ModelCypherDelta {
 	}
 	
 	public XMLResource getOldResource(Resource newResource) {
-		return newResourcesMatch.get(newResource);
+		// NOTE: If a matching is contained it is mapped to null:
+		if (newResourcesMatch.containsKey(newResource)) {
+			return newResourcesMatch.get(newResource);
+		} else {
+			// New resource not in scope -> external reference -> old resource unchanged:
+			if (!oldResourcesMatch.isEmpty()) {
+				ResourceSet oldResourceSet = oldResourcesMatch.keySet().iterator().next().getResourceSet();
+				Resource oldResource = oldResourceSet.getResource(newResource.getURI(), true);
+				return (XMLResource) oldResource;
+			} else {
+				// Initial version...
+				return null;
+			}
+		}
 	}
 	
 	public Map<XMLResource, XMLResource> getOldResourcesMatch() {
 		return oldResourcesMatch;
 	}
 	
-	public boolean containsOldResource(Resource oldResource) {
-		return oldResourcesMatch.containsKey(oldResource);
+	public boolean isInOldResourceScope(Resource oldResource) {
+		return (oldResourcesScope == null) || oldResourcesScope.contains(oldResource);
+	}
+	
+	public Set<Resource> getOldResourcesScope() {
+		return oldResourcesScope;
+	}
+
+	public void setOldResourcesScope(Set<Resource> oldResourcesScope) {
+		this.oldResourcesScope = oldResourcesScope;
 	}
 
 	public int getOldVersion() {
@@ -131,13 +176,33 @@ public class ModelCypherDelta {
 	}
 
 	public XMLResource getNewResource(Resource oldResource) {
-		return oldResourcesMatch.get(oldResource);
+		// NOTE: If a matching is contained it is mapped to null:
+		if (oldResourcesMatch.containsKey(oldResource)) {
+			return oldResourcesMatch.get(oldResource);
+		} else {
+			// Old resource not in scope -> external reference -> new resource unchanged:
+			if (!newResourcesMatch.isEmpty()) {
+				ResourceSet oldResourceSet = newResourcesMatch.keySet().iterator().next().getResourceSet();
+				Resource newResource = oldResourceSet.getResource(oldResource.getURI(), true);
+				return (XMLResource) newResource;
+			} else {
+				return null;
+			}
+		}
 	}
 	
-	public boolean containsNewResource(Resource newResource) {
-		return newResourcesMatch.containsKey(newResource);
+	public boolean isInNewResourceScope(Resource newResource) {
+		return (newResourcesScope == null) || newResourcesScope.contains(newResource);
 	}
 	
+	public Set<Resource> getNewResourcesScope() {
+		return newResourcesScope;
+	}
+
+	public void setNewResourcesScope(Set<Resource> newResourcesScope) {
+		this.newResourcesScope = newResourcesScope;
+	}
+
 	public Map<XMLResource, XMLResource> getNewResourcesMatch() {
 		return newResourcesMatch;
 	}

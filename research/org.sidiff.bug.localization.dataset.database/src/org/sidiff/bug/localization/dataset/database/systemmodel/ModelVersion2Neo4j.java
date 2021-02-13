@@ -1,10 +1,9 @@
 package org.sidiff.bug.localization.dataset.database.systemmodel;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -80,18 +79,15 @@ public class ModelVersion2Neo4j {
 	}
 
 	public void commitInitial(
-			Version previousVersion, Version newModelVersion, Version nextModelVersion, 
+			Version newModelVersion, Version nextModelVersion, 
 			BugReport bugReport, int newDatabaseVersion) {
 		
-		ResourceSet newResourceSet = createResourceSet();
-		
-		// TODO: Generalize this!?
-		if (newResourceSet.getURIConverter().exists(systemModelURI, null)) {
+		if (createResourceSet().getURIConverter().exists(systemModelURI, null)) {
 			internal_commitDelta(
-					previousVersion, newModelVersion, nextModelVersion, 
-					bugReport, newDatabaseVersion, false);
-			SystemModelFactory.eINSTANCE.createSystemModel(newResourceSet, systemModelURI, true); // load all resources...
-			modelDelta.commitDelta(newDatabaseVersion, null, null, repositoryBaseURI, newResourceSet.getResources());
+					null, newModelVersion, nextModelVersion, 
+					bugReport, newDatabaseVersion, true);
+		} else {
+			System.err.println("Missing the system model:" + systemModelURI);
 		}
 	}
 	
@@ -108,67 +104,68 @@ public class ModelVersion2Neo4j {
 			Version previousVersion, Version currentModelVersion, Version nextModelVersion,
 			BugReport bugReport, int currentDatabaseVersion, boolean commitToDatabase) {
 		
-		// Get models which changed in this version:
-		List<FileChange> newModelVersionChanges = nextModelVersionChanges;
+		ResourceSet currentResourceSet = createResourceSet();
+		List<Resource> currentResources = new ArrayList<>();
 		
 		// Initial version?
-		if (newModelVersionChanges == null) {
-			newModelVersionChanges = modelRepository.getChanges(previousVersion, currentModelVersion, false);
-		}
-		
-		ResourceSet newResourceSet = createResourceSet();
-		List<Resource> newResources = new ArrayList<>();
-		Map<Path, Resource> newResourcesLocations = new HashMap<>();
-		
-		for (FileChange fileChange : newModelVersionChanges) {
-			if (!fileChange.getType().equals(FileChangeType.DELETE)) {
-				Resource newResource = loadModel(fileChange, newResourceSet);
-				
-				if (newResource != null) {
-					newResources.add(newResource);
-					newResourcesLocations.put(fileChange.getLocation(), newResource);
+		if (previousVersion == null) {
+			// Start new history -> load all resources:
+			SystemModelFactory.eINSTANCE.createSystemModel(currentResourceSet, systemModelURI, true); // load all resources...
+			currentResources.addAll(currentResourceSet.getResources());
+		} else {
+			// Append to history: Get models which changed in this version:
+			List<FileChange> newModelVersionChanges = nextModelVersionChanges;
+			
+			// Restart history:
+			if (newModelVersionChanges == null) {
+				newModelVersionChanges = modelRepository.getChanges(previousVersion, currentModelVersion, false);
+			}
+			
+			for (FileChange fileChange : newModelVersionChanges) {
+				if (!fileChange.getType().equals(FileChangeType.DELETE)) { // created or modified
+					Resource newResource = loadModel(fileChange, currentResourceSet);
+					
+					if (newResource != null) {
+						currentResources.add(newResource);
+					}
 				}
 			}
 		}
 		
-		// FIXME[WORKAROUND]: Introduce some general interface for patching of model versions.
-		Resource systemModelResource = patchSystemModelVersion(newResourceSet, newResources, currentModelVersion, bugReport);
-		
-		// Get old versions of models:
-		List<Resource> oldResources = previousResources;
+		// Patch system model:
+		Resource systemModelResource = patchSystemModelVersion(currentResourceSet, currentResources, currentModelVersion, bugReport);
 		
 		// Compute and commit model delta:
 		if (commitToDatabase) {
-			modelDelta.commitDelta(currentDatabaseVersion, repositoryBaseURI, oldResources, repositoryBaseURI, newResources);
+			modelDelta.commitDelta(currentDatabaseVersion, repositoryBaseURI, previousResources, repositoryBaseURI, currentResources);
 		}
 		
-		// Avoids resource leaks...
-		modelUnloadThread.execute(() -> UMLUtil.unloadUMLModels(oldResources));
-//		UMLUtil.unloadUMLModels(previousResources);
-		
-		// Prepare for next version:
+		// Prepare for next version -> Compute old resources for next incremental resource delta:
 		if (nextModelVersion != null) {
 			this.nextModelVersionChanges = modelRepository.getChanges(currentModelVersion, nextModelVersion, false);
-			this.previousResources = new ArrayList<>();
 			
+			Set<Resource> currentResourcesModifiedNext = new LinkedHashSet<>();
+			currentResourcesModifiedNext.add(systemModelResource);
+			
+			// Load all model from this version which are needed for comparison in the next version:
+			// (The versions can not be loaded after Git checkout.)
 			for (FileChange fileChange : nextModelVersionChanges) {
-				if (!fileChange.getType().equals(FileChangeType.ADD)) {
-					
-					// Keep only models from this version which will be modified in the next version:
-					Resource previousModel = newResourcesLocations.get(fileChange.getLocation());
-					
-					// Load models from this version which will be modified in the next version:
-					if (previousModel == null) {
-						previousModel = loadModel(fileChange, newResourceSet);
-					}
-					
-					previousResources.add(previousModel);
+				if (!fileChange.getType().equals(FileChangeType.ADD)) { // deleted or modified
+					Resource currentResourceModifiedNext = loadModel(fileChange, currentResourceSet);
+					currentResourcesModifiedNext.add(currentResourceModifiedNext);
 				}
 			}
 			
-			if (!previousResources.contains(systemModelResource)) {
-				previousResources.add(systemModelResource);
+			// Avoids resource leaks...
+			if (previousResources != null) {
+				// The lambda will directly access the current value in the objects field
+				// 'previousResources' from within the thread, which will be changed in the next
+				// step, so we need a copy; otherwise the wrong resources will be unloaded!
+				List<Resource> resourcesToBeUnloaded = new ArrayList<>(previousResources);
+				modelUnloadThread.execute(() -> UMLUtil.unloadUMLModels(resourcesToBeUnloaded));
 			}
+			
+			this.previousResources = new ArrayList<>(currentResourcesModifiedNext);
 		}
 	}
 
@@ -202,6 +199,7 @@ public class ModelVersion2Neo4j {
 	/**
 	 * Append model version and bug report information from data set.
 	 */
+	// FIXME[WORKAROUND]: Compute this while reverse engineering.
 	protected Resource patchSystemModelVersion(
 			ResourceSet newResourceSet, List<Resource> newResources, 
 			Version currentModelVersion, BugReport bugReport) {

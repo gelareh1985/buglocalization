@@ -78,7 +78,7 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 
 	private void deriveEdgeDelta(XMLResource oldResource, XMLResource newResource) {
 		
-		// Process old nodes to be removed:
+		// Process old edges to be removed:
 		if (oldResource != null) { // initial version?
 			for (EObject oldModelElement : (Iterable<EObject>) () -> EcoreUtil.getAllProperContents(oldResource, true)) {
 				String modelElementID = getModelElementID(oldResource, oldModelElement);
@@ -112,10 +112,10 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 						++index;
 					}
 				} else {
-					Object target = oldModelElement.eGet(reference);
+					Object oldTarget = oldModelElement.eGet(reference);
 					
-					if (target instanceof EObject) {
-						deriveRemovedEdgeBatchQuery(-1, modelElementID, newModelElement, oldModelElement, reference, (EObject) target);
+					if (oldTarget instanceof EObject) {
+						deriveRemovedEdgeBatchQuery(-1, modelElementID, newModelElement, oldModelElement, reference, (EObject) oldTarget);
 					}
 				}
 			}
@@ -128,12 +128,11 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	
 		Resource targetResourceOld = targetOld.eResource();
 	
-		if ((targetResourceOld instanceof XMLResource) && (containsOldResource(targetResourceOld))) {
+		if ((targetResourceOld instanceof XMLResource) && isInOldResourceScope(targetResourceOld)) {
 			String targetID = getModelElementID((XMLResource) targetResourceOld, targetOld);
-			XMLResource targetResourceNew = getNewResource(targetResourceOld);
 	
 			if (isRemovedEdge(index, sourceNew, reference,
-					targetResourceNew, targetID, targetOld)) {
+					targetResourceOld, targetID, targetOld)) {
 				Map<String, Object> properties = new HashMap<>();
 				properties.put("__last__version__", getOldVersion());
 				
@@ -143,19 +142,25 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	}
 
 	private boolean isRemovedEdge(int index, EObject sourceNew, EReference reference, 
-			XMLResource targetResourceNew, String targetID, EObject targetOld) {
+			Resource targetResourceOld, String targetID, EObject targetOld) {
 		
 		// removed source node?
-		if ((sourceNew == null) || (targetResourceNew == null)) {
+		if (sourceNew == null) {
 			return true; // all edges are removed
 		} else {
-			EObject targetNew = getModelElement(targetResourceNew, targetOld.eClass(), targetID);
+			XMLResource targetResourceNew = getNewResource(targetResourceOld);
 			
-			// removed target node?
-			if (targetNew == null) {
-				return true; // edge is removed
+			if (targetResourceNew == null) {
+				return true; // all edges are removed
 			} else {
-				return !isExistingEdge(index, sourceNew, reference, targetNew);
+				EObject targetNew = getModelElement(targetResourceNew, targetOld.eClass(), targetID);
+				
+				// removed target node?
+				if (targetNew == null) {
+					return true; // edge is removed
+				} else {
+					return !isExistingEdge(index, sourceNew, reference, targetNew);
+				}
 			}
 		}
 	}
@@ -175,10 +180,10 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 						++index;
 					}
 				} else {
-					Object target = newModelElement.eGet(reference);
+					Object newTarget = newModelElement.eGet(reference);
 					
-					if (target instanceof EObject) {
-						deriveCreatedEdgeBatchQuery(-1, modelElementID, oldModelElement, newModelElement, reference, (EObject) target);
+					if (newTarget instanceof EObject) {
+						deriveCreatedEdgeBatchQuery(-1, modelElementID, oldModelElement, newModelElement, reference, (EObject) newTarget);
 					}
 				}
 			}
@@ -188,12 +193,14 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	private void deriveCreatedEdgeBatchQuery(int index, String sourceID, EObject sourceOld, EObject sourceNew, EReference reference, EObject targetNew) {
 		Resource targetResourceNew = targetNew.eResource();
 	
-		if ((targetResourceNew instanceof XMLResource) && containsNewResource(targetResourceNew)) {
+		if ((targetResourceNew instanceof XMLResource) && isInNewResourceScope(targetResourceNew)) {
 			String targetID = getModelElementID((XMLResource) targetResourceNew, targetNew);
-			XMLResource targetResourceOld = getOldResource(targetResourceNew);
 	
-			if (isCreatedEdge(index, sourceOld, reference, 
-					targetResourceOld, targetID, targetNew)) {
+			if (isCreatedEdge(index, sourceOld, reference, targetResourceNew, targetID, targetNew)) {
+				
+				if (targetID.equals("org.eclipse.jdt.core/Lorg/eclipse/jdt/core/IAnnotatable;")) {
+					System.out.println("ModelCypherEdgeDelta.deriveCreatedEdgeBatchQuery()");
+				}
 				
 				Map<String, Object> createEdgeProperties = new HashMap<>();
 				createEdgeProperties.put("__containment__", reference.isContainment());
@@ -213,19 +220,25 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	}
 
 	private boolean isCreatedEdge(int index, EObject sourceOld, EReference reference, 
-			XMLResource targetResourceOld, String targetID, EObject targetNew) {
+			Resource targetResourceNew, String targetID, EObject targetNew) {
 		
 		// new source node?
-		if ((sourceOld == null) || (targetResourceOld == null)) {
+		if (sourceOld == null) {
 			return true; // all edges are new
 		} else {
-			EObject targetOld = getModelElement(targetResourceOld, targetNew.eClass(), targetID);
+			XMLResource targetResourceOld = getOldResource(targetResourceNew);
 			
-			// new target node?
-			if (targetOld == null) {
-				return true; // edge is new
+			if (targetResourceOld == null) {
+				return true; // all edges are new
 			} else {
-				return !isExistingEdge(index, sourceOld, reference, targetOld);
+				EObject targetOld = getModelElement(targetResourceOld, targetNew.eClass(), targetID);
+				
+				// new target node?
+				if (targetOld == null) {
+					return true; // edge is new
+				} else {
+					return !isExistingEdge(index, sourceOld, reference, targetOld);
+				}
 			}
 		}
 	}
