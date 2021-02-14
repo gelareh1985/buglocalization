@@ -36,7 +36,7 @@ if __name__ == '__main__':
         sample_prefetch_count=10, 
         multiprocessing=False, 
         log_level=100)
-    flow, callbacks = prediction_generator.get_generator("prediction", dataset.get_samples())
+    flow, callbacks = prediction_generator.get_generator("prediction", dataset.bug_samples)
          
     prediction = model.predict(flow, callbacks=callbacks)
     print(prediction)

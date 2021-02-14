@@ -28,10 +28,7 @@ class IDataSet:
     def __init__(self, is_negative: bool = False):
         self.bug_samples: List[ISample] = []
         self.is_negative: bool = is_negative
-
-    def get_samples(self) -> 'List[ISample]':
-        return self.bug_samples
-
+        
 
 class ISample:
 
@@ -39,8 +36,8 @@ class ISample:
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
 
-    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[Sequence, None, None]:  # type: ignore
-        pass
+    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[Sequence, None, None]:
+        raise NotImplementedError()
 
 # ===============================================================================
 # Text Graph Data Connector
@@ -48,7 +45,6 @@ class ISample:
 
 
 class DataSetTextGraph(IDataSet):
-    bug_samples: 'List[SampleTextGraph]'  # type: ignore
 
     def __init__(self, samples_path: str, is_negative: bool = False):
         super().__init__(is_negative)
@@ -58,6 +54,9 @@ class DataSetTextGraph(IDataSet):
         self.nodes_column_names: List[str] = ["index", "text", "type", "tag"]
         self.edges_column_names: List[str] = ["source", "target"]
         self.list_samples(self.samples_path)
+        
+    def get_samples_text_graph(self) -> List['SampleTextGraph']:
+        return cast(List[SampleTextGraph], self.bug_samples)
 
     def list_samples(self, folder: str):
         for filename in os.listdir(folder):
@@ -65,7 +64,7 @@ class DataSetTextGraph(IDataSet):
                 edge_list_path = folder + filename
                 self.bug_samples.append(self.create_sample(edge_list_path))
 
-    def create_sample(self, edge_list_path: str):
+    def create_sample(self, edge_list_path: str) -> 'SampleTextGraph':
         return SampleTextGraph(self, edge_list_path)
 
 
@@ -112,17 +111,19 @@ class SampleTextGraph(ISample):
 
 
 class DataSetTextGraphEmbedding(DataSetTextGraph):
-    bug_samples: 'List[SampleTextGraphEmbedding]'  # type: ignore
 
     def __init__(self, samples_path: str, is_negative: bool = False):
         super().__init__(samples_path, is_negative)
         self.compression = "gzip"
         self.load_feature_size()
         self.create_nodes_column_names()
+        
+    def get_samples_text_graph_embedding(self) -> List['SampleTextGraphEmbedding']:
+        return cast(List[SampleTextGraphEmbedding], self.bug_samples)
 
     def load_feature_size(self):
         if self.bug_samples:
-            self.feature_size = self.bug_samples[0].load_feature_size()
+            self.feature_size = self.get_samples_text_graph_embedding()[0].load_feature_size()
         else:
             raise Exception('No samples found')
 
@@ -140,7 +141,7 @@ class DataSetTextGraphEmbedding(DataSetTextGraph):
 
     def save_dataset_as_hdf(self, name: str):
         with pd.HDFStore(self.samples_path + name + ".h5", mode='w') as database:
-            for bug_sample in self.bug_samples:
+            for bug_sample in self.get_samples_text_graph_embedding():
                 database.put(key="nodes:" + bug_sample.sample_id,
                              value=bug_sample.nodes, format='fixed', complevel=9, complib='zlib')
                 database.put(key="edges:" + bug_sample.sample_id,
@@ -258,9 +259,8 @@ class SampleTextGraphEmbedding(SampleTextGraph):
 
 
 class DataSetTrainingTextGraphEmbedding(DataSetTextGraphEmbedding):
-    bug_samples: 'List[SampleTrainingTextGraphEmbedding]'  # type: ignore
 
-    def create_sample(self, edge_list_path: str) -> ISample:
+    def create_sample(self, edge_list_path: str) -> SampleTextGraphEmbedding:
         return SampleTrainingTextGraphEmbedding(self, edge_list_path)
 
 
@@ -299,7 +299,6 @@ class SampleTrainingTextGraphEmbedding(SampleTextGraphEmbedding):
 
 
 class DataSetNeo4j(IDataSet):
-    bug_samples: 'List[SampleNeo4j]'  # type: ignore
 
     # https://py2neo.org/v4/database.html
     # https://stellargraph.readthedocs.io/en/stable/demos/basics/loading-saving-neo4j.html
@@ -323,6 +322,9 @@ class DataSetNeo4j(IDataSet):
         # Opened Connection:
         self.neo4j_graph = Graph(host=host, port=port, user=user, password=password)
         self.list_samples()
+        
+    def get_samples_neo4j(self) -> List['SampleNeo4j']:
+        return cast(List[SampleNeo4j], self.bug_samples)
 
     class TypbasedGraphSlicingNeo4j(TypbasedGraphSlicing):
 
@@ -365,7 +367,7 @@ class DataSetNeo4j(IDataSet):
         for db_version in self.run_query(self.query_buggy_versions())['versions']:
             self.bug_samples.append(self.create_sample(db_version))
 
-    def create_sample(self, db_version: int):
+    def create_sample(self, db_version: int) -> 'SampleNeo4j':
         return SampleNeo4j(self, db_version)
 
     # # Send query to the Neo4j database and parse the result to a Pandas data frame #
@@ -731,9 +733,8 @@ class SampleNeo4j(ISample):
 
 
 class DataSetPredictionNeo4j(DataSetNeo4j):
-    bug_samples: 'List[SamplePredictionNeo4j]'  # type: ignore
 
-    def create_sample(self, db_version: int):
+    def create_sample(self, db_version: int) -> SampleNeo4j:
         return SamplePredictionNeo4j(self, db_version)
 
 

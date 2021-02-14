@@ -28,8 +28,8 @@ import stellargraph as sg  # type: ignore
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from tensorflow import keras  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow.keras.utils import (Sequence,  # type: ignore # @UnusedImport
-                                    plot_model)
+from tensorflow.keras.utils import (Sequence,  # type: ignore 
+                                    plot_model)  # @UnusedImport
 
 from bug_localization_data_set import (DataSetTrainingTextGraphEmbedding,
                                        IDataSet, ISample)
