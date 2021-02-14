@@ -73,8 +73,15 @@ class BugLocalizationGenerator(IBugLocalizationGenerator):
                     # Convert Keras Sequence to generator:
                     for batch_num in range(len(flow)):
                         bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
-                        bug_location_samples.append((bug_location_sample_inputs, bug_location_sample_label))
-                        sample_count += len(bug_location_sample_label)
+                        
+                        if bug_location_sample_label is None:
+                            # Prediction:
+                            bug_location_samples.append((bug_location_sample_inputs))
+                            sample_count += 1
+                        else:
+                            # Training:
+                            bug_location_samples.append((bug_location_sample_inputs, bug_location_sample_label))
+                            sample_count += len(bug_location_sample_label)
 
             if self.log_level >= 100:
                 print("Sample", time() - t)

@@ -7,7 +7,7 @@ from __future__ import annotations
 import ntpath
 import os
 import time  # @UnusedImport
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple, cast
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple, cast, Union
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -15,13 +15,14 @@ from pandas.core.frame import DataFrame  # type: ignore
 from py2neo import Graph, Node  # type: ignore  # @UnusedImport
 from stellargraph import StellarGraph  # type: ignore
 from stellargraph.mapper import GraphSAGELinkGenerator  # type: ignore
-from tensorflow.keras.utils import TFSequence  # type: ignore # @UnusedImport
+from tensorflow.keras.utils import Sequence  # type: ignore # @UnusedImport
 
 from bug_localization_meta_model import (GraphSlicing, MetaModel,
                                          NodeSelfEmbedding,
                                          TypbasedGraphSlicing)
 from bug_localization_util import t
 
+ISample = Union[ISample]
 
 class IDataSet:
 
@@ -39,7 +40,7 @@ class ISample:
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
 
-    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[TFSequence, None, None]:  # type: ignore
+    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[Sequence, None, None]:  # type: ignore
         pass
 
 # ===============================================================================
@@ -267,7 +268,7 @@ class DataSetTrainingTextGraphEmbedding(DataSetTextGraphEmbedding):
 class SampleTrainingTextGraphEmbedding(SampleTextGraphEmbedding):
     dataset: DataSetTrainingTextGraphEmbedding
 
-    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[TFSequence, None, None]:
+    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[Sequence, None, None]:
 
         # Load each bug sample:
         self.load_bug_sample()
@@ -382,7 +383,7 @@ class DataSetNeo4j(IDataSet):
     # # Subgraph Cypher queries # #
 
     def query_buggy_versions(self):
-        return "MATCH (n:TracedBugReport) RETURN n.__initial__version__ AS versions"
+        return "MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions"
 
     def query_edge_containment(self, is_value: bool):
         if is_value:
@@ -660,14 +661,14 @@ class SampleNeo4j(ISample):
         # # Cross-Tree Outgoing Edges # #
         tree_of_outgoing = set()
 
-        if slicing.parent_outgoing and parent_edges is not None:
+        if slicing.parent_outgoing and parent_edges is not None and not parent_edges.empty:
             for parent in parent_edges['target']:
                 tree_of_outgoing.add(parent)
 
         if slicing.self_outgoing:
             tree_of_outgoing.add(node_id)
 
-        if slicing.child_outgoing and child_edges is not None:
+        if slicing.child_outgoing and child_edges is not None and not child_edges.empty:
             for child in child_edges['target']:
                 tree_of_outgoing.add(child)
 
@@ -679,14 +680,14 @@ class SampleNeo4j(ISample):
         # # Cross-Tree Incoming Edges # #
         tree_of_incoming = set()
 
-        if slicing.parent_incoming and parent_edges is not None:
+        if slicing.parent_incoming and parent_edges is not None and not parent_edges.empty:
             for parent in parent_edges['target']:
                 tree_of_incoming.add(parent)
 
         if slicing.self_incoming:
             tree_of_incoming.add(node_id)
 
-        if slicing.child_incoming and child_edges is not None:
+        if slicing.child_incoming and child_edges is not None and not child_edges.empty:
             for child in child_edges['target']:
                 tree_of_incoming.add(child)
 
@@ -740,7 +741,7 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
 class SamplePredictionNeo4j(SampleNeo4j):
     dataset: DataSetPredictionNeo4j
 
-    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[TFSequence, None, None]:
+    def sample_generator(self, num_samples: List[int], log_level=0) -> Generator[Sequence, None, None]:
         typebased_slicing = self.dataset.typebased_slicing
         meta_model = self.dataset.meta_model
 

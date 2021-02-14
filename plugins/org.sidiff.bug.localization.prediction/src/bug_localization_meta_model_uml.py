@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Set
 
-import numpy as np
-import pandas as pd
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 from gensim.models import KeyedVectors  # type: ignore
 from py2neo import Node  # type: ignore
 
