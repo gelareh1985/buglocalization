@@ -21,7 +21,7 @@ class TypbasedGraphSlicing:
     def get_types(self) -> List[str]:
         return list(self.type_label_to_graph_slicing.keys())
 
-    def get_slicing(self, type_label: str) -> GraphSlicing:
+    def get_slicing(self, type_label: str) -> 'GraphSlicing':
         return self.type_label_to_graph_slicing[type_label]
 
 

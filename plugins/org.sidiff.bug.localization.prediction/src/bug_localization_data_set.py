@@ -7,7 +7,7 @@ from __future__ import annotations
 import ntpath
 import os
 import time  # @UnusedImport
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple, cast, Union
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -22,7 +22,6 @@ from bug_localization_meta_model import (GraphSlicing, MetaModel,
                                          TypbasedGraphSlicing)
 from bug_localization_util import t
 
-ISample = Union[ISample]
 
 class IDataSet:
 
@@ -30,7 +29,7 @@ class IDataSet:
         self.bug_samples: List[ISample] = []
         self.is_negative: bool = is_negative
 
-    def get_samples(self) -> List[ISample]:
+    def get_samples(self) -> 'List[ISample]':
         return self.bug_samples
 
 
@@ -49,7 +48,7 @@ class ISample:
 
 
 class DataSetTextGraph(IDataSet):
-    bug_samples: List[SampleTextGraph]  # type: ignore
+    bug_samples: 'List[SampleTextGraph]'  # type: ignore
 
     def __init__(self, samples_path: str, is_negative: bool = False):
         super().__init__(is_negative)
@@ -113,7 +112,7 @@ class SampleTextGraph(ISample):
 
 
 class DataSetTextGraphEmbedding(DataSetTextGraph):
-    bug_samples: List[SampleTextGraphEmbedding]  # type: ignore
+    bug_samples: 'List[SampleTextGraphEmbedding]'  # type: ignore
 
     def __init__(self, samples_path: str, is_negative: bool = False):
         super().__init__(samples_path, is_negative)
@@ -259,7 +258,7 @@ class SampleTextGraphEmbedding(SampleTextGraph):
 
 
 class DataSetTrainingTextGraphEmbedding(DataSetTextGraphEmbedding):
-    bug_samples: List[SampleTrainingTextGraphEmbedding]  # type: ignore
+    bug_samples: 'List[SampleTrainingTextGraphEmbedding]'  # type: ignore
 
     def create_sample(self, edge_list_path: str) -> ISample:
         return SampleTrainingTextGraphEmbedding(self, edge_list_path)
@@ -300,7 +299,7 @@ class SampleTrainingTextGraphEmbedding(SampleTextGraphEmbedding):
 
 
 class DataSetNeo4j(IDataSet):
-    bug_samples: List[SampleNeo4j]  # type: ignore
+    bug_samples: 'List[SampleNeo4j]'  # type: ignore
 
     # https://py2neo.org/v4/database.html
     # https://stellargraph.readthedocs.io/en/stable/demos/basics/loading-saving-neo4j.html
@@ -732,7 +731,7 @@ class SampleNeo4j(ISample):
 
 
 class DataSetPredictionNeo4j(DataSetNeo4j):
-    bug_samples: List[SamplePredictionNeo4j]  # type: ignore
+    bug_samples: 'List[SamplePredictionNeo4j]'  # type: ignore
 
     def create_sample(self, db_version: int):
         return SamplePredictionNeo4j(self, db_version)
