@@ -1,0 +1,17 @@
+{
+    "git.ignoreLimitWarning": true,
+    "python.pythonPath": "C:\\IDE\\Anaconda3\\envs\\tf-gpu\\python.exe",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=150",
+        "--ignore=E231, E252, E265, W291, E128, W293, E722, E402, F401",
+    ],
+    "python.linting.pylintEnabled": false,
+    "python.linting.mypyEnabled": true,
+    "python.formatting.autopep8Args": [
+        "--max-line-length",
+        "150",
+        "--experimental"
+    ]
+}

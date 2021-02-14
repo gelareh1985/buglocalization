@@ -19,17 +19,22 @@ if gpus:
         print(e)
 #===============================================================================
 
-from bug_localization_data_set import IDataSet, ISample, DataSetTrainingTextGraphEmbedding
-from bug_localization_sample_generator import IBugLocalizationGenerator, BugLocalizationGenerator
+import datetime
 from pathlib import Path
+from time import time
+from typing import List, Tuple
+
+import stellargraph as sg  # type: ignore
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from tensorflow import keras  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow.keras.utils import Sequence, plot_model  # type: ignore # @UnusedImport
-from time import time
-from typing import List, Tuple
-import datetime
-import stellargraph as sg  # type: ignore
+from tensorflow.keras.utils import (Sequence,  # type: ignore # @UnusedImport
+                                    plot_model)
+
+from bug_localization_data_set import (DataSetTrainingTextGraphEmbedding,
+                                       IDataSet, ISample)
+from bug_localization_sample_generator import (BugLocalizationGenerator,
+                                               IBugLocalizationGenerator)
 
 # from tqdm.keras import TqdmCallback  # type: ignore
 
@@ -37,11 +42,11 @@ import stellargraph as sg  # type: ignore
 # Environmental Information
 #===============================================================================
 
-# positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"
-# negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"
+# positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"  # noqa: E501
+# negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"  # noqa: E501
 
-positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples" + "/"
-negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples" + "/"
+positve_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples" + "/"  # noqa: E501
+negative_samples_path:str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples" + "/"  # noqa: E501
 
 # NOTE: Paths should not be too long, causes error (on Windows)!
 model_training_save_dir = r"D:\buglocalization_gelareh_home\training\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
@@ -53,37 +58,37 @@ model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 
 class DataSetSplitter:
-    
-    def __init__(self, dataset_positive:IDataSet, dataset_negative:IDataSet):
-        self.dataset_positive:IDataSet = dataset_positive
-        self.dataset_negative:IDataSet = dataset_negative
-        self.bug_sample_sequence:List[ISample] = self.create_bug_sample_sequence()
-        
+
+    def __init__(self, dataset_positive: IDataSet, dataset_negative: IDataSet):
+        self.dataset_positive: IDataSet = dataset_positive
+        self.dataset_negative: IDataSet = dataset_negative
+        self.bug_sample_sequence: List[ISample] = self.create_bug_sample_sequence()
+
     def create_bug_sample_sequence(self) -> List[ISample]:
-        
-        # Mix positive and negative samples to create a full set of samples 
+
+        # Mix positive and negative samples to create a full set of samples
         # that can be split to create a training and validation set of samples:
         bug_sample_sequence = []
         index = 0
-        
+
         while index < len(self.dataset_positive.bug_samples) or index < len(self.dataset_negative.bug_samples):
             if index < len(self.dataset_positive.bug_samples):
                 bug_sample_sequence.append(self.dataset_positive.bug_samples[index])
             if index < len(self.dataset_negative.bug_samples):
                 bug_sample_sequence.append(self.dataset_negative.bug_samples[index])
-                     
+
             index += 1
-            
+
         return bug_sample_sequence
-        
-    def split(self, fraction:int) -> Tuple[List[ISample], List[ISample]]:
-        
+
+    def split(self, fraction: int) -> Tuple[List[ISample], List[ISample]]:
+
         # Split training and test data:
         split_idx = len(self.bug_sample_sequence) // fraction
-        
+
         bug_samples_train = self.bug_sample_sequence[:split_idx]
         bug_samples_eval = self.bug_sample_sequence[split_idx:]
-        
+
         return bug_samples_train, bug_samples_eval
 
 #===============================================================================
@@ -92,11 +97,18 @@ class DataSetSplitter:
 
 
 class BugLocalizationAIModelBuilder:
-    
-    def create_model(self, num_samples:List[int], layer_sizes:List[int], feature_size:int, checkpoint_dir:str, dropout:float=0.0, normalize="l2") -> keras.Model:
+
+    def create_model(self,
+                     num_samples: List[int],
+                     layer_sizes: List[int],
+                     feature_size: int,
+                     checkpoint_dir: str,
+                     dropout: float = 0.0,
+                     normalize="l2") -> keras.Model:
+
         print('Creating a new model')
         Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
-        
+
         graphsage = GraphSAGE(
             n_samples=num_samples,
             layer_sizes=layer_sizes,
@@ -106,55 +118,55 @@ class BugLocalizationAIModelBuilder:
             dropout=dropout,  # Dropout supplied to each layer: 0 < dropout < 1, 0 means no dropout.
             normalize=normalize  # l2 or None
         )
-         
+
         # Build the model and expose input and output sockets of GraphSAGE model for link prediction
         x_inp, x_out = graphsage.in_out_tensors()
-         
+
         prediction = link_classification(
             output_dim=1, output_act="relu", edge_embedding_method="ip"
         )(x_out)
-         
+
         model = keras.Model(inputs=x_inp, outputs=prediction)
-         
+
         model.compile(
             optimizer=keras.optimizers.Adam(lr=1e-3),
             loss=keras.losses.binary_crossentropy,  # two-class classification problem
             metrics=["acc"],
         )
-        
+
         return model
-    
-    def restore_model(self, model_dir:str) -> keras.Model:
+
+    def restore_model(self, model_dir: str) -> keras.Model:
         print('Restoring model from', model_dir)
         # https://stellargraph.readthedocs.io/en/stable/api.html -> stellargraph.custom_keras_layers= {...}
         return keras.models.load_model(model_dir, custom_objects=sg.custom_keras_layers)
 
-    
+
 class BugLocalizationAIModelTrainer:
-    
-    def __init__(self, dataset_splitter:DataSetSplitter, model:keras.Model, num_samples:List[int], checkpoint_dir:str):
-        self.dataset_splitter:DataSetSplitter = dataset_splitter
-        self.model:keras.Model = model
-        self.num_samples:List[int] = num_samples
-        
+
+    def __init__(self, dataset_splitter: DataSetSplitter, model: keras.Model, num_samples: List[int], checkpoint_dir: str):
+        self.dataset_splitter: DataSetSplitter = dataset_splitter
+        self.model: keras.Model = model
+        self.num_samples: List[int] = num_samples
+
         self.callbacks = []
-        
+
         # This callback saves a SavedModel every epoch (or X batches).
         self.callbacks.append(self.Timer())
         self.callbacks.append(keras.callbacks.ModelCheckpoint(filepath=checkpoint_dir, save_freq='epoch'))
         self.callbacks.append(CSVLogger(checkpoint_dir + "model_history_log.csv", append=True))
         self.callbacks.append(self.BatchLogger())
-        
-    def train(self, epochs:int, sample_generator:IBugLocalizationGenerator, log_level=0):
-        
+
+    def train(self, epochs: int, sample_generator: IBugLocalizationGenerator, log_level=0):
+
         # Initialize training data:
         bug_samples_train, bug_samples_eval = dataset_splitter.split(2)
         train_flow, train_callbacks = sample_generator.get_generator("training", bug_samples_train)
         eval_flow, eval_callbacks = sample_generator.get_generator("evaluation", bug_samples_eval)
-        
+
         self.callbacks.extend(train_callbacks)
         self.callbacks.extend(eval_callbacks)
-        
+
         # # Train Model # #
         # self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
         history = self.model.fit(
@@ -168,19 +180,19 @@ class BugLocalizationAIModelTrainer:
             callbacks=self.callbacks)
 
         if log_level >= 1:
-            for layer in model.layers: 
+            for layer in model.layers:
                 print(layer.get_config(), layer.get_weights())
-                
+
             sg.utils.plot_history(history)
-        
-        # # Save Final Trained Model # #     
+
+        # # Save Final Trained Model # #
         self.model.save(model_training_save_dir)
-        
+
         # # Evaluate Trained Model # #
         self.evaluate(eval_flow)
-    
-    # TODO: Write to file    
-    def evaluate(self, evaluation_flow:Sequence):
+
+    # TODO: Write to file
+    def evaluate(self, evaluation_flow: Sequence):
         evaluation_metrics = self.model.evaluate(evaluation_flow)
 
         print("Evaluation metrics of the model:")
@@ -204,7 +216,7 @@ class BugLocalizationAIModelTrainer:
 
         def __init__(self):
             self.seen = 0
-    
+
         def on_batch_end(self, batch, logs={}):  # @UnusedVariable
             if 'metrics' in self.params:
                 self.seen += logs.get('size', 0)
@@ -222,57 +234,57 @@ class BugLocalizationAIModelTrainer:
 
 
 if __name__ == '__main__':
-    
+
     #===========================================================================
     # Create Training and Test Data:
     #===========================================================================
-    
+
     # Collect all graphs from the given folder:
     dataset_positive = DataSetTrainingTextGraphEmbedding(positve_samples_path, is_negative=False)
     dataset_negative = DataSetTrainingTextGraphEmbedding(negative_samples_path, is_negative=True)
     dataset_splitter = DataSetSplitter(dataset_positive, dataset_negative)
-    
+
     #===========================================================================
     # Create AI Model:
     #===========================================================================
-    
+
     # GraphSAGE Settings:
     num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
     layer_sizes = [20, 20]  # Size of GraphSAGE hidden layers
-    
+
     assert len(num_samples) == len(layer_sizes), "The number of neighbor node samples need to be specified per GraphSAGE layer!"
-    
+
     # Regularization:
-    
-    # Dropout supplied to each GraphSAGE layer: 0 < dropout < 1, 0 means no dropout. 
+
+    # Dropout supplied to each GraphSAGE layer: 0 < dropout < 1, 0 means no dropout.
     # Dropout refers to ignoring neurons during the training phase which are chosen at random to prevent over-fitting.
     # [https://medium.com/@amarbudhiraja/https-medium-com-amarbudhiraja-learning-less-to-learn-better-dropout-in-deep-machine-learning-74334da4bfc5]
     dropout = 0.0  # 0.3
-    
+
     # GraphSAGE input normalization: l2 or None
     normalize = "l2"
-    
+
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
     model = bug_localization_model_builder.create_model(
         num_samples, layer_sizes, dataset_positive.feature_size, model_training_checkpoint_dir, dropout, normalize)
-    
+
     # Plot model:
     # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]
-    # plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot 
-    
+    # plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot
+
     #===========================================================================
     # Train and Evaluate AI Model:
     #===========================================================================
-    
+
     # Training Settings:
-    epochs = 20  # Number of training epochs. 
+    epochs = 20  # Number of training epochs.
     batch_size = 40  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     generator_workers = 2  # Number of threads that load/generate the batches in parallel.
     multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
     sample_prefetch_count = batch_size * 2  # Preload some data for fast (GPU) processing
     log_level = 2  # Some console output for debugging...
-    
+
     bug_localization_generator = BugLocalizationGenerator(
         num_samples,
         batch_size,
@@ -281,11 +293,11 @@ if __name__ == '__main__':
         sample_prefetch_count,
         multiprocessing,
         log_level)
-    
+
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
         dataset_splitter=dataset_splitter,
         model=model,
         num_samples=num_samples,
         checkpoint_dir=model_training_checkpoint_dir)
-    
+
     bug_localization_model_trainer.train(epochs, bug_localization_generator, log_level)

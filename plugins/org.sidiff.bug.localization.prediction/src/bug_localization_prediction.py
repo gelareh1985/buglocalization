@@ -8,10 +8,10 @@ from bug_localization_util import t
 from bug_localization_sample_generator import BugLocalizationGenerator
 from time import time
 
-pretrained_dictionary_path = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\data\GoogleNews-vectors-negative300.bin"
+pretrained_dictionary_path = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\data\GoogleNews-vectors-negative300.bin"  # noqa: E501
 dictionary_words_length = 300
 
-bug_localization_model_path = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\trained_model_2021-02-05_03-38-53_train90_test10" + "/"
+bug_localization_model_path = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\trained_model_2021-02-05_03-38-53_train90_test10" + "/"  # noqa: E501
 
 if __name__ == '__main__':
     
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     print("Start Prediction ...")
     start_time = time()
-    
+
     prediction_generator = BugLocalizationGenerator(
         num_samples, 
         batch_size=20, 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         sample_prefetch_count=10, 
         multiprocessing=False, 
         log_level=100)
-    flow, callbacks = prediction_generator.get_generator("prediction", dataset.bug_samples)
+    flow, callbacks = prediction_generator.get_generator("prediction", dataset.get_samples())
          
     prediction = model.predict(flow, callbacks=callbacks)
     print(prediction)
