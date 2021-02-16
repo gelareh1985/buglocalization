@@ -8,7 +8,7 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from gensim.models import KeyedVectors  # type: ignore
 
-from bug_localization_data_set import DataSetTextGraph, SampleTextGraph
+from bug_localization_data_set_text_graph import DataSetTextGraph, BugSampleTextGraph
 from bug_localization_util import WordDictionary, text_to_words
 
 positve_samples_path = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\positivesamples/"  # noqa: E501
@@ -38,7 +38,7 @@ class DatasetPropertyEmbedding:
                 # self.sample_embedding(negative_samples_path, negative_bug_sample, log)
                 executor.submit(self.sample_embedding, negative_samples_path, negative_bug_sample, log)
 
-    def sample_embedding(self, path: str, bug_sample: SampleTextGraph, log):
+    def sample_embedding(self, path: str, bug_sample: BugSampleTextGraph, log):
         bug_sample.load()
 
         # Encoded nodes:

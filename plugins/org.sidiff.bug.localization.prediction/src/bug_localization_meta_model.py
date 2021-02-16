@@ -2,7 +2,7 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-from __future__ import annotations
+from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
 from typing import Dict, List, Set
 

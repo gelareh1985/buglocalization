@@ -2,7 +2,7 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-from __future__ import annotations
+from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
 from typing import Dict, List, Optional, Set
 
@@ -103,18 +103,19 @@ class MetaModelUML(MetaModel):
     # Specifies all meta types that will be considered as model elements.
     def get_model_meta_type_labels(self) -> List[str]:
         model_meta_type_labels = [
-            "Model",
-            "Package",
+            # "Model",
+            # "Package",
             "Class",
-            "Interface",
-            "Enumeration",
-            "DataType",
-            "Operation",
-            "Parameter",
-            "Property",
-            "EnumerationLiteral",
-            "Generalization",
-            "InterfaceRealization",
+            # "Interface",
+            # "Enumeration",
+            # "DataType",
+            # "Operation",
+            # "Parameter",
+            # "Property",
+            # "EnumerationLiteral",
+            # "Generalization",
+            # "InterfaceRealization",
+            # "Comment"
 
             # FIXME: "unnamed" Literal... model elements -> Fixed need new model training
             # "InstanceValue",
@@ -123,21 +124,19 @@ class MetaModelUML(MetaModel):
             # "LiteralReal",
             # "LiteralString",
             # "LiteralUnlimitedNatural",
-
-            "Comment"
         ]
         return model_meta_type_labels
 
     # Specifies all meta types that will be considered as bug locations.
     def get_bug_location_model_meta_type_labels(self) -> Set[str]:
         bug_location_model_meta_type_labels = {
-            "Package",
+            # "Package",
             "Class",
-            "Interface",
-            "Enumeration",
-            "DataType",
-            "Operation",
-            "Property"
+            # "Interface",
+            # "Enumeration",
+            # "DataType",
+            # "Operation",
+            # "Property"
         }
 
         # Consistency validation:
@@ -208,7 +207,7 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
     def load(self):
         if self.dictionary_words is None:
             # use empty dict {} for testing
-            self.dictionary_words = KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)
+            self.dictionary_words = {}#KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)
 
     def unload(self):
         self.dictionary_words = None
