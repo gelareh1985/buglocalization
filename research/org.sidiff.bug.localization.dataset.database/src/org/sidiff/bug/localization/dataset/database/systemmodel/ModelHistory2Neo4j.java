@@ -32,6 +32,8 @@ public class ModelHistory2Neo4j {
 	
 	private boolean startWithFullVersion = true;
 	
+	private String stopOnGitVersion = null;
+	
 	private int reopenSession = 10; // prevent resource leaks...
 	
 	private boolean onlyBuggyVersions = false;
@@ -63,6 +65,14 @@ public class ModelHistory2Neo4j {
 
 	public void setStartWithFullVersion(boolean startWithFullVersion) {
 		this.startWithFullVersion = startWithFullVersion;
+	}
+	
+	public String getStopOnGitVersion() {
+		return stopOnGitVersion;
+	}
+
+	public void setStopOnGitVersion(String stopOnGitVersion) {
+		this.stopOnGitVersion = stopOnGitVersion;
 	}
 
 	public int getReopenSession() {
@@ -104,6 +114,10 @@ public class ModelHistory2Neo4j {
 			Version previousVersion = historyIterator.getOlderVersion();
 			Version currentVersion = historyIterator.next();
 			Version nextVersion = historyIterator.getNewerVersion();
+			
+			if ((stopOnGitVersion != null) && currentVersion.getIdentification().equals(stopOnGitVersion)) {
+				break;
+			}
 			
 			// reopen transaction to prevent resource leaks.
 			if (databaseVersion % reopenSession == 0) {

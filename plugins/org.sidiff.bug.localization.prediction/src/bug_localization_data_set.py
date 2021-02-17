@@ -37,6 +37,12 @@ class IBugSample:
         self.location_samples: List[ILocationSample] = []
 
     def initialize(self, log_level: int = 0):
+        """
+        Will be lazely called to create all (not yet inistialized) "location samples".
+
+        Args:
+            log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
+        """
         ...
 
     def __len__(self) -> int:
@@ -52,21 +58,48 @@ class IBugSample:
 class ILocationSample:
 
     def initialize(self, bug_sample: IBugSample, log_level: int = 0):
+        """
+        Will be lazely called to initialize the provided data: label, graph, bug report, model location, is negative
+
+        Args:
+            bug_sample (IBugSample): The parent/corresponding bug report.
+            log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
+        """
         ...
 
     def label(self) -> Optional[Union[float, int]]:
+        """
+        Returns:
+            Optional[Union[float, int]]: The expected result for training, or the model element ID as "sample ID" for prediction.
+        """
         return -1
 
     def graph(self) -> StellarGraph:
+        """
+        Returns:
+            StellarGraph: The graph which will be used for sampling paths to neigbors form the given bug report and model element location.
+        """
         raise NotImplementedError()
 
     def bug_report(self) -> Union[int, str]:
+        """
+        Returns:
+            Union[int, str]: The node ID (in the given Stellar-Graph) of the corresponding bug report.
+        """
         raise NotImplementedError()
 
     def model_location(self) -> Union[int, str]:
+        """
+        Returns:
+            Union[int, str]: The node ID (in the given Stellar-Graph) of the corresponding model element.
+        """
         raise NotImplementedError()
 
     def is_negative(self) -> Optional[bool]:
+        """
+        Returns:
+            Optional[bool]: During training, true if it is a negative sample; false if it is a positive sampel.
+        """
         raise NotImplementedError()
 
 

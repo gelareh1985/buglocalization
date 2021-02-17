@@ -8,7 +8,7 @@
     "python.linting.flake8CategorySeverity.W": "Warning",
     "python.linting.flake8Args": [
         "--max-line-length=150",
-        "--ignore=E231, E252, E265, W291, E128, W293, E722, E402, F401, W391",
+        "--ignore=E231, E252, E265, W291, E128, W293, E722, E402, F401, W391, W504",
     ],
     "python.linting.pylintArgs": [
         "--enable=W0614"

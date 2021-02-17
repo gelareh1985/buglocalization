@@ -20,10 +20,10 @@ from bug_localization_util import text_to_words
 class MetaModelUML(MetaModel):
 
     # Specifies the slicing of subgraph for embedding of model elements.
-    def get_slicing_criterion(self, dnn_depth: int) -> TypbasedGraphSlicing:
+    def get_slicing_criterion(self, max_dnn_depth: int) -> TypbasedGraphSlicing:
         slicing = TypbasedGraphSlicing()
 
-        type_model = GraphSlicing(dnn_depth,
+        type_model = GraphSlicing(max_dnn_depth,
                                   parent_levels=0,
                                   parent_incoming=False,
                                   parent_outgoing=False,
@@ -36,7 +36,7 @@ class MetaModelUML(MetaModel):
                                   incoming_distance=0)
         slicing.add_type('Model', type_model)
 
-        type_package = GraphSlicing(dnn_depth,
+        type_package = GraphSlicing(max_dnn_depth,
                                     parent_levels=5,
                                     parent_incoming=False,
                                     parent_outgoing=False,
@@ -49,7 +49,7 @@ class MetaModelUML(MetaModel):
                                     incoming_distance=0)
         slicing.add_type('Package', type_package)
 
-        type_classifier = GraphSlicing(dnn_depth,
+        type_classifier = GraphSlicing(max_dnn_depth,
                                        parent_levels=5,
                                        parent_incoming=False,
                                        parent_outgoing=False,
@@ -65,7 +65,7 @@ class MetaModelUML(MetaModel):
         slicing.add_type('Enumeration', type_classifier)
         slicing.add_type('DataType', type_classifier)
 
-        type_operation = GraphSlicing(dnn_depth,
+        type_operation = GraphSlicing(max_dnn_depth,
                                       parent_levels=5,
                                       parent_incoming=False,
                                       parent_outgoing=False,
@@ -78,7 +78,7 @@ class MetaModelUML(MetaModel):
                                       incoming_distance=1)
         slicing.add_type('Operation', type_operation)
 
-        type_property = GraphSlicing(dnn_depth,
+        type_property = GraphSlicing(max_dnn_depth,
                                      parent_levels=5,
                                      parent_incoming=False,
                                      parent_outgoing=False,
@@ -103,8 +103,8 @@ class MetaModelUML(MetaModel):
     # Specifies all meta types that will be considered as model elements.
     def get_model_meta_type_labels(self) -> List[str]:
         model_meta_type_labels = [
-            # "Model",
-            # "Package",
+            "Model",
+            "Package",
             "Class",
             # "Interface",
             # "Enumeration",
@@ -130,7 +130,7 @@ class MetaModelUML(MetaModel):
     # Specifies all meta types that will be considered as bug locations.
     def get_bug_location_model_meta_type_labels(self) -> Set[str]:
         bug_location_model_meta_type_labels = {
-            # "Package",
+            "Package",
             "Class",
             # "Interface",
             # "Enumeration",

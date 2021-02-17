@@ -8,7 +8,7 @@
             "name": "Bug Localization - Prediction",
             "type": "python",
             "request": "launch",
-            "program": "src/bug_localization_prediction.py",
+            "program": "src/bug_localization_prediction_test.py",
             "console": "integratedTerminal"
         },
         {

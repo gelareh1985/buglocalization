@@ -7,17 +7,13 @@ from __future__ import annotations  # FIXME: Currently not supported by PyDev
 import ntpath
 import os
 import time  # @UnusedImport
-from itertools import chain, islice
-from typing import (Any, Dict, Generator, List, Optional, Set, Tuple, Union,
-                    cast)
+from typing import Any, Dict, List, Optional, Set, Tuple, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas.core.frame import DataFrame  # type: ignore
 from py2neo import Graph, Node  # type: ignore  # @UnusedImport
 from stellargraph import StellarGraph  # type: ignore
-from stellargraph.mapper import GraphSAGELinkGenerator  # type: ignore
-from tensorflow.keras.utils import Sequence  # type: ignore # @UnusedImport
 
 from bug_localization_data_set import IBugSample, IDataSet, ILocationSample
 from bug_localization_meta_model import (GraphSlicing, MetaModel,
@@ -25,9 +21,32 @@ from bug_localization_meta_model import (GraphSlicing, MetaModel,
                                          TypbasedGraphSlicing)
 from bug_localization_util import t
 
+
 # ===============================================================================
 # Neo4j Data Connector
 # ===============================================================================
+
+
+class Neo4jConfiguration:
+
+    def __init__(self,
+                 neo4j_host: str = 'localhost',
+                 neo4j_port: int = 7687,
+                 neo4j_user: str = None,
+                 neo4j_password: str = None):
+        """
+        The configuration parameters for connection to Neo4j graph database.
+
+        Args:
+            neo4j_host (str): Neo4j host address. Defaults to localhost.
+            neo4j_port (int, optional): Neo4j connection port. Defaults to bolt port 7687.
+            neo4j_user (str, optional): Neo4j user name for connection. Defaults to None.
+            neo4j_password (str, optional): Password for connection. Defaults to None.
+        """
+        self.neo4j_host: str = neo4j_host
+        self.neo4j_port: Optional[int] = neo4j_port
+        self.neo4j_user: Optional[str] = neo4j_user
+        self.neo4j_password: Optional[str] = neo4j_password
 
 
 class DataSetNeo4j(IDataSet):
@@ -36,15 +55,12 @@ class DataSetNeo4j(IDataSet):
     # https://stellargraph.readthedocs.io/en/stable/demos/basics/loading-saving-neo4j.html
 
     def __init__(self, meta_model: MetaModel, node_self_embedding: NodeSelfEmbedding, typebased_slicing: TypbasedGraphSlicing,
-                 host: str, port: int = None, user: str = None, password: str = None, is_negative: bool = False):
+                 neo4j_config: Neo4jConfiguration, is_negative: bool = False):
 
         super().__init__(is_negative)
 
         # Connnection info:
-        self.host: str = host
-        self.port: Optional[int] = port
-        self.user: Optional[str] = user
-        self.password: Optional[str] = password
+        self.neo4j_config = neo4j_config
 
         # Meta-model configuration
         self.meta_model = meta_model
@@ -52,7 +68,8 @@ class DataSetNeo4j(IDataSet):
         self.typebased_slicing = self.translate_slicing_criterion(typebased_slicing)
 
         # Opened Connection:
-        self.neo4j_graph = Graph(host=host, port=port, user=user, password=password)
+        self.neo4j_graph = Graph(host=neo4j_config.neo4j_host, port=neo4j_config.neo4j_port,
+                                 user=neo4j_config.neo4j_user, password=neo4j_config.neo4j_password)
         self.list_samples()
 
     def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
@@ -169,6 +186,10 @@ class DataSetNeo4j(IDataSet):
     def query_node_by_id(self, node_id: int) -> str:
         return 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' RETURN n'
 
+    def query_nodes_by_ids(self, return_query: str) -> str:
+        # $node_ids: List[int]
+        return 'MATCH (n) WHERE ID(n) IN $node_ids ' + return_query
+
     def query_edge_by_id(self, edge_id: int) -> str:
         return 'MATCH (s)-[r]-(t) WHERE ID(r)=' + str(edge_id) + ' RETURN s, r, t'
 
@@ -181,6 +202,47 @@ class DataSetNeo4j(IDataSet):
         node_version = 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' WITH n.__last__version__ AS version'
         version_node = 'MATCH (vn:TracedVersion {__last__version__:version}) RETURN vn.modelVersionID'
         return node_version + ' ' + version_node
+
+    # # Read version information Cypher query # #
+
+    def query_db_version_by_code_repo_version(self) -> str:
+        return 'MATCH (n:TracedVersion {modelVersionID:$repo_version}) RETURN n.__initial__version__'
+
+    def query_db_version_by_model_repo_version(self) -> str:
+        return 'MATCH (n:TracedVersion {codeVersionID:$repo_version}) RETURN n.__initial__version__'
+
+    def query_code_repo_version_by_db_version(self) -> str:
+        return 'MATCH (n:TracedVersion {__initial__version__:$db_version}) RETURN n.codeVersionID'
+
+    def query_model_repo_version_by_db_version(self) -> str:
+        return 'MATCH (n:TracedVersion {__initial__version__:$db_version}) RETURN n.modelVersionID'
+
+    # # Read property/attribute Cypher query # #
+
+    def query_property_value_in_version(self, meta_type_label: str, property_name: str) -> str:
+        # $db_version: int
+        return 'MATCH (n:' + meta_type_label + ') WHERE ' + self.query_by_version('n') + ' RETURN n.' + property_name
+
+    # # Full graph Cypher queries # #
+
+    def query_nodes_in_version(self, meta_type_label: str = '') -> str:
+        if meta_type_label != '':
+            meta_type_label = ':' + meta_type_label
+        return 'MATCH (n' + meta_type_label + ') WHERE ' + self.query_by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+
+    def query_edges_in_version(self, source_meta_type_label: str = '', edge_meta_type_label: str = '', target_meta_type_label: str = '') -> str:
+        if source_meta_type_label != '':
+            source_meta_type_label = ':' + source_meta_type_label
+        if edge_meta_type_label != '':
+            edge_meta_type_label = ':' + edge_meta_type_label
+        if target_meta_type_label != '':
+            target_meta_type_label = ':' + target_meta_type_label
+        is_in_version = 'WHERE ' + self.query_by_version('r') + ' AND ' + self.query_edges_no_dangling('s', 't')
+
+        match_query = 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version
+        return_query = 'RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'
+
+        return match_query + ' ' + return_query
 
 
 class BugSampleNeo4j(IBugSample):
@@ -313,7 +375,7 @@ class BugSampleNeo4j(IBugSample):
             self.nodes_columns = embedding.get_column_names()
 
         # Bug report node:
-        bug_report_node_frame = self.load_dataframe(self.query_nodes_in_version('TracedBugReport'))
+        bug_report_node_frame = self.load_dataframe(self.dataset.query_nodes_in_version('TracedBugReport'))
         assert len(bug_report_node_frame.index) == 1
         self.bug_report_node_id = bug_report_node_frame.index[0]
         self.bug_report_node = bug_report_node_frame.loc[self.bug_report_node_id]
@@ -321,11 +383,11 @@ class BugSampleNeo4j(IBugSample):
         # Bug report graph:
         bug_report_meta_type_labels = ['TracedBugReport', 'BugReportComment']
         self.bug_report_nodes = self.load_node_embeddings(bug_report_meta_type_labels, embedding)
-        self.bug_report_edges = self.load_dataframe(self.query_edges_in_version(
+        self.bug_report_edges = self.load_dataframe(self.dataset.query_edges_in_version(
             'TracedBugReport', 'comments', 'BugReportComment'))
 
         # Bug locations:
-        bug_location_edges = self.load_dataframe(self.query_edges_in_version('Change', 'location'))
+        bug_location_edges = self.load_dataframe(self.dataset.query_edges_in_version('Change', 'location'))
         self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
 
         for index, edge in bug_location_edges.iterrows():  # @UnusedVariable
@@ -340,7 +402,7 @@ class BugSampleNeo4j(IBugSample):
 
         for meta_type_label in meta_type_labels:
             if not embedding.filter_type(meta_type_label):
-                nodes_in_version = self.load_dataframe(self.query_nodes_in_version(meta_type_label))
+                nodes_in_version = self.load_dataframe(self.dataset.query_nodes_in_version(meta_type_label))
                 print(meta_type_label + ': ' + str(len(nodes_in_version.index)))
 
                 if not nodes_in_version.empty:
@@ -435,35 +497,6 @@ class BugSampleNeo4j(IBugSample):
 
         return subgraph
 
-    # # Read version information Cypher query # #
-
-    def query_db_version_by_code_repo_version(self) -> str:
-        return 'MATCH (n:TracedVersion {modelVersionID:$repo_version}) RETURN n.__initial__version__'
-
-    def query_db_version_by_model_repo_version(self) -> str:
-        return 'MATCH (n:TracedVersion {codeVersionID:$repo_version}) RETURN n.__initial__version__'
-
-    # # Full graph Cypher queries # #
-
-    def query_nodes_in_version(self, meta_type_label: str = '') -> str:
-        if meta_type_label != '':
-            meta_type_label = ':' + meta_type_label
-        return 'MATCH (n' + meta_type_label + ') WHERE ' + self.dataset.query_by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
-
-    def query_edges_in_version(self, source_meta_type_label: str = '', edge_meta_type_label: str = '', target_meta_type_label: str = '') -> str:
-        if source_meta_type_label != '':
-            source_meta_type_label = ':' + source_meta_type_label
-        if edge_meta_type_label != '':
-            edge_meta_type_label = ':' + edge_meta_type_label
-        if target_meta_type_label != '':
-            target_meta_type_label = ':' + target_meta_type_label
-        is_in_version = 'WHERE ' + self.dataset.query_by_version('r') + ' AND ' + self.dataset.query_edges_no_dangling('s', 't')
-
-        match_query = 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version
-        return_query = 'RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'
-
-        return match_query + ' ' + return_query
-
 
 class DataSetPredictionNeo4j(DataSetNeo4j):
 
@@ -474,7 +507,7 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
 class BugSamplePredictionNeo4j(BugSampleNeo4j):
     dataset: DataSetPredictionNeo4j
 
-    def initialize(self, log_level:int=0):
+    def initialize(self, log_level: int = 0):
         print("Start Loading Dictionary...")
         start_time = time.time()
 
@@ -499,7 +532,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         for model_location_types in meta_model.get_bug_location_model_meta_type_labels():
             for model_location in self.model_nodes_types[model_location_types]:
                 self.location_samples.append(LocationSamplePredictionNeo4j(model_location, model_location_types))
-                
+
         print("Finished Loading Locations:", t(start_time))
 
 
@@ -510,11 +543,11 @@ class LocationSamplePredictionNeo4j(ILocationSample):
         self.mode_location_type = mode_location_type
 
         self._graph: Optional[StellarGraph] = None
-        self._model_location: Optional[int] = None 
+        self._model_location: Optional[int] = None
         self._bug_report: Optional[int] = None
         self._is_negative: Optional[bool] = is_negative
 
-    def initialize(self, bug_sample: IBugSample, log_level: int=0):
+    def initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSamplePredictionNeo4j):
             typebased_slicing = bug_sample.dataset.typebased_slicing
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(
@@ -528,7 +561,7 @@ class LocationSamplePredictionNeo4j(ILocationSample):
 
     def label(self) -> int:
         return self.neo4j_model_location
-    
+
     def graph(self) -> StellarGraph:
         if self._graph is not None:
             return self._graph
@@ -546,7 +579,7 @@ class LocationSamplePredictionNeo4j(ILocationSample):
             return self._model_location
         else:
             raise Exception("Model AST element location is missing. Location sample not initialized?")
-        
+
     def is_negative(self) -> bool:
         if self._is_negative is not None:
             return self._is_negative

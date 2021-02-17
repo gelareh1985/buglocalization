@@ -43,9 +43,10 @@ public class DatasetExportApplication implements IApplication {
 	
 	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
 	//       -> Last Version + 1
-	private int restartWithVersion = -1;//7927;//7928; // next version number or -1
-	private String restartWithGitVersion = "28f53155d592e8d12991fab6d60706a44adb05e0"; // next version hash value or null
-	private boolean startWithFullVersion = true;
+	private int restartWithVersion = 381; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
+	private String restartWithGitVersion = null; // next version hash value or null
+	private boolean startWithFullVersion = false;
+	private String stopOnGitVersion = "28f53155d592e8d12991fab6d60706a44adb05e0";
 	private boolean runTestCases = false;
 	
 	@Override
@@ -70,6 +71,7 @@ public class DatasetExportApplication implements IApplication {
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseConnection, databaseUser, databasePassword)) {
 			ModelHistory2Neo4j modelHistory2Neo4j = new ModelHistory2Neo4j(modelRepository, transaction);
 			modelHistory2Neo4j.setOnlyBuggyVersions(true);
+			modelHistory2Neo4j.setStopOnGitVersion(stopOnGitVersion);
 			
 			if ((restartWithVersion != -1) || (restartWithGitVersion != null)) {
 				// Restart conversion...

@@ -42,6 +42,8 @@ public class ModelDelta {
 		Map<String, Map<String, Object>> removedNodeQueries = nodeDeltaDerivation.constructRemovedNodesQueries();
 		Map<String, Map<String, Object>> createdNodeQueries = nodeDeltaDerivation.constructCreatedNodesQueries();
 		
+		time = stopTime(time, "Compute Node Delta Queries");
+		
 		ModelCypherEdgeDelta edgeDeltaDerivation = new ModelCypherEdgeDelta(
 				version - 1, oldBaseURI, oldResourcesMatch,
 				version, newBaseURI, newResourcesMatch, 
@@ -50,7 +52,7 @@ public class ModelDelta {
 		Map<String, Map<String, Object>> removedEdgeQueries = edgeDeltaDerivation.constructRemovedEdgesQuery();
 		Map<String, Map<String, Object>> createdEdgeQueries = edgeDeltaDerivation.constructCreatedEdgesQuery();
 		
-		time = stopTime(time, "Compute Delta Queries");
+		time = stopTime(time, "Compute Edge Delta Queries");
 		
 		/*
 		 * Make sure all nodes have an index for creation of edges.

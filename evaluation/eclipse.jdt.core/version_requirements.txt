@@ -1,0 +1,10 @@
+[https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44]
+
+conda create --name tf-gpu
+conda activate tf-gpu
+conda install python=3.8
+conda install -c anaconda cudatoolkit=10.1
+pip install tensorflow==2.3
+pip install stellargraph
+conda install nltk
+conda install -c conda-forge py2neo
