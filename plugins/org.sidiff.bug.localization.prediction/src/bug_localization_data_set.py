@@ -44,6 +44,9 @@ class IBugSample:
             log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
         """
         ...
+        
+    def unload(self):
+        ...
 
     def __len__(self) -> int:
         return len(self.location_samples)
@@ -65,6 +68,9 @@ class ILocationSample:
             bug_sample (IBugSample): The parent/corresponding bug report.
             log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
         """
+        ...
+        
+    def unload(self):
         ...
 
     def label(self) -> Optional[Union[float, int]]:

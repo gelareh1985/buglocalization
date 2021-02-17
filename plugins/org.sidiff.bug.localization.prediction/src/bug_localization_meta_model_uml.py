@@ -4,6 +4,7 @@
 
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
+from threading import Semaphore
 from typing import Dict, List, Optional, Set
 
 import numpy as np  # type: ignore
@@ -15,6 +16,27 @@ from bug_localization_meta_model import (GraphSlicing, MetaModel,
                                          NodeSelfEmbedding,
                                          TypbasedGraphSlicing)
 from bug_localization_util import text_to_words
+from word_to_vector_shared_dictionary import WordDictionary
+
+
+def create_uml_configuration(
+        word_dictionary: WordDictionary,
+        num_samples: List[int]):
+
+    # Modeling Language Meta-Model Configuration:
+    meta_model = MetaModelUML()
+
+    # Node Embedding Configuration:
+    # TODO: Specify stopwords? May not be in the dictionary anyway!
+    node_self_embedding = UMLNodeSelfEmbedding(
+        meta_model.get_meta_type_to_properties(),
+        word_dictionary)
+
+    # Graph Slicing Configuration:
+    max_dnn_depth = len(num_samples)
+    typebased_slicing = meta_model.get_slicing_criterion(max_dnn_depth)
+
+    return meta_model, node_self_embedding, typebased_slicing
 
 
 class MetaModelUML(MetaModel):
@@ -106,31 +128,29 @@ class MetaModelUML(MetaModel):
             "Model",
             "Package",
             "Class",
-            # "Interface",
-            # "Enumeration",
-            # "DataType",
-            # "Operation",
-            # "Parameter",
-            # "Property",
-            # "EnumerationLiteral",
-            # "Generalization",
-            # "InterfaceRealization",
-            # "Comment"
-
-            # FIXME: "unnamed" Literal... model elements -> Fixed need new model training
-            # "InstanceValue",
-            # "LiteralBoolean",
-            # "LiteralInteger",
-            # "LiteralReal",
-            # "LiteralString",
-            # "LiteralUnlimitedNatural",
+            "Interface",
+            "Enumeration",
+            "DataType",
+            "Operation",
+            "Parameter",
+            "Property",
+            "EnumerationLiteral",
+            "Generalization",
+            "InterfaceRealization",
+            "Comment",
+            "InstanceValue",
+            "LiteralBoolean",
+            "LiteralInteger",
+            "LiteralReal",
+            "LiteralString",
+            "LiteralUnlimitedNatural",
         ]
         return model_meta_type_labels
 
     # Specifies all meta types that will be considered as bug locations.
     def get_bug_location_model_meta_type_labels(self) -> Set[str]:
         bug_location_model_meta_type_labels = {
-            "Package",
+            # "Package",
             "Class",
             # "Interface",
             # "Enumeration",
@@ -191,45 +211,42 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
     def __init__(
             self, meta_type_to_properties: Dict[str, List[str]],
-            dictionary_path: str, dictionary_words_length: int, stopwords={},
-            unescape=True):
+            word_dictionary: WordDictionary, stopwords={}, unescape=True):
         self.meta_type_to_properties: Dict[str, List[str]] = meta_type_to_properties
 
-        self.dictionary_path = dictionary_path
-        self.dictionary_words_length = dictionary_words_length
+        self.word_dictionary = word_dictionary
+        self.dictionary_words_length = word_dictionary.dimension()
         self.stopwords = stopwords
         self.unescape = unescape
 
         self.dictionary_words: Optional[Dict[str, np.ndarray]] = None
-
-        self.column_names = self.create_column_names()
+        
+    def __getstate__(self):
+        # Do not expose the dictionary (for multiprocessing) which fails on pickle.
+        state = dict(self.__dict__)
+        
+        if 'dictionary_words' in state:
+            state['dictionary_words'] = None
+            
+        return state
 
     def load(self):
         if self.dictionary_words is None:
             # use empty dict {} for testing
-            self.dictionary_words = {}#KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)
+            # self.dictionary_words = KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)
+            self.dictionary_words, dictionary_words_length = self.word_dictionary.dictionary() 
+            assert dictionary_words_length == self.dictionary_words_length, "Word feature size is inconsistently specified!"
 
     def unload(self):
         self.dictionary_words = None
 
-    def create_column_names(self):
-        column_names = []
-
-        for column in range(self.get_dimension()):
-            column_names.append(str("feature" + str(column)))
-
-        return column_names
-
-    def get_column_names(self):
-        return self.column_names
-
-    def filter_type(self, meta_type_label: str) -> bool:  # @UnusedVariable
+    def filter_type(self, meta_type_label: str) -> bool:
         return False  # Filtered by meta type configuration
 
-    def filter_node(self, node: pd.Series) -> bool:  # @UnusedVariable
+    def filter_node(self, node: pd.Series) -> bool:
         return False
 
-    def get_dimension(self) -> int:  # @UnusedVariable
+    def get_dimension(self) -> int: 
         return self.dictionary_words_length
 
     def node_to_vector(self, node: pd.Series) -> np.ndarray:

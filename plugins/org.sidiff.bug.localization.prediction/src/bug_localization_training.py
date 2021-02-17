@@ -19,21 +19,25 @@ if gpus:
         print(e)
 # ===============================================================================
 
+import datetime
+from pathlib import Path
+from time import time
+from typing import List, Tuple
+
+import stellargraph as sg  # type: ignore
+from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
+from tensorflow import keras  # type: ignore
+from tensorflow.keras.callbacks import CSVLogger  # type: ignore
+from tensorflow.keras.utils import Sequence  # type: ignore
+from tensorflow.keras.utils import plot_model  # @UnusedImport
+
+from bug_localization_data_set import IBugSample, IDataSet
+from bug_localization_data_set_neo4j import (DataSetTrainingNeo4j,
+                                             Neo4jConfiguration)
+from bug_localization_meta_model_uml import create_uml_configuration
 from bug_localization_sample_generator import (BugSampleGenerator,
                                                IBugSampleGenerator)
-from bug_localization_data_set_text_graph import \
-    DataSetTrainingTextGraphEmbedding
-from bug_localization_data_set import IBugSample, IDataSet
-from tensorflow.keras.utils import plot_model  # @UnusedImport
-from tensorflow.keras.utils import Sequence  # type: ignore
-from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow import keras  # type: ignore
-from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
-import stellargraph as sg  # type: ignore
-from typing import List, Tuple
-from time import time
-from pathlib import Path
-import datetime
+from word_to_vector_shared_dictionary import WordDictionary
 
 # from tqdm.keras import TqdmCallback  # type: ignore
 
@@ -50,6 +54,14 @@ negative_samples_path: str = r"C:\Users\manue\git\buglocalization\research\org.s
 # NOTE: Paths should not be too long, causes error (on Windows)!
 model_training_save_dir = r"D:\buglocalization_gelareh_home\training\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
+
+# Database connection:
+neo4j_configuration = Neo4jConfiguration(
+    neo4j_host="localhost",
+    neo4j_port=7687,
+    neo4j_user="neo4j",
+    neo4j_password="password",
+)
 
 # ===============================================================================
 # Data Processing
@@ -240,23 +252,17 @@ class BugLocalizationAIModelTrainer:
                             metrics_log += ' - %s: %.4e' % (k, val)
                 print('{}{}'.format(self.seen, metrics_log))
             else:
-                print("Batch:", batch)
+                print("Batches finished:", batch)
 
 
 if __name__ == '__main__':
 
     # ===========================================================================
-    # Create Training and Test Data:
-    # ===========================================================================
-
-    # Collect all graphs from the given folder:
-    dataset_positive = DataSetTrainingTextGraphEmbedding(positve_samples_path, is_negative=False)
-    dataset_negative = DataSetTrainingTextGraphEmbedding(negative_samples_path, is_negative=True)
-    dataset_splitter = DataSetSplitter(dataset_positive, dataset_negative)
-
-    # ===========================================================================
     # Create AI Model:
     # ===========================================================================
+
+    # Wprd embedding:
+    word_dictionary = WordDictionary()
 
     # GraphSAGE Settings:
     num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
@@ -276,11 +282,23 @@ if __name__ == '__main__':
 
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
     model = bug_localization_model_builder.create_model(
-        num_samples, layer_sizes, dataset_positive.feature_size, model_training_checkpoint_dir, dropout, normalize)
+        num_samples, layer_sizes, word_dictionary.dimension(), model_training_checkpoint_dir, dropout, normalize)
 
     # Plot model:
     # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]
     # plot_model(model, to_file=model_training_checkpoint_dir + "model.png") # model_to_dot
+
+    # ===========================================================================
+    # Create Training and Test Data:
+    # ===========================================================================
+
+    # Modeling Language Meta-Model Configuration:
+    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(word_dictionary, num_samples)
+
+    # Test Dataset Containing Bug Samples:
+    dataset_positive = DataSetTrainingNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, is_negative=False)
+    dataset_negative = DataSetTrainingNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, is_negative=True)
+    dataset_splitter = DataSetSplitter(dataset_positive, dataset_negative)
 
     # ===========================================================================
     # Train and Evaluate AI Model:
@@ -293,7 +311,7 @@ if __name__ == '__main__':
     generator_workers = 2  # Number of threads that load/generate the batches in parallel.
     multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
     sample_prefetch_count = batch_size * 2  # Preload some data for fast (GPU) processing
-    log_level = 2  # Some console output for debugging...
+    log_level = 3  # Some console output for debugging...
 
     bug_localization_generator = BugSampleGenerator(
         batch_size,

@@ -10,19 +10,18 @@ import numpy as np
 import pandas as pd
 
 from bug_localization_data_set_neo4j import (BugSamplePredictionNeo4j,
-                                             DataSetPredictionNeo4j, Neo4jConfiguration)
-from bug_localization_meta_model_uml import MetaModelUML, UMLNodeSelfEmbedding
-from bug_localization_prediction import BugLocalizationPredictionConfiguration, BugLocalizationPrediction
+                                             DataSetPredictionNeo4j,
+                                             Neo4jConfiguration)
+from bug_localization_meta_model_uml import create_uml_configuration
+from bug_localization_prediction import (
+    BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
+from word_to_vector_shared_dictionary import WordDictionary
 
 # TODO: Dump DL/Meta-Model Configuration
 
 # ===============================================================================
 # Evaluation Test max_dnn_depth
 # ===============================================================================
-
-# Embedding Dictionary:
-pretrained_dictionary_path: str = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\data\GoogleNews-vectors-negative300.bin"  # noqa: E501
-dictionary_words_length: int = 300
 
 # Evaluation Result Records:
 evaluation_results_path: str = r"D:\evaluation\eclipse.jdt.core\test_results" + "/"
@@ -31,6 +30,7 @@ evaluation_results_path: str = r"D:\evaluation\eclipse.jdt.core\test_results" + 
 log_level: int = 0  # 0-100
 peek_location_samples: Optional[int] = 20  # Test only the first N location samples per bug sample; or None
 
+# Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(
 
     # Trained bug localization model:
@@ -46,6 +46,7 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     sample_max_queue_size=10
 )
 
+# Database connection:
 neo4j_configuration = Neo4jConfiguration(
     neo4j_host="localhost",
     neo4j_port=7687,
@@ -111,7 +112,7 @@ class BugLocalizationPredictionTest:
         is_location_col = prediction_results_columns[2]
         missing_locations = []
 
-        for model_location in bug_sample.bug_location_model_node_index:
+        for model_location, model_location_type in bug_sample.bug_locations:
             if model_location in prediction_results.index:
                 prediction_results.loc[model_location][is_location_col] = 1
             else:
@@ -187,7 +188,7 @@ class BugLocalizationPredictionTest:
 
         # DatabaseNodeID, MetaType, Properties
         bug_location_graph = []
-        
+
         # Version:
         query_version_node = dataset.query_nodes_in_version('TracedVersion')
         version_node = dataset.run_query(query_version_node, query_database_version_parameter)
@@ -223,17 +224,8 @@ class BugLocalizationPredictionTest:
 if __name__ == '__main__':
 
     # Modeling Language Meta-Model Configuration:
-    meta_model = MetaModelUML()
-
-    # Node Embedding Configuration:
-    # TODO: Specify stopwords? May not be in the dictionary anyway!
-    node_self_embedding = UMLNodeSelfEmbedding(
-        meta_model.get_meta_type_to_properties(),
-        pretrained_dictionary_path,
-        dictionary_words_length)
-
-    # Graph Slicing Configuration:
-    typebased_slicing = meta_model.get_slicing_criterion(len(prediction_configuration.num_samples))
+    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
+        WordDictionary(), prediction_configuration.num_samples)
 
     # Test Dataset Containing Bug Samples:
     dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration)
@@ -247,7 +239,7 @@ if __name__ == '__main__':
 
     for bug_sample, bug_location_prediction in prediction_generator:
         prediction_runtime = time() - start_time_prediction
-        
+
         # Write result log files:
         prediction_test.record_evaluation_results(
             evaluation_results_path,
@@ -255,5 +247,5 @@ if __name__ == '__main__':
             bug_location_prediction,
             prediction_runtime,
             sort=True)
-        
+
         start_time_prediction = time()

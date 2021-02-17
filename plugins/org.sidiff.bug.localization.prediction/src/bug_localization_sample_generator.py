@@ -201,6 +201,8 @@ class BaseSequence(Sequence):
         else:
             flow = graph_sage_generator.flow(bug_location_pairs)
 
+        # Free memory:
+        location_sample.unload()
         return flow
 
     def __len__(self):
@@ -210,7 +212,7 @@ class BaseSequence(Sequence):
     def __getitem__(self, batch_idx):
         """Generate one batch of data"""
         if self.log_level >= 3:
-            print("Get", self.name, "batch:", batch_idx)
+            print("Get", self.name, "batch index:", batch_idx)
 
         # Loading data batch:
         bug_location_samples, bug_location_sample_labels = self.create_batch(batch_idx * self.batch_size)
@@ -289,6 +291,8 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                         bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
                         bug_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
                         sample_count += len(bug_location_sample_label)
+                
+                bug_sample.unload()
 
             if self.log_level >= 100:
                 print("Compute Sample Batch", t(start_time))
@@ -320,8 +324,8 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                                            location_samples,
                                            self.reshape_input,
                                            self.log_level)
-        shuffle = self.LocationSampleSequence.ShuffleCallback(flow)  # FIXME https://github.com/tensorflow/tensorflow/issues/35911
-        return flow, [shuffle]
+        shuffle_callback = self.LocationSampleSequence.ShuffleCallback(flow)  # FIXME https://github.com/tensorflow/tensorflow/issues/35911
+        return flow, [shuffle_callback]
 
     class LocationSampleSequence(BaseSequence):
 

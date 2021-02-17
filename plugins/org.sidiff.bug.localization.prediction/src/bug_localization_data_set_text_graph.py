@@ -233,39 +233,54 @@ class DataSetTrainingTextGraphEmbedding(DataSetTextGraphEmbedding):
 class BugSampleTrainingTextGraphEmbedding(BugSampleTextGraphEmbedding):
     dataset: DataSetTrainingTextGraphEmbedding
     
-    def initialize(self, log_level: int=0):
+    def __init__(self, dataset: DataSetTextGraph, sample_file_path: str):
+        super().__init__(dataset, sample_file_path)
+        self.graph: Optional[StellarGraph] = None
+
+    def initialize(self, log_level: int = 0):
         self.load_bug_sample()
-        
+
         # Convert to structural location element:
         if log_level >= 4:
             print("Generating", "negative" if self.dataset.is_negative else "positive", "sample:", self.sample_id)
 
         # Convert to StellarGraph:
-        stellargraph = StellarGraph(nodes=self.nodes, edges=self.edges)
+        self.graph = StellarGraph(nodes=self.nodes, edges=self.edges)
 
         if log_level >= 5:
-            print(stellargraph.info())
-        
+            print(self.graph.info())
+
         if self.bug_location_pairs is not None:
             for location_sample_idx in range(len(self.bug_location_pairs)):
                 bug_report, model_location = self.bug_location_pairs[location_sample_idx]
                 testcase_label = 0.0 if self.dataset.is_negative else 1.0
-                locationSample = LocationSampleTextGraphEmbedding(stellargraph,
-                                                                bug_report,
-                                                                model_location,
-                                                                testcase_label,
-                                                                self.dataset.is_negative)
+                locationSample = LocationSampleTextGraphEmbedding(self,
+                                                                  bug_report,
+                                                                  model_location,
+                                                                  testcase_label,
+                                                                  self.dataset.is_negative)
                 self.location_samples.append(locationSample)
-                
-        # Free memory:
-        self.unload()
 
-    
+        # Free memory:
+        super().unload()
+        
+    def unload(self):
+        # Free memory:
+        self.graph = None
+
+
 class LocationSampleTextGraphEmbedding(LocationSampleBase):
-    
-    def __init__(self, graph: StellarGraph, bug_report: Union[int, str], model_location: Union[int, str], label: float, is_negative: bool):
+
+    def __init__(self,
+                 bug_sample: BugSampleTrainingTextGraphEmbedding,
+                 bug_report: Union[int, str],
+                 model_location: Union[int, str],
+                 label: float, is_negative: bool):
         super().__init__(bug_report, model_location, label, is_negative)
-        self._graph = graph
-    
+        self.bug_sample: BugSampleTrainingTextGraphEmbedding = bug_sample
+
     def graph(self) -> StellarGraph:
-        return self._graph 
+        if self.bug_sample.graph is not None:
+            return self.bug_sample.graph
+        else:
+            raise Exception("Bug location graph not initialized!")

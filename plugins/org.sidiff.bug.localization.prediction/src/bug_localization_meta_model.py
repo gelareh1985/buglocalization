@@ -57,10 +57,10 @@ class GraphSlicing:
 class NodeSelfEmbedding:
 
     def load(self):
-        pass
+        ...
 
     def unload(self):
-        pass
+        ...
 
     def filter_type(self, meta_type_label: str) -> bool:  # @UnusedVariable
         return False
@@ -68,30 +68,27 @@ class NodeSelfEmbedding:
     def filter_node(self, node: pd.Series) -> bool:  # @UnusedVariable
         return False
 
-    def get_dimension(self) -> int:  # type: ignore
-        pass
-
-    def get_column_names(self):
-        pass
+    def get_dimension(self) -> int:
+        raise NotImplementedError()
 
     def node_to_vector(self, node: pd.Series) -> np.ndarray:
-        pass
+        raise NotImplementedError()
 
 
 class MetaModel:
 
     # Specifies the slicing of subgraph for embedding of model elements.
-    def get_slicing_criterion(self, dnn_depth: int) -> TypbasedGraphSlicing:  # type: ignore
-        pass
+    def get_slicing_criterion(self, dnn_depth: int) -> TypbasedGraphSlicing:
+        raise NotImplementedError()
 
     # Specifies all meta types that will be considered as model elements.
-    def get_model_meta_type_labels(self) -> List[str]:  # type: ignore
-        pass
+    def get_model_meta_type_labels(self) -> List[str]:
+        raise NotImplementedError()
 
     # Specifies all meta types that will be considered as bug locations.
-    def get_bug_location_model_meta_type_labels(self) -> Set[str]:  # type: ignore
-        pass
+    def get_bug_location_model_meta_type_labels(self) -> Set[str]:
+        raise NotImplementedError()
 
     # Specifies the properties of nodes that will be considered during embedding.
     def get_meta_type_to_properties(self):
-        pass
+        raise NotImplementedError()

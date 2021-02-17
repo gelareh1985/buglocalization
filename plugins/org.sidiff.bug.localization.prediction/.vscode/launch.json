@@ -18,5 +18,12 @@
             "program": "src/bug_localization_training.py",
             "console": "integratedTerminal"
         },
+        {
+            "name": "Word To Vector - Shared Dictionary",
+            "type": "python",
+            "request": "launch",
+            "program": "src/word_to_vector_shared_dictionary.py",
+            "console": "integratedTerminal"
+        },
     ]
 }
