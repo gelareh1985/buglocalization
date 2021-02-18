@@ -700,7 +700,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
 
         return list(node_ids)
     
-    def unload(self):
+    def uninitialize(self):
         # TODO: Make field Optional!?
         self.model_nodes = {}
         self.model_nodes_types = {}
@@ -740,6 +740,12 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
             self._bug_localization_subgraph_edges = None
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
+        
+    def uninitialize(self):
+        self._bug_localization_subgraph_edges = None
+        self._graph = None
+        self._bug_report = None
+        self._model_location = None
 
 
 # ===============================================================================
@@ -789,7 +795,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         if log_level >= 4:
             print("Finished Loading Locations:", t(start_time))
         
-    def unload(self):
+    def uninitialize(self):
         # TODO: Make field Optional!?
         self.model_nodes = {}
         self.model_nodes_types = {}
@@ -817,3 +823,9 @@ class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
             self._model_location = bug_location_pair[1]  # Mapped ID in subgraph
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
+        
+    def uninitialize(self):
+        self._graph = None
+        self._bug_report = None
+        self._model_location = None
+        

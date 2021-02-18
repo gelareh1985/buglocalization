@@ -45,7 +45,7 @@ class IBugSample:
         """
         ...
         
-    def unload(self):
+    def uninitialize(self):
         ...
 
     def __len__(self) -> int:
@@ -70,7 +70,7 @@ class ILocationSample:
         """
         ...
         
-    def unload(self):
+    def uninitialize(self):
         ...
 
     def label(self) -> Optional[Union[float, int]]:

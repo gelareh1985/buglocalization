@@ -82,7 +82,7 @@ class BugSampleTextGraph(IBugSample):
     def load_edges(self):
         self.edges = pd.read_table(self.get_edges_path(), names=self.dataset.edges_column_names)
 
-    def unload(self):
+    def uninitialize(self):
         self.nodes = None
         self.edges = None
 
@@ -218,7 +218,7 @@ class BugSampleTextGraphEmbedding(BugSampleTextGraph):
             bug_location_source) & self.edges["target"].isin(bug_location_target)]
         self.edges.drop(bug_location_edges.index, inplace=True)
 
-    def unload(self):
+    def uninitialize(self):
         self.nodes = None
         self.edges = None
         self.bug_location_pairs = None
@@ -262,9 +262,9 @@ class BugSampleTrainingTextGraphEmbedding(BugSampleTextGraphEmbedding):
                 self.location_samples.append(locationSample)
 
         # Free memory:
-        super().unload()
+        super().uninitialize()
         
-    def unload(self):
+    def uninitialize(self):
         # Free memory:
         self.graph = None
 

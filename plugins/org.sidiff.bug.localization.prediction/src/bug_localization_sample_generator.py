@@ -200,7 +200,7 @@ class BaseSequence(Sequence):
             flow = graph_sage_generator.flow(bug_location_pairs)
 
         # Free memory:
-        location_sample.unload()
+        location_sample.uninitialize()
         return flow
 
     def __len__(self):
@@ -290,7 +290,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                         bug_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
                         sample_count += len(bug_location_sample_label)
                 
-                bug_sample.unload()
+                bug_sample.uninitialize()
 
             if self.log_level >= 100:
                 print("Compute Sample Batch", t(start_time))

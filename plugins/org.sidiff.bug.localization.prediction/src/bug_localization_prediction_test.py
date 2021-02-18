@@ -41,8 +41,8 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     num_samples=[20, 10],
     batch_size=20,
 
-    sample_generator_workers=1,
-    sample_generator_workers_multiprocessing=False,
+    sample_generator_workers=2,
+    sample_generator_workers_multiprocessing=True,
     sample_max_queue_size=10
 )
 
