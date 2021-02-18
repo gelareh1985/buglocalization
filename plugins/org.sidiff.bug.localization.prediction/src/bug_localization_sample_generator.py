@@ -77,7 +77,6 @@ class SampleBaseGenerator:
         self.log_level: int = log_level
 
         # A model wrapping the giving model, to output sample IDs alongside the prediction results:
-        self.prediction_wrapper_model: Optional[Model] = None
         self.reshape_input: Optional[Callable] = None
 
     def create_prediction_model(self, model: Model, concatenate_results_with_sample_ids: bool = False) -> Model:
@@ -101,7 +100,6 @@ class SampleBaseGenerator:
             prediction_wrapper_model = Model([model.input, sample_id_input_layer], [model.output, sample_id_input_layer])
 
         # Expose the wrapper model to the generator:
-        self.prediction_wrapper_model = prediction_wrapper_model
         self.reshape_input = self.create_prediction_model_input
 
         # Return the model to be used for predict()
@@ -326,7 +324,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                                            self.log_level)
         shuffle_callback = self.LocationSampleSequence.ShuffleCallback(flow)  # FIXME https://github.com/tensorflow/tensorflow/issues/35911
         return flow, [shuffle_callback]
-
+        
     class LocationSampleSequence(BaseSequence):
 
         def __init__(self, name: str,

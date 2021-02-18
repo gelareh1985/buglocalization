@@ -9,21 +9,24 @@
             "type": "python",
             "request": "launch",
             "program": "src/bug_localization_prediction_test.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false,
         },
         {
             "name": "Bug Localization - Training",
             "type": "python",
             "request": "launch",
             "program": "src/bug_localization_training.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false,
         },
         {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",
             "program": "src/word_to_vector_shared_dictionary.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false,
         },
     ]
 }
