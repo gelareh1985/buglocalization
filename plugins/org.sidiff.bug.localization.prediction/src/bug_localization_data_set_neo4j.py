@@ -23,7 +23,12 @@ from bug_localization_util import t
 
 
 # ===============================================================================
-# Neo4j Data Connector
+# Neo4j Data Connector:
+# ===============================================================================
+# -- WARNING: Do not save any "raw" Neo4j Node or Edge objects in the data set. 
+#    These objects store a reference to py2neo.internal.connectors.BoltConnector 
+#    which is not pickable and causing problems with multi-processing. Also see
+#    __getstate__() makes the intentionally stored connection invisible to pickle.
 # ===============================================================================
 
 
@@ -97,6 +102,9 @@ class DataSetNeo4j(IDataSet):
         return self.neo4j_graph
     
     def closeNeo4j(self):
+        # https://stackoverflow.com/questions/59138809/connection-pool-life-cycle-of-py2neo-graph-would-the-connections-be-released-wh
+        # graph.database.connector.close() 
+        # Database.forget_all() 
         self.neo4j_graph = None
 
     def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
@@ -311,7 +319,6 @@ class BugSampleNeo4j(IBugSample):
         self.model_nodes_types: Dict[str, List[int]] = {}
 
         # Bug report graph:
-        self.bug_report_node: Node = None
         self.bug_report_node_id: int = -1
         self.bug_report_nodes: Dict[int, Dict[int, np.ndarray]] = {}
         # StellarGraph requires Panda Data Frames as edges
@@ -426,7 +433,6 @@ class BugSampleNeo4j(IBugSample):
         bug_report_node_frame = self.load_dataframe(self.dataset.query_nodes_in_version('TracedBugReport'))
         assert len(bug_report_node_frame.index) == 1
         self.bug_report_node_id = bug_report_node_frame.index[0]
-        self.bug_report_node = bug_report_node_frame.loc[self.bug_report_node_id]
 
         # Bug report graph:
         bug_report_meta_type_labels = ['TracedBugReport', 'BugReportComment']
@@ -704,7 +710,6 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
         # TODO: Make field Optional!?
         self.model_nodes = {}
         self.model_nodes_types = {}
-        self.bug_report_node = None
         self.bug_report_node_id = -1
         self.bug_report_nodes = {}
         self.bug_report_edges = None
@@ -799,7 +804,6 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         # TODO: Make field Optional!?
         self.model_nodes = {}
         self.model_nodes_types = {}
-        self.bug_report_node = None
         self.bug_report_node_id = -1
         self.bug_report_nodes = {}
         self.bug_report_edges = None
