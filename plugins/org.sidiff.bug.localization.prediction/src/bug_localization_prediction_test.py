@@ -82,10 +82,6 @@ class BugLocalizationPredictionTest:
         Path(path).mkdir(parents=True, exist_ok=True)
         file_name_prefix = self.get_file_name(bug_sample)
 
-        # Sort predictions by probability:
-        if sort:
-            prediction = -np.sort(-prediction, axis=0)
-
         # ===========================================================================
         # Prediction result table:
         # ===========================================================================
@@ -114,7 +110,8 @@ class BugLocalizationPredictionTest:
 
         for model_location, model_location_type in bug_sample.load_bug_locations():
             if model_location in prediction_results.index:
-                prediction_results[is_location_col][model_location] = 1
+                prediction_results.at[model_location, is_location_col] = 1
+                print(prediction_results.at[model_location, is_location_col])
             else:
                 missing_locations.append(model_location)
 
@@ -129,10 +126,13 @@ class BugLocalizationPredictionTest:
                                                           ', n.__model__element__id__ AS ' + model_element_id_col)
         query_type_and_names_parameters = {'node_ids': prediction_results.index.tolist()}
         meta_type_and_model_element_id = dataset.run_query(query_type_and_names, query_type_and_names_parameters)
-
         meta_type_and_model_element_id.set_index(database_id_col, inplace=True)
+        
         prediction_results = prediction_results.join(meta_type_and_model_element_id)
-
+        
+        # Sort predictions by probability:
+        prediction_results.sort_values(by=prediction_col, ascending=False, inplace=True)
+        
         # Save table:
         prediction_results.to_csv(path + '/' + file_name_prefix + '_prediction.csv', sep=';')
 
