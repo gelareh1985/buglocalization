@@ -93,10 +93,14 @@ class BugLocalizationPrediction:
             start_time_prediction = time()
             bug_sample.initialize()
             location_samples = bug_sample.location_samples
-
+            
             # Test only the first N location samples per bug sample
             if peek_location_samples is not None:
+                print('WARNING: Prediction is set to use only the first ' + str(peek_location_samples) + 'samples.')
                 location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
+                
+            print('Initialization (Location Samples:', len(location_samples), '):',  t(start_time_prediction))
+            start_time_prediction = time()
 
             flow, callbacks = prediction_generator.create_location_sample_generator("prediction", bug_sample, location_samples)
             prediction = model.predict(flow,

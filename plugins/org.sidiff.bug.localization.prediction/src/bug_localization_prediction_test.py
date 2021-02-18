@@ -28,7 +28,7 @@ evaluation_results_path: str = r"D:\evaluation\eclipse.jdt.core\test_results" + 
 
 # For debugging:
 log_level: int = 0  # 0-100
-peek_location_samples: Optional[int] = 20  # Test only the first N location samples per bug sample; or None
+peek_location_samples: Optional[int] = None  # Test only the first N location samples per bug sample; or None
 
 # Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(
@@ -41,7 +41,7 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     num_samples=[20, 10],
     batch_size=20,
 
-    sample_generator_workers=2,
+    sample_generator_workers=8,
     sample_generator_workers_multiprocessing=False,
     sample_max_queue_size=10
 )
@@ -114,7 +114,7 @@ class BugLocalizationPredictionTest:
 
         for model_location, model_location_type in bug_sample.load_bug_locations():
             if model_location in prediction_results.index:
-                prediction_results.loc[model_location][is_location_col] = 1
+                prediction_results[is_location_col][model_location] = 1
             else:
                 missing_locations.append(model_location)
 

@@ -152,9 +152,9 @@ class MetaModelUML(MetaModel):
         bug_location_model_meta_type_labels = {
             # "Package",
             "Class",
-            # "Interface",
-            # "Enumeration",
-            # "DataType",
+            "Interface",
+            "Enumeration",
+            "DataType",
             # "Operation",
             # "Property"
         }
@@ -171,7 +171,8 @@ class MetaModelUML(MetaModel):
     # Specifies the properties of nodes that will be considered during embedding.
     def get_meta_type_to_properties(self):
         meta_type_to_properties: Dict[str, List[str]] = {
-            # Model:
+            
+            # ----- Model -----
             "Model": ["name"],
             "Package": ["name"],
             "Class": ["name"],
@@ -192,7 +193,7 @@ class MetaModelUML(MetaModel):
             "LiteralUnlimitedNatural": ["value"],
             "Comment": ["body"],
 
-            # Bug Report:
+            # ----- Bug Report -----
             "TracedBugReport": ["summary"],
             "BugReportComment": ["text"]
         }
