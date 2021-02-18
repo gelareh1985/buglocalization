@@ -91,22 +91,22 @@ class BugLocalizationPrediction:
         for bug_sample in bug_samples:
             print("Start Prediction ...")
             start_time_prediction = time()
+            bug_sample.initialize()
+            location_samples = bug_sample.location_samples
 
-            if peek_location_samples is None:
-                flow, callbacks = prediction_generator.create_location_sample_generator("prediction", bug_sample)
-            else:
-                # Test only the first N location samples per bug sample
-                bug_sample.initialize(log_level)
-                location_samples = bug_sample.location_samples[:min(peek_location_samples, len(bug_sample.location_samples))]
-                flow, callbacks = prediction_generator.create_location_sample_generator("prediction", bug_sample, location_samples)
+            # Test only the first N location samples per bug sample
+            if peek_location_samples is not None:
+                location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
 
+            flow, callbacks = prediction_generator.create_location_sample_generator("prediction", bug_sample, location_samples)
             prediction = model.predict(flow,
                                        callbacks=callbacks,
                                        workers=config.sample_generator_workers,
                                        use_multiprocessing=config.sample_generator_workers_multiprocessing,
                                        max_queue_size=config.sample_max_queue_size,
                                        verbose=1 if log_level > 0 else 0)
-
+            bug_sample.uninitialize()
+            
             print("Finished Prediction:", t(start_time_prediction))
 
             yield bug_sample, prediction

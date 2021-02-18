@@ -25,8 +25,8 @@ from bug_localization_util import t
 # ===============================================================================
 # Neo4j Data Connector:
 # ===============================================================================
-# -- WARNING: Do not save any "raw" Neo4j Node or Edge objects in the data set. 
-#    These objects store a reference to py2neo.internal.connectors.BoltConnector 
+# -- WARNING: Do not save any "raw" Neo4j Node or Edge objects in the data set.
+#    These objects store a reference to py2neo.internal.connectors.BoltConnector
 #    which is not pickable and causing problems with multi-processing. Also see
 #    __getstate__() makes the intentionally stored connection invisible to pickle.
 # ===============================================================================
@@ -79,20 +79,20 @@ class DataSetNeo4j(IDataSet):
         # Opened connection and read bug samlpes:
         self.neo4j_graph: Optional[Graph] = None
         self.connectNeo4j()
-        
+
         self.list_samples()
-        
+
     def __getstate__(self):
         # Close connection to allow multiprocessing i.e., each process needs its own connnection.
         self.closeNeo4j()
-        
+
         # Do not expose Ne4j connection (for multiprocessing) which is not pickable.
         state = dict(self.__dict__)
-        
+
         # Check again if connection is actually "closed" for exposed state:
         if 'neo4j_graph' in state:
             state['neo4j_graph'] = None
-            
+
         return state
 
     def connectNeo4j(self) -> Graph:
@@ -100,11 +100,11 @@ class DataSetNeo4j(IDataSet):
             self.neo4j_graph = Graph(host=self.neo4j_config.neo4j_host, port=self.neo4j_config.neo4j_port,
                                      user=self.neo4j_config.neo4j_user, password=self.neo4j_config.neo4j_password)
         return self.neo4j_graph
-    
+
     def closeNeo4j(self):
         # https://stackoverflow.com/questions/59138809/connection-pool-life-cycle-of-py2neo-graph-would-the-connections-be-released-wh
-        # graph.database.connector.close() 
-        # Database.forget_all() 
+        # graph.database.connector.close()
+        # Database.forget_all()
         self.neo4j_graph = None
 
     def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
@@ -327,9 +327,9 @@ class BugSampleNeo4j(IBugSample):
 
     # # Load graphs from Neo4j # #
 
-    def load_model_nodes(self, 
-                         model_meta_type_labels: List[str], 
-                         embedding: NodeSelfEmbedding, 
+    def load_model_nodes(self,
+                         model_meta_type_labels: List[str],
+                         embedding: NodeSelfEmbedding,
                          node_ids: List[int] = None,
                          log_level: int = 0):
         for model_meta_type_label in model_meta_type_labels:
@@ -442,15 +442,18 @@ class BugSampleNeo4j(IBugSample):
         self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
 
         # Bug locations:
-        self.load_bug_locations()
+        self.bug_locations = self.load_bug_locations()
 
-    def load_bug_locations(self):
+    def load_bug_locations(self) -> Set[Tuple[int, str]]:
+        bug_locations = set()
         bug_location_edges = self.load_dataframe(self.dataset.query_edges_in_version('Change', 'location', return_ids=False))
 
         for index, edge in bug_location_edges.iterrows():
             # location edges point at model elements:
             bug_location: Node = edge['target']
-            self.bug_locations.add((bug_location.identity, self.dataset.get_label(bug_location)))
+            bug_locations.add((bug_location.identity, self.dataset.get_label(bug_location)))
+            
+        return bug_locations
 
     def load_node_embeddings(self,
                              meta_type_labels: List[str],
@@ -645,19 +648,23 @@ class DataSetTrainingNeo4j(DataSetNeo4j):
 class BugSampleTrainingNeo4j(BugSampleNeo4j):
     dataset: DataSetTrainingNeo4j
 
-    def load_bug_locations(self):
+    def load_bug_locations(self) -> Set[Tuple[int, str]]:
         if not self.dataset.is_negative:
-            # Load positive sample:
-            super().load_bug_locations()
+            # Load positive sample -> default super class implementation:
+            return super().load_bug_locations()
         else:
             # Generate negative sample:
+            bug_locations: Set[Tuple[int, str]] = set()
+            
             for model_type in self.dataset.meta_model.get_bug_location_model_meta_type_labels():
                 count = self.dataset.generate_negative_sample_per_type
                 random_nodes = self.load_dataframe(self.dataset.query_random_nodes_in_version(count, model_type), set_index=False)
 
                 for index, random_node_result in random_nodes.iterrows():
                     random_node = random_node_result['nodes']
-                    self.bug_locations.add((random_node.identity, self.dataset.get_label(random_node)))
+                    bug_locations.add((random_node.identity, self.dataset.get_label(random_node)))
+                    
+            return bug_locations
 
     def initialize(self, log_level: int = 0):
         if log_level >= 4:
@@ -705,7 +712,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
                 node_ids.add(target_id)
 
         return list(node_ids)
-    
+
     def uninitialize(self):
         # TODO: Make field Optional!?
         self.model_nodes = {}
@@ -745,7 +752,7 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
             self._bug_localization_subgraph_edges = None
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
-        
+
     def uninitialize(self):
         self._bug_localization_subgraph_edges = None
         self._graph = None
@@ -782,7 +789,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
 
         meta_model = self.dataset.meta_model
         self.load_bug_report(node_self_embedding)
-        self.load_model_nodes(meta_model.get_model_meta_type_labels(), 
+        self.load_model_nodes(meta_model.get_model_meta_type_labels(),
                               node_self_embedding, log_level=log_level)
 
         # TODO: Free memory...!?
@@ -799,7 +806,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
 
         if log_level >= 4:
             print("Finished Loading Locations:", t(start_time))
-        
+
     def uninitialize(self):
         # TODO: Make field Optional!?
         self.model_nodes = {}
@@ -827,9 +834,8 @@ class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
             self._model_location = bug_location_pair[1]  # Mapped ID in subgraph
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
-        
+
     def uninitialize(self):
         self._graph = None
         self._bug_report = None
         self._model_location = None
-        

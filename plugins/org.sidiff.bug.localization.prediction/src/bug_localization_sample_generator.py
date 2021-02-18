@@ -308,12 +308,9 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
 
     def create_location_sample_generator(self, name: str,
-                                         bug_sample: IBugSample,
-                                         location_samples: List[ILocationSample] = None) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
-        if location_samples is None:
-            bug_sample.initialize(self.log_level)
-            location_samples = bug_sample.location_samples
-
+                                         bug_sample: IBugSample,  # already initialized
+                                         location_samples: List[ILocationSample]) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
+        
         flow = self.LocationSampleSequence(name,
                                            self.batch_size,
                                            self.shuffle,

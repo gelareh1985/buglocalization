@@ -42,7 +42,7 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     batch_size=20,
 
     sample_generator_workers=2,
-    sample_generator_workers_multiprocessing=True,
+    sample_generator_workers_multiprocessing=False,
     sample_max_queue_size=10
 )
 
@@ -112,7 +112,7 @@ class BugLocalizationPredictionTest:
         is_location_col = prediction_results_columns[2]
         missing_locations = []
 
-        for model_location, model_location_type in bug_sample.bug_locations:
+        for model_location, model_location_type in bug_sample.load_bug_locations():
             if model_location in prediction_results.index:
                 prediction_results.loc[model_location][is_location_col] = 1
             else:
