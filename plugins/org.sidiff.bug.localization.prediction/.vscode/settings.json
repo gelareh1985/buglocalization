@@ -23,8 +23,12 @@
     "editor.minimap.maxColumn": 150,
     "editor.minimap.scale": 2,
     "outline.showVariables": false,
-    "outline.showMethods": false,
+    "outline.showMethods": true,
     "outline.showConstructors": false,
+    "window.zoomLevel": -0.5,
+    "editor.fontSize": 15,
+    "terminal.integrated.fontSize": 15,
+    
     "files.exclude": {
         "**/__pycache__": true,
         "**/.mypy_cache": true,
