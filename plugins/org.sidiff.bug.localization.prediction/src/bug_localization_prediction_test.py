@@ -9,6 +9,7 @@ from typing import Dict, List, Mapping, Optional, cast
 import numpy as np
 import pandas as pd
 
+import bug_localization_data_set_neo4j_queries as query
 from bug_localization_data_set_neo4j import (BugSamplePredictionNeo4j,
                                              DataSetPredictionNeo4j,
                                              Neo4jConfiguration)
@@ -41,7 +42,7 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     num_samples=[20, 10],
     batch_size=20,
 
-    sample_generator_workers=8,
+    sample_generator_workers=2,
     sample_generator_workers_multiprocessing=False,
     sample_max_queue_size=10
 )
@@ -61,10 +62,10 @@ class BugLocalizationPredictionTest:
         dataset: DataSetPredictionNeo4j = bug_sample.dataset
         query_database_version_parameter = {'db_version': bug_sample.db_version}
 
-        query_bug_report_id = dataset.query_property_value_in_version('TracedBugReport', 'id')
+        query_bug_report_id = query.property_value_in_version('TracedBugReport', 'id')
         bug_report_id = dataset.run_query_value(query_bug_report_id, query_database_version_parameter)
 
-        query_model_version = dataset.query_model_repo_version_by_db_version()
+        query_model_version = query.model_repo_version_by_db_version()
         model_version = dataset.run_query_value(query_model_version, query_database_version_parameter)
 
         return str(bug_sample.db_version) + '_' + 'bug' + str(bug_report_id) + '_' + model_version
@@ -107,13 +108,17 @@ class BugLocalizationPredictionTest:
         # IsLocation
         is_location_col = prediction_results_columns[2]
         missing_locations = []
+        bug_location_by_container_node_ids = []
+        bug_locations_by_container = bug_sample.load_bug_locations(meta_model.find_bug_location_by_container())
 
-        for model_location, model_location_type in bug_sample.load_bug_locations():
+        for model_location, model_location_type in bug_locations_by_container:
             if model_location in prediction_results.index:
                 prediction_results.at[model_location, is_location_col] = 1
                 print(prediction_results.at[model_location, is_location_col])
             else:
                 missing_locations.append(model_location)
+            
+            bug_location_by_container_node_ids.append(model_location)
 
         prediction_results[is_location_col].fillna(0, inplace=True)
 
@@ -121,18 +126,18 @@ class BugLocalizationPredictionTest:
         meta_type_col = prediction_results_columns[3]
         model_element_id_col = prediction_results_columns[4]
 
-        query_type_and_names = dataset.query_nodes_by_ids('RETURN ID(n) AS ' + database_id_col +
-                                                          ', LABELS(n) AS ' + meta_type_col +
-                                                          ', n.__model__element__id__ AS ' + model_element_id_col)
+        query_type_and_names = query.nodes_by_ids('RETURN ID(n) AS ' + database_id_col +
+                                               ', LABELS(n) AS ' + meta_type_col +
+                                               ', n.__model__element__id__ AS ' + model_element_id_col)
         query_type_and_names_parameters = {'node_ids': prediction_results.index.tolist()}
         meta_type_and_model_element_id = dataset.run_query(query_type_and_names, query_type_and_names_parameters)
         meta_type_and_model_element_id.set_index(database_id_col, inplace=True)
-        
+
         prediction_results = prediction_results.join(meta_type_and_model_element_id)
-        
+
         # Sort predictions by probability:
         prediction_results.sort_values(by=prediction_col, ascending=False, inplace=True)
-        
+
         # Save table:
         prediction_results.to_csv(path + '/' + file_name_prefix + '_prediction.csv', sep=';')
 
@@ -148,19 +153,19 @@ class BugLocalizationPredictionTest:
 
         # ModelVersionRepository
         model_version_repository_col = bug_sample_info_columns[1]
-        query_model_version = dataset.query_model_repo_version_by_db_version()
+        query_model_version = query.model_repo_version_by_db_version()
         model_version = dataset.run_query_value(query_model_version, query_database_version_parameter)
         bug_sample_info[model_version_repository_col] = model_version
 
         # CodeVersionRepository
         code_version_repository_col = bug_sample_info_columns[2]
-        query_code_version = dataset.query_code_repo_version_by_db_version()
+        query_code_version = query.code_repo_version_by_db_version()
         code_version = dataset.run_query_value(query_code_version, query_database_version_parameter)
         bug_sample_info[code_version_repository_col] = code_version
 
         # BugReportNumber
         bug_report_id_col = bug_sample_info_columns[3]
-        query_bug_report_id = dataset.query_property_value_in_version('TracedBugReport', 'id')
+        query_bug_report_id = query.property_value_in_version('TracedBugReport', 'id')
         bug_report_id = dataset.run_query_value(query_bug_report_id, query_database_version_parameter)
         bug_sample_info[bug_report_id_col] = [bug_report_id]
 
@@ -174,7 +179,7 @@ class BugLocalizationPredictionTest:
 
         # BugSummary
         bug_summary_col = bug_sample_info_columns[6]
-        query_bug_report_summary = dataset.query_property_value_in_version('TracedBugReport', 'summary')
+        query_bug_report_summary = query.property_value_in_version('TracedBugReport', 'summary')
         bug_report_summary = dataset.run_query_value(query_bug_report_summary, query_database_version_parameter)
         bug_sample_info[bug_summary_col] = bug_report_summary
 
@@ -190,26 +195,29 @@ class BugLocalizationPredictionTest:
         bug_location_graph = []
 
         # Version:
-        query_version_node = dataset.query_nodes_in_version('TracedVersion')
+        query_version_node = query.nodes_in_version('TracedVersion')
         version_node = dataset.run_query(query_version_node, query_database_version_parameter)
         bug_location_graph.extend(version_node['nodes'].tolist())
 
         # Bug Report:
-        query_bug_report_node = dataset.query_nodes_in_version('TracedBugReport')
+        query_bug_report_node = query.nodes_in_version('TracedBugReport')
         bug_report_node = dataset.run_query(query_bug_report_node, query_database_version_parameter)
         bug_location_graph.extend(bug_report_node['nodes'].tolist())
 
         # Bug Comments:
-        query_bug_report_comment_nodes = dataset.query_nodes_in_version('BugReportComment')
+        query_bug_report_comment_nodes = query.nodes_in_version('BugReportComment')
         bug_report_comment_nodes = dataset.run_query(query_bug_report_comment_nodes, query_database_version_parameter)
         bug_location_graph.extend(bug_report_comment_nodes['nodes'].tolist())
 
         # Bug Model Location: Change -- location --> Model Element
-        query_bug_location_edges = dataset.query_edges_in_version('Change', 'location')
+        query_bug_location_edges = query.edges_in_version('Change', 'location')
         bug_location_edges = dataset.run_query(query_bug_location_edges, query_database_version_parameter)
         bug_location_node_ids = bug_location_edges['target'].tolist()
+        
+        bug_location_node_ids.append(bug_location_by_container_node_ids)
+        bug_location_node_ids = list(set(bug_location_node_ids))
 
-        query_bug_location_nodes = dataset.query_nodes_by_ids('RETURN n AS nodes')
+        query_bug_location_nodes = query.nodes_by_ids('RETURN n AS nodes')
         bug_location_nodes = dataset.run_query(query_bug_location_nodes, {'node_ids': bug_location_node_ids})
         bug_location_graph.extend(bug_location_nodes['nodes'].tolist())
 

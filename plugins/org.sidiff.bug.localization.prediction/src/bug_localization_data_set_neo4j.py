@@ -4,28 +4,26 @@
 
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
-import ntpath
-import os
-import time  # @UnusedImport
+import time
 from typing import Any, Dict, List, Optional, Set, Tuple, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas.core.frame import DataFrame  # type: ignore
-from py2neo import Graph, Node  # type: ignore  # @UnusedImport
+from py2neo import Graph, Node  # type: ignore
 from stellargraph import StellarGraph  # type: ignore
 
+import bug_localization_data_set_neo4j_queries as query
 from bug_localization_data_set import IBugSample, IDataSet, ILocationSample
 from bug_localization_meta_model import (GraphSlicing, MetaModel,
                                          NodeSelfEmbedding,
                                          TypbasedGraphSlicing)
 from bug_localization_util import t
 
-
 # ===============================================================================
 # Neo4j Data Connector:
 # ===============================================================================
-# -- WARNING: Do not save any "raw" Neo4j Node or Edge objects in the data set.
+# -- NOTE: Do not save any "raw" Neo4j Node or Edge objects in the data set.
 #    These objects store a reference to py2neo.internal.connectors.BoltConnector
 #    which is not pickable and causing problems with multi-processing. Also see
 #    __getstate__() makes the intentionally stored connection invisible to pickle.
@@ -117,11 +115,11 @@ class DataSetNeo4j(IDataSet):
 
     class GraphSlicingNeo4j(GraphSlicing):
 
-        def __init__(self, dataset, slicing_criterion: GraphSlicing):
+        def __init__(self, dataset: DataSetNeo4j, slicing_criterion: GraphSlicing):
             self.parent_levels: int = slicing_criterion.parent_levels
             self.parent_incoming: bool = slicing_criterion.parent_incoming
             self.parent_outgoing: bool = slicing_criterion.parent_outgoing
-            self.parent_query: str = dataset.query_edges_to_parent_nodes(self.parent_levels)
+            self.parent_query: str = query.edges_to_parent_nodes(self.parent_levels)
 
             self.self_incoming: bool = slicing_criterion.self_incoming
             self.self_outgoing: bool = slicing_criterion.self_outgoing
@@ -129,13 +127,13 @@ class DataSetNeo4j(IDataSet):
             self.child_levels: int = slicing_criterion.child_levels
             self.child_incoming: bool = slicing_criterion.child_incoming
             self.child_outgoing: bool = slicing_criterion.child_outgoing
-            self.child_query = dataset.query_edges_to_child_nodes(self.child_levels)
+            self.child_query: str = query.edges_to_child_nodes(self.child_levels)
 
             self.outgoing_distance: int = slicing_criterion.outgoing_distance
-            self.outgoing_query = dataset.query_outgoing_cross_tree_edges(self.outgoing_distance)
+            self.outgoing_query: str = query.outgoing_cross_tree_edges(self.outgoing_distance)
 
             self.incoming_distance: int = slicing_criterion.incoming_distance
-            self.incoming_query = dataset.query_incoming_cross_tree_edges(self.incoming_distance)
+            self.incoming_query: str = query.incoming_cross_tree_edges(self.incoming_distance)
 
     def translate_slicing_criterion(self, typebased_slicing: TypbasedGraphSlicing) -> DataSetNeo4j.TypbasedGraphSlicingNeo4j:
         neo4j_typebased_slicing = DataSetNeo4j.TypbasedGraphSlicingNeo4j()
@@ -148,7 +146,7 @@ class DataSetNeo4j(IDataSet):
         return neo4j_typebased_slicing
 
     def list_samples(self):
-        for db_version in self.run_query(self.query_buggy_versions())['versions']:
+        for db_version in self.run_query(query.buggy_versions())['versions']:
             self.bug_samples.append(self.create_sample(db_version))
 
     def create_sample(self, db_version: int) -> 'BugSampleNeo4j':
@@ -167,141 +165,6 @@ class DataSetNeo4j(IDataSet):
 
     def get_label(self, node: Node) -> str:
         return ':'.join(node.labels)
-
-    # # Subgraph Cypher queries # #
-
-    def query_buggy_versions(self):
-        return "MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions"
-
-    def query_edge_containment(self, is_value: bool):
-        if is_value:
-            return '__containment__:true'
-        else:
-            return '__containment__:false'
-
-    def query_edge_container(self, is_value: bool):
-        if is_value:
-            return '__container__:true'
-        else:
-            return '__container__:false'
-
-    def query_edges_to_parent_nodes(self, k=2) -> str:
-        return self.query_path(self.query_edge_containment(True), 'b', k)
-
-    def query_edges_to_child_nodes(self, k=2) -> str:
-        return self.query_path(self.query_edge_containment(True), 'a', k)
-
-    def query_outgoing_cross_tree_edges(self, k=2) -> str:
-        return self.query_path(self.query_edge_containment(False) + ', ' + self.query_edge_container(False), 'a', k)
-
-    def query_incoming_cross_tree_edges(self, k=1) -> str:
-        return self.query_path(self.query_edge_containment(False) + ', ' + self.query_edge_container(False), 'b', k)
-
-    def query_path(self, edge_properties: str, start_variable: str, k=2, return_relationship_attributes=False):
-        input_nodes = 'UNWIND $node_ids AS node_id '
-        node_path_in_version = 'ID(' + start_variable + ')= node_id AND ' + self.query_edges_no_dangling('a', 'b')
-        edge_path_in_version = 'UNWIND [edge IN relationships(path) WHERE ' + self.query_by_version('edge') + '] AS edge'
-        return_id_source_target_edge = 'RETURN DISTINCT ID(edge) AS index, ID(a) AS source, ID(b) as target'
-
-        if return_relationship_attributes:
-            return_id_source_target_edge = return_id_source_target_edge + ', edge AS edges'
-
-        path_filter = 'WHERE ' + node_path_in_version + ' WITH DISTINCT a, b, path ' + edge_path_in_version + ' ' + return_id_source_target_edge
-        return input_nodes + ' MATCH path=(a)-[*0..' + str(k) + ' {' + edge_properties + '}]->(b) ' + path_filter
-
-    def query_edges_no_dangling(self, source_variable: str, target_variable: str):
-        # FIXME: Missing __last__version__ for removed nodes in data set
-        return self.query_by_version(source_variable) + ' AND ' + self.query_by_version(target_variable)
-
-    def query_by_version(self, variable: str) -> str:
-        created_in_version = variable + '.__initial__version__ <= $db_version'
-        removed_in_version = variable + '.__last__version__ >= $db_version'
-        existing_in_latest_version = 'NOT EXISTS(' + variable + '.__last__version__)'
-        return created_in_version + ' AND ' + '(' + removed_in_version + ' OR ' + existing_in_latest_version + ')'
-
-    # # Some Cypher queries for testing # #
-
-    def query_node_by_id(self, node_id: int) -> str:
-        return 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' RETURN n'
-
-    def query_nodes_by_ids(self, return_query: str) -> str:
-        # $node_ids: List[int]
-        return 'MATCH (n) WHERE ID(n) IN $node_ids ' + return_query
-
-    def query_edge_by_id(self, edge_id: int) -> str:
-        return 'MATCH (s)-[r]-(t) WHERE ID(r)=' + str(edge_id) + ' RETURN s, r, t'
-
-    def query_initial_repo_version(self, node_id: int) -> str:
-        node_version = 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' WITH n.__initial__version__ AS version'
-        version_node = 'MATCH (vn:TracedVersion {__initial__version__:version}) RETURN vn.modelVersionID'
-        return node_version + ' ' + version_node
-
-    def query_last_repo_version(self, node_id: int) -> str:
-        node_version = 'MATCH (n) WHERE ID(n)=' + str(node_id) + ' WITH n.__last__version__ AS version'
-        version_node = 'MATCH (vn:TracedVersion {__last__version__:version}) RETURN vn.modelVersionID'
-        return node_version + ' ' + version_node
-
-    # # Read version information Cypher query # #
-
-    def query_db_version_by_code_repo_version(self) -> str:
-        return 'MATCH (n:TracedVersion {modelVersionID:$repo_version}) RETURN n.__initial__version__'
-
-    def query_db_version_by_model_repo_version(self) -> str:
-        return 'MATCH (n:TracedVersion {codeVersionID:$repo_version}) RETURN n.__initial__version__'
-
-    def query_code_repo_version_by_db_version(self) -> str:
-        return 'MATCH (n:TracedVersion {__initial__version__:$db_version}) RETURN n.codeVersionID'
-
-    def query_model_repo_version_by_db_version(self) -> str:
-        return 'MATCH (n:TracedVersion {__initial__version__:$db_version}) RETURN n.modelVersionID'
-
-    # # Read property/attribute Cypher query # #
-
-    def query_property_value_in_version(self, meta_type_label: str, property_name: str) -> str:
-        # $db_version: int
-        return 'MATCH (n:' + meta_type_label + ') WHERE ' + self.query_by_version('n') + ' RETURN n.' + property_name
-
-    # # Full graph Cypher queries # #
-
-    def query_nodes_in_version(self, meta_type_label: str = '', node_ids: bool = False) -> str:
-        if meta_type_label != '':
-            meta_type_label = ':' + meta_type_label
-
-        where = 'WHERE ' + self.query_by_version('n')
-
-        if node_ids:
-            where += ' AND ID(n) IN $node_ids'
-
-        return 'MATCH (n' + meta_type_label + ') ' + where + ' RETURN ID(n) AS index, n AS nodes'
-
-    def query_random_nodes_in_version(self, count: int, meta_type_label: str = '') -> str:
-        if meta_type_label != '':
-            meta_type_label = ':' + meta_type_label
-        return_query = 'RETURN n AS nodes, rand() AS r ORDER BY r LIMIT ' + str(count)
-        return 'MATCH (n' + meta_type_label + ') WHERE ' + self.query_by_version('n') + ' ' + return_query
-
-    def query_edges_in_version(self,
-                               source_meta_type_label: str = '',
-                               edge_meta_type_label: str = '',
-                               target_meta_type_label: str = '',
-                               return_ids: bool = True) -> str:
-
-        if source_meta_type_label != '':
-            source_meta_type_label = ':' + source_meta_type_label
-        if edge_meta_type_label != '':
-            edge_meta_type_label = ':' + edge_meta_type_label
-        if target_meta_type_label != '':
-            target_meta_type_label = ':' + target_meta_type_label
-
-        if return_ids:
-            return_query = 'RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'
-        else:
-            return_query = 'RETURN ID(r) AS index, s AS source, t AS target, r AS edges'
-
-        is_in_version = 'WHERE ' + self.query_by_version('r') + ' AND ' + self.query_edges_no_dangling('s', 't')
-        match_query = 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version
-
-        return match_query + ' ' + return_query
 
 
 class BugSampleNeo4j(IBugSample):
@@ -427,33 +290,60 @@ class BugSampleNeo4j(IBugSample):
 
         return graph, (nodes_trace[self.bug_report_node_id], nodes_trace[node_id])
 
-    def load_bug_report(self, embedding: NodeSelfEmbedding):
+    def load_bug_report(self, embedding: NodeSelfEmbedding, locate_by_container: int):
 
         # Bug report node:
-        bug_report_node_frame = self.load_dataframe(self.dataset.query_nodes_in_version('TracedBugReport'))
+        bug_report_node_frame = self.load_dataframe(query.nodes_in_version('TracedBugReport'))
         assert len(bug_report_node_frame.index) == 1
         self.bug_report_node_id = bug_report_node_frame.index[0]
 
         # Bug report graph:
         bug_report_meta_type_labels = ['TracedBugReport', 'BugReportComment']
         self.bug_report_nodes = self.load_node_embeddings(bug_report_meta_type_labels, embedding)
-        self.bug_report_edges = self.load_dataframe(self.dataset.query_edges_in_version(
+        self.bug_report_edges = self.load_dataframe(query.edges_in_version(
             'TracedBugReport', 'comments', 'BugReportComment'))
         self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
 
         # Bug locations:
-        self.bug_locations = self.load_bug_locations()
+        self.bug_locations = self.load_bug_locations(locate_by_container)
 
-    def load_bug_locations(self) -> Set[Tuple[int, str]]:
-        bug_locations = set()
-        bug_location_edges = self.load_dataframe(self.dataset.query_edges_in_version('Change', 'location', return_ids=False))
+    def load_bug_locations(self, locate_by_container: int) -> Set[Tuple[int, str]]:
+        bug_locations: Set[Tuple[int, str]] = set()
+        bug_location_edges = self.load_dataframe(query.edges_in_version('Change', 'location', return_ids=False))
 
         for index, edge in bug_location_edges.iterrows():
             # location edges point at model elements:
             bug_location: Node = edge['target']
             bug_locations.add((bug_location.identity, self.dataset.get_label(bug_location)))
-            
+
+        # Find container of bug location if the type is not in specified location:
+        if locate_by_container > 0:
+            bug_locations = self.locate_bug_locations_by_container(bug_locations, locate_by_container)
+
         return bug_locations
+
+    def locate_bug_locations_by_container(self, bug_locations: Set[Tuple[int, str]], locate_by_container: int) -> Set[Tuple[int, str]]:
+        bug_locations_by_container: Set[Tuple[int, str]] = set()  # Set eliminated duplicted id, type tuples.
+        bug_location_types: Set[str] = self.dataset.meta_model.get_bug_location_types()
+
+        query_parent_node = query.path(query.edge_containment(True), 'b', k=2, return_query='RETURN DISTINCT a AS parents')
+        get_label = self.dataset.get_label
+        query_parent_node_parameter: Dict[str, List[int]] = {'node_ids': []}
+
+        for model_location, bug_location_type in bug_locations:
+            if bug_location_type in bug_location_types:
+                bug_locations_by_container.add((model_location, bug_location_type))
+            else:
+                query_parent_node_parameter['node_ids'] = [model_location]
+                parent_nodes = self.load_dataframe(
+                    query_parent_node, query_parent_node_parameter, set_index=False)
+
+                for parent_node in parent_nodes['parents']:
+                    if get_label(parent_node) in bug_location_types:
+                        bug_locations_by_container.add((parent_node.identity, get_label(parent_node)))
+                        break
+
+        return bug_locations_by_container
 
     def load_node_embeddings(self,
                              meta_type_labels: List[str],
@@ -480,11 +370,11 @@ class BugSampleNeo4j(IBugSample):
 
                 # Filter by given node IDs?
                 if to_be_embedded_node_ids is not None:
-                    query_nodes_in_version = self.dataset.query_nodes_in_version(meta_type_label, node_ids=True)
+                    query_nodes_in_version = query.nodes_in_version(meta_type_label, node_ids=True)
                     query_nodes_in_version_parameter = {'node_ids': to_be_embedded_node_ids}
                     nodes_in_version = self.load_dataframe(query_nodes_in_version, query_nodes_in_version_parameter)
                 else:
-                    nodes_in_version = self.load_dataframe(self.dataset.query_nodes_in_version(meta_type_label))
+                    nodes_in_version = self.load_dataframe(query.nodes_in_version(meta_type_label))
 
                 if log_level >= 5:
                     print(meta_type_label + ': ' + str(len(nodes_in_version.index)))
@@ -544,6 +434,8 @@ class BugSampleNeo4j(IBugSample):
         tree_of_outgoing = set()
 
         if slicing.parent_outgoing and parent_edges is not None and not parent_edges.empty:
+            for parent in parent_edges['source']:
+                tree_of_outgoing.add(parent)
             for parent in parent_edges['target']:
                 tree_of_outgoing.add(parent)
 
@@ -551,6 +443,8 @@ class BugSampleNeo4j(IBugSample):
             tree_of_outgoing.add(node_id)
 
         if slicing.child_outgoing and child_edges is not None and not child_edges.empty:
+            for child in child_edges['source']:
+                tree_of_outgoing.add(child)
             for child in child_edges['target']:
                 tree_of_outgoing.add(child)
 
@@ -563,6 +457,8 @@ class BugSampleNeo4j(IBugSample):
         tree_of_incoming = set()
 
         if slicing.parent_incoming and parent_edges is not None and not parent_edges.empty:
+            for parent in parent_edges['source']:
+                tree_of_incoming.add(parent)
             for parent in parent_edges['target']:
                 tree_of_incoming.add(parent)
 
@@ -570,6 +466,8 @@ class BugSampleNeo4j(IBugSample):
             tree_of_incoming.add(node_id)
 
         if slicing.child_incoming and child_edges is not None and not child_edges.empty:
+            for child in child_edges['source']:
+                tree_of_incoming.add(child)
             for child in child_edges['target']:
                 tree_of_incoming.add(child)
 
@@ -648,22 +546,22 @@ class DataSetTrainingNeo4j(DataSetNeo4j):
 class BugSampleTrainingNeo4j(BugSampleNeo4j):
     dataset: DataSetTrainingNeo4j
 
-    def load_bug_locations(self) -> Set[Tuple[int, str]]:
+    def load_bug_locations(self, locate_by_container: int) -> Set[Tuple[int, str]]:
         if not self.dataset.is_negative:
             # Load positive sample -> default super class implementation:
-            return super().load_bug_locations()
+            return super().load_bug_locations(locate_by_container)
         else:
             # Generate negative sample:
             bug_locations: Set[Tuple[int, str]] = set()
-            
-            for model_type in self.dataset.meta_model.get_bug_location_model_meta_type_labels():
+
+            for model_type in self.dataset.meta_model.get_bug_location_types():
                 count = self.dataset.generate_negative_sample_per_type
-                random_nodes = self.load_dataframe(self.dataset.query_random_nodes_in_version(count, model_type), set_index=False)
+                random_nodes = self.load_dataframe(query.random_nodes_in_version(count, model_type), set_index=False)
 
                 for index, random_node_result in random_nodes.iterrows():
                     random_node = random_node_result['nodes']
                     bug_locations.add((random_node.identity, self.dataset.get_label(random_node)))
-                    
+
             return bug_locations
 
     def initialize(self, log_level: int = 0):
@@ -683,18 +581,18 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
         bug_localization_subgraphs = []
 
         # Bug report and locations:
-        self.load_bug_report(node_self_embedding)
+        self.load_bug_report(node_self_embedding, meta_model.find_bug_location_by_container())
 
         # Subgraphs of bug locations:
         for bug_location, bug_location_type in self.bug_locations:
             # Filter by type configured for meta-model:
-            if bug_location_type in meta_model.get_bug_location_model_meta_type_labels():
+            if bug_location_type in meta_model.get_bug_location_types():
                 label = 0 if self.dataset.is_negative else 1
                 location_sample = LocationSampleTrainingNeo4j(bug_location, bug_location_type, label)
                 bug_localization_subgraphs.append(location_sample.bug_localization_subgraph_edges(self))
                 self.location_samples.append(location_sample)
 
-        self.load_model_nodes(meta_model.get_model_meta_type_labels(),
+        self.load_model_nodes(meta_model.get_types(),
                               node_self_embedding,
                               self.collect_model_nodes(bug_localization_subgraphs),
                               log_level=log_level)
@@ -788,8 +686,8 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             start_time = time.time()
 
         meta_model = self.dataset.meta_model
-        self.load_bug_report(node_self_embedding)
-        self.load_model_nodes(meta_model.get_model_meta_type_labels(),
+        self.load_bug_report(node_self_embedding, meta_model.find_bug_location_by_container())
+        self.load_model_nodes(meta_model.get_types(),
                               node_self_embedding, log_level=log_level)
 
         # TODO: Free memory...!?
@@ -800,7 +698,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             print("Start Loading Locations...")
             start_time = time.time()
 
-        for model_location_types in meta_model.get_bug_location_model_meta_type_labels():
+        for model_location_types in meta_model.get_bug_location_types():
             for model_location in self.model_nodes_types[model_location_types]:
                 self.location_samples.append(LocationSamplePredictionNeo4j(model_location, model_location_types, label=model_location))
 

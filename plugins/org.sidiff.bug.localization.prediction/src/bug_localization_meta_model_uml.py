@@ -29,7 +29,7 @@ def create_uml_configuration(
     # Node Embedding Configuration:
     # TODO: Specify stopwords? May not be in the dictionary anyway!
     node_self_embedding = UMLNodeSelfEmbedding(
-        meta_model.get_meta_type_to_properties(),
+        meta_model.get_type_to_properties(),
         word_dictionary)
 
     # Graph Slicing Configuration:
@@ -114,7 +114,7 @@ class MetaModelUML(MetaModel):
         slicing.add_type('Property', type_property)
 
         # Consistency validation:
-        for bug_location_model_meta_type_label in self.get_bug_location_model_meta_type_labels():
+        for bug_location_model_meta_type_label in self.get_bug_location_types():
             try:
                 slicing.get_slicing(bug_location_model_meta_type_label)
             except:
@@ -123,7 +123,7 @@ class MetaModelUML(MetaModel):
         return slicing
 
     # Specifies all meta types that will be considered as model elements.
-    def get_model_meta_type_labels(self) -> List[str]:
+    def get_types(self) -> List[str]:
         model_meta_type_labels = [
             "Model",
             "Package",
@@ -148,7 +148,7 @@ class MetaModelUML(MetaModel):
         return model_meta_type_labels
 
     # Specifies all meta types that will be considered as bug locations.
-    def get_bug_location_model_meta_type_labels(self) -> Set[str]:
+    def get_bug_location_types(self) -> Set[str]:
         bug_location_model_meta_type_labels = {
             # "Package",
             "Class",
@@ -160,7 +160,7 @@ class MetaModelUML(MetaModel):
         }
 
         # Consistency validation:
-        model_meta_type_labels = self.get_model_meta_type_labels()
+        model_meta_type_labels = self.get_types()
 
         for bug_location_model_meta_type_label in bug_location_model_meta_type_labels:
             if bug_location_model_meta_type_label not in model_meta_type_labels:
@@ -168,8 +168,12 @@ class MetaModelUML(MetaModel):
 
         return bug_location_model_meta_type_labels
 
+    # Find container of bug location if the type is not in specified location.
+    def find_bug_location_by_container(self) -> int:
+        return 2
+
     # Specifies the properties of nodes that will be considered during embedding.
-    def get_meta_type_to_properties(self):
+    def get_type_to_properties(self):
         meta_type_to_properties: Dict[str, List[str]] = {
             
             # ----- Model -----
@@ -199,7 +203,7 @@ class MetaModelUML(MetaModel):
         }
 
         # Consistency validation:
-        for model_meta_type_label in self.get_model_meta_type_labels():
+        for model_meta_type_label in self.get_types():
             try:
                 meta_type_to_properties[model_meta_type_label]
             except:

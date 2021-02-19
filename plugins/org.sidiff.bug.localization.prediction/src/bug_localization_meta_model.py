@@ -62,10 +62,10 @@ class NodeSelfEmbedding:
     def unload(self):
         ...
 
-    def filter_type(self, meta_type_label: str) -> bool:  # @UnusedVariable
+    def filter_type(self, meta_type_label: str) -> bool:
         return False
 
-    def filter_node(self, node: pd.Series) -> bool:  # @UnusedVariable
+    def filter_node(self, node: pd.Series) -> bool:
         return False
 
     def get_dimension(self) -> int:
@@ -77,18 +77,43 @@ class NodeSelfEmbedding:
 
 class MetaModel:
 
-    # Specifies the slicing of subgraph for embedding of model elements.
+    def get_types(self) -> List[str]:
+        """
+        Returns:
+            List[str]: Specifies all meta types that will be considered as model elements.
+        """
+        raise NotImplementedError()
+
+    def get_type_to_properties(self):
+        """
+        Raises:
+            NotImplementedError: pecifies the properties of nodes that will be considered during embedding.
+        """
+        raise NotImplementedError()
+
+    def get_bug_location_types(self) -> Set[str]:
+        """
+        Returns:
+            Set[str]: Specifies all meta types that will be considered as bug locations.
+        """
+        raise NotImplementedError()
+
+    def find_bug_location_by_container(self) -> int:
+        """
+        Find container of bug location if the type is not in specified location.
+
+        Returns:
+            int: The maximal number of parents to be searched. Default to 2. 0 is off.
+        """
+        return 2
+
     def get_slicing_criterion(self, dnn_depth: int) -> TypbasedGraphSlicing:
-        raise NotImplementedError()
+        """
 
-    # Specifies all meta types that will be considered as model elements.
-    def get_model_meta_type_labels(self) -> List[str]:
-        raise NotImplementedError()
+        Args:
+            dnn_depth (int): The maximal depth of the deep neural network, i.e., GraphSAGE layers.
 
-    # Specifies all meta types that will be considered as bug locations.
-    def get_bug_location_model_meta_type_labels(self) -> Set[str]:
-        raise NotImplementedError()
-
-    # Specifies the properties of nodes that will be considered during embedding.
-    def get_meta_type_to_properties(self):
+        Returns:
+            TypbasedGraphSlicing: Specifies the slicing of subgraph for embedding of model elements.
+        """
         raise NotImplementedError()
