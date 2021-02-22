@@ -1,0 +1,10 @@
+version: "3"
+services:
+  buglocalization:
+    container_name: buglocalization
+    ports: 
+      - "8888:8888"
+    volumes:
+      - C:/Users/manue/git/buglocalization/plugins/org.sidiff.bug.localization.prediction:/notebooks
+    build: .
+    command: jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
