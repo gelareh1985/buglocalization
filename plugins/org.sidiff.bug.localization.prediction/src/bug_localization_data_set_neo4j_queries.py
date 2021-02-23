@@ -69,6 +69,10 @@ def by_version(variable: str) -> str:
     existing_in_latest_version = 'NOT EXISTS(' + variable + '.__last__version__)'
     return created_in_version + ' AND ' + '(' + removed_in_version + ' OR ' + existing_in_latest_version + ')'
 
+
+def where_version(variable: str) -> str:
+    return 'WHERE ' + by_version(variable)
+
 # # Some Cypher queries for testing # #
 
 

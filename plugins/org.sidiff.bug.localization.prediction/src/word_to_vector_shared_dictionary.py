@@ -6,12 +6,20 @@ import numpy as np  # type: ignore
 from gensim.models import KeyedVectors
 from gensim.test.utils import get_tmpfile
 
-pretrained_dictionary_path: str = r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\data" + "/"
+import os
+
+plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+pretrained_dictionary_path: str = str(os.path.join(plugin_directory, 'data/'))
 
 pretrained_dictionary_name = "GoogleNews-vectors-negative300.bin"
 pretrained_dictionary_normalized_name = "GoogleNews-vectors-gensim-normed300.bin"
 pretrained_dictionary_feature_size = 300
 
+# Dictionary:
+# https://code.google.com/archive/p/word2vec/
+# https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit
+
+# Shared Memory:
 # https://stackoverflow.com/questions/42986405/how-to-speed-up-gensim-word2vec-model-load-time/43067907
 # https://tomassetti.me/creating-a-reverse-dictionary/
 # https://stackoverflow.com/questions/51616074/sharing-memory-for-gensims-keyedvectors-objects-between-docker-containers
@@ -61,6 +69,7 @@ if __name__ == '__main__':
 
     # Check if normalized dictionary exists; otherwise create it?
     if not Path(pretrained_dictionary_path + "/" + pretrained_dictionary_normalized_name).is_file():
+        print("Normalize dictionary:", str(Path(pretrained_dictionary_path + "/" + pretrained_dictionary_normalized_name)))
         save_normalized_dictionary()
 
     # Load the dictionary:

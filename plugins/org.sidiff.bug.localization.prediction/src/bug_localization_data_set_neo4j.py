@@ -5,7 +5,7 @@
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
 import time
-from typing import Any, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -15,8 +15,7 @@ from stellargraph import StellarGraph  # type: ignore
 
 import bug_localization_data_set_neo4j_queries as query
 from bug_localization_data_set import IBugSample, IDataSet, ILocationSample
-from bug_localization_meta_model import (GraphSlicing, MetaModel,
-                                         NodeSelfEmbedding,
+from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
                                          TypbasedGraphSlicing)
 from bug_localization_util import t
 
@@ -72,7 +71,7 @@ class DataSetNeo4j(IDataSet):
         # Meta-model configuration
         self.meta_model = meta_model
         self.node_self_embedding = node_self_embedding
-        self.typebased_slicing = self.translate_slicing_criterion(typebased_slicing)
+        self.typebased_slicing = typebased_slicing
 
         # Opened connection and read bug samlpes:
         self.neo4j_graph: Optional[Graph] = None
@@ -108,43 +107,6 @@ class DataSetNeo4j(IDataSet):
     def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
         return cast(List[BugSampleNeo4j], self.bug_samples)
 
-    class TypbasedGraphSlicingNeo4j(TypbasedGraphSlicing):
-
-        def get_slicing(self, type_label: str) -> DataSetNeo4j.GraphSlicingNeo4j:
-            return cast(DataSetNeo4j.GraphSlicingNeo4j, self.type_label_to_graph_slicing[type_label])
-
-    class GraphSlicingNeo4j(GraphSlicing):
-
-        def __init__(self, dataset: DataSetNeo4j, slicing_criterion: GraphSlicing):
-            self.parent_levels: int = slicing_criterion.parent_levels
-            self.parent_incoming: bool = slicing_criterion.parent_incoming
-            self.parent_outgoing: bool = slicing_criterion.parent_outgoing
-            self.parent_query: str = query.edges_to_parent_nodes(self.parent_levels)
-
-            self.self_incoming: bool = slicing_criterion.self_incoming
-            self.self_outgoing: bool = slicing_criterion.self_outgoing
-
-            self.child_levels: int = slicing_criterion.child_levels
-            self.child_incoming: bool = slicing_criterion.child_incoming
-            self.child_outgoing: bool = slicing_criterion.child_outgoing
-            self.child_query: str = query.edges_to_child_nodes(self.child_levels)
-
-            self.outgoing_distance: int = slicing_criterion.outgoing_distance
-            self.outgoing_query: str = query.outgoing_cross_tree_edges(self.outgoing_distance)
-
-            self.incoming_distance: int = slicing_criterion.incoming_distance
-            self.incoming_query: str = query.incoming_cross_tree_edges(self.incoming_distance)
-
-    def translate_slicing_criterion(self, typebased_slicing: TypbasedGraphSlicing) -> DataSetNeo4j.TypbasedGraphSlicingNeo4j:
-        neo4j_typebased_slicing = DataSetNeo4j.TypbasedGraphSlicingNeo4j()
-
-        for type_label in typebased_slicing.get_types():
-            slicing_criterion = typebased_slicing.get_slicing(type_label)
-            neo4j_slicing = self.GraphSlicingNeo4j(self, slicing_criterion)
-            neo4j_typebased_slicing.add_type(type_label, neo4j_slicing)
-
-        return neo4j_typebased_slicing
-
     def list_samples(self):
         for db_version in self.run_query(query.buggy_versions())['versions']:
             self.bug_samples.append(self.create_sample(db_version))
@@ -156,6 +118,9 @@ class DataSetNeo4j(IDataSet):
 
     def run_query(self, query: str, parameters: Dict[str, Any] = None) -> DataFrame:
         return self.connectNeo4j().run(query, parameters).to_data_frame()
+    
+    def run_query_to_table(self, query: str, parameters: Dict[str, Any] = None) -> List[Tuple[Any]]:
+        return self.connectNeo4j().run(query, parameters).to_table()
 
     def run_query_value(self, query: str, parameters: Dict[str, Any] = None) -> Any:
         result = self.run_query(query, parameters)
@@ -263,6 +228,13 @@ class BugSampleNeo4j(IBugSample):
             raise Exception(
                 "No (subgraph) embedding found for node: ID " + str(node_id))
 
+        # Fallback
+        if node_id not in nodes_trace:
+            print("WARNING: No connected subgraph for node:", node_id)
+            subgraph_node_id = len(subgraph_nodes_model)
+            nodes_trace[node_id] = subgraph_node_id
+            subgraph_nodes_model.append(self.model_nodes[node_id])
+
         # =======================================================================
         # Bug Report Graph: (append to model graph)
         # =======================================================================
@@ -338,10 +310,13 @@ class BugSampleNeo4j(IBugSample):
                 parent_nodes = self.load_dataframe(
                     query_parent_node, query_parent_node_parameter, set_index=False)
 
-                for parent_node in parent_nodes['parents']:
-                    if get_label(parent_node) in bug_location_types:
-                        bug_locations_by_container.add((parent_node.identity, get_label(parent_node)))
-                        break
+                if not parent_nodes.empty:
+                    for parent_node in parent_nodes['parents']:
+                        if get_label(parent_node) in bug_location_types:
+                            bug_locations_by_container.add((parent_node.identity, get_label(parent_node)))
+                            break
+                else:
+                    print("WARNING: No parent found for node ID", model_location)
 
         return bug_locations_by_container
 
@@ -408,79 +383,32 @@ class BugSampleNeo4j(IBugSample):
             df.set_index("index", inplace=True)
 
         return df
-
-    def load_subgraph_edges(self, node_id: int, slicing: DataSetNeo4j.GraphSlicingNeo4j) -> DataFrame:
-        # t = time.time()
-
-        if slicing is None:
-            raise Exception("Missing slicing configuration for node:", node_id)
-
-        subgraph_edges = []
-        node_id_query_parameter = {'node_ids': [node_id]}
-
-        # # Containment Tree # #
-        parent_edges: DataFrame = None
-        child_edges: DataFrame = None
-
-        if slicing.parent_levels > 0:
-            parent_edges = self.load_dataframe(slicing.parent_query, node_id_query_parameter)
-            subgraph_edges.append(parent_edges)
-
-        if slicing.child_levels > 0:
-            child_edges = self.load_dataframe(slicing.child_query, node_id_query_parameter)
-            subgraph_edges.append(child_edges)
-
-        # # Cross-Tree Outgoing Edges # #
-        tree_of_outgoing = set()
-
-        if slicing.parent_outgoing and parent_edges is not None and not parent_edges.empty:
-            for parent in parent_edges['source']:
-                tree_of_outgoing.add(parent)
-            for parent in parent_edges['target']:
-                tree_of_outgoing.add(parent)
-
-        if slicing.self_outgoing:
-            tree_of_outgoing.add(node_id)
-
-        if slicing.child_outgoing and child_edges is not None and not child_edges.empty:
-            for child in child_edges['source']:
-                tree_of_outgoing.add(child)
-            for child in child_edges['target']:
-                tree_of_outgoing.add(child)
-
-        tree_of_outgoing_query_parameter = {'node_ids': list(tree_of_outgoing)}
-        outgoing_edges = self.load_dataframe(
-            slicing.outgoing_query, tree_of_outgoing_query_parameter)
-        subgraph_edges.append(outgoing_edges)
-
-        # # Cross-Tree Incoming Edges # #
-        tree_of_incoming = set()
-
-        if slicing.parent_incoming and parent_edges is not None and not parent_edges.empty:
-            for parent in parent_edges['source']:
-                tree_of_incoming.add(parent)
-            for parent in parent_edges['target']:
-                tree_of_incoming.add(parent)
-
-        if slicing.self_incoming:
-            tree_of_incoming.add(node_id)
-
-        if slicing.child_incoming and child_edges is not None and not child_edges.empty:
-            for child in child_edges['source']:
-                tree_of_incoming.add(child)
-            for child in child_edges['target']:
-                tree_of_incoming.add(child)
-
-        tree_of_incoming_query_parameter = {'node_ids': list(tree_of_incoming)}
-        incoming_eges = self.load_dataframe(slicing.incoming_query, tree_of_incoming_query_parameter)
-        subgraph_edges.append(incoming_eges)
-
-        # # Combine Edges # #
-        subgraph = pd.concat(subgraph_edges)
-        # print("Query Subgraph:", time.time() - t)
-
-        return subgraph
-
+    
+    def load_subgraph_edges(self, node_id: int, slicing_queries: List[str]) -> Tuple[DataFrame, Set[int]]:
+        node_ids: Set[int] = set()
+        node_ids.add(node_id)
+        
+        for query_nodes in slicing_queries:
+            self.read_node_ids(query_nodes, node_id, node_ids)
+        
+        query_edges = query.edges_from_nodes_in_version()
+        parameters = {'node_ids': list(node_ids)}
+        edges = self.load_dataframe(query_edges, parameters)
+        
+        if len(node_ids) > 500:
+            print("WARNING: Large Sub Graph Found: ", len(node_ids), "node", node_id)
+            for query_nodes in slicing_queries:
+                print(query_nodes)
+        
+        return edges, node_ids
+    
+    def read_node_ids(self, query: str, node_id: int, node_ids: Set[int]):
+        parameters = {'node_id': node_id, 'db_version': self.db_version}
+        
+        for row in self.dataset.run_query_to_table(query, parameters):
+            for entry in row:
+                node_ids.add(entry)
+        
 
 class LocationSampleBaseNeo4j(ILocationSample):
 
@@ -578,7 +506,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
             start_time = time.time()
 
         meta_model = self.dataset.meta_model
-        bug_localization_subgraphs = []
+        bug_localization_subgraphs = set()
 
         # Bug report and locations:
         self.load_bug_report(node_self_embedding, meta_model.find_bug_location_by_container())
@@ -589,27 +517,17 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
             if bug_location_type in meta_model.get_bug_location_types():
                 label = 0 if self.dataset.is_negative else 1
                 location_sample = LocationSampleTrainingNeo4j(bug_location, bug_location_type, label)
-                bug_localization_subgraphs.append(location_sample.bug_localization_subgraph_edges(self))
+                bug_localization_subgraph_edges, nodes_ids = location_sample.bug_localization_subgraph_edges(self)
+                bug_localization_subgraphs.update(nodes_ids)
                 self.location_samples.append(location_sample)
 
         self.load_model_nodes(meta_model.get_types(),
                               node_self_embedding,
-                              self.collect_model_nodes(bug_localization_subgraphs),
+                              list(bug_localization_subgraphs),
                               log_level=log_level)
 
         if log_level >= 4:
             print("Finished Loading Locations:", t(start_time))
-
-    def collect_model_nodes(self, bug_localization_subgraphs: List[DataFrame]) -> List[int]:
-        node_ids: Set[int] = set()
-
-        for bug_localization_subgraph in bug_localization_subgraphs:
-            for source_id in bug_localization_subgraph['source']:
-                node_ids.add(source_id)
-            for target_id in bug_localization_subgraph['target']:
-                node_ids.add(target_id)
-
-        return list(node_ids)
 
     def uninitialize(self):
         # TODO: Make field Optional!?
@@ -627,20 +545,22 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
     def __init__(self, neo4j_model_location: int, model_location_type: str, label: int):
         super().__init__(neo4j_model_location, model_location_type, label)
         self._bug_localization_subgraph_edges: Optional[DataFrame] = None
+        self.node_ids: Optional[Set[int]] = None
 
-    def bug_localization_subgraph_edges(self, bug_sample: BugSampleTrainingNeo4j) -> DataFrame:
-        if self._bug_localization_subgraph_edges is not None:
-            return self._bug_localization_subgraph_edges
+    def bug_localization_subgraph_edges(self, bug_sample: BugSampleTrainingNeo4j) -> Tuple[DataFrame, Set[int]]:
+        if self._bug_localization_subgraph_edges is not None and self.node_ids is not None:
+            return self._bug_localization_subgraph_edges, self.node_ids 
         else:
             typebased_slicing = bug_sample.dataset.typebased_slicing
             slicing = typebased_slicing.get_slicing(self.mode_location_type)
-            self._bug_localization_subgraph_edges = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
-            return self._bug_localization_subgraph_edges
+            self._bug_localization_subgraph_edges, self.node_ids = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
+            return self._bug_localization_subgraph_edges, self.node_ids 
 
     def initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSampleTrainingNeo4j):
+            _bug_localization_subgraph_edges, node_ids = self.bug_localization_subgraph_edges(bug_sample)
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(
-                self.neo4j_model_location, self.bug_localization_subgraph_edges(bug_sample))
+                self.neo4j_model_location, _bug_localization_subgraph_edges)
 
             self._graph = subgraph
             self._bug_report = bug_location_pair[0]
@@ -648,11 +568,13 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
 
             # Free memory:
             self._bug_localization_subgraph_edges = None
+            self.node_ids = None
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
 
     def uninitialize(self):
         self._bug_localization_subgraph_edges = None
+        self.node_ids = None
         self._graph = None
         self._bug_report = None
         self._model_location = None
@@ -723,7 +645,7 @@ class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
             typebased_slicing = bug_sample.dataset.typebased_slicing
             slicing = typebased_slicing.get_slicing(self.mode_location_type)
 
-            bug_localization_subgraph_edges = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
+            bug_localization_subgraph_edges, node_ids = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(
                 self.neo4j_model_location, bug_localization_subgraph_edges)
 
