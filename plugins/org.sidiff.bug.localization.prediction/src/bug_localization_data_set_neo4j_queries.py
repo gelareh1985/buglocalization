@@ -69,6 +69,10 @@ def by_version(variable: str) -> str:
     existing_in_latest_version = 'NOT EXISTS(' + variable + '.__last__version__)'
     return created_in_version + ' AND ' + '(' + removed_in_version + ' OR ' + existing_in_latest_version + ')'
 
+
+def where_version(variable: str) -> str:
+    return 'WHERE ' + by_version(variable)
+
 # # Some Cypher queries for testing # #
 
 
@@ -165,3 +169,8 @@ def edges_in_version(
     match_query = 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version
 
     return match_query + ' ' + return_query
+
+
+def edges_from_nodes_in_version() -> str:
+    return 'MATCH (a)-[e]->(b) WHERE ID(a) IN $node_ids AND ID(b) IN $node_ids AND ' + by_version('e') + ' RETURN ID(e) as index, ID(a) AS source, ID(b) AS target'  # noqa: E501
+
