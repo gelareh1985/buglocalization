@@ -20,6 +20,7 @@ if gpus:
 # ===============================================================================
 
 import datetime
+import os
 from pathlib import Path
 from time import time
 from typing import List, Tuple
@@ -52,7 +53,8 @@ positve_samples_path: str = r"C:\Users\manue\git\buglocalization\research\org.si
 negative_samples_path: str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples" + "/"  # noqa: E501
 
 # NOTE: Paths should not be too long, causes error (on Windows)!
-model_training_save_dir = r"D:\buglocalization_gelareh_home\training\trained_model_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
+plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+model_training_save_dir = str(os.path.join(plugin_directory, '/training/trained_model_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '/'))
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 # Database connection:
@@ -266,9 +268,11 @@ if __name__ == '__main__':
 
     # GraphSAGE Settings:
     num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
-    layer_sizes = [20, 20]  # Size of GraphSAGE hidden layers
+    layer_sizes = [300, 300]  # Size of GraphSAGE hidden layers
 
     assert len(num_samples) == len(layer_sizes), "The number of neighbor node samples need to be specified per GraphSAGE layer!"
+    
+    print('Save Training:', model_training_save_dir)
 
     # Regularization:
 
@@ -306,7 +310,7 @@ if __name__ == '__main__':
 
     # Training Settings:
     epochs = 20  # Number of training epochs.
-    batch_size = 40  # Number of bug location samples, please node that each sample has multiple location samples.
+    batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     generator_workers = 2  # Number of threads that load/generate the batches in parallel.
     multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
