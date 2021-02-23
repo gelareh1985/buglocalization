@@ -169,3 +169,8 @@ def edges_in_version(
     match_query = 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version
 
     return match_query + ' ' + return_query
+
+
+def edges_from_nodes_in_version() -> str:
+    return 'MATCH (a)-[e]->(b) WHERE ID(a) IN $node_ids AND ID(b) IN $node_ids AND ' + by_version('e') + ' RETURN ID(e) as index, ID(a) AS source, ID(b) AS target'  # noqa: E501
+
