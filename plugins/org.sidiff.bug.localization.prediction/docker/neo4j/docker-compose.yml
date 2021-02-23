@@ -1,8 +1,12 @@
 version: "3"
 services:
+
   neo4j:
-    container_name: Neo4j-BugLocalization
+    container_name: neo4j
     image: neo4j:latest
+    # For the connection between the application container and the Neo4j container:
+    networks: 
+      - back 
     volumes:
       # Data folder will contain another directory the "database" that actually contains the entire database:
       - ./data:/data
@@ -16,16 +20,18 @@ services:
       - "7687:7687"
     # Configuration of Neo4j databases. The difference is the environment parameters and local installation configuration 
     # is that "_" is to be replaced with double underscore "__"  and "." to be replaced with one underscore "_":
+    # https://neo4j.com/docs/operations-manual/current/reference/configuration-settings/#configuration-settings
     environment:
       - NEO4J_dbms_memory_heap_initial__size=1G
       - NEO4J_dbms_memory_heap_max__size=6G
+      - NEO4J_dbms_memory_pagecache_size=2G
+      - NEO4J_dbms_tx__state_memory__allocation=ON_HEAP
       - NEO4J_dbms_default__listen__address=0.0.0.0
       - NEO4J_dbms_default__database=neo4j
       # user/password or none
       - NEO4J_AUTH=neo4j/password
-    networks: ["Neo4j-BugLocalization"]
     restart: unless-stopped
-networks: { Neo4j-BugLocalization: {} }
-# Use docker volume to persist data outside of a container:
-volumes:
-  Neo4j-BugLocalization:
+
+# For the connection between the application container and the Neo4j container:
+networks:
+  back:
