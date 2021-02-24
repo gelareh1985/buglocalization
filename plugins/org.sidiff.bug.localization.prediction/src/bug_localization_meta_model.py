@@ -68,6 +68,13 @@ class MetaModel:
             Set[str]: Specifies all meta types that will be considered as bug locations.
         """
         raise NotImplementedError()
+    
+    def get_bug_location_negative_sample_count(self) -> Dict[str, int]:
+        """
+        Returns:
+            Set[str]: Specifies all meta types that will be considered as negative bug locations and the count of generated samples.
+        """
+        raise NotImplementedError()
 
     def find_bug_location_by_container(self) -> int:
         """

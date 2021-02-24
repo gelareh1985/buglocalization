@@ -4,7 +4,8 @@
 
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
-from typing import List, Optional, Union, Iterator
+import threading
+from typing import Iterator, List, Optional, Union
 
 from stellargraph import StellarGraph  # type: ignore
 
@@ -32,6 +33,7 @@ class IDataSet:
 class IBugSample:
 
     def __init__(self, dataset: IDataSet, sample_id: str):
+        self.lock = threading.Lock()
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
         self.location_samples: List[ILocationSample] = []

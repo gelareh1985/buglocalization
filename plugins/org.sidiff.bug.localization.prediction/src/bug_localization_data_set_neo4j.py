@@ -255,8 +255,16 @@ class BugSampleNeo4j(IBugSample):
         # StellarGraph of Bug Localization Subgraph:
         # =======================================================================
 
+        if len(subgraph_nodes_model) > 1000:
+            print("WARNING: Large Sub-Graph Created - Nodes:", len(subgraph_nodes_model))
+            print("  Bug Report:", str(self.bug_report_node_id))
+            print("  Model Node:", str(node_id))
+            print("  Is Negative Sample:", str(self.dataset.is_negative))
+
         model_subgraph_edges_dataframe = pd.DataFrame(subgraph_edges_model, columns=self.edge_columns)
         subgraph_nodes_model_array = np.asarray(subgraph_nodes_model)
+        
+        print(subgraph_nodes_model_array.shape)
         graph = StellarGraph(nodes=subgraph_nodes_model_array,
                              edges=model_subgraph_edges_dataframe)
 
@@ -461,11 +469,9 @@ class DataSetTrainingNeo4j(DataSetNeo4j):
                  node_self_embedding: NodeSelfEmbedding,
                  typebased_slicing: TypbasedGraphSlicing,
                  neo4j_config: Neo4jConfiguration,
-                 is_negative: bool,
-                 generate_negative_sample_per_type: int = 10):
+                 is_negative: bool):
 
         super().__init__(meta_model, node_self_embedding, typebased_slicing, neo4j_config, is_negative=is_negative)
-        self.generate_negative_sample_per_type = generate_negative_sample_per_type
 
     def create_sample(self, db_version: int) -> BugSampleNeo4j:
         return BugSampleTrainingNeo4j(self, db_version)
@@ -481,14 +487,16 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
         else:
             # Generate negative sample:
             bug_locations: Set[Tuple[int, str]] = set()
+            type_to_count = self.dataset.meta_model.get_bug_location_negative_sample_count()
 
             for model_type in self.dataset.meta_model.get_bug_location_types():
-                count = self.dataset.generate_negative_sample_per_type
-                random_nodes = self.load_dataframe(query.random_nodes_in_version(count, model_type), set_index=False)
+                if model_type in type_to_count:
+                    count = type_to_count[model_type]
+                    random_nodes = self.load_dataframe(query.random_nodes_in_version(count, model_type), set_index=False)
 
-                for index, random_node_result in random_nodes.iterrows():
-                    random_node = random_node_result['nodes']
-                    bug_locations.add((random_node.identity, self.dataset.get_label(random_node)))
+                    for index, random_node_result in random_nodes.iterrows():
+                        random_node = random_node_result['nodes']
+                        bug_locations.add((random_node.identity, self.dataset.get_label(random_node)))
 
             return bug_locations
 

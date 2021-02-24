@@ -44,26 +44,33 @@ class MetaModelUML(MetaModel):
     def get_slicing_criterion(self, num_samples: List[int]) -> TypbasedGraphSlicing:
         slicing = TypbasedGraphSlicing()
         
+        # FIXME: We should test if the query random sampling behave correctly - but to be sure...
+        # TODO: -> raise or log if result > np.cumprod(num_samples) + 1
+        hard_limit = ' LIMIT ' + str(np.cumproduct(num_samples)[len(num_samples) - 1] + 10)  # ''
+        
         # Abstract Syntax Tree parent and child nodes:
         query_ast_head = 'MATCH (c) WHERE ID(c)=$node_id AND ' + by_version('c')
         
         query_ast_parents_path = ' CALL {WITH c MATCH (c)<-[*0..2 {__containment__:true}]-(p) ' + where_version('c') + ' RETURN p} WITH c, p'
         query_ast_parents_return = ' RETURN ID(p) AS parent'
-        query_ast_parents = query_ast_head + query_ast_parents_path + query_ast_parents_return
+        query_ast_parents = query_ast_head + query_ast_parents_path + query_ast_parents_return + hard_limit
         
         query_ast_childs = ' CALL { WITH c MATCH (c)-[{__containment__:true}]->(k) ' + where_version('k') + ' RETURN k, rand() AS rk ORDER BY rk LIMIT ' + str(num_samples[0]) + '} WITH c, k'  # noqa: E501
         query_ast_childs_sub = ' CALL {WITH k MATCH (k)-[{__containment__:true}]->(kk) ' + where_version('kk') + ' RETURN kk, rand() AS rkk ORDER BY rkk LIMIT ' + str(num_samples[1]) + '}'  # noqa: E501
         query_ast_childs_return = ' RETURN ID(k) AS child, ID(kk) AS subchild'
-        query_ast_childs = query_ast_head + query_ast_childs + query_ast_childs_sub + query_ast_childs_return
+        query_ast_childs = query_ast_head + query_ast_childs + query_ast_childs_sub + query_ast_childs_return + hard_limit
 
         # Realized Interfaces:
         query_interfaces = 'MATCH (c)-[:interfaceRealization]-(z:InterfaceRealization)-[:supplier]->(i:Interface) WHERE ID(c)=$node_id AND ' + by_version('c') + ' AND ' + by_version('z') + ' AND ' + by_version('i') + ' WITH z, i, rand() AS r ORDER BY r LIMIT ' + str(num_samples[1]) + ' RETURN ID(z) AS realization, ID(i) AS interface'  # noqa: E501
+        query_interfaces = query_interfaces + hard_limit
 
         # Super-classes
         query_generalization = 'MATCH (c)-[:generalization]-(g:Generalization)-[:general]->(s:Class) WHERE ID(c)=$node_id AND ' + by_version('c') + ' AND ' + by_version('g') + ' AND ' + by_version('s') + ' WITH g, s, rand() AS r ORDER BY r LIMIT ' + str(num_samples[1]) + ' RETURN ID(g) AS generalization, ID(s) AS superclass'  # noqa: E501
+        query_generalization = query_generalization + hard_limit
 
         # E.g. sub-classes:
         query_crosstree = 'MATCH (c) WHERE ID(c)=$node_id AND ' + by_version('c') + ' CALL { WITH c MATCH (c)-[ {__containment__:false, __container__:false}]-(e) ' + where_version('e') + ' RETURN e, rand() AS re ORDER BY re LIMIT ' + str(num_samples[1]) + '} With e CALL {WITH e MATCH (e)<-[{__containment__:true}]-(t) ' + where_version('t') + ' RETURN t LIMIT 1} RETURN ID(e) AS crosstree, ID(t) AS crosstreecontainer'  # noqa: E501
+        query_crosstree = query_crosstree + hard_limit 
 
         classifier_query_slicing = [query_ast_parents, query_ast_childs, query_interfaces, query_generalization, query_crosstree]
         
@@ -126,6 +133,18 @@ class MetaModelUML(MetaModel):
                 raise Exception("Missing meta-type for bug location type: " + bug_location_model_meta_type_label)
 
         return bug_location_model_meta_type_labels
+
+    def get_bug_location_negative_sample_count(self) -> Dict[str, int]:
+        bug_location_negative_samples_per_type = {
+            # "Package",
+            "Class": 5,
+            "Interface": 5,
+            "Enumeration": 2,
+            "DataType": 1,
+            # "Operation",
+            # "Property"
+        }
+        return bug_location_negative_samples_per_type
 
     # Find container of bug location if the type is not in specified location.
     def find_bug_location_by_container(self) -> int:

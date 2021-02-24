@@ -2,11 +2,14 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 import random
+import sys
 from time import time
-from typing import List, Tuple, Union, Optional, Any, Callable
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import numpy as np  # type: ignore
-from stellargraph.mapper import GraphSAGELinkGenerator  # type: ignore
+import pandas as pd
+from stellargraph.mapper import (GraphSAGELinkGenerator,  # type: ignore
+                                 StellarGraph)
 from tensorflow import keras  # type: ignore
 from tensorflow.keras import Input, Model  # type: ignore
 from tensorflow.keras.layers import concatenate  # type: ignore
@@ -14,6 +17,7 @@ from tensorflow.keras.utils import Sequence  # type: ignore
 
 from bug_localization_data_set import IBugSample, ILocationSample
 from bug_localization_util import t
+from word_to_vector_shared_dictionary import WordDictionary
 
 # ===============================================================================
 # Data Generator: A "location sample" is pair of a bug report and model location,
@@ -64,6 +68,9 @@ class ILocationSampleGenerator:
 
 
 class SampleBaseGenerator:
+    
+    # Use with caution, to ignore exceptions during sample generation!
+    RETURN_DUMMY_SAMPLES_ON_EXCEPTION = True
 
     def __init__(self,
                  batch_size: int,
@@ -185,23 +192,38 @@ class BaseSequence(Sequence):
         return input_type, samples_per_layer, feature_size
 
     def create_location_sequence(self, bug_sample: IBugSample, location_sample: ILocationSample) -> Sequence:
-        location_sample.initialize(bug_sample, self.log_level)
+        try:
+            location_sample.initialize(bug_sample, self.log_level)
 
-        graph = location_sample.graph()
-        bug_location_pairs = [(location_sample.bug_report(), location_sample.model_location())]
-        bug_location_label = location_sample.label()
+            graph = location_sample.graph()
+            bug_location_pairs = [(location_sample.bug_report(), location_sample.model_location())]
+            bug_location_label = location_sample.label()
 
-        # Read Keras Sequence from StellarGraph (should only be one):
-        graph_sage_generator = GraphSAGELinkGenerator(graph, len(bug_location_pairs), num_samples=self.num_samples)
+            # Read Keras Sequence from StellarGraph (should only be one):
+            graph_sage_generator = GraphSAGELinkGenerator(graph, len(bug_location_pairs), num_samples=self.num_samples)
 
-        if bug_location_label is not None:
-            flow = graph_sage_generator.flow(bug_location_pairs, [bug_location_label])
-        else:
-            flow = graph_sage_generator.flow(bug_location_pairs)
+            if bug_location_label is not None:
+                flow = graph_sage_generator.flow(bug_location_pairs, [bug_location_label])
+            else:
+                flow = graph_sage_generator.flow(bug_location_pairs)
 
-        # Free memory:
-        location_sample.uninitialize()
-        return flow
+            # Free memory:
+            location_sample.uninitialize()
+            return flow
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            
+            if self.RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
+                # TODO: Log and investigate if we came here!
+                # Return a dummy sample as last rescue before crashing the evaluation:
+                dummy_edges = pd.DataFrame(columns=["source", "target"])
+                dummy_nodes = np.asarray([np.zeros(WordDictionary().dimension()), np.zeros(WordDictionary().dimension())])
+                dummy_graph = StellarGraph(nodes=dummy_nodes, edges=dummy_edges)
+                graph_sage_dummy_generator = GraphSAGELinkGenerator(dummy_graph, 1, num_samples=self.num_samples)
+                dummy_flow = graph_sage_dummy_generator.flow([(0,1)], [0])
+                return dummy_flow
+            else:
+                raise
 
     def __len__(self):
         """Denotes the number of batches per epoch"""
@@ -274,12 +296,15 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
             else:
                 start_time = -1
 
-            end_bug_sample = min(start_bug_sample + self.batch_size, len(self.bug_samples) - 1)
+            end_bug_sample = min(start_bug_sample + self.batch_size, len(self.bug_samples))  # index exlusive
             bug_sample_sequences: List[Tuple] = []
             sample_count = 0
 
-            for bug_sample_idx in range(start_bug_sample, end_bug_sample + 1):
+            for bug_sample_idx in range(start_bug_sample, end_bug_sample):
                 bug_sample: IBugSample = self.bug_samples[bug_sample_idx]
+                bug_sample.lock.acquire()
+                
+                print('+++++ Sample', bug_sample.sample_id, '+++++')
                 bug_sample.initialize(self.log_level)
 
                 for bug_location in bug_sample:
@@ -291,6 +316,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                         sample_count += len(bug_location_sample_label)
                 
                 bug_sample.uninitialize()
+                bug_sample.lock.release()
 
             if self.log_level >= 100:
                 print("Compute Sample Batch", t(start_time))
@@ -345,11 +371,11 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
             else:
                 start_time = -1
 
-            end_location_sample = min(start_location_sample + self.batch_size, len(self.location_samples) - 1)
+            end_location_sample = min(start_location_sample + self.batch_size, len(self.location_samples))  # index exlusive
             location_sample_sequences: List[Tuple] = []
             sample_count = 0
 
-            for location_sample_idx in range(start_location_sample, end_location_sample + 1):
+            for location_sample_idx in range(start_location_sample, end_location_sample):
                 location_sample: ILocationSample = self.location_samples[location_sample_idx]
                 flow = self.create_location_sequence(self.bug_sample, location_sample)
 
