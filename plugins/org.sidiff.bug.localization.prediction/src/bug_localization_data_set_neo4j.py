@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas.core.frame import DataFrame  # type: ignore
-from py2neo import Graph, Node, Database  # type: ignore
+from py2neo import Graph, Node  # type: ignore
 from stellargraph import StellarGraph  # type: ignore
 
 import bug_localization_data_set_neo4j_queries as query
@@ -108,7 +108,7 @@ class DataSetNeo4j(IDataSet):
     def closeNeo4j(self):
         # https://stackoverflow.com/questions/59138809/connection-pool-life-cycle-of-py2neo-graph-would-the-connections-be-released-wh
         # graph.database.connector.close()
-        Database.forget_all()
+        # Database.forget_all()
         self.neo4j_graph = None
 
     def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
@@ -155,7 +155,7 @@ class BugSampleNeo4j(IBugSample):
 
         # Bug report graph:
         self.bug_report_node_id: int = -1
-        self.bug_report_nodes: Dict[int, Dict[int, np.ndarray]] = {}
+        self.bug_report_nodes: Dict[int, np.ndarray] = {}
         # StellarGraph requires Panda Data Frames as edges
         self.bug_report_edges: DataFrame = None
         self.bug_locations: Set[Tuple[int, str]] = set()  # node ID -> meta-type
@@ -271,7 +271,6 @@ class BugSampleNeo4j(IBugSample):
         model_subgraph_edges_dataframe = pd.DataFrame(subgraph_edges_model, columns=self.edge_columns)
         subgraph_nodes_model_array = np.asarray(subgraph_nodes_model)
         
-        print(subgraph_nodes_model_array.shape)
         graph = StellarGraph(nodes=subgraph_nodes_model_array,
                              edges=model_subgraph_edges_dataframe)
 
@@ -286,7 +285,8 @@ class BugSampleNeo4j(IBugSample):
 
         # Bug report graph:
         bug_report_meta_type_labels = ['TracedBugReport', 'BugReportComment']
-        self.bug_report_nodes = self.load_node_embeddings(bug_report_meta_type_labels, embedding)
+        self.bug_report_nodes = {}
+        self.load_node_embeddings(bug_report_meta_type_labels, embedding, self.bug_report_nodes)
         self.bug_report_edges = self.load_dataframe(query.edges_in_version(
             'TracedBugReport', 'comments', 'BugReportComment'))
         self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
@@ -338,10 +338,10 @@ class BugSampleNeo4j(IBugSample):
     def load_node_embeddings(self,
                              meta_type_labels: List[str],
                              embedding: NodeSelfEmbedding,
-                             nodes_embeddings: Dict[int, np.ndarray] = {},
+                             nodes_embeddings: Dict[int, np.ndarray],
                              to_be_embedded_node_ids: List[int] = None,
                              embedded_node_ids: List[int] = None,
-                             log_level: int = 0) -> Dict[int, np.ndarray]:
+                             log_level: int = 0) -> None:
         """
         Args:
             meta_type_labels (List[str]): All meta-types to be embedded.
@@ -379,8 +379,6 @@ class BugSampleNeo4j(IBugSample):
 
                             if embedded_node_ids is not None:
                                 embedded_node_ids.append(index)
-
-        return nodes_embeddings
 
     def dict_to_data_frame(self, data: Dict[int, np.ndarray], columns: str):
         return pd.DataFrame.from_dict(data, orient='index', columns=columns)

@@ -60,7 +60,7 @@ model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 # Database connection:
 neo4j_configuration = Neo4jConfiguration(
     neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
-    neo4j_port=7687,  # port of Neo4j bold port
+    neo4j_port=7687,  # port of Neo4j bold port: 7687, 11003
     neo4j_user="neo4j",
     neo4j_password="password",
 )
@@ -310,11 +310,11 @@ if __name__ == '__main__':
 
     # Training Settings:
     epochs = 20  # Number of training epochs.
-    batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
+    batch_size = 10  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     generator_workers = 2  # Number of threads that load/generate the batches in parallel.
-    multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
-    sample_prefetch_count = batch_size * 2  # Preload some data for fast (GPU) processing
+    multiprocessing = False  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
+    sample_prefetch_count = 5  # Preload some data for fast (GPU) processing
     log_level = 3  # Some console output for debugging...
 
     bug_localization_generator = BugSampleGenerator(
