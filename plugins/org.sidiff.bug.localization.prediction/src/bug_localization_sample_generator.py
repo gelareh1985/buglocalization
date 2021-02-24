@@ -213,6 +213,11 @@ class BaseSequence(Sequence):
         except:
             print("Unexpected error:", sys.exc_info()[0])
             
+            try:
+                location_sample.uninitialize()
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+            
             if self.RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
                 # TODO: Log and investigate if we came here!
                 # Return a dummy sample as last rescue before crashing the evaluation:

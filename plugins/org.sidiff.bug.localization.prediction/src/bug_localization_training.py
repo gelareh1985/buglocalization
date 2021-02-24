@@ -59,8 +59,8 @@ model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 # Database connection:
 neo4j_configuration = Neo4jConfiguration(
-    neo4j_host="localhost",
-    neo4j_port=7687,
+    neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
+    neo4j_port=7687,  # port of Neo4j bold port
     neo4j_user="neo4j",
     neo4j_password="password",
 )
