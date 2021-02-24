@@ -1,6 +1,9 @@
 version: "3"
 services:
   buglocalization:
+    # For the connection between the application container and the Neo4j container:
+    networks: 
+      - neonet 
     container_name: buglocalization
     ports: 
       - "8888:8888"
@@ -9,8 +12,11 @@ services:
     build: .
     command: jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
   neo4j:
-    container_name: Neo4jBL
+    container_name: neo4j
     image: neo4j:latest
+    # For the connection between the application container and the Neo4j container:
+    networks: 
+      - neonet 
     volumes:
       # Data folder will contain another directory the "database" that actually contains the entire database:
       - ./data:/data
@@ -24,16 +30,18 @@ services:
       - "7687:7687"
     # Configuration of Neo4j databases. The difference is the environment parameters and local installation configuration 
     # is that "_" is to be replaced with double underscore "__"  and "." to be replaced with one underscore "_":
+    # https://neo4j.com/docs/operations-manual/current/reference/configuration-settings/#configuration-settings
     environment:
       - NEO4J_dbms_memory_heap_initial__size=1G
       - NEO4J_dbms_memory_heap_max__size=6G
+      - NEO4J_dbms_memory_pagecache_size=2G
+      - NEO4J_dbms_tx__state_memory__allocation=ON_HEAP
       - NEO4J_dbms_default__listen__address=0.0.0.0
       - NEO4J_dbms_default__database=neo4j
       # user/password or none
       - NEO4J_AUTH=neo4j/password
-    networks: ["Neo4jBL"]
     restart: unless-stopped
-networks: { Neo4jBL: {} }
-# Use docker volume to persist data outside of a container:
-volumes:
-  Neo4jBL:
+
+# For the connection between the application container and the Neo4j container:
+networks:
+  neonet:

@@ -1,12 +1,11 @@
 version: "3"
 services:
-
   neo4j:
     container_name: neo4j
     image: neo4j:latest
     # For the connection between the application container and the Neo4j container:
     networks: 
-      - back 
+      - neonet 
     volumes:
       # Data folder will contain another directory the "database" that actually contains the entire database:
       - ./data:/data
@@ -34,4 +33,4 @@ services:
 
 # For the connection between the application container and the Neo4j container:
 networks:
-  back:
+  neonet:
