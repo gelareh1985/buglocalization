@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas.core.frame import DataFrame  # type: ignore
-from py2neo import Graph, Node  # type: ignore
+from py2neo import Graph, Node, Database  # type: ignore
 from stellargraph import StellarGraph  # type: ignore
 
 import bug_localization_data_set_neo4j_queries as query
@@ -74,6 +74,7 @@ class DataSetNeo4j(IDataSet):
         self.typebased_slicing = typebased_slicing
 
         # Opened connection and read bug samlpes:
+        self.connectionCounter = 0
         self.neo4j_graph: Optional[Graph] = None
         self.connectNeo4j()
 
@@ -93,6 +94,12 @@ class DataSetNeo4j(IDataSet):
         return state
 
     def connectNeo4j(self) -> Graph:
+        if self.connectionCounter > 2000:
+            self.closeNeo4j()  # prevent resource leaks
+            self.connectionCounter = 0
+        else:
+            self.connectionCounter += 1
+        
         if self.neo4j_graph is None:
             self.neo4j_graph = Graph(host=self.neo4j_config.neo4j_host, port=self.neo4j_config.neo4j_port,
                                      user=self.neo4j_config.neo4j_user, password=self.neo4j_config.neo4j_password)
@@ -101,7 +108,7 @@ class DataSetNeo4j(IDataSet):
     def closeNeo4j(self):
         # https://stackoverflow.com/questions/59138809/connection-pool-life-cycle-of-py2neo-graph-would-the-connections-be-released-wh
         # graph.database.connector.close()
-        # Database.forget_all()
+        Database.forget_all()
         self.neo4j_graph = None
 
     def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
