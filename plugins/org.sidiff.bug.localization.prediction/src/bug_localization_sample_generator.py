@@ -309,7 +309,9 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                 bug_sample: IBugSample = self.bug_samples[bug_sample_idx]
                 bug_sample.lock.acquire()
                 
-                print('+++++ Sample', bug_sample.sample_id, '+++++')
+                if self.log_level >= 3:
+                    print('+++++ Sample', bug_sample.sample_id, '+++++')
+                    
                 bug_sample.initialize(self.log_level)
 
                 for bug_location in bug_sample:

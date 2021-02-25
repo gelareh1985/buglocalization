@@ -2,23 +2,6 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-# ===============================================================================
-# Configure GPU Device:
-# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
-# ===============================================================================
-import tensorflow as tf  # type: ignore
-
-# Only allocate needed memory needed by the application:
-gpus = tf.config.experimental.list_physical_devices('GPU')
-
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    except RuntimeError as e:
-        print(e)
-# ===============================================================================
-
 import datetime
 import os
 from pathlib import Path
@@ -26,6 +9,7 @@ from time import time
 from typing import List, Tuple
 
 import stellargraph as sg  # type: ignore
+import tensorflow as tf  # type: ignore
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from tensorflow import keras  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
@@ -38,7 +22,23 @@ from bug_localization_data_set_neo4j import (DataSetTrainingNeo4j,
 from bug_localization_meta_model_uml import create_uml_configuration
 from bug_localization_sample_generator import (BugSampleGenerator,
                                                IBugSampleGenerator)
+# ===============================================================================
+# Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
+# ===============================================================================
 from word_to_vector_shared_dictionary import WordDictionary
+
+# Only allocate needed memory needed by the application:
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+# ===============================================================================
+
 
 # from tqdm.keras import TqdmCallback  # type: ignore
 
@@ -46,15 +46,14 @@ from word_to_vector_shared_dictionary import WordDictionary
 # Environmental Information
 # ===============================================================================
 
+# TODO: Legacy:
 # positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"  # noqa: E501
 # negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"  # noqa: E501
 
-positve_samples_path: str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\positivesamples" + "/"  # noqa: E501
-negative_samples_path: str = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\encoding\negativesamples" + "/"  # noqa: E501
-
 # NOTE: Paths should not be too long, causes error (on Windows)!
 plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
-model_training_save_dir = str(os.path.join(plugin_directory, '/training/trained_model_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '/'))
+model_training_save_dir = str(plugin_directory) + '/training/trained_model_' + \
+    datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '/'
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
 
 # Database connection:
@@ -92,7 +91,7 @@ class DataSetSplitter:
 
             index += 1
 
-        return bug_sample_sequence
+        return bug_sample_sequence[:50]
 
     def split(self, fraction: int) -> Tuple[List[IBugSample], List[IBugSample]]:
 
@@ -228,10 +227,10 @@ class BugLocalizationAIModelTrainer:
         def __init__(self):
             self.mark = time()
 
-        def on_epoch_begin(self, epoch, logs=None):  # @UnusedVariable
+        def on_epoch_begin(self, epoch, logs=None):
             self.mark = time()
 
-        def on_epoch_end(self, epoch, logs=None):  # @UnusedVariable
+        def on_epoch_end(self, epoch, logs=None):
             duration = time() - self.mark
             self.mark = time()
             print("Epoch", epoch, "time:", duration)
@@ -241,20 +240,17 @@ class BugLocalizationAIModelTrainer:
         def __init__(self):
             self.seen = 0
 
-        def on_batch_end(self, batch, logs={}):  # @UnusedVariable
-            if 'metrics' in self.params:
-                self.seen += logs.get('size', 0)
-                metrics_log = ''
-                for k in self.params['metrics']:
-                    if k in logs:
-                        val = logs[k]
-                        if abs(val) > 1e-3:
-                            metrics_log += ' - %s: %.4f' % (k, val)
-                        else:
-                            metrics_log += ' - %s: %.4e' % (k, val)
-                print('{}{}'.format(self.seen, metrics_log))
+        def on_train_batch_end(self, batch, logs={}):
+            if 'loss' in logs and 'acc' in logs:
+                print("Training batch finished:", batch, "Loss:", logs['loss'], "Accuracy:", logs['acc'])
             else:
-                print("Batches finished:", batch)
+                print("Training batch finished:", batch)
+
+        def on_test_batch_end(self, batch, logs={}):
+            if 'loss' in logs and 'acc' in logs:
+                print("Evaluation batch finished:", batch, "Loss:", logs['loss'], "Accuracy:", logs['acc'])
+            else:
+                print("Evaluation batch finished:", batch)
 
 
 if __name__ == '__main__':
@@ -268,10 +264,10 @@ if __name__ == '__main__':
 
     # GraphSAGE Settings:
     num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
-    layer_sizes = [300, 300]  # Size of GraphSAGE hidden layers
+    layer_sizes = [20, 20]  # Size of GraphSAGE hidden layers
 
     assert len(num_samples) == len(layer_sizes), "The number of neighbor node samples need to be specified per GraphSAGE layer!"
-    
+
     print('Save Training:', model_training_save_dir)
 
     # Regularization:
@@ -310,12 +306,12 @@ if __name__ == '__main__':
 
     # Training Settings:
     epochs = 20  # Number of training epochs.
-    batch_size = 10  # Number of bug location samples, please node that each sample has multiple location samples.
+    batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
-    generator_workers = 2  # Number of threads that load/generate the batches in parallel.
+    generator_workers = 4  # Number of threads that load/generate the batches in parallel.
     multiprocessing = False  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
-    sample_prefetch_count = 5  # Preload some data for fast (GPU) processing
-    log_level = 3  # Some console output for debugging...
+    sample_prefetch_count = 8  # Preload some data for fast (GPU) processing
+    log_level = 2  # Some console output for debugging...
 
     bug_localization_generator = BugSampleGenerator(
         batch_size,

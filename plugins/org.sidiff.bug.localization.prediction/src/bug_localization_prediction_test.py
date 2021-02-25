@@ -1,6 +1,8 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
+import datetime
+import os
 from json import dump
 from pathlib import Path
 from time import time
@@ -25,7 +27,9 @@ from word_to_vector_shared_dictionary import WordDictionary
 # ===============================================================================
 
 # Evaluation Result Records:
-evaluation_results_path: str = r"D:\evaluation\eclipse.jdt.core\test_results" + "/"
+plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+evaluation_results_path: str = str(plugin_directory) + "/evaluation/eclipse.jdt.core_" + \
+    datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
 
 # For debugging:
 log_level: int = 0  # 0-100
@@ -35,22 +39,22 @@ peek_location_samples: Optional[int] = None  # Test only the first N location sa
 prediction_configuration = BugLocalizationPredictionConfiguration(
 
     # Trained bug localization model:
-    bug_localization_model_path=r"C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\trained_model_2021-02-05_03-38-53_train90_test10" + "/",  # noqa: E501
+    bug_localization_model_path=str(plugin_directory) + "/training/trained_model_2021-02-25_20-27-48--tr45_va45_te10--l20_l20" + "/",
 
     # DL Model Prediction Configuration:
     # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
     num_samples=[20, 10],
     batch_size=20,
 
-    sample_generator_workers=2,
+    sample_generator_workers=4,
     sample_generator_workers_multiprocessing=False,
-    sample_max_queue_size=10
+    sample_max_queue_size=8
 )
 
 # Database connection:
 neo4j_configuration = Neo4jConfiguration(
-    neo4j_host="localhost",
-    neo4j_port=7687,
+    neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
+    neo4j_port=7687,  # port of Neo4j bold port: 7687, 11003
     neo4j_user="neo4j",
     neo4j_password="password",
 )
@@ -108,7 +112,7 @@ class BugLocalizationPredictionTest:
         # IsLocation
         is_location_col = prediction_results_columns[2]
         missing_locations = []
-        bug_location_by_container_node_ids = []
+        bug_locations_by_container_node_ids = []
         bug_locations_by_container = bug_sample.load_bug_locations(meta_model.find_bug_location_by_container())
 
         for model_location, model_location_type in bug_locations_by_container:
@@ -117,8 +121,8 @@ class BugLocalizationPredictionTest:
                 print(prediction_results.at[model_location, is_location_col])
             else:
                 missing_locations.append(model_location)
-            
-            bug_location_by_container_node_ids.append(model_location)
+
+            bug_locations_by_container_node_ids.append(model_location)
 
         prediction_results[is_location_col].fillna(0, inplace=True)
 
@@ -127,8 +131,8 @@ class BugLocalizationPredictionTest:
         model_element_id_col = prediction_results_columns[4]
 
         query_type_and_names = query.nodes_by_ids('RETURN ID(n) AS ' + database_id_col +
-                                               ', LABELS(n) AS ' + meta_type_col +
-                                               ', n.__model__element__id__ AS ' + model_element_id_col)
+                                                  ', LABELS(n) AS ' + meta_type_col +
+                                                  ', n.__model__element__id__ AS ' + model_element_id_col)
         query_type_and_names_parameters = {'node_ids': prediction_results.index.tolist()}
         meta_type_and_model_element_id = dataset.run_query(query_type_and_names, query_type_and_names_parameters)
         meta_type_and_model_element_id.set_index(database_id_col, inplace=True)
@@ -213,8 +217,8 @@ class BugLocalizationPredictionTest:
         query_bug_location_edges = query.edges_in_version('Change', 'location')
         bug_location_edges = dataset.run_query(query_bug_location_edges, query_database_version_parameter)
         bug_location_node_ids = bug_location_edges['target'].tolist()
-        
-        bug_location_node_ids.append(bug_location_by_container_node_ids)
+
+        bug_location_node_ids.extend(bug_locations_by_container_node_ids)
         bug_location_node_ids = list(set(bug_location_node_ids))
 
         query_bug_location_nodes = query.nodes_by_ids('RETURN n AS nodes')

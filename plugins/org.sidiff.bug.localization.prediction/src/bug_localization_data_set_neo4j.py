@@ -5,7 +5,7 @@
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
 import time
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, Callable, Dict, List, Optional, Sequence, Set, Tuple, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -65,19 +65,18 @@ class DataSetNeo4j(IDataSet):
 
         super().__init__(is_negative)
 
-        # Connnection info:
-        self.neo4j_config = neo4j_config
-
-        # Meta-model configuration
-        self.meta_model = meta_model
-        self.node_self_embedding = node_self_embedding
-        self.typebased_slicing = typebased_slicing
-
         # Opened connection and read bug samlpes:
-        self.connectionCounter = 0
+        self.neo4j_config: Neo4jConfiguration = neo4j_config
+        self.connectionCounter: int = 0
         self.neo4j_graph: Optional[Graph] = None
         self.connectNeo4j()
 
+        # Meta-model configuration
+        self.meta_model: MetaModel = meta_model
+        self.node_self_embedding: NodeSelfEmbedding = node_self_embedding
+        self.typebased_slicing: TypbasedGraphSlicing = typebased_slicing
+
+        # Load all (uninitialized) bug samples:
         self.list_samples()
 
     def __getstate__(self):
@@ -99,7 +98,7 @@ class DataSetNeo4j(IDataSet):
             self.connectionCounter = 0
         else:
             self.connectionCounter += 1
-        
+
         if self.neo4j_graph is None:
             self.neo4j_graph = Graph(host=self.neo4j_config.neo4j_host, port=self.neo4j_config.neo4j_port,
                                      user=self.neo4j_config.neo4j_user, password=self.neo4j_config.neo4j_password)
@@ -125,7 +124,7 @@ class DataSetNeo4j(IDataSet):
 
     def run_query(self, query: str, parameters: Dict[str, Any] = None) -> DataFrame:
         return self.connectNeo4j().run(query, parameters).to_data_frame()
-    
+
     def run_query_to_table(self, query: str, parameters: Dict[str, Any] = None) -> List[Tuple[Any]]:
         return self.connectNeo4j().run(query, parameters).to_table()
 
@@ -151,7 +150,7 @@ class BugSampleNeo4j(IBugSample):
         self.model_nodes: Dict[int, np.ndarray] = {}
 
         # Model graph nodes: List[(id:type)]
-        self.model_nodes_types: Dict[str, List[int]] = {}
+        self.model_nodes_types: Dict[str, List[int]] = {}  # type -> nodes
 
         # Bug report graph:
         self.bug_report_node_id: int = -1
@@ -270,7 +269,7 @@ class BugSampleNeo4j(IBugSample):
 
         model_subgraph_edges_dataframe = pd.DataFrame(subgraph_edges_model, columns=self.edge_columns)
         subgraph_nodes_model_array = np.asarray(subgraph_nodes_model)
-        
+
         graph = StellarGraph(nodes=subgraph_nodes_model_array,
                              edges=model_subgraph_edges_dataframe)
 
@@ -396,32 +395,32 @@ class BugSampleNeo4j(IBugSample):
             df.set_index("index", inplace=True)
 
         return df
-    
+
     def load_subgraph_edges(self, node_id: int, slicing_queries: List[str]) -> Tuple[DataFrame, Set[int]]:
         node_ids: Set[int] = set()
         node_ids.add(node_id)
-        
+
         for query_nodes in slicing_queries:
             self.read_node_ids(query_nodes, node_id, node_ids)
-        
+
         query_edges = query.edges_from_nodes_in_version()
         parameters = {'node_ids': list(node_ids)}
         edges = self.load_dataframe(query_edges, parameters)
-        
+
         if len(node_ids) > 500:
             print("WARNING: Large Sub Graph Found: ", len(node_ids), "node", node_id)
             for query_nodes in slicing_queries:
                 print(query_nodes)
-        
+
         return edges, node_ids
-    
+
     def read_node_ids(self, query: str, node_id: int, node_ids: Set[int]):
         parameters = {'node_id': node_id, 'db_version': self.db_version}
-        
+
         for row in self.dataset.run_query_to_table(query, parameters):
             for entry in row:
                 node_ids.add(entry)
-        
+
 
 class LocationSampleBaseNeo4j(ILocationSample):
 
@@ -490,6 +489,9 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
             # Load positive sample -> default super class implementation:
             return super().load_bug_locations(locate_by_container)
         else:
+            positive_bug_locations: Set[Tuple[int, str]] = super().load_bug_locations(locate_by_container)
+            positive_bug_locations_ids = {positive_bug_location[0] for positive_bug_location in positive_bug_locations}
+
             # Generate negative sample:
             bug_locations: Set[Tuple[int, str]] = set()
             type_to_count = self.dataset.meta_model.get_bug_location_negative_sample_count()
@@ -497,11 +499,18 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
             for model_type in self.dataset.meta_model.get_bug_location_types():
                 if model_type in type_to_count:
                     count = type_to_count[model_type]
-                    random_nodes = self.load_dataframe(query.random_nodes_in_version(count, model_type), set_index=False)
+                    random_nodes = self.load_dataframe(query.random_nodes_in_version(
+                        count, model_type, filter_library_elements=True), set_index=False)
 
                     for index, random_node_result in random_nodes.iterrows():
                         random_node = random_node_result['nodes']
-                        bug_locations.add((random_node.identity, self.dataset.get_label(random_node)))
+                        node_id = random_node.identity
+
+                        # Avoid intersections with positive sample:
+                        if node_id not in positive_bug_locations_ids:
+                            bug_locations.add((node_id, self.dataset.get_label(random_node)))
+                        else:
+                            print("INFO: Negative sample that overlaps with positive filtered: ", node_id)
 
             return bug_locations
 
@@ -562,12 +571,12 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
 
     def bug_localization_subgraph_edges(self, bug_sample: BugSampleTrainingNeo4j) -> Tuple[DataFrame, Set[int]]:
         if self._bug_localization_subgraph_edges is not None and self.node_ids is not None:
-            return self._bug_localization_subgraph_edges, self.node_ids 
+            return self._bug_localization_subgraph_edges, self.node_ids
         else:
             typebased_slicing = bug_sample.dataset.typebased_slicing
             slicing = typebased_slicing.get_slicing(self.mode_location_type)
             self._bug_localization_subgraph_edges, self.node_ids = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
-            return self._bug_localization_subgraph_edges, self.node_ids 
+            return self._bug_localization_subgraph_edges, self.node_ids
 
     def initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSampleTrainingNeo4j):
@@ -600,8 +609,32 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
 
 class DataSetPredictionNeo4j(DataSetNeo4j):
 
+    def __init__(self, 
+                 meta_model: MetaModel, 
+                 node_self_embedding: NodeSelfEmbedding, 
+                 typebased_slicing: TypbasedGraphSlicing,
+                 neo4j_config: Neo4jConfiguration, 
+                 is_negative: bool = False):
+        
+        super().__init__(meta_model, node_self_embedding, typebased_slicing, neo4j_config, is_negative=is_negative)
+
+        # Library element, e.g., Java String, Integer,  contained in the database by type over all versions:
+        # type -> nodes:
+        self.model_library_nodes: Dict[str, Set[int]] = self.load_model_library_nodes(meta_model.get_bug_location_types())
+
     def create_sample(self, db_version: int) -> BugSampleNeo4j:
         return BugSamplePredictionNeo4j(self, db_version)
+    
+    def load_model_library_nodes(self, model_meta_type_labels: Set[str]) -> Dict[str, Set[int]]:
+        model_nodes_library = {}
+
+        for model_meta_type_label in model_meta_type_labels:
+            library_elements_by_type = self.run_query(query.library_elements(model_meta_type_label))
+
+            if not library_elements_by_type.empty:
+                model_nodes_library[model_meta_type_label] = set(library_elements_by_type["nodes"])
+
+        return model_nodes_library
 
 
 class BugSamplePredictionNeo4j(BugSampleNeo4j):
@@ -634,8 +667,11 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             start_time = time.time()
 
         for model_location_types in meta_model.get_bug_location_types():
+            model_library_nodes_by_type = self.dataset.model_library_nodes[model_location_types]
+            
             for model_location in self.model_nodes_types[model_location_types]:
-                self.location_samples.append(LocationSamplePredictionNeo4j(model_location, model_location_types, label=model_location))
+                if model_location not in model_library_nodes_by_type:
+                    self.location_samples.append(LocationSamplePredictionNeo4j(model_location, model_location_types, label=model_location))
 
         if log_level >= 4:
             print("Finished Loading Locations:", t(start_time))

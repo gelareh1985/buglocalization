@@ -6,6 +6,21 @@ def buggy_versions() -> str:
     return "MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions"
 
 
+def library_elements(type: str) -> str:
+    """
+    Args:
+        type (str): a type label
+
+    Returns:
+        str: All nodes of the given type that were created as "external" library element, e.g., Java types like String, Integer.
+    """
+    return 'MATCH (l:' + type + ') WHERE ' + is_library_element('l') + ' RETURN ID(l) AS nodes'
+
+
+def is_library_element(variable: str) -> str:
+    return variable + '.__model__element__id__ STARTS WITH "library/"'
+
+
 def edge_containment(is_value: bool) -> str:
     if is_value:
         return '__containment__:true'
@@ -140,11 +155,11 @@ def nodes_in_version(meta_type_label: str = '', node_ids: bool = False) -> str:
     return 'MATCH (n' + meta_type_label + ') ' + where + ' RETURN ID(n) AS index, n AS nodes'
 
 
-def random_nodes_in_version(count: int, meta_type_label: str = '') -> str:
+def random_nodes_in_version(count: int, meta_type_label: str = '', filter_library_elements: bool = True) -> str:
     if meta_type_label != '':
         meta_type_label = ':' + meta_type_label
     return_query = 'RETURN n AS nodes, rand() AS r ORDER BY r LIMIT ' + str(count)
-    return 'MATCH (n' + meta_type_label + ') WHERE ' + by_version('n') + ' ' + return_query
+    return 'MATCH (n' + meta_type_label + ') WHERE ' + by_version('n') + ' AND NOT ' + is_library_element('n') + ' ' + return_query
 
 
 def edges_in_version(
