@@ -155,7 +155,7 @@ class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
             bug_localization_subgraph_edges, node_ids = bug_sample.load_subgraph_edges(
                 self.neo4j_model_location, slicing)
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(
-                self.neo4j_model_location, bug_localization_subgraph_edges)
+                self.neo4j_model_location, bug_localization_subgraph_edges, bug_sample.db_version)
 
             self._graph = subgraph
             self._bug_report = bug_location_pair[0]

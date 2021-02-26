@@ -175,7 +175,7 @@ class BugSampleNeo4j(IBugSample):
                                       embedded_node_ids=node_ids_per_meta_type,
                                       log_level=log_level)
 
-    def load_bug_location_subgraph(self, node_id: int, bug_localization_subgraph_edges: DataFrame) -> Tuple[StellarGraph, Tuple[int, int]]:
+    def load_bug_location_subgraph(self, node_id: int, bug_localization_subgraph_edges: DataFrame, db_version: int) -> Tuple[StellarGraph, Tuple[int, int]]:
         nodes_trace: Dict[int, int] = {}
         edges_ids = set()
 
@@ -231,11 +231,11 @@ class BugSampleNeo4j(IBugSample):
 
         if not subgraph_nodes_model:
             raise Exception(
-                "No (subgraph) embedding found for node: ID " + str(node_id))
+                "No (subgraph) embedding found for node: ID " + str(node_id) + " in version " + str(db_version))
 
         # Fallback
         if node_id not in nodes_trace:
-            print("WARNING: No connected subgraph for node:", node_id)
+            print("WARNING: No connected subgraph for node:", node_id, "in version", db_version)
             subgraph_node_id = len(subgraph_nodes_model)
             nodes_trace[node_id] = subgraph_node_id
             subgraph_nodes_model.append(self.model_nodes[node_id])
