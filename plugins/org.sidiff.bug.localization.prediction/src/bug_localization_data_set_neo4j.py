@@ -666,11 +666,14 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             print("Start Loading Locations...")
             start_time = time.time()
 
+        # Load location samples by type:
         for model_location_types in meta_model.get_bug_location_types():
             model_library_nodes_by_type = self.dataset.model_library_nodes[model_location_types]
             
             for model_location in self.model_nodes_types[model_location_types]:
                 if model_location not in model_library_nodes_by_type:
+                    if self.dataset.run_query('MATCH (n) WHERE ID(n) = ' + model_location + ' AND "Parameter" IN labels(n) RETURN n'):
+                        print(model_location) 
                     self.location_samples.append(LocationSamplePredictionNeo4j(model_location, model_location_types, label=model_location))
 
         if log_level >= 4:

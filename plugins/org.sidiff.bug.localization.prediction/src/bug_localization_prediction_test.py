@@ -1,6 +1,24 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
+
+# ===============================================================================
+# Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
+# ===============================================================================
+import tensorflow as tf  # type: ignore
+
+# Only allocate needed memory needed by the application:
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+# ===============================================================================
+
 import datetime
 import os
 from json import dump
@@ -39,12 +57,12 @@ peek_location_samples: Optional[int] = None  # Test only the first N location sa
 prediction_configuration = BugLocalizationPredictionConfiguration(
 
     # Trained bug localization model:
-    bug_localization_model_path=str(plugin_directory) + "/training/trained_model_2021-02-25_20-27-48--tr45_va45_te10--l20_l20" + "/",
+    bug_localization_model_path=str(plugin_directory) + "/training/trained_model_2021-02-24_20-37-42" + "/",
 
     # DL Model Prediction Configuration:
     # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
     num_samples=[20, 10],
-    batch_size=20,
+    batch_size=100,
 
     sample_generator_workers=4,
     sample_generator_workers_multiprocessing=False,
@@ -118,7 +136,6 @@ class BugLocalizationPredictionTest:
         for model_location, model_location_type in bug_locations_by_container:
             if model_location in prediction_results.index:
                 prediction_results.at[model_location, is_location_col] = 1
-                print(prediction_results.at[model_location, is_location_col])
             else:
                 missing_locations.append(model_location)
 
@@ -201,29 +218,39 @@ class BugLocalizationPredictionTest:
         # Version:
         query_version_node = query.nodes_in_version('TracedVersion')
         version_node = dataset.run_query(query_version_node, query_database_version_parameter)
-        bug_location_graph.extend(version_node['nodes'].tolist())
+
+        if not datatypes_query_slicing.empty:
+            bug_location_graph.extend(version_node['nodes'].tolist())
 
         # Bug Report:
         query_bug_report_node = query.nodes_in_version('TracedBugReport')
         bug_report_node = dataset.run_query(query_bug_report_node, query_database_version_parameter)
-        bug_location_graph.extend(bug_report_node['nodes'].tolist())
+
+        if not bug_report_node.empty:
+            bug_location_graph.extend(bug_report_node['nodes'].tolist())
 
         # Bug Comments:
         query_bug_report_comment_nodes = query.nodes_in_version('BugReportComment')
         bug_report_comment_nodes = dataset.run_query(query_bug_report_comment_nodes, query_database_version_parameter)
-        bug_location_graph.extend(bug_report_comment_nodes['nodes'].tolist())
+
+        if not bug_report_comment_nodes.empty:
+            bug_location_graph.extend(bug_report_comment_nodes['nodes'].tolist())
 
         # Bug Model Location: Change -- location --> Model Element
         query_bug_location_edges = query.edges_in_version('Change', 'location')
         bug_location_edges = dataset.run_query(query_bug_location_edges, query_database_version_parameter)
-        bug_location_node_ids = bug_location_edges['target'].tolist()
+
+        if not bug_location_edges.empty:
+            bug_location_node_ids = bug_location_edges['target'].tolist()
 
         bug_location_node_ids.extend(bug_locations_by_container_node_ids)
         bug_location_node_ids = list(set(bug_location_node_ids))
 
         query_bug_location_nodes = query.nodes_by_ids('RETURN n AS nodes')
         bug_location_nodes = dataset.run_query(query_bug_location_nodes, {'node_ids': bug_location_node_ids})
-        bug_location_graph.extend(bug_location_nodes['nodes'].tolist())
+        
+        if not bug_location_nodes.empty:
+            bug_location_graph.extend(bug_location_nodes['nodes'].tolist())
 
         for bug_location_node in bug_location_graph:
             bug_location_node['__labels__'] = str(bug_location_node.labels)

@@ -211,12 +211,12 @@ class BaseSequence(Sequence):
             location_sample.uninitialize()
             return flow
         except:
-            print("Unexpected error:", sys.exc_info()[0])
+            print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
             
             try:
                 location_sample.uninitialize()
             except:
-                print("Unexpected error:", sys.exc_info()[0])
+                print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
             
             if self.RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
                 # TODO: Log and investigate if we came here!

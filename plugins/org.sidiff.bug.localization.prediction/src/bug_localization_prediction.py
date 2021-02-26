@@ -99,7 +99,7 @@ class BugLocalizationPrediction:
                 print('WARNING: Prediction is set to use only the first ' + str(peek_location_samples) + 'samples.')
                 location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
                 
-            print('Initialize location samples:', len(location_samples), ' in: ', t(start_time_prediction))
+            print('Initialized location samples:', len(location_samples), 'in:', t(start_time_prediction))
             start_time_prediction = time()
 
             flow, callbacks = prediction_generator.create_location_sample_generator("prediction", bug_sample, location_samples)

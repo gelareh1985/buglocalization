@@ -2,3 +2,4 @@ data/GoogleNews-vectors-negative300.bin
 .mypy_cache/
 .settings/
 *__pycache__
+evaluation/

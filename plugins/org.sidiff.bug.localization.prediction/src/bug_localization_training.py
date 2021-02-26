@@ -2,14 +2,31 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
+# ===============================================================================
+# Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
+# ===============================================================================
+import tensorflow as tf  # type: ignore
+
+# Only allocate needed memory needed by the application:
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+# ===============================================================================
+
 import datetime
 import os
 from pathlib import Path
 from time import time
 from typing import List, Tuple
+from word_to_vector_shared_dictionary import WordDictionary
 
 import stellargraph as sg  # type: ignore
-import tensorflow as tf  # type: ignore
 from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
 from tensorflow import keras  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger  # type: ignore
@@ -22,22 +39,6 @@ from bug_localization_data_set_neo4j import (DataSetTrainingNeo4j,
 from bug_localization_meta_model_uml import create_uml_configuration
 from bug_localization_sample_generator import (BugSampleGenerator,
                                                IBugSampleGenerator)
-# ===============================================================================
-# Configure GPU Device:
-# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
-# ===============================================================================
-from word_to_vector_shared_dictionary import WordDictionary
-
-# Only allocate needed memory needed by the application:
-gpus = tf.config.experimental.list_physical_devices('GPU')
-
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    except RuntimeError as e:
-        print(e)
-# ===============================================================================
 
 
 # from tqdm.keras import TqdmCallback  # type: ignore

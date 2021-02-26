@@ -76,8 +76,11 @@ class MetaModelUML(MetaModel):
         
         slicing.add_type('Class', classifier_query_slicing)
         slicing.add_type('Interface', classifier_query_slicing)
-        slicing.add_type('Enumeration', classifier_query_slicing)
-        slicing.add_type('DataType', classifier_query_slicing)
+
+        datatypes_query_slicing = [query_ast_parents, query_ast_childs, query_crosstree]
+
+        slicing.add_type('Enumeration', datatypes_query_slicing)
+        slicing.add_type('DataType', datatypes_query_slicing)
 
         # Consistency validation:
         for bug_location_model_meta_type_label in self.get_bug_location_types():

@@ -1,4 +1,8 @@
-/neo4j/backups/
-/neo4j/data/
-/neo4j/import/
-/neo4j/plugins/
+/neo4j_test/backups/
+/neo4j_test/data/
+/neo4j_test/import/
+/neo4j_test/plugins/
+/neo4j_training/backups/
+/neo4j_training/data/
+/neo4j_training/import/
+/neo4j_training/plugins/
