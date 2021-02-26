@@ -34,8 +34,8 @@ from tensorflow.keras.utils import Sequence  # type: ignore
 from tensorflow.keras.utils import plot_model  # @UnusedImport
 
 from bug_localization_data_set import IBugSample, IDataSet
-from bug_localization_data_set_neo4j import (DataSetTrainingNeo4j,
-                                             Neo4jConfiguration)
+from bug_localization_data_set_neo4j_training import DataSetTrainingNeo4j
+from bug_localization_data_set_neo4j import Neo4jConfiguration
 from bug_localization_meta_model_uml import create_uml_configuration
 from bug_localization_sample_generator import (BugSampleGenerator,
                                                IBugSampleGenerator)

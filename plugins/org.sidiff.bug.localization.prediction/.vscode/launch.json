@@ -28,5 +28,13 @@
             "console": "integratedTerminal",
             "justMyCode": false,
         },
+        {
+            "name": "Test File",
+            "type": "python",
+            "request": "launch",
+            "program": "src/test_model_subgraph_slicing.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
     ]
 }

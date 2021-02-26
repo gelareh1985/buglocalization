@@ -1,0 +1,17 @@
+    epochs = 20  # Number of training epochs.
+    batch_size = 10  # Number of bug location samples, please node that each sample has multiple location samples.
+    shuffle = True  # Shuffle training and validation samples after each epoch?
+
+    # GraphSAGE Settings:
+    num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
+    layer_sizes = [300, 300]  # Size of GraphSAGE hidden layers
+
+    # Regularization:
+
+    # Dropout supplied to each GraphSAGE layer: 0 < dropout < 1, 0 means no dropout.
+    # Dropout refers to ignoring neurons during the training phase which are chosen at random to prevent over-fitting.
+    # [https://medium.com/@amarbudhiraja/https-medium-com-amarbudhiraja-learning-less-to-learn-better-dropout-in-deep-machine-learning-74334da4bfc5]
+    dropout = 0.0  # 0.3
+
+    # GraphSAGE input normalization: l2 or None
+    normalize = "l2"

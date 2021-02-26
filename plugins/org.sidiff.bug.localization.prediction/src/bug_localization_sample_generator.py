@@ -27,6 +27,9 @@ from word_to_vector_shared_dictionary import WordDictionary
 # https://www.tensorflow.org/guide/keras/train_and_evaluate#using_a_kerasutilssequence_object_as_input
 # ===============================================================================
 
+# Use with caution, to ignore exceptions during sample generation!
+RETURN_DUMMY_SAMPLES_ON_EXCEPTION = True
+
 
 class IBugSampleGenerator:
 
@@ -69,9 +72,6 @@ class ILocationSampleGenerator:
 
 class SampleBaseGenerator:
     
-    # Use with caution, to ignore exceptions during sample generation!
-    RETURN_DUMMY_SAMPLES_ON_EXCEPTION = True
-
     def __init__(self,
                  batch_size: int,
                  shuffle: bool,
@@ -218,11 +218,12 @@ class BaseSequence(Sequence):
             except:
                 print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
             
-            if self.RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
+            if RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
                 # TODO: Log and investigate if we came here!
                 # Return a dummy sample as last rescue before crashing the evaluation:
+                print("  Return Dummy Sample...")
                 dummy_edges = pd.DataFrame(columns=["source", "target"])
-                dummy_nodes = np.asarray([np.zeros(WordDictionary().dimension()), np.zeros(WordDictionary().dimension())])
+                dummy_nodes = np.asarray([np.random.random_sample(WordDictionary().dimension()), np.random.random_sample(WordDictionary().dimension())])
                 dummy_graph = StellarGraph(nodes=dummy_nodes, edges=dummy_edges)
                 graph_sage_dummy_generator = GraphSAGELinkGenerator(dummy_graph, 1, num_samples=self.num_samples)
                 dummy_flow = graph_sage_dummy_generator.flow([(0,1)], [0])

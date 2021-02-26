@@ -5,7 +5,7 @@
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
 from threading import Semaphore
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -21,7 +21,7 @@ from word_to_vector_shared_dictionary import WordDictionary
 
 def create_uml_configuration(
         word_dictionary: WordDictionary,
-        num_samples: List[int]):
+        num_samples: List[int]) -> Tuple[MetaModel, NodeSelfEmbedding, TypbasedGraphSlicing]:
 
     # Modeling Language Meta-Model Configuration:
     meta_model = MetaModelUML()
@@ -225,12 +225,6 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
     def unload(self):
         self.dictionary_words = None
-
-    def filter_type(self, meta_type_label: str) -> bool:
-        return False  # Filtered by meta type configuration
-
-    def filter_node(self, node: pd.Series) -> bool:
-        return False
 
     def get_dimension(self) -> int: 
         return self.dictionary_words_length

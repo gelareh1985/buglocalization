@@ -30,9 +30,9 @@ import numpy as np
 import pandas as pd
 
 import bug_localization_data_set_neo4j_queries as query
-from bug_localization_data_set_neo4j import (BugSamplePredictionNeo4j,
-                                             DataSetPredictionNeo4j,
-                                             Neo4jConfiguration)
+from bug_localization_data_set_neo4j_prediction import (BugSamplePredictionNeo4j,
+                                             DataSetPredictionNeo4j)
+from bug_localization_data_set_neo4j import Neo4jConfiguration
 from bug_localization_meta_model_uml import create_uml_configuration
 from bug_localization_prediction import (
     BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
@@ -50,14 +50,14 @@ evaluation_results_path: str = str(plugin_directory) + "/evaluation/eclipse.jdt.
     datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + "/"
 
 # For debugging:
-log_level: int = 0  # 0-100
+log_level: int = 2  # 0-100
 peek_location_samples: Optional[int] = None  # Test only the first N location samples per bug sample; or None
 
 # Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(
 
     # Trained bug localization model:
-    bug_localization_model_path=str(plugin_directory) + "/training/trained_model_2021-02-24_20-37-42" + "/",
+    bug_localization_model_path=str(plugin_directory) + "/training/trained_model_2021-02-24_20-37-42_train45_val45_test10" + "/",
 
     # DL Model Prediction Configuration:
     # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
@@ -219,7 +219,7 @@ class BugLocalizationPredictionTest:
         query_version_node = query.nodes_in_version('TracedVersion')
         version_node = dataset.run_query(query_version_node, query_database_version_parameter)
 
-        if not datatypes_query_slicing.empty:
+        if not version_node.empty:
             bug_location_graph.extend(version_node['nodes'].tolist())
 
         # Bug Report:
@@ -242,15 +242,14 @@ class BugLocalizationPredictionTest:
 
         if not bug_location_edges.empty:
             bug_location_node_ids = bug_location_edges['target'].tolist()
+            bug_location_node_ids.extend(bug_locations_by_container_node_ids)
+            bug_location_node_ids = list(set(bug_location_node_ids))
 
-        bug_location_node_ids.extend(bug_locations_by_container_node_ids)
-        bug_location_node_ids = list(set(bug_location_node_ids))
-
-        query_bug_location_nodes = query.nodes_by_ids('RETURN n AS nodes')
-        bug_location_nodes = dataset.run_query(query_bug_location_nodes, {'node_ids': bug_location_node_ids})
+            query_bug_location_nodes = query.nodes_by_ids('RETURN n AS nodes')
+            bug_location_nodes = dataset.run_query(query_bug_location_nodes, {'node_ids': bug_location_node_ids})
         
-        if not bug_location_nodes.empty:
-            bug_location_graph.extend(bug_location_nodes['nodes'].tolist())
+            if not bug_location_nodes.empty:
+                bug_location_graph.extend(bug_location_nodes['nodes'].tolist())
 
         for bug_location_node in bug_location_graph:
             bug_location_node['__labels__'] = str(bug_location_node.labels)
@@ -267,7 +266,7 @@ if __name__ == '__main__':
         WordDictionary(), prediction_configuration.num_samples)
 
     # Test Dataset Containing Bug Samples:
-    dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration)
+    dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, log_level=log_level)
 
     # Initialize Bug Localization Prediction:
     prediction_test = BugLocalizationPredictionTest()
@@ -275,9 +274,14 @@ if __name__ == '__main__':
     prediction_generator = prediction.predict(dataset, prediction_configuration, log_level, peek_location_samples)
 
     start_time_prediction = time()
+    bug_sample_counter = 0
 
     for bug_sample, bug_location_prediction in prediction_generator:
         prediction_runtime = time() - start_time_prediction
+        bug_sample_counter += 1
+
+        if log_level >= 1:
+            print('Prediction:', bug_sample_counter)
 
         # Write result log files:
         prediction_test.record_evaluation_results(

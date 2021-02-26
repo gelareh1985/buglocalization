@@ -33,12 +33,6 @@ class NodeSelfEmbedding:
     def unload(self):
         ...
 
-    def filter_type(self, meta_type_label: str) -> bool:
-        return False
-
-    def filter_node(self, node: pd.Series) -> bool:
-        return False
-
     def get_dimension(self) -> int:
         raise NotImplementedError()
 
@@ -47,6 +41,9 @@ class NodeSelfEmbedding:
 
 
 class MetaModel:
+    
+    def get_bug_report_node_types(self) -> List[str]:
+        return ['TracedBugReport', 'BugReportComment']
 
     def get_types(self) -> List[str]:
         """

@@ -143,6 +143,14 @@ def property_value_in_version(meta_type_label: str, property_name: str) -> str:
 # # Full graph Cypher queries # #
 
 
+def nodes_by_type(meta_type_label: str) -> str:
+    return 'MATCH (n:' + meta_type_label + ') RETURN ID(n) AS index, n as nodes'
+
+
+def node_ids_in_version(meta_type_label: str) -> str:
+    return 'MATCH (n:' + meta_type_label + ') WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+
+
 def nodes_in_version(meta_type_label: str = '', node_ids: bool = False) -> str:
     if meta_type_label != '':
         meta_type_label = ':' + meta_type_label
