@@ -109,7 +109,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
     def uninitialize(self):
         # TODO: Make field Optional!?
         self.model_nodes = {}
-        self.bug_report_node_id = -1
+        self.bug_report_node_id = -2
         self.bug_report_nodes = {}
         self.bug_report_edges = None
         self.bug_locations = set()

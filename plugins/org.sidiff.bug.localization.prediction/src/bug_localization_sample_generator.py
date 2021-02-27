@@ -193,6 +193,7 @@ class BaseSequence(Sequence):
 
     def create_location_sequence(self, bug_sample: IBugSample, location_sample: ILocationSample) -> Sequence:
         try:
+            location_sample.lock.acquire()
             location_sample.initialize(bug_sample, self.log_level)
 
             graph = location_sample.graph()
@@ -209,6 +210,7 @@ class BaseSequence(Sequence):
 
             # Free memory:
             location_sample.uninitialize()
+            location_sample.lock.release()
             return flow
         except:
             print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])

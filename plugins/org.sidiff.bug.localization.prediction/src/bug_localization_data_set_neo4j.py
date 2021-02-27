@@ -233,8 +233,12 @@ class BugSampleNeo4j(IBugSample):
                 subgraph_nodes_model.append(self.model_nodes[node_id])
 
         if not subgraph_nodes_model:
-            raise Exception(
-                "No (subgraph) embedding found for node: ID " + str(node_id) + " in version " + str(db_version))
+            message = "No (subgraph) embedding found for node: ID " + str(node_id)
+            message += "in version " + str(db_version)
+            message += "embedded model nodes " + str(len(self.model_nodes))
+            message += " bug report ID " + str(self.bug_report_node_id) + "."
+            message += " Sample not initialized or uninitialized?"
+            raise Exception(message)
 
         # Fallback
         if node_id not in nodes_trace:

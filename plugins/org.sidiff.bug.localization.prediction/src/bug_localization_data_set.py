@@ -61,6 +61,9 @@ class IBugSample:
 
 
 class ILocationSample:
+    
+    def __init__(self) -> None:
+        self.lock = threading.Lock()
 
     def initialize(self, bug_sample: IBugSample, log_level: int = 0):
         """
