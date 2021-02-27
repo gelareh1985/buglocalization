@@ -5,7 +5,7 @@
 from __future__ import annotations  # FIXME: Currently not supported by PyDev
 
 import threading
-from typing import Iterator, List, Optional, Union
+from typing import Callable, Iterator, List, Optional, Union
 
 from stellargraph import StellarGraph  # type: ignore
 
@@ -33,7 +33,7 @@ class IDataSet:
 class IBugSample:
 
     def __init__(self, dataset: IDataSet, sample_id: str):
-        self.lock = threading.Lock()
+        self.lock = CountingLock()
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
         self.location_samples: List[ILocationSample] = []
@@ -45,9 +45,22 @@ class IBugSample:
         Args:
             log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
         """
-        ...
+        # Only the first accessing thread will call initialize:
+        self.lock.count_up(lambda: self._initialize(log_level))
         
+    def _initialize(self, log_level: int = 0):
+        # TODO: To be implemented by clients
+        ...
+
     def uninitialize(self):
+        """
+        Finally called to free memory for garbadge collections.
+        """
+        # Only the last accessing thread will call uninitialize:
+        self.lock.count_down(lambda: self._uninitialize())
+        
+    def _uninitialize(self):
+        # TODO: To be implemented by clients
         ...
 
     def __len__(self) -> int:
@@ -61,9 +74,9 @@ class IBugSample:
 
 
 class ILocationSample:
-    
+
     def __init__(self) -> None:
-        self.lock = threading.Lock()
+        self.lock = CountingLock()
 
     def initialize(self, bug_sample: IBugSample, log_level: int = 0):
         """
@@ -73,9 +86,22 @@ class ILocationSample:
             bug_sample (IBugSample): The parent/corresponding bug report.
             log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
         """
-        ...
+        # Only the first accessing thread will call initialize:
+        self.lock.count_up(lambda: self._initialize(bug_sample, log_level))
         
+    def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
+        # TODO: To be implemented by clients
+        ...
+
     def uninitialize(self):
+        """
+        Finally called to free memory for garbadge collections.
+        """
+        # Only the last accessing thread will call uninitialize:
+        self.lock.count_down(lambda: self._uninitialize())
+        
+    def _uninitialize(self):
+        # TODO: To be implemented by clients
         ...
 
     def label(self) -> Optional[Union[float, int]]:
@@ -136,3 +162,32 @@ class LocationSampleBase(ILocationSample):
 
     def is_negative(self) -> bool:
         return self._is_negative
+
+
+class CountingLock(object):
+
+    def __init__(self, count=0):
+        self.count = count
+        self.lock = threading.Condition()
+
+    def count_down(self, on_unlock: Callable):
+        self.lock.acquire()
+        self.count -= 1
+        if self.count == 0:
+            on_unlock()
+        if self.count <= 0:
+            self.lock.notifyAll()
+        self.lock.release()
+
+    def count_up(self, on_first_lock: Callable):
+        self.lock.acquire()
+        self.count += 1
+        if self.count == 1:
+            on_first_lock()
+        self.lock.release()
+        
+    def wait(self, timeout: float = None):
+        self.lock.acquire()
+        while self.count > 0:
+            self.lock.wait(timeout)
+        self.lock.release()

@@ -185,11 +185,8 @@ class BugLocalizationAIModelTrainer:
 
         # Initialize training data:
         bug_samples_train, bug_samples_eval = dataset_splitter.split(2)
-        train_flow, train_callbacks = sample_generator.create_bug_sample_generator("training", bug_samples_train)
-        eval_flow, eval_callbacks = sample_generator.create_bug_sample_generator("evaluation", bug_samples_eval)
-
-        self.callbacks.extend(train_callbacks)
-        self.callbacks.extend(eval_callbacks)
+        train_flow = sample_generator.create_bug_sample_generator("training", bug_samples_train, self.callbacks)
+        eval_flow = sample_generator.create_bug_sample_generator("evaluation", bug_samples_eval, self.callbacks)
 
         # # Train Model # #
         # self.callbacks.append(TqdmCallback(verbose=2)) # logging during training

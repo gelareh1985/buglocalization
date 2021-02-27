@@ -427,6 +427,7 @@ class BugSampleNeo4j(IBugSample):
 class LocationSampleBaseNeo4j(ILocationSample):
 
     def __init__(self, neo4j_model_location: int, model_location_type: str, label: int):
+        super().__init__()
         self.neo4j_model_location: int = neo4j_model_location
         self.mode_location_type: str = model_location_type
 
@@ -434,9 +435,6 @@ class LocationSampleBaseNeo4j(ILocationSample):
         self._graph: Optional[StellarGraph] = None
         self._model_location: Optional[int] = None
         self._bug_report: Optional[int] = None
-
-    def initialize(self, bug_sample: IBugSample, log_level: int = 0):
-        ...
 
     def label(self) -> int:
         return self._label

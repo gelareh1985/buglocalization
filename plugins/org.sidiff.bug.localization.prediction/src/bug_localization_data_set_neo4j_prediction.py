@@ -104,7 +104,7 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
 class BugSamplePredictionNeo4j(BugSampleNeo4j):
     dataset: DataSetPredictionNeo4j
     
-    def initialize(self, log_level: int = 0):
+    def _initialize(self, log_level: int = 0):
         start_time = time.time()
         
         if log_level >= 4:
@@ -135,8 +135,8 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             else:
                 return np.zeros(self.dataset.node_self_embedding.get_dimension())
 
-    def uninitialize(self):
-        # TODO: Make field Optional!?
+    def _uninitialize(self):
+        # TODO: Make fields Optional!?
         self.model_nodes = {}
         self.bug_report_node_id = -2
         self.bug_report_nodes = {}
@@ -147,7 +147,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
 
 class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
 
-    def initialize(self, bug_sample: IBugSample, log_level: int = 0):
+    def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSamplePredictionNeo4j):
             typebased_slicing = bug_sample.dataset.typebased_slicing
             slicing = typebased_slicing.get_slicing(self.mode_location_type)
@@ -163,7 +163,7 @@ class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
 
-    def uninitialize(self):
+    def _uninitialize(self):
         self._graph = None
         self._bug_report = None
         self._model_location = None

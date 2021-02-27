@@ -89,27 +89,13 @@ class BugLocalizationPrediction:
         else:
             bug_samples = cast(IDataSet, sample_data).bug_samples
 
-        # FIXME: WORKAROUND 1: This looks like a Keras bug:
-        #        After returning the results from the predict() function, there are sometimes still threads accessing the data.
-        #        Therefore, we postpone the uninitialize() of the bug sample to not immediately crash these threads.
-        # last_bug_sample = None
-
         for bug_sample in bug_samples:
             print("Start Prediction ...")
             start_time_prediction = time()
-            bug_sample.initialize()
-            location_samples = bug_sample.location_samples
-            
-            # Test only the first N location samples per bug sample
-            if peek_location_samples is not None:
-                print('WARNING: Prediction is set to use only the first ' + str(peek_location_samples) + 'samples.')
-                location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
-                
-            print('Initialized location samples:', len(location_samples), 'in:', t(start_time_prediction))
-            start_time_prediction = time()
 
-            flow, callbacks = prediction_generator.create_location_sample_generator("prediction", bug_sample, location_samples)
-            callbacks.append(self.Uninitialize(bug_sample))
+            callbacks: List[keras.callbacks.Callback] = []
+            flow = prediction_generator.create_location_sample_generator(
+                "prediction", bug_sample, callbacks, peek_location_samples)
             
             prediction = model.predict(flow,
                                        callbacks=callbacks,
@@ -118,33 +104,8 @@ class BugLocalizationPrediction:
                                        max_queue_size=config.sample_max_queue_size,
                                        verbose=1 if log_level > 0 else 0)
             
-            if len(prediction) != len(location_samples):
-                print("WARNING: Counts does not match: Samples", len(location_samples), "Results", len(prediction))
+            print("Finished Prediction:", bug_sample.sample_id, "in", t(start_time_prediction) + "s")
             
             yield bug_sample, prediction
 
-        #     # See WORKAROUND 1:
-        #     if last_bug_sample is not None:
-        #         last_bug_sample.uninitialize()
-        #     last_bug_sample = bug_sample
-
-        # # See WORKAROUND 1:
-        # if last_bug_sample is not None:
-        #     last_bug_sample.uninitialize()
-
         print("Evaluation Finished:", t(start_time_evaluation))
-        
-    class Uninitialize(keras.callbacks.Callback):
-
-        def __init__(self, bug_sample: IBugSample):
-            self.mark = time()
-            self.bug_sample = bug_sample
-
-        def on_predict_begin(self, logs=None):
-            self.mark = time()
-
-        def on_predict_end(self, logs=None):
-            self.bug_sample.uninitialize()
-            duration = time() - self.mark
-            self.mark = time()
-            print("Finished Prediction:", self.bug_sample.sample_id, "in", str(duration) + "s")

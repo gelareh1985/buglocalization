@@ -70,7 +70,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
 
             return bug_locations
 
-    def initialize(self, log_level: int = 0):
+    def _initialize(self, log_level: int = 0):
         if log_level >= 4:
             print("Start Loading Dictionary...")
         start_time = time.time()
@@ -106,8 +106,8 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
         if log_level >= 4:
             print("Finished Loading Locations:", t(start_time))
 
-    def uninitialize(self):
-        # TODO: Make field Optional!?
+    def _uninitialize(self):
+        # TODO: Make fields Optional!?
         self.model_nodes = {}
         self.bug_report_node_id = -2
         self.bug_report_nodes = {}
@@ -132,7 +132,7 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
             self._bug_localization_subgraph_edges, self.node_ids = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
             return self._bug_localization_subgraph_edges, self.node_ids
 
-    def initialize(self, bug_sample: IBugSample, log_level: int = 0):
+    def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSampleTrainingNeo4j):
             _bug_localization_subgraph_edges, node_ids = self.bug_localization_subgraph_edges(bug_sample)
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(
@@ -148,7 +148,7 @@ class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
         else:
             raise Exception("Unsupported bug sample: " + str(type(bug_sample)))
 
-    def uninitialize(self):
+    def _uninitialize(self):
         self._bug_localization_subgraph_edges = None
         self.node_ids = None
         self._graph = None

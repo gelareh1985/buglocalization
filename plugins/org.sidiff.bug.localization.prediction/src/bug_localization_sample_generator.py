@@ -4,7 +4,7 @@
 import random
 import sys
 from time import time
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union, final
 
 import numpy as np  # type: ignore
 import pandas as pd
@@ -34,7 +34,8 @@ RETURN_DUMMY_SAMPLES_ON_EXCEPTION = True
 class IBugSampleGenerator:
 
     def create_bug_sample_generator(self, name: str,
-                                    bug_samples: List[IBugSample]) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
+                                    bug_samples: List[IBugSample],
+                                    callbacks: List[keras.callbacks.Callback]) -> Sequence:
         """
         Generates a batch from a number of "bug samples".
         Each "bug sample" could contain multiple "location samples", i.e., the batch size is not fixed w.r.t. the "location samples"".
@@ -43,6 +44,7 @@ class IBugSampleGenerator:
         Args:
             name (str): A descriptive name, e.g., for exceptions and debugging.
             bug_samples (List[IBugSample]): A set of "bug samples".
+            callbacks (List[keras.callbacks.Callback]): The list of callbacks for the Keras API.
 
         Returns:
             Tuple[Sequence, List[keras.callbacks.Callback]]: A Keras input Sequence and some callbacks for the training/prediction.
@@ -54,7 +56,7 @@ class ILocationSampleGenerator:
 
     def create_location_sample_generator(self, name: str,
                                          bug_sample: IBugSample,
-                                         location_samples: List[ILocationSample]) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
+                                         callbacks: List[keras.callbacks.Callback]) -> Sequence:
         """
         Generates batches from a number of "location samples" which are contained in the same "bug sample".
         For example, predicting the bug locations for a single model verison.
@@ -62,7 +64,7 @@ class ILocationSampleGenerator:
         Args:
             name (str): A descriptive name, e.g., for exceptions and debugging.
             bug_sample (IBugSample): The "bug sample" that contains/corresponds to the given "location samples".
-            location_samples (List[ILocationSample]): A set of "location samples" which elements in the model's ASG.
+            callbacks (List[keras.callbacks.Callback]): The list of callbacks for the Keras API.
 
         Returns:
             Tuple[Sequence, List[keras.callbacks.Callback]]: A Keras input Sequence and some callbacks for the training/prediction.
@@ -193,8 +195,7 @@ class BaseSequence(Sequence):
 
     def create_location_sequence(self, bug_sample: IBugSample, location_sample: ILocationSample) -> Sequence:
         try:
-            location_sample.lock.acquire()
-            location_sample.initialize(bug_sample, self.log_level)
+            location_sample.initialize(bug_sample, self.log_level)  # see finally
 
             graph = location_sample.graph()
             bug_location_pairs = [(location_sample.bug_report(), location_sample.model_location())]
@@ -207,18 +208,10 @@ class BaseSequence(Sequence):
                 flow = graph_sage_generator.flow(bug_location_pairs, [bug_location_label])
             else:
                 flow = graph_sage_generator.flow(bug_location_pairs)
-
-            # Free memory:
-            location_sample.uninitialize()
-            location_sample.lock.release()
+           
             return flow
         except:
             print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
-
-            try:
-                location_sample.uninitialize()
-            except:
-                print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
 
             if RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
                 # TODO: Log and investigate if we came here!
@@ -234,6 +227,9 @@ class BaseSequence(Sequence):
                 return dummy_flow
             else:
                 raise
+        finally:
+            # Free memory:
+            location_sample.uninitialize()
 
     def __len__(self):
         """Denotes the number of batches per epoch"""
@@ -253,37 +249,34 @@ class BaseSequence(Sequence):
         else:
             return bug_location_samples, bug_location_sample_labels
 
-    # FIXME: Not calling on_epoch_end... Waiting for bug fix release... Workaround use callbacks
-    # https://github.com/tensorflow/tensorflow/issues/35911
-    def workaround_on_epoch_end(self):
-        """Prepare the data set for the next epoch"""
-
-        # Shuffle samples:
-        if self.shuffle:
-            random.shuffle(self.samples)
-
-    class ShuffleCallback(keras.callbacks.Callback):
+    class SequenceCallback(keras.callbacks.Callback):
 
         def __init__(self, flow):
             self.flow = flow
 
-        def on_epoch_end(self, epoch, logs=None):  # @UnusedVariable
-            self.flow.workaround_on_epoch_end()
+        def on_epoch_end(self, epoch, logs=None):
+            """Prepare the data set for the next epoch"""
+
+            # Shuffle samples:
+            if self.shuffle:
+                random.shuffle(self.samples)
 
 
 class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 
     def create_bug_sample_generator(self, name: str,
-                                    bug_samples: List[IBugSample]) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
+                                    bug_samples: List[IBugSample],
+                                    callbacks: List[keras.callbacks.Callback]) -> Sequence:
+        
         flow = self.BugSampleSequence(name,
                                       self.batch_size,
                                       self.shuffle,
                                       self.num_samples,
                                       bug_samples,
+                                      callbacks,
                                       self.reshape_input,
                                       self.log_level)
-        shuffle = self.BugSampleSequence.ShuffleCallback(flow)  # FIXME https://github.com/tensorflow/tensorflow/issues/35911
-        return flow, [shuffle]
+        return flow
 
     class BugSampleSequence(BaseSequence):
 
@@ -292,10 +285,12 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                      shuffle: bool,
                      num_samples: List[int],
                      bug_samples: List[IBugSample],
+                     callbacks: List[keras.callbacks.Callback],
                      reshape_input: Callable = None,
                      log_level: int = 0):
 
             super().__init__(name, bug_samples, batch_size, shuffle, num_samples, reshape_input, log_level)
+            callbacks.append(self.SequenceCallback(self))
             self.bug_samples: List[IBugSample] = bug_samples
 
         def create_batch(self, start_bug_sample: int) -> Tuple[np.ndarray, np.array]:
@@ -312,23 +307,24 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 
             for bug_sample_idx in range(start_bug_sample, end_bug_sample):
                 bug_sample: IBugSample = self.bug_samples[bug_sample_idx]
-                bug_sample.lock.acquire()
+                
+                try:
+                    if self.log_level >= 3:
+                        print('+++++ Sample', bug_sample.sample_id, '+++++')
 
-                if self.log_level >= 3:
-                    print('+++++ Sample', bug_sample.sample_id, '+++++')
+                    bug_sample.initialize(self.log_level)  # see finally
 
-                bug_sample.initialize(self.log_level)
+                    for bug_location in bug_sample:
+                        flow = self.create_location_sequence(bug_sample, bug_location)
 
-                for bug_location in bug_sample:
-                    flow = self.create_location_sequence(bug_sample, bug_location)
+                        for batch_num in range(len(flow)):
+                            bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
+                            bug_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
+                            sample_count += len(bug_location_sample_label)
 
-                    for batch_num in range(len(flow)):
-                        bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
-                        bug_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
-                        sample_count += len(bug_location_sample_label)
-
-                bug_sample.uninitialize()
-                bug_sample.lock.release()
+                finally:
+                    # Free memory:
+                    bug_sample.uninitialize()
 
             if self.log_level >= 100:
                 print("Compute Sample Batch", t(start_time))
@@ -346,19 +342,21 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
 
     def create_location_sample_generator(self, name: str,
-                                         bug_sample: IBugSample,  # already initialized
-                                         location_samples: List[ILocationSample]) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
+                                         bug_sample: IBugSample,
+                                         callbacks: List[keras.callbacks.Callback],
+                                         peek_location_samples: int = None) -> Sequence:
 
         flow = self.LocationSampleSequence(name,
                                            self.batch_size,
                                            self.shuffle,
                                            self.num_samples,
                                            bug_sample,
-                                           location_samples,
+                                           callbacks,
                                            self.reshape_input,
+                                           peek_location_samples,
                                            self.log_level)
-        shuffle_callback = self.LocationSampleSequence.ShuffleCallback(flow)  # FIXME https://github.com/tensorflow/tensorflow/issues/35911
-        return flow, [shuffle_callback]
+        
+        return flow
 
     class LocationSampleSequence(BaseSequence):
 
@@ -367,13 +365,56 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                      shuffle: bool,
                      num_samples: List[int],
                      bug_sample: IBugSample,
-                     location_samples: List[ILocationSample],
+                     callbacks: List[keras.callbacks.Callback],
                      reshape_input: Callable = None,
+                     peek_location_samples: int = None,
                      log_level: int = 0):
 
+            start_time = time()
+            bug_sample.initialize()
+            location_samples = bug_sample.location_samples
+            
+            # Test only the first N location samples per bug sample
+            if peek_location_samples is not None:
+                print('WARNING: Prediction is set to use only the first ' + str(peek_location_samples) + 'samples.')
+                location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
+                
+            print('Initialized location samples:', len(location_samples), 'in:', t(start_time))
+            start_time = time()
+
             super().__init__(name, location_samples, batch_size, shuffle, num_samples, reshape_input, log_level)
+            callbacks.append(self.SequenceCallback(self))
+            callbacks.append(self.LocationSampleSequenceCallback(self))
+            
             self.bug_sample: IBugSample = bug_sample
             self.location_samples: List[ILocationSample] = location_samples
+            
+        def __getitem__(self, batch_idx):
+            try:
+                self.bug_sample.initialize()  # (b)lock uninitialization() - reinitialization unexpected
+                result = super().__getitem__(batch_idx)
+            finally:
+                self.bug_sample.uninitialize()  # do uninitialization() if callback on_*_end() was called in parallel
+            return result
+            
+        class LocationSampleSequenceCallback(keras.callbacks.Callback):
+
+            def __init__(self, flow):
+                self.flow = flow
+                
+            def on_train_end(self, logs=None):
+                self.on_end(logs)
+                
+            def on_test_end(self, logs=None):
+                self.on_end(logs)
+                
+            def on_predict_end(self, logs=None):
+                self.on_end(logs)
+
+            def on_end(self, logs=None):
+                # Free mememory:
+                print(self.flow.bug_sample.lock.count)
+                self.flow.bug_sample.uninitialize()
 
         def create_batch(self, start_location_sample: int, training: bool = False) -> Tuple[np.ndarray, np.array]:
 
