@@ -88,6 +88,12 @@ class BugLocalizationPrediction:
         else:
             bug_samples = cast(IDataSet, sample_data).bug_samples
 
+        # FIXME: WORKAROUND 1: This looks like a Keras bug:
+        #        After returning the results from the predict() function, there are sometimes still threads accessing the data.
+        #        Therefore, we postpone the uninitialize() of the bug sample to not immediately crash these threads.
+        #        This even happens with a single worker thread - maybe a concurrency problem of the main and worker thread.
+        last_bug_sample = None
+
         for bug_sample in bug_samples:
             print("Start Prediction ...")
             start_time_prediction = time()
@@ -111,8 +117,19 @@ class BugLocalizationPrediction:
                                        verbose=1 if log_level > 0 else 0)
             bug_sample.uninitialize()
             
+            if len(prediction) != len(location_samples):
+                print("WARNING: Counts does not match: Samples", len(location_samples), "Results", len(prediction))
+            
             print("Finished Prediction:", t(start_time_prediction))
-
             yield bug_sample, prediction
+
+            # See WORKAROUND 1:
+            if last_bug_sample is not None:
+                last_bug_sample.uninitialize()
+            last_bug_sample = bug_sample
+
+        # See WORKAROUND 1:
+        if last_bug_sample is not None:
+            last_bug_sample.uninitialize()
 
         print("Evaluation Finished:", t(start_time_evaluation))

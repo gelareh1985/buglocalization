@@ -71,7 +71,7 @@ class ILocationSampleGenerator:
 
 
 class SampleBaseGenerator:
-    
+
     def __init__(self,
                  batch_size: int,
                  shuffle: bool,
@@ -212,21 +212,23 @@ class BaseSequence(Sequence):
             return flow
         except:
             print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
-            
+
             try:
                 location_sample.uninitialize()
             except:
                 print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
-            
+
             if RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
                 # TODO: Log and investigate if we came here!
                 # Return a dummy sample as last rescue before crashing the evaluation:
                 print("  Return Dummy Sample...")
                 dummy_edges = pd.DataFrame(columns=["source", "target"])
-                dummy_nodes = np.asarray([np.random.random_sample(WordDictionary().dimension()), np.random.random_sample(WordDictionary().dimension())])
+                dummy_nodes = np.asarray(
+                    [np.random.random_sample(WordDictionary().dimension()),
+                     np.random.random_sample(WordDictionary().dimension())])
                 dummy_graph = StellarGraph(nodes=dummy_nodes, edges=dummy_edges)
                 graph_sage_dummy_generator = GraphSAGELinkGenerator(dummy_graph, 1, num_samples=self.num_samples)
-                dummy_flow = graph_sage_dummy_generator.flow([(0,1)], [0])
+                dummy_flow = graph_sage_dummy_generator.flow([(0, 1)], [0])
                 return dummy_flow
             else:
                 raise
@@ -309,10 +311,10 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
             for bug_sample_idx in range(start_bug_sample, end_bug_sample):
                 bug_sample: IBugSample = self.bug_samples[bug_sample_idx]
                 bug_sample.lock.acquire()
-                
+
                 if self.log_level >= 3:
                     print('+++++ Sample', bug_sample.sample_id, '+++++')
-                    
+
                 bug_sample.initialize(self.log_level)
 
                 for bug_location in bug_sample:
@@ -322,7 +324,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                         bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
                         bug_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
                         sample_count += len(bug_location_sample_label)
-                
+
                 bug_sample.uninitialize()
                 bug_sample.lock.release()
 
@@ -344,7 +346,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
     def create_location_sample_generator(self, name: str,
                                          bug_sample: IBugSample,  # already initialized
                                          location_samples: List[ILocationSample]) -> Tuple[Sequence, List[keras.callbacks.Callback]]:
-        
+
         flow = self.LocationSampleSequence(name,
                                            self.batch_size,
                                            self.shuffle,
@@ -355,7 +357,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                                            self.log_level)
         shuffle_callback = self.LocationSampleSequence.ShuffleCallback(flow)  # FIXME https://github.com/tensorflow/tensorflow/issues/35911
         return flow, [shuffle_callback]
-        
+
     class LocationSampleSequence(BaseSequence):
 
         def __init__(self, name: str,

@@ -175,7 +175,10 @@ class BugSampleNeo4j(IBugSample):
                                       embedded_node_ids=node_ids_per_meta_type,
                                       log_level=log_level)
 
-    def load_bug_location_subgraph(self, node_id: int, bug_localization_subgraph_edges: DataFrame, db_version: int) -> Tuple[StellarGraph, Tuple[int, int]]:
+    def load_bug_location_subgraph(self, node_id: int, 
+                                   bug_localization_subgraph_edges: DataFrame, 
+                                   db_version: int) -> Tuple[StellarGraph, Tuple[int, int]]:
+        
         nodes_trace: Dict[int, int] = {}
         edges_ids = set()
 
