@@ -91,7 +91,6 @@ class BugLocalizationPrediction:
         # FIXME: WORKAROUND 1: This looks like a Keras bug:
         #        After returning the results from the predict() function, there are sometimes still threads accessing the data.
         #        Therefore, we postpone the uninitialize() of the bug sample to not immediately crash these threads.
-        #        This even happens with a single worker thread - maybe a concurrency problem of the main and worker thread.
         last_bug_sample = None
 
         for bug_sample in bug_samples:
