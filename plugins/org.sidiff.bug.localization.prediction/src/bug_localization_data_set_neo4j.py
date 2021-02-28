@@ -112,9 +112,6 @@ class DataSetNeo4j(IDataSet):
         # Database.forget_all()
         self.neo4j_graph = None
 
-    def get_samples_neo4j(self) -> List['BugSampleNeo4j']:
-        return cast(List[BugSampleNeo4j], self.bug_samples)
-
     def list_samples(self):
         for db_version in self.run_query(query.buggy_versions())['versions']:
             self.bug_samples.append(self.create_sample(db_version))
@@ -284,7 +281,7 @@ class BugSampleNeo4j(IBugSample):
     def load_bug_report(self, locate_by_container: int):
 
         # Bug report node:
-        bug_report_node_frame = self.load_dataframe(query.nodes_in_version('TracedBugReport'))
+        bug_report_node_frame = self.run_query_by_version(query.nodes_in_version('TracedBugReport'))
         assert len(bug_report_node_frame.index) == 1
         self.bug_report_node_id = bug_report_node_frame.index[0]
 
@@ -292,7 +289,7 @@ class BugSampleNeo4j(IBugSample):
         bug_report_meta_type_labels = self.dataset.meta_model.get_bug_report_node_types()
         self.bug_report_nodes = {}
         self.load_node_embeddings(bug_report_meta_type_labels, self.bug_report_nodes)
-        self.bug_report_edges = self.load_dataframe(query.edges_in_version(
+        self.bug_report_edges = self.run_query_by_version(query.edges_in_version(
             'TracedBugReport', 'comments', 'BugReportComment'))
         self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
 
@@ -301,7 +298,7 @@ class BugSampleNeo4j(IBugSample):
 
     def load_bug_locations(self, locate_by_container: int) -> Set[Tuple[int, str]]:
         bug_locations: Set[Tuple[int, str]] = set()
-        bug_location_edges = self.load_dataframe(query.edges_in_version('Change', 'location', return_ids=False))
+        bug_location_edges = self.run_query_by_version(query.edges_in_version('Change', 'location', return_ids=False))
 
         for index, edge in bug_location_edges.iterrows():
             # location edges point at model elements:
@@ -327,7 +324,7 @@ class BugSampleNeo4j(IBugSample):
                 bug_locations_by_container.add((model_location, bug_location_type))
             else:
                 query_parent_node_parameter['node_ids'] = [model_location]
-                parent_nodes = self.load_dataframe(
+                parent_nodes = self.run_query_by_version(
                     query_parent_node, query_parent_node_parameter, set_index=False)
 
                 if not parent_nodes.empty:
@@ -365,9 +362,9 @@ class BugSampleNeo4j(IBugSample):
             if to_be_embedded_node_ids is not None:
                 query_nodes_in_version = query.nodes_in_version(meta_type_label, node_ids=True)
                 query_nodes_in_version_parameter = {'node_ids': to_be_embedded_node_ids}
-                nodes_in_version = self.load_dataframe(query_nodes_in_version, query_nodes_in_version_parameter)
+                nodes_in_version = self.run_query_by_version(query_nodes_in_version, query_nodes_in_version_parameter)
             else:
-                nodes_in_version = self.load_dataframe(query.nodes_in_version(meta_type_label))
+                nodes_in_version = self.run_query_by_version(query.nodes_in_version(meta_type_label))
 
             if log_level >= 5:
                 print(meta_type_label + ': ' + str(len(nodes_in_version.index)))
@@ -388,7 +385,7 @@ class BugSampleNeo4j(IBugSample):
     def dict_to_data_frame(self, data: Dict[int, np.ndarray], columns: str):
         return pd.DataFrame.from_dict(data, orient='index', columns=columns)
 
-    def load_dataframe(self, query: str, parameters: dict = None, set_index: bool = True) -> DataFrame:
+    def run_query_by_version(self, query: str, parameters: dict = None, set_index: bool = True) -> DataFrame:
         default_parameter = {'db_version': self.db_version}
 
         if parameters is not None:
@@ -407,7 +404,7 @@ class BugSampleNeo4j(IBugSample):
 
         query_edges = query.edges_from_nodes_in_version()
         parameters = {'node_ids': list(node_ids)}
-        edges = self.load_dataframe(query_edges, parameters)
+        edges = self.run_query_by_version(query_edges, parameters)
 
         if len(node_ids) > 500:
             print("WARNING: Large Sub Graph Found: ", len(node_ids), "node", node_id)
@@ -424,7 +421,7 @@ class BugSampleNeo4j(IBugSample):
                 node_ids.add(entry)
 
 
-class LocationSampleBaseNeo4j(ILocationSample):
+class LocationSampleNeo4j(ILocationSample):
 
     def __init__(self, neo4j_model_location: int, model_location_type: str, label: int):
         super().__init__()

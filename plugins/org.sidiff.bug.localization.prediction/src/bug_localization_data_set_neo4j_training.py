@@ -11,7 +11,7 @@ from pandas.core.frame import DataFrame  # type: ignore
 import bug_localization_data_set_neo4j_queries as query
 from bug_localization_data_set import IBugSample
 from bug_localization_data_set_neo4j import (BugSampleNeo4j, DataSetNeo4j,
-                                             LocationSampleBaseNeo4j,
+                                             LocationSampleNeo4j,
                                              Neo4jConfiguration)
 from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
                                          TypbasedGraphSlicing)
@@ -55,7 +55,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
             for model_type in self.dataset.meta_model.get_bug_location_types():
                 if model_type in type_to_count:
                     count = type_to_count[model_type]
-                    random_nodes = self.load_dataframe(query.random_nodes_in_version(
+                    random_nodes = self.run_query_by_version(query.random_nodes_in_version(
                         count, model_type, filter_library_elements=True), set_index=False)
 
                     for index, random_node_result in random_nodes.iterrows():
@@ -116,7 +116,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
         self.location_samples = []
 
 
-class LocationSampleTrainingNeo4j(LocationSampleBaseNeo4j):
+class LocationSampleTrainingNeo4j(LocationSampleNeo4j):
 
     def __init__(self, neo4j_model_location: int, model_location_type: str, label: int):
         super().__init__(neo4j_model_location, model_location_type, label)

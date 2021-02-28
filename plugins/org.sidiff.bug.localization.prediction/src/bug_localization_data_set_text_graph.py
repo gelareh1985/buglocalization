@@ -13,7 +13,7 @@ import pandas as pd  # type: ignore
 from pandas.core.frame import DataFrame  # type: ignore
 from stellargraph import StellarGraph  # type: ignore
 
-from bug_localization_data_set import IBugSample, IDataSet, LocationSampleBase
+from bug_localization_data_set import IBugSample, IDataSet, ILocationSample
 from bug_localization_util import t
 
 # ===============================================================================
@@ -85,6 +85,30 @@ class BugSampleTextGraph(IBugSample):
     def uninitialize(self):
         self.nodes = None
         self.edges = None
+        
+        
+class LocationSampleTextGraph(ILocationSample):
+
+    def __init__(self, bug_report: Union[int, str], model_location: Union[int, str], label: float = None, is_negative: bool = False):
+        self._bug_report: Union[int, str] = bug_report
+        self._model_location: Union[int, str] = model_location
+        self._label: Optional[float] = label
+        self._is_negative: bool = is_negative
+
+    def label(self) -> Optional[float]:
+        return self._label
+
+    def graph(self) -> StellarGraph:
+        raise NotImplementedError()
+
+    def bug_report(self) -> Union[int, str]:
+        return self._bug_report
+
+    def model_location(self) -> Union[int, str]:
+        return self._model_location
+
+    def is_negative(self) -> bool:
+        return self._is_negative
 
 
 class DataSetTextGraphEmbedding(DataSetTextGraph):
@@ -269,7 +293,7 @@ class BugSampleTrainingTextGraphEmbedding(BugSampleTextGraphEmbedding):
         self.graph = None
 
 
-class LocationSampleTextGraphEmbedding(LocationSampleBase):
+class LocationSampleTextGraphEmbedding(LocationSampleTextGraph):
 
     def __init__(self,
                  bug_sample: BugSampleTrainingTextGraphEmbedding,

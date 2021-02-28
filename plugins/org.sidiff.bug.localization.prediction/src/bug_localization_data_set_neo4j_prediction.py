@@ -13,7 +13,7 @@ import pandas as pd  # type: ignore
 import bug_localization_data_set_neo4j_queries as query
 from bug_localization_data_set import IBugSample
 from bug_localization_data_set_neo4j import (BugSampleNeo4j, DataSetNeo4j,
-                                             LocationSampleBaseNeo4j,
+                                             LocationSampleNeo4j,
                                              Neo4jConfiguration)
 from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
                                          TypbasedGraphSlicing)
@@ -116,7 +116,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         # Load location samples by type:
         for model_location_types in self.dataset.meta_model.get_bug_location_types():
             model_library_nodes_by_type = self.dataset.model_library_nodes[model_location_types]
-            model_locations = self.load_dataframe(query.node_ids_in_version(model_location_types))
+            model_locations = self.run_query_by_version(query.node_ids_in_version(model_location_types))
             
             for model_location in model_locations['nodes']:
                 if model_location not in model_library_nodes_by_type:
@@ -145,7 +145,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         self.location_samples = []
 
 
-class LocationSamplePredictionNeo4j(LocationSampleBaseNeo4j):
+class LocationSamplePredictionNeo4j(LocationSampleNeo4j):
 
     def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSamplePredictionNeo4j):

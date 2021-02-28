@@ -6,6 +6,22 @@
 # Configure GPU Device:
 # https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 # ===============================================================================
+from word_to_vector_shared_dictionary import WordDictionary
+from bug_localization_prediction import (
+    BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
+from bug_localization_meta_model_uml import create_uml_configuration
+from bug_localization_data_set_neo4j import Neo4jConfiguration
+from bug_localization_data_set_neo4j_prediction import (BugSamplePredictionNeo4j,
+                                                        DataSetPredictionNeo4j)
+import bug_localization_data_set_neo4j_queries as query
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Mapping, Optional, cast
+from time import time
+from pathlib import Path
+from json import dump
+import os
+import datetime
 import tensorflow as tf  # type: ignore
 
 # Only allocate needed memory needed by the application:
@@ -19,24 +35,6 @@ if gpus:
         print(e)
 # ===============================================================================
 
-import datetime
-import os
-from json import dump
-from pathlib import Path
-from time import time
-from typing import Dict, List, Mapping, Optional, cast
-
-import numpy as np
-import pandas as pd
-
-import bug_localization_data_set_neo4j_queries as query
-from bug_localization_data_set_neo4j_prediction import (BugSamplePredictionNeo4j,
-                                             DataSetPredictionNeo4j)
-from bug_localization_data_set_neo4j import Neo4jConfiguration
-from bug_localization_meta_model_uml import create_uml_configuration
-from bug_localization_prediction import (
-    BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
-from word_to_vector_shared_dictionary import WordDictionary
 
 # TODO: Dump DL/Meta-Model Configuration
 
@@ -79,6 +77,41 @@ neo4j_configuration = Neo4jConfiguration(
 
 
 class BugLocalizationPredictionTest:
+    """
+    Recorded Evaluation Files:
+
+    <version number>_bug<number>_<model Git version>_prediction.csv:  The ranked list of bug locations.
+
+    - DatabaseNodeID: The ID in the Neo4j Database. Actually, we should not rely on that value as Neo4j gives no
+      guarantee that these IDs will always be preserved. I also don't know if they are the same after loading the
+      database from the .dump files.
+    - Prediction: The probability value of the link prediction between 0 and 1.
+    - IsLocation: Contains 1 if the row/model element is the expected location; 0 otherwise.
+    - MetaType: The meta-type of the model element. Corresponds to the label in Neo4j.
+    - ModelElementID: The ID that identifies the model element  the UML model. Actually, it is a URL that can also be
+      used to reconstruct the original Java file. These IDs are unique within each version of the model, i.e., to get
+      one specific element from the Neo4j database we need to combine the ID with a version number.
+
+    <version number>_bug<number>_<model Git version>_info.csv: Some bug report version information.
+
+    - ModelVersionNeo4j: The successive version number of the buggy version.
+    - ModelVersionRepository: The corresponding Git version (hash value) of the model repository.
+    - CodeVersionRepository: The corresponding Git version (hash value) of the code repository.
+    - BugReportNumber: The ID number of the bug report in the bug tracker.
+    - PredictionRuntime: The time needed to compute this prediction for a full model.
+    - MissingLocations: For debugging, contains expected model elements that are missing in the _prediction.csv.
+      Expected to be empty.
+    - BugSummary: The short description of the bug report.
+
+    <version number>_bug<number>_<model Git version>_nodes.json: Contains some nodes from the Neo4j database related to
+    the bug report.
+
+    - TracedVersion [1]: The node representing the buggy version.
+    - TracedBugReport [1]: The main bug report node.
+    - BugReportComment [0..*]: The comments related to the bug report.
+    - Class/Interface/DataType/Enumeration [1..*]: The expected bug locations on the classifier level
+    - Model/Package/Operation/Property: The originally expected bug locations that are not on the classifier level.
+    """
 
     def get_file_name(self, bug_sample: BugSamplePredictionNeo4j):
         dataset: DataSetPredictionNeo4j = bug_sample.dataset
@@ -247,7 +280,7 @@ class BugLocalizationPredictionTest:
 
             query_bug_location_nodes = query.nodes_by_ids('RETURN n AS nodes')
             bug_location_nodes = dataset.run_query(query_bug_location_nodes, {'node_ids': bug_location_node_ids})
-        
+
             if not bug_location_nodes.empty:
                 bug_location_graph.extend(bug_location_nodes['nodes'].tolist())
 

@@ -1,4 +1,4 @@
-from bug_localization_data_set_neo4j import Neo4jConfiguration, DataSetNeo4j, BugSampleNeo4j, LocationSampleBaseNeo4j
+from bug_localization_data_set_neo4j import Neo4jConfiguration, DataSetNeo4j, BugSampleNeo4j, LocationSampleNeo4j
 from bug_localization_meta_model_uml import create_uml_configuration
 from word_to_vector_shared_dictionary import WordDictionary
 from typing import cast
@@ -26,18 +26,18 @@ for node in nodes:
     node_label: str = data_set.get_label(data_set.run_query_value('MATCH (n) WHERE ID(n) = ' + str(node_id) + ' RETURN n'))
     db_version = node[1]
     
-    bug_sample = BugSampleNeo4j(data_set, db_version)
-    data_set.bug_samples.append(bug_sample)
+    bug_sample_neo4j = BugSampleNeo4j(data_set, db_version)
+    data_set.bug_samples.append(bug_sample_neo4j)
 
-    location_sample = LocationSampleBaseNeo4j(node_id, node_label, node_id)
-    bug_sample.location_samples.append(location_sample)
+    location_sample_neo4j = LocationSampleNeo4j(node_id, node_label, node_id)
+    bug_sample_neo4j.location_samples.append(location_sample_neo4j)
 
 # Create sub-graphs:
 for bug_sample in data_set:
     bug_sample_neo4j = cast(BugSampleNeo4j, bug_sample)
 
     for location_sample in bug_sample_neo4j:
-        location_sample_neo4j = cast(LocationSampleBaseNeo4j, location_sample)
+        location_sample_neo4j = cast(LocationSampleNeo4j, location_sample)
 
         typebased_slicing = bug_sample_neo4j.dataset.typebased_slicing
         slicing = typebased_slicing.get_slicing(location_sample_neo4j.mode_location_type)
