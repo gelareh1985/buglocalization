@@ -2,25 +2,22 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-from __future__ import annotations  # FIXME: Currently not supported by PyDev
+from __future__ import annotations
 
-from threading import Semaphore
 from typing import Dict, List, Optional, Set, Tuple
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-from gensim.models import KeyedVectors  # type: ignore
-from py2neo import Node  # type: ignore
-
-from bug_localization_data_set_neo4j_queries import by_version, where_version
-from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
-                                         TypbasedGraphSlicing)
-from bug_localization_util import text_to_words
-from word_to_vector_shared_dictionary import WordDictionary
+import numpy as np
+import pandas as pd
+from buglocalization.dataset.neo4j_queries import by_version, where_version
+from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
+                                                  TypbasedGraphSlicing)
+from buglocalization.textembedding.text_utils import text_to_words
+from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
+from py2neo import Node
 
 
 def create_uml_configuration(
-        word_dictionary: WordDictionary,
+        word_dictionary: WordToVectorDictionary,
         num_samples: List[int]) -> Tuple[MetaModel, NodeSelfEmbedding, TypbasedGraphSlicing]:
 
     # Modeling Language Meta-Model Configuration:
@@ -197,7 +194,7 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
     def __init__(
             self, meta_type_to_properties: Dict[str, List[str]],
-            word_dictionary: WordDictionary, stopwords={}, unescape=True):
+            word_dictionary: WordToVectorDictionary, stopwords={}, unescape=True):
         self.meta_type_to_properties: Dict[str, List[str]] = meta_type_to_properties
 
         self.word_dictionary = word_dictionary

@@ -5,19 +5,19 @@
 from __future__ import annotations
 
 import time
-from typing import (Dict, Set)
+from typing import Dict, Set
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-
-import bug_localization_data_set_neo4j_queries as query
-from bug_localization_data_set import IBugSample
-from bug_localization_data_set_neo4j import (BugSampleNeo4j, DataSetNeo4j,
-                                             LocationSampleNeo4j,
-                                             Neo4jConfiguration)
-from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
-                                         TypbasedGraphSlicing)
-from bug_localization_util import t
+import numpy as np
+import pandas as pd
+from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset.data_set import IBugSample
+from buglocalization.dataset.neo4j_data_set import (BugSampleNeo4j,
+                                                    DataSetNeo4j,
+                                                    LocationSampleNeo4j,
+                                                    Neo4jConfiguration)
+from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
+                                                  TypbasedGraphSlicing)
+from buglocalization.utils.common_utils import t
 
 # ===============================================================================
 # Prediction Neo4j Data Connector
@@ -26,14 +26,14 @@ from bug_localization_util import t
 
 class DataSetPredictionNeo4j(DataSetNeo4j):
 
-    def __init__(self, 
-                 meta_model: MetaModel, 
-                 node_self_embedding: NodeSelfEmbedding, 
+    def __init__(self,
+                 meta_model: MetaModel,
+                 node_self_embedding: NodeSelfEmbedding,
                  typebased_slicing: TypbasedGraphSlicing,
-                 neo4j_config: Neo4jConfiguration, 
+                 neo4j_config: Neo4jConfiguration,
                  is_negative: bool = False,
                  log_level: int = 0):
-        
+
         super().__init__(meta_model, node_self_embedding, typebased_slicing, neo4j_config, is_negative=is_negative)
 
         # All Versions: Model graph nodes: index -> embedding
@@ -44,7 +44,7 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
         # Library element, e.g., Java String, Integer,  contained in the database by type over all versions:
         # type -> nodes:
         self.model_library_nodes: Dict[str, Set[int]] = self.load_model_library_nodes(meta_model.get_bug_location_types())
-        
+
     def load_node_self_embeddings(self, log_level: int = 0):
         if log_level >= 2:
             print("Start Loading Dictionary...")
@@ -60,35 +60,35 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
         # Bug report nodes:
         for model_location_types in self.meta_model.get_bug_report_node_types():
             bug_report_nodes = self.run_query(query.nodes_by_type(model_location_types), index="index")
-            
+
             if log_level >= 2:
                 print("Embedding", model_location_types, len(bug_report_nodes.index))
-                
+
             for node_id, model_node in bug_report_nodes.iterrows():
                 node_embedding = self.node_self_embedding.node_to_vector(model_node)
                 self.bug_report_node_embeddings[node_id] = node_embedding
-        
+
         # Model nodes:
         for model_location_types in self.meta_model.get_types():
             model_nodes = self.run_query(query.nodes_by_type(model_location_types), index="index")
-            
+
             if log_level >= 2:
                 print("Embedding", model_location_types, len(model_nodes.index))
-                
+
             for node_id, model_node in model_nodes.iterrows():
                 node_embedding = self.node_self_embedding.node_to_vector(model_node)
                 self.model_node_embeddings[node_id] = node_embedding
-        
+
         # Free memory...
         self.node_self_embedding.unload()
 
         if log_level >= 2:
             print("Finished Word Embedding:", t(start_time))
             start_time = time.time()
-        
+
     def create_sample(self, db_version: int) -> BugSampleNeo4j:
         return BugSamplePredictionNeo4j(self, db_version)
-    
+
     def load_model_library_nodes(self, model_meta_type_labels: Set[str]) -> Dict[str, Set[int]]:
         model_nodes_library = {}
 
@@ -103,13 +103,13 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
 
 class BugSamplePredictionNeo4j(BugSampleNeo4j):
     dataset: DataSetPredictionNeo4j
-    
+
     def _initialize(self, log_level: int = 0):
         start_time = time.time()
-        
+
         if log_level >= 4:
             print("Start Loading Locations...")
-        
+
         self.model_nodes = self.dataset.model_node_embeddings
         self.load_bug_report(self.dataset.meta_model.find_bug_location_by_container())
 
@@ -117,7 +117,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         for model_location_types in self.dataset.meta_model.get_bug_location_types():
             model_library_nodes_by_type = self.dataset.model_library_nodes[model_location_types]
             model_locations = self.run_query_by_version(query.node_ids_in_version(model_location_types))
-            
+
             for model_location in model_locations['nodes']:
                 if model_location not in model_library_nodes_by_type:
                     nodes_id = model_location.identity
@@ -125,7 +125,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
 
         if log_level >= 4:
             print("Finished Loading Locations:", t(start_time))
-    
+
     def node_to_vector(self, node_id: int, node: pd.Series):
         try:
             return self.dataset.bug_report_node_embeddings[node_id]

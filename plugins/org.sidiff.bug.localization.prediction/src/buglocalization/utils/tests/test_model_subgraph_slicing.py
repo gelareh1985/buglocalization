@@ -1,7 +1,11 @@
-from bug_localization_data_set_neo4j import Neo4jConfiguration, DataSetNeo4j, BugSampleNeo4j, LocationSampleNeo4j
-from bug_localization_meta_model_uml import create_uml_configuration
-from word_to_vector_shared_dictionary import WordDictionary
 from typing import cast
+
+from buglocalization.dataset.neo4j_data_set import (BugSampleNeo4j,
+                                                    DataSetNeo4j,
+                                                    LocationSampleNeo4j,
+                                                    Neo4jConfiguration)
+from buglocalization.metamodel.meta_model_uml import create_uml_configuration
+from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
 
 # List of node IDs from the Neo4j database:
 nodes = [(2059, 7747)]  # ID -> DB Version
@@ -16,7 +20,7 @@ neo4j_configuration = Neo4jConfiguration(
 )
 
 # Meta-model configuration:
-meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(WordDictionary(), num_samples)
+meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(WordToVectorDictionary(), num_samples)
 
 # Build data set from given nodes:
 data_set = DataSetNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, list_bug_samples=False)

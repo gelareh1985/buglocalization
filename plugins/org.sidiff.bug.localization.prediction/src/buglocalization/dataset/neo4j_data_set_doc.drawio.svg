@@ -1,0 +1,539 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1282px" height="731px" viewBox="-0.5 -0.5 1282 731" content="&lt;mxfile host=&quot;d2359b1d-cf09-4ffd-979c-e48b2d1c8d51&quot; modified=&quot;2021-02-28T21:05:53.513Z&quot; agent=&quot;5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.53.2 Chrome/87.0.4280.141 Electron/11.2.1 Safari/537.36&quot; etag=&quot;pNEZ_PJI3egpYcDp9izj&quot; version=&quot;14.2.4&quot; type=&quot;embed&quot;&gt;&lt;diagram id=&quot;y7BJrQX0B9SS8UAwjC42&quot; name=&quot;Page-1&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs>
+        <clipPath id="mx-clip-4-110-182-20-0">
+            <rect x="4" y="110" width="182" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-4-138-182-20-0">
+            <rect x="4" y="138" width="182" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-4-334-182-20-0">
+            <rect x="4" y="334" width="182" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-4-362-182-52-0">
+            <rect x="4" y="362" width="182" height="52"/>
+        </clipPath>
+        <clipPath id="mx-clip-4-540-182-70-0">
+            <rect x="4" y="540" width="182" height="70"/>
+        </clipPath>
+        <clipPath id="mx-clip-4-618-182-58-0">
+            <rect x="4" y="618" width="182" height="58"/>
+        </clipPath>
+        <clipPath id="mx-clip-244-90-172-20-0">
+            <rect x="244" y="90" width="172" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-244-118-172-82-0">
+            <rect x="244" y="118" width="172" height="82"/>
+        </clipPath>
+        <clipPath id="mx-clip-244-305-172-80-0">
+            <rect x="244" y="305" width="172" height="80"/>
+        </clipPath>
+        <clipPath id="mx-clip-244-393-172-102-0">
+            <rect x="244" y="393" width="172" height="102"/>
+        </clipPath>
+        <clipPath id="mx-clip-244-564-172-20-0">
+            <rect x="244" y="564" width="172" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-244-592-172-20-0">
+            <rect x="244" y="592" width="172" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-50-232-20-0">
+            <rect x="504" y="50" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-78-232-20-0">
+            <rect x="504" y="78" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-162-232-50-0">
+            <rect x="504" y="162" width="232" height="50"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-220-232-10-0">
+            <rect x="504" y="220" width="232" height="10"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-280-232-20-0">
+            <rect x="504" y="280" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-308-232-20-0">
+            <rect x="504" y="308" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-392-232-20-0">
+            <rect x="504" y="392" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-420-232-20-0">
+            <rect x="504" y="420" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-510-232-20-0">
+            <rect x="504" y="510" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-538-232-20-0">
+            <rect x="504" y="538" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-622-232-20-0">
+            <rect x="504" y="622" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-504-650-232-20-0">
+            <rect x="504" y="650" width="232" height="20"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-0-412-25-0">
+            <rect x="854" y="0" width="412" height="25"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-25-412-55-0">
+            <rect x="854" y="25" width="412" height="55"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-210-412-25-0">
+            <rect x="854" y="210" width="412" height="25"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-235-412-65-0">
+            <rect x="854" y="235" width="412" height="65"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-450-422-25-0">
+            <rect x="854" y="450" width="422" height="25"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-475-422-105-0">
+            <rect x="854" y="475" width="422" height="105"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-600-422-25-0">
+            <rect x="854" y="600" width="422" height="25"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-625-422-105-0">
+            <rect x="854" y="625" width="422" height="105"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-100-412-25-0">
+            <rect x="854" y="100" width="412" height="25"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-125-412-45-0">
+            <rect x="854" y="125" width="412" height="45"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-320-422-25-0">
+            <rect x="854" y="320" width="422" height="25"/>
+        </clipPath>
+        <clipPath id="mx-clip-854-345-422-60-0">
+            <rect x="854" y="345" width="422" height="60"/>
+        </clipPath>
+    </defs>
+    <g>
+        <path d="M 0 110 L 0 70 L 190 70 L 190 110" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 0 110 L 0 158 L 190 158 L 190 110" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 0 110 L 190 110" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="94.5" y="87.5">
+                IDataSet
+            </text>
+            <text x="94.5" y="101.5">
+                {abstract}
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-4-110-182-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 0 134 L 190 134" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-4-138-182-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 0 334 L 0 294 L 190 294 L 190 334" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 0 334 L 0 414 L 190 414 L 190 334" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 0 334 L 190 334" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="94.5" y="311.5">
+                IBugSample
+            </text>
+            <text x="94.5" y="325.5">
+                {abstract}
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-4-334-182-20-0)" font-size="12px"/>
+        <path d="M 0 358 L 190 358" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-4-362-182-52-0)" font-size="10px">
+            <text x="5.5" y="373.5">
+                + initialize(...)
+            </text>
+            <text x="5.5" y="385.5">
+                # _initialize(...)
+            </text>
+            <text x="5.5" y="397.5">
+                + uninitialize()
+            </text>
+            <text x="5.5" y="409.5">
+                # _uninitialize()
+            </text>
+        </g>
+        <path d="M 0 540 L 0 500 L 190 500 L 190 540" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 0 540 L 0 676 L 190 676 L 190 540" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 0 540 L 190 540" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="94.5" y="517.5">
+                ILocationSample
+            </text>
+            <text x="94.5" y="531.5">
+                {abstract}
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-4-540-182-70-0)" font-size="10px">
+            <text x="5.5" y="554.5">
+                + label: Number
+            </text>
+            <text x="5.5" y="566.5">
+                + graph: StellarGraph
+            </text>
+            <text x="5.5" y="578.5">
+                + bug_report: ID
+            </text>
+            <text x="5.5" y="590.5">
+                + model_location : ID
+            </text>
+            <text x="5.5" y="602.5">
+                + is_negative: bool
+            </text>
+        </g>
+        <path d="M 0 614 L 190 614" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-4-618-182-58-0)" font-size="10px">
+            <text x="5.5" y="628.5">
+                + initialize(bug_sample, ...)
+            </text>
+            <text x="5.5" y="640.5">
+                # _initialize(bug_sample, ...)
+            </text>
+            <text x="5.5" y="652.5">
+                + uninitialize()
+            </text>
+            <text x="5.5" y="664.5">
+                # _uninitialize()
+            </text>
+        </g>
+        <path d="M 95 167.99 L 95 294" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 95 158.99 L 97.65 163.49 L 95 167.99 L 92.35 163.49 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="11px">
+            <rect fill="#ffffff" stroke="none" x="106" y="166" width="60" height="14" stroke-width="0"/>
+            <text x="134.92" y="176.42">
+                1..1 dataset
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="11px">
+            <rect fill="#ffffff" stroke="none" x="102" y="275" width="87" height="14" stroke-width="0"/>
+            <text x="144.92" y="284.92">
+                0..* bug_samples
+            </text>
+        </g>
+        <path d="M 95 423.99 L 95 500" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 95 414.99 L 97.65 419.49 L 95 423.99 L 92.35 419.49 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="11px">
+            <rect fill="#ffffff" stroke="none" x="102" y="483" width="107" height="14" stroke-width="0"/>
+            <text x="154.92" y="492.75">
+                0..* location_samples
+            </text>
+        </g>
+        <path d="M 240 90 L 240 50 L 420 50 L 420 90" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 90 L 240 200 L 420 200 L 420 90" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 90 L 420 90" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="329.5" y="67.5">
+                DataSetNeo4j
+            </text>
+            <text x="329.5" y="81.5">
+                {abstract}
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-244-90-172-20-0)" font-size="12px"/>
+        <path d="M 240 114 L 420 114" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-244-118-172-82-0)" font-size="10px">
+            <text x="245.5" y="138.5">
+                + list_samples()
+            </text>
+            <text x="245.5" y="150.5">
+                + create_samples(db_version)
+            </text>
+            <text x="245.5" y="162.5">
+                + run_query(...): PandasDataFrame
+            </text>
+            <text x="245.5" y="174.5">
+                + run_query_to_table(...): ListOfTuple
+            </text>
+            <text x="245.5" y="186.5">
+                + run_query_value(...): FirstResult
+            </text>
+        </g>
+        <path d="M 240 305 L 240 265 L 420 265 L 420 305" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 305 L 240 495 L 420 495 L 420 305" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 305 L 420 305" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="329.5" y="282.5">
+                BugSampleNeo4j
+            </text>
+            <text x="329.5" y="296.5">
+                {abstract}
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-244-305-172-80-0)" font-size="10px">
+            <text x="245.5" y="318.5">
+                + db_version: int
+            </text>
+            <text x="245.5" y="330.5">
+                + model_nodes: ID-&gt;Embedding
+            </text>
+            <text x="245.5" y="342.5">
+                + bug_report_node_id: ID
+            </text>
+            <text x="245.5" y="354.5">
+                + bug_report_nodes: ID-&gt;Embedding
+            </text>
+            <text x="245.5" y="366.5">
+                + bug_report_edges: [source, target]
+            </text>
+            <text x="245.5" y="378.5">
+                + bug_locations: [ID, Type]
+            </text>
+        </g>
+        <path d="M 240 389 L 420 389" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-244-393-172-102-0)" font-size="10px">
+            <text x="245.5" y="405.5">
+                + load_mode_nodes(...)
+            </text>
+            <text x="245.5" y="417.5">
+                + load_bug_locations(...)
+            </text>
+            <text x="245.5" y="429.5">
+                + load_bug_location_subgraph(...)
+            </text>
+            <text x="245.5" y="441.5">
+                + load_bug_report(...)
+            </text>
+            <text x="245.5" y="453.5">
+                # load_node_embeddings()
+            </text>
+            <text x="245.5" y="465.5">
+                # node_to_vector(...)
+            </text>
+            <text x="245.5" y="477.5">
+                # run_query_by_version(...)
+            </text>
+            <text x="245.5" y="489.5">
+                # load_subgraph_edges(...)
+            </text>
+        </g>
+        <path d="M 240 564 L 240 524 L 420 524 L 420 564" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 564 L 240 612 L 420 612 L 420 564" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 564 L 420 564" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="329.5" y="541.5">
+                LocationSampleNeo4j
+            </text>
+            <text x="329.5" y="555.5">
+                {abstract}
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-244-564-172-20-0)" font-size="12px"/>
+        <path d="M 240 588 L 420 588" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-244-592-172-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 240 574 L 200.12 574.8" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 191.12 574.98 L 200.03 570.3 L 200.21 579.3 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 240 345 L 200.12 344.2" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 191.12 344.02 L 200.21 339.7 L 200.03 348.7 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 238.2 118.74 L 200.11 119.74" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 191.12 119.97 L 200 115.24 L 200.23 124.23 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 50 L 500 10 L 740 10 L 740 50" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 50 L 500 98 L 740 98 L 740 50" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 50 L 740 50" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="619.5" y="34.5">
+                DataSetTrainingNeo4j
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-50-232-20-0)" font-size="12px"/>
+        <path d="M 500 74 L 740 74" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-78-232-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 500 162 L 500 122 L 740 122 L 740 162" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 162 L 500 230 L 740 230 L 740 162" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 162 L 740 162" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="619.5" y="146.5">
+                DataSetPredictionNeo4j
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-162-232-50-0)" font-size="10px">
+            <text x="505.5" y="172.5">
+                + model_node_embeddings: ID-&gt;Embedding
+            </text>
+            <text x="505.5" y="184.5">
+                + bug_report_node_embeddinds: ID-&gt;Embedding
+            </text>
+            <text x="505.5" y="196.5">
+                + model_library_nods: Type-&gt;ID
+            </text>
+        </g>
+        <path d="M 500 216 L 740 216" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-220-232-10-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 500 60 L 427.85 118.62" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 420.87 124.29 L 425.02 115.13 L 430.69 122.11 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 187 L 428.68 144.2" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 420.96 139.57 L 430.99 140.34 L 426.36 148.06 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 280 L 500 240 L 740 240 L 740 280" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 280 L 500 328 L 740 328 L 740 280" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 280 L 740 280" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="619.5" y="264.5">
+                BugSampleTrainingNeo4j
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-280-232-20-0)" font-size="12px"/>
+        <path d="M 500 304 L 740 304" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-308-232-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 500 392 L 500 352 L 740 352 L 740 392" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 392 L 500 440 L 740 440 L 740 392" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 392 L 740 392" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="619.5" y="376.5">
+                BugSamplePredictionNeo4j
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-392-232-20-0)" font-size="12px"/>
+        <path d="M 500 416 L 740 416" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-420-232-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 500 510 L 500 470 L 740 470 L 740 510" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 510 L 500 558 L 740 558 L 740 510" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 510 L 740 510" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="619.5" y="494.5">
+                LocationSampleNeo4j
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-510-232-20-0)" font-size="12px"/>
+        <path d="M 500 534 L 740 534" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-538-232-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 500 622 L 500 582 L 740 582 L 740 622" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 622 L 500 670 L 740 670 L 740 622" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 622 L 740 622" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="619.5" y="606.5">
+                LocationSamplePredictionNeo4j
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-622-232-20-0)" font-size="12px"/>
+        <path d="M 500 646 L 740 646" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-504-650-232-20-0)" text-anchor="middle" font-size="12px"/>
+        <path d="M 500 402 L 428.48 355.51" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 420.94 350.61 L 430.94 351.74 L 426.03 359.29 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 290 L 428.34 339.27" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 420.92 344.37 L 425.79 335.56 L 430.89 342.98 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 520 L 428.39 568.34" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 420.93 573.37 L 425.87 564.61 L 430.9 572.07 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 632 L 428.9 586.92" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 421.3 582.1 L 431.31 583.12 L 426.5 590.72 Z" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 740 32 L 850 12.5" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 740 262 L 850 222.5" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 850 0 L 1245 0 L 1270 25 L 1270 80 L 850 80 L 850 0 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1245 0 L 1245 25 L 1270 25" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-0-412-25-0)" font-size="12px">
+            <text x="855.5" y="17">
+                A data set collection of positive/negative bug samples:
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-25-412-55-0)" font-size="10px">
+            <text x="855.5" y="44">
+                - Bug Samples from both positive and negative bug samples are combined to training and
+            </text>
+            <text x="855.5" y="56">
+                evaluation sequences. Please note that the bug samples are still  contained by their data
+            </text>
+            <text x="855.5" y="68">
+                set which shares common information.
+            </text>
+        </g>
+        <path d="M 850 210 L 1245 210 L 1270 235 L 1270 300 L 850 300 L 850 210 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1245 210 L 1245 235 L 1270 235" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-210-412-25-0)" font-size="12px">
+            <text x="855.5" y="227">
+                A sample of a bug corresponds to a model version:
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-235-412-65-0)" font-size="10px">
+            <text x="855.5" y="259">
+                - Computes initially the node self embeddings for all nodes in all location subgraphs from the
+            </text>
+            <text x="855.5" y="271">
+                current model version.- Bug location samples are relocated to their containers if needed,
+            </text>
+            <text x="855.5" y="283">
+                e.g., Operations to Classes if the current training targets classifiers only.
+            </text>
+        </g>
+        <path d="M 850 450 L 1255 450 L 1280 475 L 1280 580 L 850 580 L 850 450 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1255 450 L 1255 475 L 1280 475" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-450-422-25-0)" font-size="12px">
+            <text x="855.5" y="467">
+                A sample of bug location corresponds to a model element:
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-475-422-105-0)" font-size="10px">
+            <text x="855.5" y="507">
+                - Positive samples correspond to the model elements in the buggy model version that were
+            </text>
+            <text x="855.5" y="519">
+                modified to produce the fixed version (corresponds to the bug fix commit in the repository)
+            </text>
+            <text x="855.5" y="531">
+                - Negative samples are randomly selected from the model version. The number of  samples
+            </text>
+            <text x="855.5" y="543">
+                per type can be configured. Library model element, e.g., Java String, Integer, are filtered
+            </text>
+            <text x="855.5" y="555">
+                from the negative location sampels.
+            </text>
+        </g>
+        <path d="M 740 492 L 850 462.5" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 850 600 L 1255 600 L 1280 625 L 1280 730 L 850 730 L 850 600 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1255 600 L 1255 625 L 1280 625" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-600-422-25-0)" font-size="12px">
+            <text x="855.5" y="617">
+                A potential bug location corresponds to a model element:
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-625-422-105-0)" font-size="10px">
+            <text x="855.5" y="657">
+                - Positive samples correspond to the model elements in the buggy model version that were
+            </text>
+            <text x="855.5" y="669">
+                modified to produce the fixed version (corresponds to the bug fix commit in the repository)
+            </text>
+            <text x="855.5" y="681">
+                - All model element in a specific version are potential bug locations. The type of samples, e.g.,
+            </text>
+            <text x="855.5" y="693">
+                class or operation, can be configured. Library model element, e.g., Java String, Integer, are
+            </text>
+            <text x="855.5" y="705">
+                filtered from the potential location sampels.
+            </text>
+        </g>
+        <path d="M 740 604 L 850 612.5" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 850 100 L 1245 100 L 1270 125 L 1270 170 L 850 170 L 850 100 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1245 100 L 1245 125 L 1270 125" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-100-412-25-0)" font-size="12px">
+            <text x="855.5" y="117">
+                A data set collection of model version and bug reports:
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-125-412-45-0)" font-size="10px">
+            <text x="855.5" y="145">
+                - Computes initially the node self embeddings for all nodes in the test data set.
+            </text>
+            <text x="855.5" y="157">
+                - Library nodes, e.g., Java String, Integer, are filtered as potential bug locations.
+            </text>
+        </g>
+        <path d="M 740 142.87 L 850 112.5" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 740 374 L 850 332.5" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 850 320 L 1255 320 L 1280 345 L 1280 405 L 850 405 L 850 320 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1255 320 L 1255 345 L 1280 345" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-320-422-25-0)" font-size="12px">
+            <text x="855.5" y="337">
+                A  bug report and the model version for prediction:
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-854-345-422-60-0)" font-size="10px">
+            <text x="855.5" y="366.5">
+                - Contains a location sample for each model element in the corresponding version.
+            </text>
+            <text x="855.5" y="378.5">
+                The type model elements to be considered as potential bug locations can be configured per
+            </text>
+            <text x="855.5" y="390.5">
+                meta-model.
+            </text>
+        </g>
+    </g>
+</svg>

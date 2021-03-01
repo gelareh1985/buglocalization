@@ -4,20 +4,19 @@
 
 from __future__ import annotations
 
-import time
-from typing import Any, Callable, Dict, List, Optional, Sequence, Set, Tuple, cast
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-from pandas.core.frame import DataFrame  # type: ignore
-from py2neo import Graph, Node  # type: ignore
-from stellargraph import StellarGraph  # type: ignore
-
-import bug_localization_data_set_neo4j_queries as query
-from bug_localization_data_set import IBugSample, IDataSet, ILocationSample
-from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
-                                         TypbasedGraphSlicing)
-from bug_localization_util import t
+import numpy as np
+import pandas as pd
+from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset.data_set import (IBugSample, IDataSet,
+                                              ILocationSample)
+from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
+                                                  TypbasedGraphSlicing)
+from buglocalization.utils.common_utils import t
+from pandas.core.frame import DataFrame
+from py2neo import Graph, Node
+from stellargraph import StellarGraph
 
 # ===============================================================================
 # Neo4j Data Connector:
@@ -164,18 +163,15 @@ class BugSampleNeo4j(IBugSample):
                          model_meta_type_labels: List[str],
                          node_ids: List[int] = None,
                          log_level: int = 0):
-        for model_meta_type_label in model_meta_type_labels:
-            node_ids_per_meta_type: List[int] = []
-            self.load_node_embeddings([model_meta_type_label],
-                                      nodes_embeddings=self.model_nodes,
-                                      to_be_embedded_node_ids=node_ids,
-                                      embedded_node_ids=node_ids_per_meta_type,
-                                      log_level=log_level)
+        self.load_node_embeddings(model_meta_type_labels,
+                                  nodes_embeddings=self.model_nodes,
+                                  to_be_embedded_node_ids=node_ids,
+                                  log_level=log_level)
 
-    def load_bug_location_subgraph(self, node_id: int, 
-                                   bug_localization_subgraph_edges: DataFrame, 
+    def load_bug_location_subgraph(self, node_id: int,
+                                   bug_localization_subgraph_edges: DataFrame,
                                    db_version: int) -> Tuple[StellarGraph, Tuple[int, int]]:
-        
+
         nodes_trace: Dict[int, int] = {}
         edges_ids = set()
 
@@ -355,37 +351,36 @@ class BugSampleNeo4j(IBugSample):
             Dict[int, np.ndarray]: The node ID -> embedding dictionary.
         """
 
-        # Filter by meta-type:
-        for meta_type_label in meta_type_labels:
+        # Filter by label:
+        query_nodes_in_version_parameter: Dict[str, Any] = {'labels': meta_type_labels}
 
-            # Filter by given node IDs?
-            if to_be_embedded_node_ids is not None:
-                query_nodes_in_version = query.nodes_in_version(meta_type_label, node_ids=True)
-                query_nodes_in_version_parameter = {'node_ids': to_be_embedded_node_ids}
-                nodes_in_version = self.run_query_by_version(query_nodes_in_version, query_nodes_in_version_parameter)
-            else:
-                nodes_in_version = self.run_query_by_version(query.nodes_in_version(meta_type_label))
+        # Filter by given node IDs?
+        if to_be_embedded_node_ids is not None:
+            query_nodes_in_version_parameter['node_ids'] = to_be_embedded_node_ids
+            query_nodes_in_version = query.nodes_by_type_in_version(meta_type_labels, True)
+        else:
+            query_nodes_in_version = query.nodes_by_type_in_version(meta_type_labels, False)
+        
+        nodes_in_version = self.run_query_by_version(query_nodes_in_version, query_nodes_in_version_parameter)
+        
+        if log_level >= 5:
+            print("Start embedding of", len(nodes_in_version.index), "nodes...")
 
-            if log_level >= 5:
-                print(meta_type_label + ': ' + str(len(nodes_in_version.index)))
+        if not nodes_in_version.empty:
+            for node_id, node in nodes_in_version.iterrows():
+                nodes_embedding = self.node_to_vector(node_id, node)
+                nodes_embeddings[node_id] = nodes_embedding
 
-            if not nodes_in_version.empty:
+                if embedded_node_ids is not None:
+                    embedded_node_ids.append(node_id)
 
-                # Filter specific node?
-                for node_id, node in nodes_in_version.iterrows():
-                    nodes_embedding = self.node_to_vector(node_id, node)
-                    nodes_embeddings[node_id] = nodes_embedding
-
-                    if embedded_node_ids is not None:
-                        embedded_node_ids.append(node_id)
-
-    def node_to_vector(self, node_id: int, node: pd.Series):
-        self.dataset.node_self_embedding.node_to_vector(node)
+    def node_to_vector(self, node_id: int, node: pd.Series) -> np.ndarray:
+        return self.dataset.node_self_embedding.node_to_vector(node)
 
     def dict_to_data_frame(self, data: Dict[int, np.ndarray], columns: str):
         return pd.DataFrame.from_dict(data, orient='index', columns=columns)
 
-    def run_query_by_version(self, query: str, parameters: dict = None, set_index: bool = True) -> DataFrame:
+    def run_query_by_version(self, query: str, parameters: Dict[str, Any] = None, set_index: bool = True) -> DataFrame:
         default_parameter = {'db_version': self.db_version}
 
         if parameters is not None:

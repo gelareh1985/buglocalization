@@ -2,15 +2,15 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 from time import time
-from typing import Generator, List, Optional, Tuple, Union, cast
+from typing import Generator, List, Tuple, Union, cast
 
 import numpy as np
 from tensorflow import keras
 
-from bug_localization_data_set import IBugSample, IDataSet
-from bug_localization_sample_generator import LocationSampleGenerator
 from bug_localization_training import BugLocalizationAIModelBuilder
-from bug_localization_util import t
+from buglocalization.dataset.data_set import IBugSample, IDataSet
+from buglocalization.dataset.sample_generator import LocationSampleGenerator
+from buglocalization.utils.common_utils import t
 
 
 class BugLocalizationPredictionConfiguration:
@@ -18,7 +18,7 @@ class BugLocalizationPredictionConfiguration:
     def __init__(self,
                  bug_localization_model_path: str,
                  num_samples: List[int],  # TODO: Get this from trained model!
-                 batch_size: int=50,
+                 batch_size: int = 50,
                  sample_generator_workers: int = 1,
                  sample_generator_workers_multiprocessing: bool = False,
                  sample_max_queue_size: int = 10):
@@ -96,16 +96,16 @@ class BugLocalizationPrediction:
             callbacks: List[keras.callbacks.Callback] = []
             flow = prediction_generator.create_location_sample_generator(
                 "prediction", bug_sample, callbacks, peek_location_samples)
-            
+
             prediction = model.predict(flow,
                                        callbacks=callbacks,
                                        workers=config.sample_generator_workers,
                                        use_multiprocessing=config.sample_generator_workers_multiprocessing,
                                        max_queue_size=config.sample_max_queue_size,
                                        verbose=1 if log_level > 0 else 0)
-            
+
             print("Finished Prediction:", bug_sample.sample_id, "in", t(start_time_prediction) + "s")
-            
+
             yield bug_sample, prediction
 
         print("Evaluation Finished:", t(start_time_evaluation))

@@ -47,7 +47,7 @@ class IBugSample:
         """
         # Only the first accessing thread will call initialize:
         self.lock.count_up(lambda: self._initialize(log_level))
-        
+
     def _initialize(self, log_level: int = 0):
         # TODO: To be implemented by clients
         ...
@@ -58,7 +58,7 @@ class IBugSample:
         """
         # Only the last accessing thread will call uninitialize:
         self.lock.count_down(lambda: self._uninitialize())
-        
+
     def _uninitialize(self):
         # TODO: To be implemented by clients
         ...
@@ -88,7 +88,7 @@ class ILocationSample:
         """
         # Only the first accessing thread will call initialize:
         self.lock.count_up(lambda: self._initialize(bug_sample, log_level))
-        
+
     def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
         # TODO: To be implemented by clients
         ...
@@ -99,7 +99,7 @@ class ILocationSample:
         """
         # Only the last accessing thread will call uninitialize:
         self.lock.count_down(lambda: self._uninitialize())
-        
+
     def _uninitialize(self):
         # TODO: To be implemented by clients
         ...
@@ -161,7 +161,7 @@ class CountingLock(object):
         if self.count == 1:
             on_first_lock()
         self.lock.release()
-        
+
     def wait(self, timeout: float = None):
         self.lock.acquire()
         while self.count > 0:

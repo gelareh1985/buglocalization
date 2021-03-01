@@ -8,13 +8,12 @@ import ntpath
 import os
 from typing import List, Optional, Tuple, Union, cast
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-from pandas.core.frame import DataFrame  # type: ignore
-from stellargraph import StellarGraph  # type: ignore
-
-from bug_localization_data_set import IBugSample, IDataSet, ILocationSample
-from bug_localization_util import t
+import pandas as pd
+from buglocalization.dataset.data_set import (IBugSample, IDataSet,
+                                              ILocationSample)
+from buglocalization.utils.common_utils import t
+from pandas.core.frame import DataFrame
+from stellargraph import StellarGraph
 
 # ===============================================================================
 # Text Graph Data Connector
@@ -85,8 +84,8 @@ class BugSampleTextGraph(IBugSample):
     def uninitialize(self):
         self.nodes = None
         self.edges = None
-        
-        
+
+
 class LocationSampleTextGraph(ILocationSample):
 
     def __init__(self, bug_report: Union[int, str], model_location: Union[int, str], label: float = None, is_negative: bool = False):
@@ -256,7 +255,7 @@ class DataSetTrainingTextGraphEmbedding(DataSetTextGraphEmbedding):
 
 class BugSampleTrainingTextGraphEmbedding(BugSampleTextGraphEmbedding):
     dataset: DataSetTrainingTextGraphEmbedding
-    
+
     def __init__(self, dataset: DataSetTextGraph, sample_file_path: str):
         super().__init__(dataset, sample_file_path)
         self.graph: Optional[StellarGraph] = None
@@ -287,7 +286,7 @@ class BugSampleTrainingTextGraphEmbedding(BugSampleTextGraphEmbedding):
 
         # Free memory:
         super().uninitialize()
-        
+
     def uninitialize(self):
         # Free memory:
         self.graph = None

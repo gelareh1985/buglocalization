@@ -1,15 +1,16 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
-import concurrent.futures  # type: ignore
+import concurrent.futures
 from pathlib import Path
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-from gensim.models import KeyedVectors  # type: ignore
-
-from bug_localization_data_set_text_graph import DataSetTextGraph, BugSampleTextGraph
-from bug_localization_util import WordDictionary, text_to_words
+import numpy as np
+import pandas as pd
+from buglocalization.dataset.text_graph_data_set import (BugSampleTextGraph,
+                                                         DataSetTextGraph)
+from buglocalization.textembedding.text_utils import (WordDictionary,
+                                                      text_to_words)
+from gensim.models import KeyedVectors
 
 positve_samples_path = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\positivesamples/"  # noqa: E501
 negative_samples_path = r"C:\Users\manue\git\buglocalization\research\org.sidiff.bug.localization.dataset.domain.eclipse\datasets\eclipse.jdt.core\DataSet_20201123160235\negativesamples/"  # noqa: E501

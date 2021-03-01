@@ -2,14 +2,10 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-from nltk.tokenize import RegexpTokenizer  # type: ignore
-from time import time
-from typing import List
 import re
+from typing import List
 
-
-def t(start_time: float) -> str:
-    return "{:.3f}".format(time() - start_time) + "s"
+from nltk.tokenize import RegexpTokenizer
 
 
 def text_to_words(text: str, stopwords={}, unescape: bool = True) -> List[str]:
@@ -38,7 +34,7 @@ class WordDictionary:
 
     def load(self, filename):
         with open(filename) as f:
-            for i, line in enumerate(f):  # @UnusedVariable
+            for i, line in enumerate(f):
                 columns = line.strip().split('\t')
                 self.dictionary_words[columns[0]] = int(columns[1])
         f.close()

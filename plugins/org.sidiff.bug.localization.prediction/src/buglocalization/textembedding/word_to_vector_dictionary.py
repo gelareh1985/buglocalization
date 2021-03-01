@@ -1,14 +1,12 @@
+import os
 from pathlib import Path
 from threading import Semaphore
 from typing import Dict, Tuple
 
-import numpy as np  # type: ignore
+import numpy as np
 from gensim.models import KeyedVectors
-from gensim.test.utils import get_tmpfile
 
-import os
-
-plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.parent
 pretrained_dictionary_path: str = str(os.path.join(plugin_directory, 'data/'))
 
 pretrained_dictionary_name = "GoogleNews-vectors-negative300.bin"
@@ -25,8 +23,8 @@ pretrained_dictionary_feature_size = 300
 # https://stackoverflow.com/questions/51616074/sharing-memory-for-gensims-keyedvectors-objects-between-docker-containers
 
 
-class WordDictionary:
-    
+class WordToVectorDictionary:
+
     def dimension(self) -> int:
         return pretrained_dictionary_feature_size
 

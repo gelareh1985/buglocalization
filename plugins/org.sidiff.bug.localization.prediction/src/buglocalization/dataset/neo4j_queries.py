@@ -2,11 +2,14 @@
 # # Subgraph Cypher queries # #
 
 
+from typing import List
+
+
 def buggy_versions() -> str:
     return "MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions"
 
 
-def library_elements(type: str) -> str:
+def library_elements(label: str) -> str:
     """
     Args:
         type (str): a type label
@@ -14,7 +17,7 @@ def library_elements(type: str) -> str:
     Returns:
         str: All nodes of the given type that were created as "external" library element, e.g., Java types like String, Integer.
     """
-    return 'MATCH (l:' + type + ') WHERE ' + is_library_element('l') + ' RETURN ID(l) AS nodes'
+    return 'MATCH (l:' + label + ') WHERE ' + is_library_element('l') + ' RETURN ID(l) AS nodes'
 
 
 def is_library_element(variable: str) -> str:
@@ -51,7 +54,7 @@ def incoming_cross_tree_edges(k=1) -> str:
     return path(edge_containment(False) + ', ' + edge_container(False), 'b', k)
 
 
-def path(edge_properties: str, start_variable: str, k=2, return_query: str=None) -> str:
+def path(edge_properties: str, start_variable: str, k=2, return_query: str = None) -> str:
     """
     Args:
         edge_properties (str): The properties on the edges to be matched. Noted nameA:valueX, nameb:valueY,...
@@ -65,10 +68,10 @@ def path(edge_properties: str, start_variable: str, k=2, return_query: str=None)
     input_nodes = 'UNWIND $node_ids AS node_id '
     node_path_in_version = 'ID(' + start_variable + ')= node_id AND ' + edges_no_dangling('a', 'b')
     edge_path_in_version = 'UNWIND [edge IN relationships(path) WHERE ' + by_version('edge') + '] AS edge'
-    
+
     if return_query is None:
         return_query = 'RETURN DISTINCT ID(edge) AS index, ID(a) AS source, ID(b) as target'
-    
+
     path_filter = 'WHERE ' + node_path_in_version + ' WITH DISTINCT a, b, path ' + edge_path_in_version + ' ' + return_query
     return input_nodes + ' MATCH path=(a)-[*0..' + str(k) + ' {' + edge_properties + '}]->(b) ' + path_filter
 
@@ -136,52 +139,62 @@ def model_repo_version_by_db_version() -> str:
 # # Read property/attribute Cypher query # #
 
 
-def property_value_in_version(meta_type_label: str, property_name: str) -> str:
+def property_value_in_version(labels: str, property_name: str) -> str:
     # $db_version: int
-    return 'MATCH (n:' + meta_type_label + ') WHERE ' + by_version('n') + ' RETURN n.' + property_name
+    return 'MATCH (n:' + labels + ') WHERE ' + by_version('n') + ' RETURN n.' + property_name
 
 # # Full graph Cypher queries # #
 
 
-def nodes_by_type(meta_type_label: str) -> str:
-    return 'MATCH (n:' + meta_type_label + ') RETURN ID(n) AS index, n as nodes'
+def nodes_by_type(labels: str) -> str:
+    return 'MATCH (n:' + labels + ') RETURN ID(n) AS index, n as nodes'
 
 
-def node_ids_in_version(meta_type_label: str) -> str:
-    return 'MATCH (n:' + meta_type_label + ') WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+def node_ids_in_version(labels: str) -> str:
+    # $db_version: int
+    return 'MATCH (n:' + labels + ') WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
 
 
-def nodes_in_version(meta_type_label: str = '', node_ids: bool = False) -> str:
-    if meta_type_label != '':
-        meta_type_label = ':' + meta_type_label
-
-    where = 'WHERE ' + by_version('n')
-
-    if node_ids:
-        where += ' AND ID(n) IN $node_ids'
-
-    return 'MATCH (n' + meta_type_label + ') ' + where + ' RETURN ID(n) AS index, n AS nodes'
+def nodes_in_version(labels: str) -> str:
+    # $db_version: int
+    return 'MATCH (n:' + labels + ') ' + 'WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
 
 
-def random_nodes_in_version(count: int, meta_type_label: str = '', filter_library_elements: bool = True) -> str:
-    if meta_type_label != '':
-        meta_type_label = ':' + meta_type_label
+def nodes_by_type_in_version(labels: List[str], by_node_id: bool) -> str:
+    # $db_version: int
+    match = ''
+    returns = ' RETURN ID(n) AS index, n AS nodes'
+    
+    for label_idx in range(len(labels)):
+        if label_idx > 0:
+            match += returns + ' UNION '
+        match += 'MATCH (n:' + labels[label_idx] + ') '
+        match += where_version('n')
+        if by_node_id:
+            match += ' AND ID(n) IN $node_ids'
+            
+    return match + returns
+
+
+def random_nodes_in_version(count: int, labels: str = '', filter_library_elements: bool = True) -> str:
+    if labels != '':
+        labels = ':' + labels
     return_query = 'RETURN n AS nodes, rand() AS r ORDER BY r LIMIT ' + str(count)
-    return 'MATCH (n' + meta_type_label + ') WHERE ' + by_version('n') + ' AND NOT ' + is_library_element('n') + ' ' + return_query
+    return 'MATCH (n' + labels + ') WHERE ' + by_version('n') + ' AND NOT ' + is_library_element('n') + ' ' + return_query
 
 
 def edges_in_version(
-        source_meta_type_label: str = '',
-        edge_meta_type_label: str = '',
-        target_meta_type_label: str = '',
+        source_labels: str = '',
+        edge_labels: str = '',
+        target_labels: str = '',
         return_ids: bool = True) -> str:
 
-    if source_meta_type_label != '':
-        source_meta_type_label = ':' + source_meta_type_label
-    if edge_meta_type_label != '':
-        edge_meta_type_label = ':' + edge_meta_type_label
-    if target_meta_type_label != '':
-        target_meta_type_label = ':' + target_meta_type_label
+    if source_labels != '':
+        source_labels = ':' + source_labels
+    if edge_labels != '':
+        edge_labels = ':' + edge_labels
+    if target_labels != '':
+        target_labels = ':' + target_labels
 
     if return_ids:
         return_query = 'RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'
@@ -189,11 +202,10 @@ def edges_in_version(
         return_query = 'RETURN ID(r) AS index, s AS source, t AS target, r AS edges'
 
     is_in_version = 'WHERE ' + by_version('r') + ' AND ' + edges_no_dangling('s', 't')
-    match_query = 'MATCH (s' + source_meta_type_label + ')-[r' + edge_meta_type_label + ']->(t' + target_meta_type_label + ') ' + is_in_version
+    match_query = 'MATCH (s' + source_labels + ')-[r' + edge_labels + ']->(t' + target_labels + ') ' + is_in_version
 
     return match_query + ' ' + return_query
 
 
 def edges_from_nodes_in_version() -> str:
     return 'MATCH (a)-[e]->(b) WHERE ID(a) IN $node_ids AND ID(b) IN $node_ids AND ' + by_version('e') + ' RETURN ID(e) as index, ID(a) AS source, ID(b) AS target'  # noqa: E501
-

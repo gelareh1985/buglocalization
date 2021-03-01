@@ -6,18 +6,16 @@ import sys
 from time import time
 from typing import Any, Callable, List, Optional, Tuple, Union, final
 
-import numpy as np  # type: ignore
+import numpy as np
 import pandas as pd
-from stellargraph.mapper import (GraphSAGELinkGenerator,  # type: ignore
-                                 StellarGraph)
-from tensorflow import keras  # type: ignore
-from tensorflow.keras import Input, Model  # type: ignore
-from tensorflow.keras.layers import concatenate  # type: ignore
-from tensorflow.keras.utils import Sequence  # type: ignore
-
-from bug_localization_data_set import IBugSample, ILocationSample
-from bug_localization_util import t
-from word_to_vector_shared_dictionary import WordDictionary
+from buglocalization.dataset.data_set import IBugSample, ILocationSample
+from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
+from buglocalization.utils.common_utils import t
+from stellargraph.mapper import GraphSAGELinkGenerator, StellarGraph
+from tensorflow import keras
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import concatenate
+from tensorflow.keras.utils import Sequence
 
 # ===============================================================================
 # Data Generator: A "location sample" is pair of a bug report and model location,
@@ -28,7 +26,7 @@ from word_to_vector_shared_dictionary import WordDictionary
 # ===============================================================================
 
 # Use with caution, to ignore exceptions during sample generation!
-RETURN_DUMMY_SAMPLES_ON_EXCEPTION = True
+RETURN_DUMMY_SAMPLES_ON_EXCEPTION = False
 
 
 class IBugSampleGenerator:
@@ -208,7 +206,7 @@ class BaseSequence(Sequence):
                 flow = graph_sage_generator.flow(bug_location_pairs, [bug_location_label])
             else:
                 flow = graph_sage_generator.flow(bug_location_pairs)
-           
+
             return flow
         except:
             print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
@@ -219,8 +217,8 @@ class BaseSequence(Sequence):
                 print("  Return Dummy Sample...")
                 dummy_edges = pd.DataFrame(columns=["source", "target"])
                 dummy_nodes = np.asarray(
-                    [np.random.random_sample(WordDictionary().dimension()),
-                     np.random.random_sample(WordDictionary().dimension())])
+                    [np.random.random_sample(WordToVectorDictionary().dimension()),
+                     np.random.random_sample(WordToVectorDictionary().dimension())])
                 dummy_graph = StellarGraph(nodes=dummy_nodes, edges=dummy_edges)
                 graph_sage_dummy_generator = GraphSAGELinkGenerator(dummy_graph, 1, num_samples=self.num_samples)
                 dummy_flow = graph_sage_dummy_generator.flow([(0, 1)], [0])
@@ -258,8 +256,8 @@ class BaseSequence(Sequence):
             """Prepare the data set for the next epoch"""
 
             # Shuffle samples:
-            if self.shuffle:
-                random.shuffle(self.samples)
+            if self.flow.shuffle:
+                random.shuffle(self.flow.samples)
 
 
 class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
@@ -267,7 +265,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
     def create_bug_sample_generator(self, name: str,
                                     bug_samples: List[IBugSample],
                                     callbacks: List[keras.callbacks.Callback]) -> Sequence:
-        
+
         flow = self.BugSampleSequence(name,
                                       self.batch_size,
                                       self.shuffle,
@@ -307,7 +305,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 
             for bug_sample_idx in range(start_bug_sample, end_bug_sample):
                 bug_sample: IBugSample = self.bug_samples[bug_sample_idx]
-                
+
                 try:
                     if self.log_level >= 3:
                         print('+++++ Sample', bug_sample.sample_id, '+++++')
@@ -355,7 +353,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                                            self.reshape_input,
                                            peek_location_samples,
                                            self.log_level)
-        
+
         return flow
 
     class LocationSampleSequence(BaseSequence):
@@ -373,22 +371,22 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
             start_time = time()
             bug_sample.initialize()
             location_samples = bug_sample.location_samples
-            
+
             # Test only the first N location samples per bug sample
             if peek_location_samples is not None:
                 print('WARNING: Prediction is set to use only the first ' + str(peek_location_samples) + 'samples.')
                 location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
-                
+
             print('Initialized location samples:', len(location_samples), 'in:', t(start_time))
             start_time = time()
 
             super().__init__(name, location_samples, batch_size, shuffle, num_samples, reshape_input, log_level)
             callbacks.append(self.SequenceCallback(self))
             callbacks.append(self.LocationSampleSequenceCallback(self))
-            
+
             self.bug_sample: IBugSample = bug_sample
             self.location_samples: List[ILocationSample] = location_samples
-            
+
         def __getitem__(self, batch_idx):
             try:
                 self.bug_sample.initialize()  # (b)lock uninitialization() - reinitialization unexpected
@@ -396,18 +394,18 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
             finally:
                 self.bug_sample.uninitialize()  # do uninitialization() if callback on_*_end() was called in parallel
             return result
-            
+
         class LocationSampleSequenceCallback(keras.callbacks.Callback):
 
             def __init__(self, flow):
                 self.flow = flow
-                
+
             def on_train_end(self, logs=None):
                 self.on_end(logs)
-                
+
             def on_test_end(self, logs=None):
                 self.on_end(logs)
-                
+
             def on_predict_end(self, logs=None):
                 self.on_end(logs)
 

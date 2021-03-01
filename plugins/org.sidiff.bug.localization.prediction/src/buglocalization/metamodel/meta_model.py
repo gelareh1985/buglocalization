@@ -2,12 +2,12 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-from __future__ import annotations  # FIXME: Currently not supported by PyDev
+from __future__ import annotations
 
 from typing import Dict, List, Set
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
+import numpy as np
+import pandas as pd
 
 
 class TypbasedGraphSlicing:

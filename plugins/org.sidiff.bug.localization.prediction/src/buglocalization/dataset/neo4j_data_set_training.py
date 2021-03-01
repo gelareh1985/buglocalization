@@ -6,16 +6,16 @@ from __future__ import annotations
 import time
 from typing import Optional, Set, Tuple
 
-from pandas.core.frame import DataFrame  # type: ignore
-
-import bug_localization_data_set_neo4j_queries as query
-from bug_localization_data_set import IBugSample
-from bug_localization_data_set_neo4j import (BugSampleNeo4j, DataSetNeo4j,
-                                             LocationSampleNeo4j,
-                                             Neo4jConfiguration)
-from bug_localization_meta_model import (MetaModel, NodeSelfEmbedding,
-                                         TypbasedGraphSlicing)
-from bug_localization_util import t
+from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset.data_set import IBugSample
+from buglocalization.dataset.neo4j_data_set import (BugSampleNeo4j,
+                                                    DataSetNeo4j,
+                                                    LocationSampleNeo4j,
+                                                    Neo4jConfiguration)
+from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
+                                                  TypbasedGraphSlicing)
+from buglocalization.utils.common_utils import t
+from pandas.core.frame import DataFrame
 
 # ===============================================================================
 # Training Neo4j Data Connector
@@ -130,7 +130,11 @@ class LocationSampleTrainingNeo4j(LocationSampleNeo4j):
             typebased_slicing = bug_sample.dataset.typebased_slicing
             slicing = typebased_slicing.get_slicing(self.mode_location_type)
             self._bug_localization_subgraph_edges, self.node_ids = bug_sample.load_subgraph_edges(self.neo4j_model_location, slicing)
-            return self._bug_localization_subgraph_edges, self.node_ids
+            
+            if self.node_ids is not None:
+                return self._bug_localization_subgraph_edges, self.node_ids
+            else:
+                raise Exception("Missing node ID")
 
     def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
         if isinstance(bug_sample, BugSampleTrainingNeo4j):

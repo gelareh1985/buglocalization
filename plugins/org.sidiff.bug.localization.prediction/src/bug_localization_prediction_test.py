@@ -6,23 +6,7 @@
 # Configure GPU Device:
 # https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 # ===============================================================================
-from word_to_vector_shared_dictionary import WordDictionary
-from bug_localization_prediction import (
-    BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
-from bug_localization_meta_model_uml import create_uml_configuration
-from bug_localization_data_set_neo4j import Neo4jConfiguration
-from bug_localization_data_set_neo4j_prediction import (BugSamplePredictionNeo4j,
-                                                        DataSetPredictionNeo4j)
-import bug_localization_data_set_neo4j_queries as query
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Mapping, Optional, cast
-from time import time
-from pathlib import Path
-from json import dump
-import os
-import datetime
-import tensorflow as tf  # type: ignore
+import tensorflow as tf
 
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -35,6 +19,25 @@ if gpus:
         print(e)
 # ===============================================================================
 
+import datetime
+import os
+from json import dump
+from pathlib import Path
+from time import time
+from typing import Dict, List, Optional, cast
+
+import numpy as np
+import pandas as pd
+
+from bug_localization_prediction import (
+    BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
+from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
+from buglocalization.dataset.neo4j_data_set_prediction import (
+    BugSamplePredictionNeo4j, DataSetPredictionNeo4j)
+from buglocalization.metamodel.meta_model_uml import create_uml_configuration
+from buglocalization.textembedding.word_to_vector_dictionary import \
+    WordToVectorDictionary
 
 # TODO: Dump DL/Meta-Model Configuration
 
@@ -296,7 +299,7 @@ if __name__ == '__main__':
 
     # Modeling Language Meta-Model Configuration:
     meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
-        WordDictionary(), prediction_configuration.num_samples)
+        WordToVectorDictionary(), prediction_configuration.num_samples)
 
     # Test Dataset Containing Bug Samples:
     dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, log_level=log_level)

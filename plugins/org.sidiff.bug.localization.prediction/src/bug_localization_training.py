@@ -24,22 +24,20 @@ import os
 from pathlib import Path
 from time import time
 from typing import List, Tuple
-from word_to_vector_shared_dictionary import WordDictionary
 
-import stellargraph as sg  # type: ignore
-from stellargraph.layer import GraphSAGE, link_classification  # type: ignore
-from tensorflow import keras  # type: ignore
-from tensorflow.keras.callbacks import CSVLogger  # type: ignore
-from tensorflow.keras.utils import Sequence  # type: ignore
-from tensorflow.keras.utils import plot_model  # @UnusedImport
-
-from bug_localization_data_set import IBugSample, IDataSet
-from bug_localization_data_set_neo4j_training import DataSetTrainingNeo4j
-from bug_localization_data_set_neo4j import Neo4jConfiguration
-from bug_localization_meta_model_uml import create_uml_configuration
-from bug_localization_sample_generator import (BugSampleGenerator,
-                                               IBugSampleGenerator)
-
+import stellargraph as sg
+from buglocalization.dataset.data_set import IBugSample, IDataSet
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
+from buglocalization.dataset.neo4j_data_set_training import \
+    DataSetTrainingNeo4j
+from buglocalization.dataset.sample_generator import (BugSampleGenerator,
+                                                      IBugSampleGenerator)
+from buglocalization.metamodel.meta_model_uml import create_uml_configuration
+from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
+from stellargraph.layer import GraphSAGE, link_classification
+from tensorflow import keras
+from tensorflow.keras.callbacks import CSVLogger
+from tensorflow.keras.utils import Sequence, plot_model
 
 # from tqdm.keras import TqdmCallback  # type: ignore
 
@@ -52,7 +50,7 @@ from bug_localization_sample_generator import (BugSampleGenerator,
 # negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"  # noqa: E501
 
 # NOTE: Paths should not be too long, causes error (on Windows)!
-plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.parent
 model_training_save_dir = str(plugin_directory) + '/training/trained_model_' + \
     datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '/'
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
@@ -92,7 +90,7 @@ class DataSetSplitter:
 
             index += 1
 
-        return bug_sample_sequence[:50]
+        return bug_sample_sequence
 
     def split(self, fraction: int) -> Tuple[List[IBugSample], List[IBugSample]]:
 
@@ -240,15 +238,15 @@ class BugLocalizationAIModelTrainer:
 
         def on_train_batch_end(self, batch, logs={}):
             if 'loss' in logs and 'acc' in logs:
-                print("Training batch finished:", batch, "Loss:", logs['loss'], "Accuracy:", logs['acc'])
+                print("Training batch", batch, "finished: Accuracy:", logs['acc'], "Loss:", logs['loss'])
             else:
-                print("Training batch finished:", batch)
+                print("Training batch", batch, "finished")
 
         def on_test_batch_end(self, batch, logs={}):
             if 'loss' in logs and 'acc' in logs:
-                print("Evaluation batch finished:", batch, "Loss:", logs['loss'], "Accuracy:", logs['acc'])
+                print("Training batch", batch, "finished: Accuracy:", logs['acc'], "Loss:", logs['loss'])
             else:
-                print("Evaluation batch finished:", batch)
+                print("Training batch", batch, "finished")
 
 
 if __name__ == '__main__':
@@ -258,7 +256,7 @@ if __name__ == '__main__':
     # ===========================================================================
 
     # Wprd embedding:
-    word_dictionary = WordDictionary()
+    word_dictionary = WordToVectorDictionary()
 
     # GraphSAGE Settings:
     num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
