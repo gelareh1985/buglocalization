@@ -133,7 +133,7 @@ public class ModelVersion2Neo4j {
 		}
 		
 		// Patch system model:
-		Resource systemModelResource = patchSystemModelVersion(currentResourceSet, currentResources, currentModelVersion, bugReport);
+		Resource systemModelResource = patchSystemModelVersion(currentResourceSet, currentResources, currentModelVersion, nextModelVersion, bugReport);
 		
 		// Compute and commit model delta:
 		if (commitToDatabase) {
@@ -202,7 +202,7 @@ public class ModelVersion2Neo4j {
 	// FIXME[WORKAROUND]: Compute this while reverse engineering.
 	protected Resource patchSystemModelVersion(
 			ResourceSet newResourceSet, List<Resource> newResources, 
-			Version currentModelVersion, BugReport bugReport) {
+			Version buggyVersion, Version fixedVersion, BugReport bugReport) {
 		
 		if (newResourceSet.getURIConverter().exists(systemModelURI, null)) {
 			Resource systemModelResource = newResourceSet.getResource(systemModelURI, true);
@@ -211,7 +211,7 @@ public class ModelVersion2Neo4j {
 				SystemModel patchedSystemModel = (SystemModel) systemModelResource.getContents().get(0);
 				patchedSystemModel.setName(systemModelName);
 				
-				TracedVersion modelVersion = dataSet2SystemModel.convertVersion(currentModelVersion, bugReport);
+				TracedVersion modelVersion = dataSet2SystemModel.convertVersion(buggyVersion, fixedVersion, bugReport);
 				patchedSystemModel.setVersion(modelVersion);
 				
 				if (modelVersion.getBugreport() != null) {

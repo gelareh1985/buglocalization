@@ -56,6 +56,11 @@ public class Neo4jTransaction implements AutoCloseable {
 	public Result execute(final String query) {
 		return transaction.run(query);
 	}
+	
+	public void execute(final String query, final Map<String, Object> parameters) {
+		transaction.run(query, parameters);
+		commitAndStopTime(query);
+	}
 
 	public void execute(final Map<String, Map<String, Object>> queries) {
 		if (!queries.isEmpty()) {

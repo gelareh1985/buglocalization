@@ -615,13 +615,31 @@ public interface SystemModelPackage extends EPackage {
 	int BUG_REPORT__MODEL_LOCATIONS = 11;
 
 	/**
+	 * The feature id for the '<em><b>Bugfix Time</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BUG_REPORT__BUGFIX_TIME = 12;
+
+	/**
+	 * The feature id for the '<em><b>Bugfix Commit</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BUG_REPORT__BUGFIX_COMMIT = 13;
+
+	/**
 	 * The number of structural features of the '<em>Bug Report</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BUG_REPORT_FEATURE_COUNT = 12;
+	int BUG_REPORT_FEATURE_COUNT = 14;
 
 	/**
 	 * The number of operations of the '<em>Bug Report</em>' class.
@@ -932,6 +950,24 @@ public interface SystemModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TRACED_BUG_REPORT__MODEL_LOCATIONS = BUG_REPORT__MODEL_LOCATIONS;
+
+	/**
+	 * The feature id for the '<em><b>Bugfix Time</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TRACED_BUG_REPORT__BUGFIX_TIME = BUG_REPORT__BUGFIX_TIME;
+
+	/**
+	 * The feature id for the '<em><b>Bugfix Commit</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TRACED_BUG_REPORT__BUGFIX_COMMIT = BUG_REPORT__BUGFIX_COMMIT;
 
 	/**
 	 * The feature id for the '<em><b>Code Locations</b></em>' containment reference list.
@@ -1431,6 +1467,28 @@ public interface SystemModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getBugReport_ModelLocations();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixTime <em>Bugfix Time</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Bugfix Time</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixTime()
+	 * @see #getBugReport()
+	 * @generated
+	 */
+	EAttribute getBugReport_BugfixTime();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixCommit <em>Bugfix Commit</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Bugfix Commit</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixCommit()
+	 * @see #getBugReport()
+	 * @generated
+	 */
+	EAttribute getBugReport_BugfixCommit();
 
 	/**
 	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.TracedVersion <em>Traced Version</em>}'.
@@ -1939,6 +1997,22 @@ public interface SystemModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BUG_REPORT__MODEL_LOCATIONS = eINSTANCE.getBugReport_ModelLocations();
+
+		/**
+		 * The meta object literal for the '<em><b>Bugfix Time</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BUG_REPORT__BUGFIX_TIME = eINSTANCE.getBugReport_BugfixTime();
+
+		/**
+		 * The meta object literal for the '<em><b>Bugfix Commit</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BUG_REPORT__BUGFIX_COMMIT = eINSTANCE.getBugReport_BugfixCommit();
 
 		/**
 		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.impl.TracedVersionImpl <em>Traced Version</em>}' class.

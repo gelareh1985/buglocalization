@@ -76,6 +76,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/summary"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//BugReport/comments"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//BugReport/modelLocations"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/bugfixTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/bugfixCommit"/>
     </genClasses>
     <genClasses ecoreClass="systemmodel.ecore#//TracedVersion">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//TracedVersion/codeVersionID"/>

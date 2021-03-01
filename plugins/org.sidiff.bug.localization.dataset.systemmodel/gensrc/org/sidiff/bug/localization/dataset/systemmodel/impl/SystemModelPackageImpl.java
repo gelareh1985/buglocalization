@@ -618,6 +618,26 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 	 * @generated
 	 */
 	@Override
+	public EAttribute getBugReport_BugfixTime() {
+		return (EAttribute)bugReportEClass.getEStructuralFeatures().get(12);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getBugReport_BugfixCommit() {
+		return (EAttribute)bugReportEClass.getEStructuralFeatures().get(13);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getTracedVersion() {
 		return tracedVersionEClass;
 	}
@@ -810,6 +830,8 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		createEAttribute(bugReportEClass, BUG_REPORT__SUMMARY);
 		createEReference(bugReportEClass, BUG_REPORT__COMMENTS);
 		createEReference(bugReportEClass, BUG_REPORT__MODEL_LOCATIONS);
+		createEAttribute(bugReportEClass, BUG_REPORT__BUGFIX_TIME);
+		createEAttribute(bugReportEClass, BUG_REPORT__BUGFIX_COMMIT);
 
 		tracedVersionEClass = createEClass(TRACED_VERSION);
 		createEAttribute(tracedVersionEClass, TRACED_VERSION__CODE_VERSION_ID);
@@ -928,6 +950,8 @@ public class SystemModelPackageImpl extends EPackageImpl implements SystemModelP
 		initEAttribute(getBugReport_Summary(), theEcorePackage.getEString(), "summary", null, 0, 1, BugReport.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getBugReport_Comments(), this.getBugReportComment(), null, "comments", null, 0, -1, BugReport.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getBugReport_ModelLocations(), this.getChange(), null, "modelLocations", null, 0, -1, BugReport.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBugReport_BugfixTime(), theEcorePackage.getEString(), "bugfixTime", null, 0, 1, BugReport.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBugReport_BugfixCommit(), theEcorePackage.getEString(), "bugfixCommit", null, 0, 1, BugReport.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tracedVersionEClass, TracedVersion.class, "TracedVersion", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getTracedVersion_CodeVersionID(), theEcorePackage.getEString(), "codeVersionID", null, 0, 1, TracedVersion.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

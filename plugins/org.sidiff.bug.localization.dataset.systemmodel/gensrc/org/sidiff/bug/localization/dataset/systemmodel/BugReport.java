@@ -27,6 +27,8 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getSummary <em>Summary</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getComments <em>Comments</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getModelLocations <em>Model Locations</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixTime <em>Bugfix Time</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixCommit <em>Bugfix Commit</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getBugReport()
@@ -277,5 +279,49 @@ public interface BugReport extends EObject {
 	 * @generated
 	 */
 	EList<Change> getModelLocations();
+
+	/**
+	 * Returns the value of the '<em><b>Bugfix Time</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Bugfix Time</em>' attribute.
+	 * @see #setBugfixTime(String)
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getBugReport_BugfixTime()
+	 * @model
+	 * @generated
+	 */
+	String getBugfixTime();
+
+	/**
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixTime <em>Bugfix Time</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Bugfix Time</em>' attribute.
+	 * @see #getBugfixTime()
+	 * @generated
+	 */
+	void setBugfixTime(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Bugfix Commit</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Bugfix Commit</em>' attribute.
+	 * @see #setBugfixCommit(String)
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getBugReport_BugfixCommit()
+	 * @model
+	 * @generated
+	 */
+	String getBugfixCommit();
+
+	/**
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport#getBugfixCommit <em>Bugfix Commit</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Bugfix Commit</em>' attribute.
+	 * @see #getBugfixCommit()
+	 * @generated
+	 */
+	void setBugfixCommit(String value);
 
 } // BugReport

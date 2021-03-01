@@ -73,6 +73,8 @@ public class BugReportItemProvider
 			addResolutionPropertyDescriptor(object);
 			addStatusPropertyDescriptor(object);
 			addSummaryPropertyDescriptor(object);
+			addBugfixTimePropertyDescriptor(object);
+			addBugfixCommitPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -298,6 +300,50 @@ public class BugReportItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Bugfix Time feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addBugfixTimePropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_BugReport_bugfixTime_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BugReport_bugfixTime_feature", "_UI_BugReport_type"),
+				 SystemModelPackage.Literals.BUG_REPORT__BUGFIX_TIME,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Bugfix Commit feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addBugfixCommitPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_BugReport_bugfixCommit_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BugReport_bugfixCommit_feature", "_UI_BugReport_type"),
+				 SystemModelPackage.Literals.BUG_REPORT__BUGFIX_COMMIT,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -374,6 +420,8 @@ public class BugReportItemProvider
 			case SystemModelPackage.BUG_REPORT__RESOLUTION:
 			case SystemModelPackage.BUG_REPORT__STATUS:
 			case SystemModelPackage.BUG_REPORT__SUMMARY:
+			case SystemModelPackage.BUG_REPORT__BUGFIX_TIME:
+			case SystemModelPackage.BUG_REPORT__BUGFIX_COMMIT:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case SystemModelPackage.BUG_REPORT__COMMENTS:

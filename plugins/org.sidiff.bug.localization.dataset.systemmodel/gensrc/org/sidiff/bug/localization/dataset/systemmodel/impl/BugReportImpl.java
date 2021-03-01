@@ -43,6 +43,8 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.BugReportImpl#getSummary <em>Summary</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.BugReportImpl#getComments <em>Comments</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.BugReportImpl#getModelLocations <em>Model Locations</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.BugReportImpl#getBugfixTime <em>Bugfix Time</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.BugReportImpl#getBugfixCommit <em>Bugfix Commit</em>}</li>
  * </ul>
  *
  * @generated
@@ -267,6 +269,46 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 	 * @ordered
 	 */
 	protected EList<Change> modelLocations;
+
+	/**
+	 * The default value of the '{@link #getBugfixTime() <em>Bugfix Time</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBugfixTime()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String BUGFIX_TIME_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getBugfixTime() <em>Bugfix Time</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBugfixTime()
+	 * @generated
+	 * @ordered
+	 */
+	protected String bugfixTime = BUGFIX_TIME_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getBugfixCommit() <em>Bugfix Commit</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBugfixCommit()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String BUGFIX_COMMIT_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getBugfixCommit() <em>Bugfix Commit</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBugfixCommit()
+	 * @generated
+	 * @ordered
+	 */
+	protected String bugfixCommit = BUGFIX_COMMIT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -549,6 +591,52 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 	 * @generated
 	 */
 	@Override
+	public String getBugfixTime() {
+		return bugfixTime;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setBugfixTime(String newBugfixTime) {
+		String oldBugfixTime = bugfixTime;
+		bugfixTime = newBugfixTime;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.BUG_REPORT__BUGFIX_TIME, oldBugfixTime, bugfixTime));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getBugfixCommit() {
+		return bugfixCommit;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setBugfixCommit(String newBugfixCommit) {
+		String oldBugfixCommit = bugfixCommit;
+		bugfixCommit = newBugfixCommit;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.BUG_REPORT__BUGFIX_COMMIT, oldBugfixCommit, bugfixCommit));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case SystemModelPackage.BUG_REPORT__COMMENTS:
@@ -591,6 +679,10 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 				return getComments();
 			case SystemModelPackage.BUG_REPORT__MODEL_LOCATIONS:
 				return getModelLocations();
+			case SystemModelPackage.BUG_REPORT__BUGFIX_TIME:
+				return getBugfixTime();
+			case SystemModelPackage.BUG_REPORT__BUGFIX_COMMIT:
+				return getBugfixCommit();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -642,6 +734,12 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 				getModelLocations().clear();
 				getModelLocations().addAll((Collection<? extends Change>)newValue);
 				return;
+			case SystemModelPackage.BUG_REPORT__BUGFIX_TIME:
+				setBugfixTime((String)newValue);
+				return;
+			case SystemModelPackage.BUG_REPORT__BUGFIX_COMMIT:
+				setBugfixCommit((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -690,6 +788,12 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 			case SystemModelPackage.BUG_REPORT__MODEL_LOCATIONS:
 				getModelLocations().clear();
 				return;
+			case SystemModelPackage.BUG_REPORT__BUGFIX_TIME:
+				setBugfixTime(BUGFIX_TIME_EDEFAULT);
+				return;
+			case SystemModelPackage.BUG_REPORT__BUGFIX_COMMIT:
+				setBugfixCommit(BUGFIX_COMMIT_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -726,6 +830,10 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 				return comments != null && !comments.isEmpty();
 			case SystemModelPackage.BUG_REPORT__MODEL_LOCATIONS:
 				return modelLocations != null && !modelLocations.isEmpty();
+			case SystemModelPackage.BUG_REPORT__BUGFIX_TIME:
+				return BUGFIX_TIME_EDEFAULT == null ? bugfixTime != null : !BUGFIX_TIME_EDEFAULT.equals(bugfixTime);
+			case SystemModelPackage.BUG_REPORT__BUGFIX_COMMIT:
+				return BUGFIX_COMMIT_EDEFAULT == null ? bugfixCommit != null : !BUGFIX_COMMIT_EDEFAULT.equals(bugfixCommit);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -760,6 +868,10 @@ public class BugReportImpl extends MinimalEObjectImpl.Container implements BugRe
 		result.append(status);
 		result.append(", summary: ");
 		result.append(summary);
+		result.append(", bugfixTime: ");
+		result.append(bugfixTime);
+		result.append(", bugfixCommit: ");
+		result.append(bugfixCommit);
 		result.append(')');
 		return result.toString();
 	}
