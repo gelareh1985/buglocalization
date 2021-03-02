@@ -156,7 +156,7 @@ class BugSampleNeo4j(IBugSample):
         # StellarGraph requires Panda Data Frames as edges
         self.bug_report_edges: DataFrame = None
         self.bug_locations: Set[Tuple[int, str]] = set()  # node ID -> meta-type
-
+        
     # # Load graphs from Neo4j # #
 
     def load_model_nodes(self,
@@ -274,7 +274,7 @@ class BugSampleNeo4j(IBugSample):
 
         return graph, (nodes_trace[self.bug_report_node_id], nodes_trace[node_id])
 
-    def load_bug_report(self, locate_by_container: int):
+    def load_bug_report(self, locate_by_container: int, filter_comments_newer_as_bugfix: bool, log_level: int = 0):
 
         # Bug report node:
         bug_report_node_frame = self.run_query_by_version(query.nodes_in_version('TracedBugReport'))
@@ -286,19 +286,34 @@ class BugSampleNeo4j(IBugSample):
         self.bug_report_nodes = {}
         self.load_node_embeddings(bug_report_meta_type_labels, self.bug_report_nodes)
         self.bug_report_edges = self.run_query_by_version(query.edges_in_version(
-            'TracedBugReport', 'comments', 'BugReportComment'))
-        self.bug_report_edges.drop(['edges'], axis=1, inplace=True)
+            'TracedBugReport', 'comments', 'BugReportComment', return_nodes=True))
 
+        # Filter comments that were written after the corresponding bug fix was commited:
+        if filter_comments_newer_as_bugfix:
+            comment_count = len(self.bug_report_edges.index)
+            fix_commit_time = bug_report_node_frame.nodes.iloc[0]['bugfixTime']
+            
+            self.bug_report_edges.drop(
+                # Compare UTC time text string:
+                self.bug_report_edges[self.bug_report_edges.target_node.map(lambda n: n['creationTime']) > fix_commit_time].index, 
+                inplace=True)
+            
+            if log_level >= 10:
+                print("Bug report comments dropped:", comment_count - len(self.bug_report_edges.index), "of", comment_count)
+
+        self.bug_report_edges.drop(['source_node'], axis=1, inplace=True)
+        self.bug_report_edges.drop(['target_node'], axis=1, inplace=True)
+        
         # Bug locations:
         self.bug_locations = self.load_bug_locations(locate_by_container)
 
     def load_bug_locations(self, locate_by_container: int) -> Set[Tuple[int, str]]:
         bug_locations: Set[Tuple[int, str]] = set()
-        bug_location_edges = self.run_query_by_version(query.edges_in_version('Change', 'location', return_ids=False))
+        bug_location_edges = self.run_query_by_version(query.edges_in_version('Change', 'location', return_nodes=True))
 
-        for index, edge in bug_location_edges.iterrows():
+        for edge_idx, edge in bug_location_edges.iterrows():
             # location edges point at model elements:
-            bug_location: Node = edge['target']
+            bug_location: Node = edge['target_node']
             bug_locations.add((bug_location.identity, self.dataset.get_label(bug_location)))
 
         # Find container of bug location if the type is not in specified location:
@@ -377,9 +392,6 @@ class BugSampleNeo4j(IBugSample):
     def node_to_vector(self, node_id: int, node: pd.Series) -> np.ndarray:
         return self.dataset.node_self_embedding.node_to_vector(node)
 
-    def dict_to_data_frame(self, data: Dict[int, np.ndarray], columns: str):
-        return pd.DataFrame.from_dict(data, orient='index', columns=columns)
-
     def run_query_by_version(self, query: str, parameters: Dict[str, Any] = None, set_index: bool = True) -> DataFrame:
         default_parameter = {'db_version': self.db_version}
 
@@ -388,6 +400,16 @@ class BugSampleNeo4j(IBugSample):
                 default_parameter[parameter_name] = value
 
         df = self.dataset.run_query(query, default_parameter, index="index" if set_index else None)
+        return df
+    
+    def run_query_by_version_value(self, query: str, parameters: Dict[str, Any] = None, set_index: bool = True) -> DataFrame:
+        default_parameter = {'db_version': self.db_version}
+
+        if parameters is not None:
+            for parameter_name, value in parameters.items():
+                default_parameter[parameter_name] = value
+
+        df = self.dataset.run_query_value(query, default_parameter)
         return df
 
     def load_subgraph_edges(self, node_id: int, slicing_queries: List[str]) -> Tuple[DataFrame, Set[int]]:

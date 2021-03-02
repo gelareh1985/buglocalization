@@ -87,7 +87,9 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
         bug_localization_subgraphs = set()
 
         # Bug report and locations:
-        self.load_bug_report(meta_model.find_bug_location_by_container())
+        self.load_bug_report(meta_model.find_bug_location_by_container(),
+                             meta_model.filter_comments_newer_as_bugfix(),
+                             log_level)
 
         # Subgraphs of bug locations:
         for bug_location, bug_location_type in self.bug_locations:

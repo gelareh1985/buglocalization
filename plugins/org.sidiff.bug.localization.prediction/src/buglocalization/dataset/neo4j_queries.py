@@ -6,7 +6,11 @@ from typing import List
 
 
 def buggy_versions() -> str:
-    return "MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions"
+    return 'MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions'
+
+
+def version(returns: str = 'RETURN v') -> str:
+    return 'MATCH (v:TracedVersion) ' + where_version('v') + ' ' + returns
 
 
 def library_elements(label: str) -> str:
@@ -187,7 +191,7 @@ def edges_in_version(
         source_labels: str = '',
         edge_labels: str = '',
         target_labels: str = '',
-        return_ids: bool = True) -> str:
+        return_nodes: bool = False) -> str:
 
     if source_labels != '':
         source_labels = ':' + source_labels
@@ -196,10 +200,10 @@ def edges_in_version(
     if target_labels != '':
         target_labels = ':' + target_labels
 
-    if return_ids:
-        return_query = 'RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target, r AS edges'
+    if return_nodes:
+        return_query = 'RETURN ID(r) AS index, ID(s) AS source, s AS source_node, ID(t) AS target, t AS target_node'
     else:
-        return_query = 'RETURN ID(r) AS index, s AS source, t AS target, r AS edges'
+        return_query = 'RETURN ID(r) AS index, ID(s) AS source, ID(t) AS target'
 
     is_in_version = 'WHERE ' + by_version('r') + ' AND ' + edges_no_dangling('s', 't')
     match_query = 'MATCH (s' + source_labels + ')-[r' + edge_labels + ']->(t' + target_labels + ') ' + is_in_version

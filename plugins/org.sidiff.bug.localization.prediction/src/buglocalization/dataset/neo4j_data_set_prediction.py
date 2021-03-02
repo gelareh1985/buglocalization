@@ -111,7 +111,9 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             print("Start Loading Locations...")
 
         self.model_nodes = self.dataset.model_node_embeddings
-        self.load_bug_report(self.dataset.meta_model.find_bug_location_by_container())
+        self.load_bug_report(self.dataset.meta_model.find_bug_location_by_container(),
+                             self.dataset.meta_model.filter_comments_newer_as_bugfix(),
+                             log_level)
 
         # Load location samples by type:
         for model_location_types in self.dataset.meta_model.get_bug_location_types():

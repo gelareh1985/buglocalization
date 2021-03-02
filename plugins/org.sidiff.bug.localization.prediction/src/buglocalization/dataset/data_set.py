@@ -19,6 +19,11 @@ class IDataSet:
     def __init__(self, is_negative: bool = False):
         self.bug_samples: List[IBugSample] = []
         self.is_negative: bool = is_negative
+        
+    def __getstate__(self):
+        # Return a copy for parallel multiprocessing:
+        state = dict(self.__dict__)
+        return state
 
     def __len__(self) -> int:
         return len(self.bug_samples)
@@ -33,10 +38,27 @@ class IDataSet:
 class IBugSample:
 
     def __init__(self, dataset: IDataSet, sample_id: str):
-        self.lock = CountingLock()
+        self.lock: Optional[CountingLock] = None
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
         self.location_samples: List[ILocationSample] = []
+        
+    def __getstate__(self):
+        # Return a copy for parallel multiprocessing:
+        self._lock().lock.acquire()
+        state = dict(self.__dict__)
+        self._lock().lock.release()
+        
+        # Locks can not be pickled:
+        if 'lock' in state:
+            state['lock'] = None
+        
+        return state
+        
+    def _lock(self):
+        if self.lock is None:
+            self.lock = CountingLock()
+        return self.lock
 
     def initialize(self, log_level: int = 0):
         """
@@ -46,7 +68,7 @@ class IBugSample:
             log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
         """
         # Only the first accessing thread will call initialize:
-        self.lock.count_up(lambda: self._initialize(log_level))
+        self._lock().count_up(lambda: self._initialize(log_level))
 
     def _initialize(self, log_level: int = 0):
         # TODO: To be implemented by clients
@@ -57,7 +79,7 @@ class IBugSample:
         Finally called to free memory for garbadge collections.
         """
         # Only the last accessing thread will call uninitialize:
-        self.lock.count_down(lambda: self._uninitialize())
+        self._lock().count_down(lambda: self._uninitialize())
 
     def _uninitialize(self):
         # TODO: To be implemented by clients
@@ -76,7 +98,24 @@ class IBugSample:
 class ILocationSample:
 
     def __init__(self) -> None:
-        self.lock = CountingLock()
+        self.lock: Optional[CountingLock] = None
+        
+    def __getstate__(self):
+        # Return a copy for parallel multiprocessing:
+        self._lock().lock.acquire()
+        state = dict(self.__dict__)
+        self._lock().lock.release()
+        
+        # Locks can not be pickled:
+        if 'lock' in state:
+            state['lock'] = None
+            
+        return state
+        
+    def _lock(self):
+        if self.lock is None:
+            self.lock = CountingLock()
+        return self.lock
 
     def initialize(self, bug_sample: IBugSample, log_level: int = 0):
         """
@@ -87,7 +126,7 @@ class ILocationSample:
             log_level (int, optional): 0-100 provide more detailed logging. Defaults to 0 for no logging.
         """
         # Only the first accessing thread will call initialize:
-        self.lock.count_up(lambda: self._initialize(bug_sample, log_level))
+        self._lock().count_up(lambda: self._initialize(bug_sample, log_level))
 
     def _initialize(self, bug_sample: IBugSample, log_level: int = 0):
         # TODO: To be implemented by clients
@@ -98,7 +137,7 @@ class ILocationSample:
         Finally called to free memory for garbadge collections.
         """
         # Only the last accessing thread will call uninitialize:
-        self.lock.count_down(lambda: self._uninitialize())
+        self._lock().count_down(lambda: self._uninitialize())
 
     def _uninitialize(self):
         # TODO: To be implemented by clients

@@ -73,15 +73,6 @@ class MetaModel:
         """
         raise NotImplementedError()
 
-    def find_bug_location_by_container(self) -> int:
-        """
-        Find container of bug location if the type is not in specified location.
-
-        Returns:
-            int: The maximal number of parents to be searched. Default to 2. 0 is off.
-        """
-        return 2
-
     def get_slicing_criterion(self, num_samples: List[int]) -> TypbasedGraphSlicing:
         """
 
@@ -92,3 +83,23 @@ class MetaModel:
             TypbasedGraphSlicing: Specifies the slicing of subgraph for embedding of model elements.
         """
         raise NotImplementedError()
+    
+    # # TODO: Create/Move to Training Configuration # #
+    
+    def find_bug_location_by_container(self) -> int:
+        """
+        Find container of bug location if the type is not in specified location.
+
+        Returns:
+            int: The maximal number of parents to be searched. Default to 2. 0 is off.
+        """
+        return 2
+    
+    def filter_comments_newer_as_bugfix(self) -> bool:
+        """
+        Filter out all bug report comments that were written after the bug fix was commited.
+
+        Returns:
+            int: True to enable the filter. Default to False.
+        """
+        return True
