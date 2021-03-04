@@ -7,4 +7,4 @@ conda install -c anaconda cudatoolkit=10.1
 pip install tensorflow==2.3
 pip install stellargraph
 conda install nltk
-conda install -c conda-forge py2neo
+pip install py2neo

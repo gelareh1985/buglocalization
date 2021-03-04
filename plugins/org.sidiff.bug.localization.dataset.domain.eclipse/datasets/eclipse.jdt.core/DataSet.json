@@ -1,0 +1,7 @@
+{
+  "name": "eclipse.jdt.core",
+  "repositoryHost": "https://git.eclipse.org",
+  "repositoryPath": "/r/jdt/eclipse.jdt.core.git",
+  "bugtrackerHost": "https://bugs.eclipse.org",
+  "bugtrackerProducts": ["JDT", "Platform"]
+}
