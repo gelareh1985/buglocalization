@@ -6,7 +6,9 @@ from typing import List
 
 
 def buggy_versions() -> str:
-    return 'MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e) RETURN DISTINCT b.__initial__version__ AS versions'
+    match = 'MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e)'
+    returns = ' RETURN DISTINCT b.__initial__version__ AS versions ORDER BY versions'
+    return match + returns
 
 
 def version(returns: str = 'RETURN v') -> str:

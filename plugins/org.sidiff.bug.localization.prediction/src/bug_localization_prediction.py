@@ -19,6 +19,7 @@ class BugLocalizationPredictionConfiguration:
                  bug_localization_model_path: str,
                  num_samples: List[int],  # TODO: Get this from trained model!
                  batch_size: int = 50,
+                 prediction_worker: int = 0,
                  sample_generator_workers: int = 1,
                  sample_generator_workers_multiprocessing: bool = False,
                  sample_max_queue_size: int = 10):
@@ -43,6 +44,8 @@ class BugLocalizationPredictionConfiguration:
         # DL Model Prediction Configuration:
         self.num_samples: List[int] = num_samples  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
         self.batch_size: int = batch_size
+        
+        self.prediction_worker = prediction_worker
 
         self.sample_generator_workers: int = sample_generator_workers
         self.sample_generator_workers_multiprocessing: bool = sample_generator_workers_multiprocessing
@@ -54,8 +57,8 @@ class BugLocalizationPrediction:
     def predict(self,
                 sample_data: Union[IDataSet, IBugSample],
                 config: BugLocalizationPredictionConfiguration,
-                log_level=0,
-                peek_location_samples=0
+                sample_data_slice: slice = None,
+                log_level=0
                 ) -> Generator[Tuple[IBugSample, np.ndarray], None, None]:
         """
         Predicts the bug locations for a given set of bug samples.
@@ -88,14 +91,16 @@ class BugLocalizationPrediction:
             bug_samples = [cast(IBugSample, sample_data)]
         else:
             bug_samples = cast(IDataSet, sample_data).bug_samples
+            
+        if sample_data_slice is not None:
+            bug_samples = bug_samples[sample_data_slice]
 
         for bug_sample in bug_samples:
             print("Start Prediction ...")
             start_time_prediction = time()
 
             callbacks: List[keras.callbacks.Callback] = []
-            flow = prediction_generator.create_location_sample_generator(
-                "prediction", bug_sample, callbacks, peek_location_samples)
+            flow = prediction_generator.create_location_sample_generator("prediction", bug_sample, callbacks)
 
             prediction = model.predict(flow,
                                        callbacks=callbacks,

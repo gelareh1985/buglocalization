@@ -341,8 +341,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
 
     def create_location_sample_generator(self, name: str,
                                          bug_sample: IBugSample,
-                                         callbacks: List[keras.callbacks.Callback],
-                                         peek_location_samples: int = None) -> Sequence:
+                                         callbacks: List[keras.callbacks.Callback]) -> Sequence:
 
         flow = self.LocationSampleSequence(name,
                                            self.batch_size,
@@ -351,7 +350,6 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                                            bug_sample,
                                            callbacks,
                                            self.reshape_input,
-                                           peek_location_samples,
                                            self.log_level)
 
         return flow
@@ -365,17 +363,11 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                      bug_sample: IBugSample,
                      callbacks: List[keras.callbacks.Callback],
                      reshape_input: Callable = None,
-                     peek_location_samples: int = None,
                      log_level: int = 0):
 
             start_time = time()
             bug_sample.initialize()
             location_samples = bug_sample.location_samples
-
-            # Test only the first N location samples per bug sample
-            if peek_location_samples is not None:
-                print('WARNING: Prediction is set to use only the first ' + str(peek_location_samples) + 'samples.')
-                location_samples = location_samples[:min(peek_location_samples, len(location_samples))]
 
             print('Initialized location samples:', len(location_samples), 'in:', t(start_time))
             start_time = time()

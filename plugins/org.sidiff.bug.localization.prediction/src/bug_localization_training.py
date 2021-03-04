@@ -305,7 +305,7 @@ if __name__ == '__main__':
     batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
     shuffle = True  # Shuffle training and validation samples after each epoch?
     generator_workers = 4  # Number of threads that load/generate the batches in parallel.
-    multiprocessing = False  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
+    multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
     sample_prefetch_count = 8  # Preload some data for fast (GPU) processing
     log_level = 2  # Some console output for debugging...
 

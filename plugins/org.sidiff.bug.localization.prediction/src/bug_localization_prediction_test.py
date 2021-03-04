@@ -22,9 +22,10 @@ if gpus:
 import datetime
 import os
 from json import dump
+from multiprocessing import Process
 from pathlib import Path
 from time import time
-from typing import Dict, List, Optional, cast
+from typing import Dict, List, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -32,6 +33,7 @@ import pandas as pd
 from bug_localization_prediction import (
     BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
 from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset.data_set import IBugSample, IDataSet
 from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 from buglocalization.dataset.neo4j_data_set_prediction import (
     BugSamplePredictionNeo4j, DataSetPredictionNeo4j)
@@ -52,7 +54,6 @@ evaluation_results_path: str = str(plugin_directory) + "/evaluation/eclipse.jdt.
 
 # For debugging:
 log_level: int = 2  # 0-100
-peek_location_samples: Optional[int] = None  # Test only the first N location samples per bug sample; or None
 
 # Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(
@@ -64,6 +65,8 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
     num_samples=[20, 10],
     batch_size=100,
+
+    prediction_worker=2,
 
     sample_generator_workers=4,
     sample_generator_workers_multiprocessing=False,
@@ -131,6 +134,7 @@ class BugLocalizationPredictionTest:
     def record_evaluation_results(
             self, path: str, bug_sample: BugSamplePredictionNeo4j, prediction: np.ndarray, prediction_runtime: float, sort: bool = True):
         dataset: DataSetPredictionNeo4j = bug_sample.dataset
+        meta_model = dataset.meta_model
         query_database_version_parameter = {'db_version': bug_sample.db_version}
 
         # Tables:
@@ -294,8 +298,52 @@ class BugLocalizationPredictionTest:
         with open(path + '/' + file_name_prefix + '_nodes.json', 'w') as outfile:
             dump(bug_location_graph, outfile, indent=4, sort_keys=True)
 
+    def predict(self,
+                sample_data: Union[IDataSet, IBugSample],
+                prediction_configuration: BugLocalizationPredictionConfiguration,
+                samples_slice: slice = None,
+                log_level: int = 0):
+
+        # Initialize Bug Localization Prediction:
+        prediction = BugLocalizationPrediction()
+        prediction_generator = prediction.predict(sample_data, prediction_configuration, samples_slice, log_level)
+
+        start_time_prediction = time()
+        bug_sample_counter = 0
+
+        for bug_sample, bug_location_prediction in prediction_generator:
+            prediction_runtime = time() - start_time_prediction
+            bug_sample_counter += 1
+
+            if log_level >= 1:
+                print('Prediction:', bug_sample_counter)
+
+            # Write result log files:
+            self.record_evaluation_results(
+                evaluation_results_path,
+                cast(BugSamplePredictionNeo4j, bug_sample),
+                bug_location_prediction,
+                prediction_runtime,
+                sort=True)
+
+            start_time_prediction = time()
+
 
 if __name__ == '__main__':
+    
+    def dataset_slice(prediction_worker: int, bug_sample_count: int, dataset_slice_idx: int) -> slice:
+        dataset_slice_count = prediction_worker + 1  # worker plus main process
+        dataset_slice_size = int(bug_sample_count / dataset_slice_count)
+        
+        dataset_slice_start = dataset_slice_idx * dataset_slice_size
+            
+        if dataset_slice_idx == dataset_slice_count - 1:
+            dataset_slice_end = bug_sample_count  # last takes remainers
+        else:
+            dataset_slice_end = dataset_slice_start + dataset_slice_size
+            
+        dataset_slice = slice(dataset_slice_start, dataset_slice_end)
+        return dataset_slice
 
     # Modeling Language Meta-Model Configuration:
     meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
@@ -303,28 +351,27 @@ if __name__ == '__main__':
 
     # Test Dataset Containing Bug Samples:
     dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, log_level=log_level)
+    bug_sample_count = len(dataset.bug_samples)
 
-    # Initialize Bug Localization Prediction:
+    # Multiprocesing?
+    processes: List[Process] = []
+    prediction_worker = prediction_configuration.prediction_worker
+    
+    for dataset_slice_idx in range(1, prediction_worker + 1):  # main process #0 worker #1,...
+        prediction_test = BugLocalizationPredictionTest()
+        dataset_slice_by_idx = dataset_slice(prediction_worker, bug_sample_count, dataset_slice_idx)
+        prediction_process = Process(target=prediction_test.predict, args=(dataset, prediction_configuration, dataset_slice_by_idx, log_level))
+        processes.append(prediction_process)
+        prediction_process.start()
+                
+    # Main process:
     prediction_test = BugLocalizationPredictionTest()
-    prediction = BugLocalizationPrediction()
-    prediction_generator = prediction.predict(dataset, prediction_configuration, log_level, peek_location_samples)
-
-    start_time_prediction = time()
-    bug_sample_counter = 0
-
-    for bug_sample, bug_location_prediction in prediction_generator:
-        prediction_runtime = time() - start_time_prediction
-        bug_sample_counter += 1
-
-        if log_level >= 1:
-            print('Prediction:', bug_sample_counter)
-
-        # Write result log files:
-        prediction_test.record_evaluation_results(
-            evaluation_results_path,
-            cast(BugSamplePredictionNeo4j, bug_sample),
-            bug_location_prediction,
-            prediction_runtime,
-            sort=True)
-
-        start_time_prediction = time()
+    dataset_slice_by_idx = dataset_slice(prediction_worker, bug_sample_count, 0)
+    prediction_test.predict(dataset, prediction_configuration, dataset_slice_by_idx, log_level)
+    
+    # Wait for workers:
+    for process in processes:
+        process.join()
+        
+    print("Prediction Test Finished!")
+        
