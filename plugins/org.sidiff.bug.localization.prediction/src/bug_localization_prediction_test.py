@@ -199,7 +199,8 @@ class BugLocalizationPredictionTest:
         prediction_results = prediction_results.join(meta_type_and_model_element_id)
 
         # Sort predictions by probability:
-        prediction_results.sort_values(by=prediction_col, ascending=False, inplace=True)
+        if sort:
+            prediction_results.sort_values(by=prediction_col, ascending=False, inplace=True)
 
         # Save table:
         prediction_results.to_csv(path + '/' + file_name_prefix + '_prediction.csv', sep=';')
