@@ -50,7 +50,7 @@ from tensorflow.keras.utils import Sequence, plot_model
 # negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"  # noqa: E501
 
 # NOTE: Paths should not be too long, causes error (on Windows)!
-plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.parent
+plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
 model_training_save_dir = str(plugin_directory) + '/training/trained_model_' + \
     datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '/'
 model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 
     # GraphSAGE Settings:
     num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
-    layer_sizes = [20, 20]  # Size of GraphSAGE hidden layers
+    layer_sizes = [300, 300]  # Size of GraphSAGE hidden layers
 
     assert len(num_samples) == len(layer_sizes), "The number of neighbor node samples need to be specified per GraphSAGE layer!"
 

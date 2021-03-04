@@ -118,6 +118,8 @@ class BugLocalizationPredictionTest:
     - Class/Interface/DataType/Enumeration [1..*]: The expected bug locations on the classifier level
     - Model/Package/Operation/Property: The originally expected bug locations that are not on the classifier level.
     """
+    def __init__(self, evaluation_results_path: str) -> None:
+        self.evaluation_results_path: str = evaluation_results_path
 
     def get_file_name(self, bug_sample: BugSamplePredictionNeo4j):
         dataset: DataSetPredictionNeo4j = bug_sample.dataset
@@ -320,7 +322,7 @@ class BugLocalizationPredictionTest:
 
             # Write result log files:
             self.record_evaluation_results(
-                evaluation_results_path,
+                self.evaluation_results_path,
                 cast(BugSamplePredictionNeo4j, bug_sample),
                 bug_location_prediction,
                 prediction_runtime,
@@ -352,20 +354,23 @@ if __name__ == '__main__':
     # Test Dataset Containing Bug Samples:
     dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, log_level=log_level)
     bug_sample_count = len(dataset.bug_samples)
+    
+    evaluation_results_path_slices = evaluation_results_path
+    print("Prediction Results:", evaluation_results_path_slices)
 
     # Multiprocesing?
     processes: List[Process] = []
     prediction_worker = prediction_configuration.prediction_worker
     
     for dataset_slice_idx in range(1, prediction_worker + 1):  # main process #0 worker #1,...
-        prediction_test = BugLocalizationPredictionTest()
+        prediction_test = BugLocalizationPredictionTest(evaluation_results_path_slices)
         dataset_slice_by_idx = dataset_slice(prediction_worker, bug_sample_count, dataset_slice_idx)
         prediction_process = Process(target=prediction_test.predict, args=(dataset, prediction_configuration, dataset_slice_by_idx, log_level))
         processes.append(prediction_process)
         prediction_process.start()
                 
     # Main process:
-    prediction_test = BugLocalizationPredictionTest()
+    prediction_test = BugLocalizationPredictionTest(evaluation_results_path_slices)
     dataset_slice_by_idx = dataset_slice(prediction_worker, bug_sample_count, 0)
     prediction_test.predict(dataset, prediction_configuration, dataset_slice_by_idx, log_level)
     
