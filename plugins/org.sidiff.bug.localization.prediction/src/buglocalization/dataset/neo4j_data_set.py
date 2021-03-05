@@ -372,9 +372,9 @@ class BugSampleNeo4j(IBugSample):
         # Filter by given node IDs?
         if to_be_embedded_node_ids is not None:
             query_nodes_in_version_parameter['node_ids'] = to_be_embedded_node_ids
-            query_nodes_in_version = query.nodes_by_type_in_version(meta_type_labels, True)
+            query_nodes_in_version = query.nodes_by_types_in_version(meta_type_labels, True)
         else:
-            query_nodes_in_version = query.nodes_by_type_in_version(meta_type_labels, False)
+            query_nodes_in_version = query.nodes_by_types_in_version(meta_type_labels, False)
         
         nodes_in_version = self.run_query_by_version(query_nodes_in_version, query_nodes_in_version_parameter)
         

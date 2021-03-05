@@ -118,7 +118,7 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
         # Load location samples by type:
         for model_location_types in self.dataset.meta_model.get_bug_location_types():
             model_library_nodes_by_type = self.dataset.model_library_nodes[model_location_types]
-            model_locations = self.run_query_by_version(query.node_ids_in_version(model_location_types))
+            model_locations = self.run_query_by_version(query.nodes_in_version(model_location_types))
 
             for model_location in model_locations['nodes']:
                 if model_location not in model_library_nodes_by_type:

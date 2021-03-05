@@ -64,7 +64,7 @@ def path(edge_properties: str, start_variable: str, k=2, return_query: str = Non
     """
     Args:
         edge_properties (str): The properties on the edges to be matched. Noted nameA:valueX, nameb:valueY,...
-        start_variable (str): 'a' means traverses outgoing edges, 'b' means traverses incoming edges 
+        start_variable (str): 'a' means traverses outgoing edges, 'b' means traverses incoming edges
         k (int, optional): The maximum distance from the start node. Defaults to 2.
         return_query (str, optional): Custom return statement. Defaults to None.
 
@@ -82,9 +82,77 @@ def path(edge_properties: str, start_variable: str, k=2, return_query: str = Non
     return input_nodes + ' MATCH path=(a)-[*0..' + str(k) + ' {' + edge_properties + '}]->(b) ' + path_filter
 
 
+def subgraph_k(k: int, node_id: int, labels_mask: List[str] = None, labels_blacklist: List[str] = None, undirected: bool = False) -> str:
+    """
+    Args:
+        k (int): Hops from the started node (traversed edges).
+        node_id (int): The start node ID
+        labels_mask (str, optional): Finally, filters the subgraph by the given label. Defaults to None.
+        labels_blacklist (str, optional): Node labels that should not be on any path.
+        undirected (bool): True if no relationship direction should be used; False to follow only outgoing relationships.
+
+    Returns:
+        str: The subgraph nodes, without the start node.
+    """
+    dircetion = '' if undirected else '>'
+    query = 'MATCH p0=(k0)-[e0]-' + dircetion + '(k1) WHERE ID(k0) = ' + str(node_id)
+    query += ' AND ' + by_version_path('k0', 'e0', 'k1')
+    if labels_blacklist is not None:
+        query += ' AND NOT ' + label_match(labels_blacklist, 'k1')
+    query += ' WITH k1, p0'
+
+    for distance in range(1, k):
+        current_path = 'p' + str(distance)
+        current_node = 'k' + str(distance)
+        current_edge = 'e' + str(distance) 
+        next_node = 'k' + str(distance + 1)
+        
+        query += ' MATCH ' + current_path + '=(' + current_node + ')-[' + current_edge + ']-' + dircetion + '(' + next_node + ')'
+        query += ' WHERE ' + by_version_path(current_node, current_edge, next_node) 
+        if labels_blacklist is not None:
+            query += ' AND NOT ' + label_match(labels_blacklist, next_node)
+        query += ' WITH ' + next_node
+        
+        for paths in range(0, distance + 1):
+            query += ', p' + str(paths)
+
+    query += ' WITH NODES(p0)'
+
+    for distance in range(1, k):
+        query += ' + NODES(p' + str(distance) + ')'
+
+    if labels_mask is not None:
+        # Filter by label:
+        query += ' AS nodes UNWIND nodes AS n WITH n WHERE'
+        query += label_match(labels_mask, 'n') 
+        query += ' RETURN DISTINCT n AS nodes'
+    else:
+        query += ' RETURN DISTINCT nodes'
+        
+    return query
+
+
+def label_match(labels: List[str], variable: str):
+    query = ''
+    
+    if labels:
+        query += '('
+        for label_idx in range(len(labels)):
+            if (label_idx > 0):
+                query += ' OR'
+            query += ' "' + labels[label_idx] + '" IN LABELS(' + variable + ')'
+        query += ')'
+        
+    return query
+
+
 def edges_no_dangling(source_variable: str, target_variable: str) -> str:
     # TODO: We might remove this check for performance improvement!?
     return by_version(source_variable) + ' AND ' + by_version(target_variable)
+
+
+def by_version_path(variableA: str, edge: str, variableB: str) -> str:
+    return by_version(variableA) + ' AND ' + by_version(edge) + ' AND ' + by_version(variableB)
 
 
 def by_version(variable: str) -> str:
@@ -156,21 +224,20 @@ def nodes_by_type(labels: str) -> str:
     return 'MATCH (n:' + labels + ') RETURN ID(n) AS index, n as nodes'
 
 
-def node_ids_in_version(labels: str) -> str:
+def nodes_in_version(labels: str = '', model_element_id: str = '') -> str:
     # $db_version: int
-    return 'MATCH (n:' + labels + ') WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+    if labels != '':
+        labels = ':' + labels
+    if model_element_id != '':
+        model_element_id = ' { __model__element__id__: "' + model_element_id + '"}'
+    return 'MATCH (n' + labels + model_element_id + ') WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
 
 
-def nodes_in_version(labels: str) -> str:
-    # $db_version: int
-    return 'MATCH (n:' + labels + ') ' + 'WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
-
-
-def nodes_by_type_in_version(labels: List[str], by_node_id: bool) -> str:
+def nodes_by_types_in_version(labels: List[str], by_node_id: bool) -> str:
     # $db_version: int
     match = ''
     returns = ' RETURN ID(n) AS index, n AS nodes'
-    
+
     for label_idx in range(len(labels)):
         if label_idx > 0:
             match += returns + ' UNION '
@@ -178,7 +245,7 @@ def nodes_by_type_in_version(labels: List[str], by_node_id: bool) -> str:
         match += where_version('n')
         if by_node_id:
             match += ' AND ID(n) IN $node_ids'
-            
+
     return match + returns
 
 

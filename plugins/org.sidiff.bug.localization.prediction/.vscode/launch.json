@@ -21,6 +21,14 @@
             "justMyCode": false,
         },
         {
+            "name": "Bug Localization - Evaluation",
+            "type": "python",
+            "request": "launch",
+            "program": "src/evaluation_location_neighbours.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",
