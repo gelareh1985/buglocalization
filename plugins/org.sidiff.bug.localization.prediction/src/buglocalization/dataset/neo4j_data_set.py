@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import numpy as np
 import pandas as pd
 from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.dataset.data_set import (IBugSample, IDataSet,
                                               ILocationSample)
 from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
@@ -134,9 +135,6 @@ class DataSetNeo4j(IDataSet):
 
         if len(result) > 0:
             return result.iloc[0, 0]
-
-    def get_label(self, node: Node) -> str:
-        return ':'.join(node.labels)
 
 
 class BugSampleNeo4j(IBugSample):
@@ -314,7 +312,7 @@ class BugSampleNeo4j(IBugSample):
         for edge_idx, edge in bug_location_edges.iterrows():
             # location edges point at model elements:
             bug_location: Node = edge['target_node']
-            bug_locations.add((bug_location.identity, self.dataset.get_label(bug_location)))
+            bug_locations.add((bug_location.identity, query_util.get_label(bug_location)))
 
         # Find container of bug location if the type is not in specified location:
         if locate_by_container > 0:
@@ -327,7 +325,6 @@ class BugSampleNeo4j(IBugSample):
         bug_location_types: Set[str] = self.dataset.meta_model.get_bug_location_types()
 
         query_parent_node = query.path(query.edge_containment(True), 'b', k=2, return_query='RETURN DISTINCT a AS parents')
-        get_label = self.dataset.get_label
         query_parent_node_parameter: Dict[str, List[int]] = {'node_ids': []}
 
         for model_location, bug_location_type in bug_locations:
@@ -340,8 +337,8 @@ class BugSampleNeo4j(IBugSample):
 
                 if not parent_nodes.empty:
                     for parent_node in parent_nodes['parents']:
-                        if get_label(parent_node) in bug_location_types:
-                            bug_locations_by_container.add((parent_node.identity, get_label(parent_node)))
+                        if query_util.get_label(parent_node) in bug_location_types:
+                            bug_locations_by_container.add((parent_node.identity, query_util.get_label(parent_node)))
                             break
                 else:
                     print("WARNING: No parent found for node ID", model_location)

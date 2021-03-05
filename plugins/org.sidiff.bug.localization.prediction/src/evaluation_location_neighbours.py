@@ -1,52 +1,12 @@
 import os
 from pathlib import Path
-from typing import Generator, Tuple
-
-import pandas as pd
 from py2neo import Graph
 
 import buglocalization.dataset.neo4j_queries as query
+from buglocalization.dataset import neo4j_queries_util as query_util
+from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
-
-
-def load_evaluation_results(path: str) -> Generator[Tuple[str, pd.DataFrame, str, pd.DataFrame], None, None]:
-    for filename in os.listdir(path):
-        if filename.endswith("_info.csv"):
-            evaluation_filename = filename[:filename.rfind("_")]
-
-            tbl_info_file = evaluation_filename + "_info.csv"
-            tbl_info_path = path + tbl_info_file
-            tbl_info = pd.read_csv(tbl_info_path, sep=';', header=0)
-            
-            tbl_predicted_file = evaluation_filename + "_prediction.csv"
-            tbl_predicted_path = path + tbl_predicted_file
-            tbl_predicted = pd.read_csv(tbl_predicted_path, sep=';', header=0)
-
-            yield tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted
-
-
-def get_expected_locations(tbl_predicted_data: pd.DataFrame) -> pd.DataFrame:
-    return tbl_predicted_data[tbl_predicted_data.IsLocation == 1].copy()
-
-
-def get_neo4j_node_id(graph: Graph, model_element_id: str, db_version: int) -> int:
-    """
-    Args:
-        model_element_id (str): The XMI-ID of the model element.
-        db_version (int): The version number in the database.
-
-    Returns:
-        (int): The resolved node ID in the database.
-    """
-    db_version_parrameter = {'db_version': db_version}
-    model_element = graph.run(query.nodes_in_version(model_element_id=model_element_id), db_version_parrameter).to_data_frame()
-
-    assert len(model_element.index) == 1, 'ID not unique in version.'
-    neo4j_id = model_element.nodes.iloc[0].identity
-
-    return neo4j_id
-
 
 if __name__ == '__main__':
     
@@ -74,10 +34,10 @@ if __name__ == '__main__':
     # Bug location garph in Neo4j:
     buglocation_graph = Graph(host="localhost", port=7687, user="neo4j", password="password")
 
-    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in load_evaluation_results(evaluation_results_path):
+    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in eval_util.load_evaluation_results(evaluation_results_path):
         db_version = int(tbl_info.ModelVersionNeo4j[0])
         db_version_parrameter = {'db_version': db_version}
-        expected_locations = get_expected_locations(tbl_predicted)
+        expected_locations = eval_util.get_expected_locations(tbl_predicted)
         subgraph_model_element_ids = set()
 
         for idx_position, expected_location in expected_locations.iterrows():
@@ -87,7 +47,7 @@ if __name__ == '__main__':
             if MATCH_MODEL_ELEMENTS_BY_NEO4J_ID:
                 neo4j_id = neo4j_id_stored
             else:
-                neo4j_id = get_neo4j_node_id(buglocation_graph, model_element_id, db_version)
+                neo4j_id = query_util.get_neo4j_node_id(buglocation_graph, model_element_id, db_version)
 
                 if (neo4j_id_stored != neo4j_id):
                     print("WARNING: Neo4j node ID chenged.")
