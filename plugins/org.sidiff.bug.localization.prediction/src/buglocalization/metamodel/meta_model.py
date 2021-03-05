@@ -43,7 +43,25 @@ class NodeSelfEmbedding:
 class MetaModel:
     
     def get_bug_report_node_types(self) -> List[str]:
+        """
+        Returns:
+            List[str]: Types of nodes that describe the bug report graph.
+        """
         return ['TracedBugReport', 'BugReportComment']
+    
+    def get_system_model_types(self) -> List[str]:
+        """
+        Returns:
+            List[str]: All type in the SystemModel (model view wrapper).
+        """
+        return ['TracedBugReport', 'BugReportComment', 'SystemModel', 'TracedVersion', 'View' 'Change']
+    
+    def get_system_model_connection_types(self) -> List[str]:
+        """
+        Returns:
+            List[str]: Nodes that connect the SystemModel (model view wrapper) with the actual model.
+        """
+        return ['Change']
 
     def get_types(self) -> List[str]:
         """
