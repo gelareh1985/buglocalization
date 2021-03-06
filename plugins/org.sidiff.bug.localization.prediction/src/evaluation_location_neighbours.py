@@ -8,10 +8,11 @@ from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
 
+
 if __name__ == '__main__':
     
     # Hops from the expected locations:
-    K_VALUE = 2
+    K_NEIGHBOURS = 2
     UNDIRECTED = True
     
     # Match model elements by Neo4j ID or by model element ID and version?
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
     evaluation_results_with_subgraphs_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder
-    evaluation_results_with_subgraphs_path += "_k" + str(K_VALUE)
+    evaluation_results_with_subgraphs_path += "_k" + str(K_NEIGHBOURS)
     evaluation_results_with_subgraphs_path += '_undirected' if UNDIRECTED else '_directed'
     evaluation_results_with_subgraphs_path += "/"
     Path(evaluation_results_with_subgraphs_path).mkdir(parents=True, exist_ok=True)
@@ -36,7 +37,6 @@ if __name__ == '__main__':
 
     for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in eval_util.load_evaluation_results(evaluation_results_path):
         db_version = int(tbl_info.ModelVersionNeo4j[0])
-        db_version_parrameter = {'db_version': db_version}
         expected_locations = eval_util.get_expected_locations(tbl_predicted)
         subgraph_model_element_ids = set()
 
@@ -53,12 +53,7 @@ if __name__ == '__main__':
                     print("WARNING: Neo4j node ID chenged.")
 
             labels_mask = list(meta_model.get_bug_location_types())
-            labels_blacklist = meta_model.get_system_model_connection_types()
-            subgraph_query = query.subgraph_k(k=K_VALUE, node_id=neo4j_id, 
-                                              labels_mask=labels_mask, 
-                                              labels_blacklist=labels_blacklist, 
-                                              undirected=UNDIRECTED)
-            subgraph = buglocation_graph.run(subgraph_query, db_version_parrameter).to_data_frame()
+            subgraph = query_util.subgraph_k(buglocation_graph, neo4j_id, db_version, K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)
 
             for idx, subgraph_node in subgraph.iterrows():
                 neigbour_model_element_id = subgraph_node.nodes['__model__element__id__']

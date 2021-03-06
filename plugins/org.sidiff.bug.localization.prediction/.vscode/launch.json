@@ -37,6 +37,14 @@
             "justMyCode": false,
         },
         {
+            "name": "Bug Localization - Evaluation Ranking Subgraphs",
+            "type": "python",
+            "request": "launch",
+            "program": "src/evaluation_ranking_subgraph.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",
@@ -52,5 +60,6 @@
             "console": "integratedTerminal",
             "justMyCode": false,
         },
+        
     ]
 }

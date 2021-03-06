@@ -121,14 +121,13 @@ def subgraph_k(k: int, node_id: int, labels_mask: List[str] = None, labels_black
     for distance in range(1, k):
         query += ' + NODES(p' + str(distance) + ')'
 
+    query += ' AS nodes UNWIND nodes AS n'
+    
+    # Filter by label:
     if labels_mask is not None:
-        # Filter by label:
-        query += ' AS nodes UNWIND nodes AS n WITH n WHERE'
-        query += label_match(labels_mask, 'n') 
-        query += ' RETURN DISTINCT n AS nodes'
-    else:
-        query += ' RETURN DISTINCT nodes'
-        
+        query += ' WITH n WHERE ' + label_match(labels_mask, 'n') 
+    
+    query += ' RETURN DISTINCT ID(n) AS index, n AS nodes'
     return query
 
 
