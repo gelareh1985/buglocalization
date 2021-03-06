@@ -27,6 +27,9 @@ def is_expected_subgraph_location(top_k_ranking: pd.DataFrame, meta_model: MetaM
 
 
 if __name__ == '__main__':
+    
+    # Size of the diagram:
+    DIAGRAM_SIZE = 60
 
     # Compute for top k ranking positions:
     TOP_RANKING_K = 35
@@ -34,9 +37,6 @@ if __name__ == '__main__':
     # Hops from the expected locations:
     K_NEIGHBOURS = 2
     UNDIRECTED = True
-
-    # Size of the diagram:
-    DIAGRAM_SIZE = 60
 
     # Evaluation result tables:
     evaluation_results_folder = "eclipse.jdt.core_evaluation_2021-03-04_02-06-04"
