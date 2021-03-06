@@ -9,12 +9,15 @@ import numpy as np
 from IPython.display import display
 
 tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_2021-02-27_15-39-33/"
+#tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_2021-03-04_02-06-04_train90_test10_layer300\eclipse.jdt.core_2021-03-04_02-06-04/"
+#tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_evaluation_2021-03-04_02-06-04_k2_undirected/"
+#tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_evaluation_2021-03-04_02-06-04_k2_directed/"
 
 def load_evaluation_results(path):
     
     tables_predicted=[]
     tables_info=[]
-    
+    table_names=[]
     for filename in os.listdir(path):
         
         if filename.endswith("_prediction.csv"):
@@ -22,6 +25,7 @@ def load_evaluation_results(path):
             tbl_predicted_path = path + tbl_predicted_filename + ".csv"
             tbl_predicted_data=pd.read_csv(tbl_predicted_path,sep=';',header=0)
             tables_predicted.append(tbl_predicted_data)
+            table_names.append(filename)
             
         elif filename.endswith("_info.csv"): 
             tbl_info_filename = filename[:filename.rfind(".")]
@@ -29,7 +33,7 @@ def load_evaluation_results(path):
             tbl_info_data=pd.read_csv(tbl_info_path,sep=';',header=0)
             tables_info.append(tbl_info_data)
             
-    return tables_predicted, tables_info
+    return table_names, tables_predicted, tables_info
 
 def mean_reciprocal_rank(rs):
     """Score is reciprocal of the rank of the first relevant item
@@ -113,7 +117,7 @@ def ranking_precision_score(y_true, y_score, k=10):
     # Divide by min(n_pos, k) such that the best achievable score is always 1.0.
     return float(n_relevant) / min(n_pos, k)
 # *************************************************************************
-tables_predicted, tables_info=load_evaluation_results(tables_path)
+tblnames,tables_predicted, tables_info=load_evaluation_results(tables_path)
 
 for idx in range(len(tables_predicted)):
     display("prediction data: ",tables_predicted[idx])
@@ -124,24 +128,29 @@ list_mean_precision=[]
 list_mrr_rank_vals=[]
 list_labels_for_topk=[]
 list_scores_for_topk=[]
-p=0.90
-row_num=199
+p=0.80
+row_num=249
+table_no=0
+list_to_dropout=[]
 for table in tables_predicted:
     ######### Dataframe define size #########
     df1=table.loc[0:row_num]
     indx_bug_loc_0=df1.loc[df1.IsLocation==0].index.tolist()  # for mean reciprocal ranks
     indx_bug_loc_1=df1.loc[df1.IsLocation==1].index.tolist()
-
+    
+    tbls=df1.loc[df1["IsLocation"]==1].index.tolist()
+    if(len(tbls)==0):
+        list_to_dropout.append(table_no)
     df2=df1.copy()
     if(len(indx_bug_loc_1)==0 and df2.loc[indx_bug_loc_0[0],"Prediction"] > p):
         df2.loc[indx_bug_loc_0[0],"IsLocation"]=1
-       
+        
     list_mrr_rank_vals.append(df2["IsLocation"].values.tolist())
     ######### Dataframe for MAP: #########
     df3=df1.copy()
     df3=df3.loc[df3["Prediction"]>p]
     list_mean_precision.append(df3["Prediction"].mean()) 
-
+ 
     ######## Dataframe for TOPK: #########
     df4=df1.copy()
     list_true_topk=df4.loc[df4.Prediction > p].index.tolist()
@@ -150,19 +159,22 @@ for table in tables_predicted:
     list_labels_for_topk.append(lblst)
     scorlst=df4["Prediction"].values.tolist()
     list_scores_for_topk.append(scorlst)
-
-# *************************************************************************          
+    table_no=table_no+1
+# ************************************************************************* 
+print("number of tables to be ignored: ",len(list_to_dropout),'\n',list_to_dropout ) 
+for tbl_no in list_to_dropout:
+    print(tblnames[tbl_no])        
 df_MAP=pd.DataFrame(list_mean_precision, columns=["mean_precision"])
 display(df_MAP)
      
 map_val=df_MAP.mean() 
 print("MAP: ", map_val)
-  
+   
 mrr_val=mean_reciprocal_rank(list_mrr_rank_vals)
 print("MRR: ", mrr_val) 
 # rs = [[0, 0, 1], [0, 1, 0], [1, 0, 0]]
 # print(mean_reciprocal_rank(rs))
-  
+   
 listk=[1,5,10,15]
 topk_final_acc_list=[]
 p_atk_final_acc_list=[]
@@ -185,7 +197,7 @@ for k in listk:
     topk_final_acc_list.append(acc_k)
     acc_at_k=sum(list_p_atk)/len(list_p_atk) 
     p_atk_final_acc_list.append(acc_at_k)
-
+  
 i=0
 for acc in topk_final_acc_list:   
     print("Top k= ", listk[i], "(accuracy):",acc)
@@ -194,5 +206,5 @@ i=0
 for acc in p_atk_final_acc_list:
     print("Precision at k= (", listk[i], "), (accuracy):",acc)     
     i=i+1
-
+ 
 
