@@ -44,23 +44,28 @@ def edge_container(is_value: bool) -> str:
         return '__container__:false'
 
 
-def edges_to_parent_nodes(k=2) -> str:
-    return path(edge_containment(True), 'b', k)
+def edges_to_parent_nodes(k=2, return_query: str = None) -> str:
+    # $node_ids: List[int], $db_version
+    return path(edge_containment(True), 'b', k, return_query)
 
 
-def edges_to_child_nodes(k=2) -> str:
-    return path(edge_containment(True), 'a', k)
+def edges_to_child_nodes(k=2, return_query: str = None) -> str:
+    # $node_ids: List[int], $db_version
+    return path(edge_containment(True), 'a', k, return_query)
 
 
-def outgoing_cross_tree_edges(k=2) -> str:
-    return path(edge_containment(False) + ', ' + edge_container(False), 'a', k)
+def outgoing_cross_tree_edges(k=2, return_query: str = None) -> str:
+    # $node_ids: List[int], $db_version
+    return path(edge_containment(False) + ', ' + edge_container(False), 'a', k, return_query)
 
 
-def incoming_cross_tree_edges(k=1) -> str:
-    return path(edge_containment(False) + ', ' + edge_container(False), 'b', k)
+def incoming_cross_tree_edges(k=1, return_query: str = None) -> str:
+    # $node_ids: List[int], $db_version
+    return path(edge_containment(False) + ', ' + edge_container(False), 'b', k, return_query)
 
 
 def path(edge_properties: str, start_variable: str, k=2, return_query: str = None) -> str:
+    # $node_ids: List[int], $db_version
     """
     Args:
         edge_properties (str): The properties on the edges to be matched. Noted nameA:valueX, nameb:valueY,...
@@ -76,10 +81,30 @@ def path(edge_properties: str, start_variable: str, k=2, return_query: str = Non
     edge_path_in_version = 'UNWIND [edge IN relationships(path) WHERE ' + by_version('edge') + '] AS edge'
 
     if return_query is None:
-        return_query = 'RETURN DISTINCT ID(edge) AS index, ID(a) AS source, ID(b) as target'
+        return_query = 'RETURN DISTINCT ID(edge) AS index, ID(startNode(edge)) AS source, ID(endNode(edge)) as target'
 
     path_filter = 'WHERE ' + node_path_in_version + ' WITH DISTINCT a, b, path ' + edge_path_in_version + ' ' + return_query
     return input_nodes + ' MATCH path=(a)-[*0..' + str(k) + ' {' + edge_properties + '}]->(b) ' + path_filter
+
+
+def path_nodes(path_query: str, return_query: str = None):
+    """
+    Args:
+        path_query (str): The path(...) query.
+
+    Returns:
+        [type]: The query wrapped to collect all distinct nodes.
+    """
+    query = 'CALL { '
+    query += path_query
+    query += ' } WITH collect(source) + collect(target) AS source_target UNWIND source_target AS nodes '
+    
+    if return_query is None:
+        query += 'RETURN DISTINCT ID(nodes) AS nodes'
+    else:
+        query += return_query
+    
+    return query
 
 
 def subgraph_k(k: int, node_id: int, labels_mask: List[str] = None, labels_blacklist: List[str] = None, undirected: bool = False) -> str:
@@ -279,5 +304,13 @@ def edges_in_version(
     return match_query + ' ' + return_query
 
 
-def edges_from_nodes_in_version() -> str:
-    return 'MATCH (a)-[e]->(b) WHERE ID(a) IN $node_ids AND ID(b) IN $node_ids AND ' + by_version('e') + ' RETURN ID(e) as index, ID(a) AS source, ID(b) AS target'  # noqa: E501
+def edges_from_nodes_in_version(return_query: str = None) -> str:
+    # $node_ids: List[int], $db_version: int
+    query = 'MATCH (a)-[e]->(b) WHERE ID(a) IN $node_ids AND ID(b) IN $node_ids AND ' + by_version('e')
+    
+    if return_query is None:
+        query += ' RETURN ID(e) as index, ID(a) AS source, ID(b) AS target'
+    else:
+        query += ' ' + return_query
+        
+    return query
