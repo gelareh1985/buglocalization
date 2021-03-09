@@ -45,6 +45,14 @@
             "justMyCode": false,
         },
         {
+            "name": "Bug Localization - Evaluation MAP",
+            "type": "python",
+            "request": "launch",
+            "program": "src/evaluation_map.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",
