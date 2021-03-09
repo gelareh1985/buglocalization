@@ -31,8 +31,8 @@ def load_all_evaluation_results(path: str) -> List[Tuple[str, pd.DataFrame, str,
     return list(load_evaluation_results(path))
 
 
-def load_all_evaluation_results_without_outlier(path: str, min_rank: int) -> List[Tuple[str, pd.DataFrame, str, pd.DataFrame]]:
-    evaluation_results_without_outlier = []
+def load_all_ranking_results(path: str, min_rank: int = None) -> List[pd.DataFrame]:
+    all_ranking_results = []
     outliers = 0
 
     for evaluation_result in load_evaluation_results(path):
@@ -40,13 +40,16 @@ def load_all_evaluation_results_without_outlier(path: str, min_rank: int) -> Lis
         expected_locations = get_expected_locations(tbl_predicted)
         first_expected_location = expected_locations.head(1)
 
-        if not first_expected_location.empty and int(first_expected_location.index.values[0]) <= min_rank:
-            evaluation_results_without_outlier.append(tbl_predicted)
+        if min_rank is not None:
+            if not first_expected_location.empty and int(first_expected_location.index.values[0]) <= min_rank:
+                all_ranking_results.append(tbl_predicted)
+            else:
+                outliers += 1
         else:
-            outliers += 1
+            all_ranking_results.append(tbl_predicted)
 
     print("Number of outliers:", outliers)
-    return evaluation_results_without_outlier
+    return all_ranking_results
        
             
 def get_expected_locations(tbl_predicted_data: pd.DataFrame) -> pd.DataFrame:
@@ -166,10 +169,10 @@ def top_k_ranking(evaluation_results: List[Tuple[str, pd.DataFrame, str, pd.Data
     return found_in_top_k, not_found_in_top_k
 
 
-def get_all_expected_locations(evaluation_results: List[Tuple[str, pd.DataFrame, str, pd.DataFrame]]) -> pd.DataFrame:
+def get_all_expected_locations(tbls_predicted: List[pd.DataFrame]) -> pd.DataFrame:
     all_expected_locations = []
 
-    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in evaluation_results:
+    for tbl_predicted in tbls_predicted:
         expected_locations = get_expected_locations(tbl_predicted)
         expected_locations['ranking'] = expected_locations.index
         
@@ -180,8 +183,8 @@ def get_all_expected_locations(evaluation_results: List[Tuple[str, pd.DataFrame,
     return all_expected_locations_df
 
 
-def get_ranking_outliers(evaluation_results: List[Tuple[str, pd.DataFrame, str, pd.DataFrame]]) -> Tuple[int, int, int]:
-    all_expected_locations_df = get_all_expected_locations(evaluation_results)
+def get_ranking_outliers(tbls_predicted: List[pd.DataFrame]) -> Tuple[int, int, int]:
+    all_expected_locations_df = get_all_expected_locations(tbls_predicted)
     
     median = box_plot_median(all_expected_locations_df)
     upper_quantile_q3 = box_plot_upper_quantile_q3(all_expected_locations_df)
@@ -223,3 +226,17 @@ def calculate_mean_average_precision(tbls_predicted: List[pd.DataFrame]) -> floa
 
     mean_average_precision = average_precision_sum / float(n1_number_bug_reports)
     return mean_average_precision
+
+
+def calculate_mean_reciprocal_rank(tbls_predicted: List[pd.DataFrame]) -> float:
+    reciprocal_rank_sum = 0.0
+    
+    for tbl_predicted in tbls_predicted:
+        rank = get_expected_locations(tbl_predicted).index[0]
+        reciprocal_rank = 1.0 / float(rank + 1)  # we count the ranking from 0
+        reciprocal_rank_sum += reciprocal_rank
+    
+    n1_number_bug_reports = len(tbls_predicted)
+    mean_reciprocal_rank = reciprocal_rank_sum / float(n1_number_bug_reports)
+    return mean_reciprocal_rank
+    

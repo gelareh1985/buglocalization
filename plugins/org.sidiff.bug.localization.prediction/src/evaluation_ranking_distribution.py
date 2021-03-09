@@ -14,7 +14,7 @@ if __name__ == '__main__':
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
-    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path)
+    evaluation_results = eval_util.load_all_ranking_results(evaluation_results_path)
     all_expected_locations_df = eval_util.get_all_expected_locations(evaluation_results)
     print("Describe:\n", all_expected_locations_df.describe())
     
