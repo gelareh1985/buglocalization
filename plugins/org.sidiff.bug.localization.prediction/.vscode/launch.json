@@ -48,7 +48,7 @@
             "name": "Bug Localization - Evaluation Metrics",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluation_metrics.py",
+            "program": "src/evaluation_ranking_metrics.py",
             "console": "integratedTerminal",
             "justMyCode": false,
         },

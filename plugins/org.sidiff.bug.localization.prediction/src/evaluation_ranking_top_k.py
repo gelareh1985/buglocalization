@@ -53,15 +53,16 @@ if __name__ == '__main__':
             for diagram_size in diagram_neighbor_sizes:
                 print("Experiment: diagram size:", diagram_size)
 
-                found_in_top_k, not_found_in_top_k = eval_util.top_k_ranking(evaluation_results=evaluation_results,
-                                                                             meta_model=meta_model,
-                                                                             graph=buglocation_graph,
-                                                                             TOP_RANKING_K=top_k_value,
-                                                                             DIAGRAM_NEIGHBOR_SIZE=diagram_size,
-                                                                             SAVE_DIAGRAM=False,
-                                                                             diagram_save_path=evaluation_results_path,
-                                                                             K_NEIGHBOURS=k_neighbor,
-                                                                             UNDIRECTED=True)
+                found_in_top_k, not_found_in_top_k = eval_util.top_k_ranking_subgraph_location(
+                    evaluation_results=evaluation_results,
+                    meta_model=meta_model,
+                    graph=buglocation_graph,
+                    TOP_RANKING_K=top_k_value,
+                    DIAGRAM_NEIGHBOR_SIZE=diagram_size,
+                    SAVE_DIAGRAM=False,
+                    diagram_save_path=evaluation_results_path,
+                    K_NEIGHBOURS=k_neighbor,
+                    UNDIRECTED=True)
                 top_k_ranking_accuracy_result = eval_util.top_k_ranking_accuracy(found_in_top_k, not_found_in_top_k)
                 evaluation.at[diagram_size, top_k_value] = top_k_ranking_accuracy_result
 
