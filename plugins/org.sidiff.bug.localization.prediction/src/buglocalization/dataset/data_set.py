@@ -17,12 +17,15 @@ from stellargraph import StellarGraph  # type: ignore
 class IDataSet:
 
     def __init__(self, is_negative: bool = False):
+        self.lock = threading.Condition()
         self.bug_samples: List[IBugSample] = []
         self.is_negative: bool = is_negative
         
     def __getstate__(self):
         # Return a copy for parallel multiprocessing:
+        self.lock.acquire()
         state = dict(self.__dict__)
+        self.lock.release()
         return state
 
     def __len__(self) -> int:

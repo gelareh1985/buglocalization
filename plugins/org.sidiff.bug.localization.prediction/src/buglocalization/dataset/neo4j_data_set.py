@@ -86,7 +86,7 @@ class DataSetNeo4j(IDataSet):
         self.closeNeo4j()
 
         # Do not expose Ne4j connection (for multiprocessing) which is not pickable.
-        state = dict(self.__dict__)
+        state = super().__getstate__()
 
         # Check again if connection is actually "closed" for exposed state:
         if 'neo4j_graph' in state:
