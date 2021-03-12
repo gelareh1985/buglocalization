@@ -6,6 +6,7 @@ from __future__ import annotations
 import time
 from typing import Optional, Set, Tuple
 
+from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.dataset import neo4j_queries as query
 from buglocalization.dataset.data_set import IBugSample
 from buglocalization.dataset.neo4j_data_set import (BugSampleNeo4j,
@@ -64,7 +65,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
 
                         # Avoid intersections with positive sample:
                         if node_id not in positive_bug_locations_ids:
-                            bug_locations.add((node_id, self.dataset.get_label(random_node)))
+                            bug_locations.add((node_id, query_util.get_label(random_node)))
                         else:
                             print("INFO: Negative sample that overlaps with positive filtered: ", node_id)
 
