@@ -26,6 +26,11 @@ class IDataSet:
         self.lock.acquire()
         state = dict(self.__dict__)
         self.lock.release()
+        
+        # Locks can not be pickled:
+        if 'lock' in state:
+            state['lock'] = None
+            
         return state
 
     def __len__(self) -> int:

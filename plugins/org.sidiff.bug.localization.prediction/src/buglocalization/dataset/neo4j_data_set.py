@@ -82,8 +82,11 @@ class DataSetNeo4j(IDataSet):
             self.list_samples()
 
     def __getstate__(self):
+        
         # Close connection to allow multiprocessing i.e., each process needs its own connnection.
+        self.lock.acquire()
         self.closeNeo4j()
+        self.lock.release()
 
         # Do not expose Ne4j connection (for multiprocessing) which is not pickable.
         state = super().__getstate__()
@@ -91,7 +94,7 @@ class DataSetNeo4j(IDataSet):
         # Check again if connection is actually "closed" for exposed state:
         if 'neo4j_graph' in state:
             state['neo4j_graph'] = None
-
+            
         return state
 
     def connectNeo4j(self) -> Graph:
