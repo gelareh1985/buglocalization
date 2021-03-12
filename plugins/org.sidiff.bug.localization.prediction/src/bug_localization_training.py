@@ -95,10 +95,17 @@ class DataSetSplitter:
     def split(self, fraction: int) -> Tuple[List[IBugSample], List[IBugSample]]:
 
         # Split training and test data:
-        split_idx = len(self.bug_sample_sequence) // fraction
+        if fraction > 0:
+            split_idx = len(self.bug_sample_sequence) // fraction
+        else:
+            split_idx = len(self.bug_sample_sequence)  # only training data
 
         bug_samples_train = self.bug_sample_sequence[:split_idx]
-        bug_samples_eval = self.bug_sample_sequence[split_idx:]
+        
+        if split_idx < len(self.bug_sample_sequence):
+            bug_samples_eval = self.bug_sample_sequence[split_idx:]
+        else:
+            bug_samples_eval = []  # only training data
 
         return bug_samples_train, bug_samples_eval
 
@@ -115,7 +122,8 @@ class BugLocalizationAIModelBuilder:
                      feature_size: int,
                      checkpoint_dir: str,
                      dropout: float = 0.0,
-                     normalize="l2") -> keras.Model:
+                     normalize="l2",
+                     optimizer_learning_rate:float = 1e-3) -> keras.Model:
 
         print('Creating a new model')
         Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
@@ -140,7 +148,7 @@ class BugLocalizationAIModelBuilder:
         model = keras.Model(inputs=x_inp, outputs=prediction)
 
         model.compile(
-            optimizer=keras.optimizers.Adam(lr=1e-3),
+            optimizer=keras.optimizers.Adam(lr=optimizer_learning_rate),
             loss=keras.losses.binary_crossentropy,  # two-class classification problem
             metrics=["acc"],
         )
@@ -179,10 +187,10 @@ class BugLocalizationAIModelTrainer:
         self.callbacks.append(CSVLogger(checkpoint_dir + "model_history_log.csv", append=True))
         self.callbacks.append(self.BatchLogger())
 
-    def train(self, epochs: int, sample_generator: IBugSampleGenerator, log_level=0):
+    def train(self, epochs: int, sample_generator: IBugSampleGenerator, dataset_split_fraction: int = 2, log_level=0):
 
         # Initialize training data:
-        bug_samples_train, bug_samples_eval = dataset_splitter.split(2)
+        bug_samples_train, bug_samples_eval = dataset_splitter.split(dataset_split_fraction)
         train_flow = sample_generator.create_bug_sample_generator("training", bug_samples_train, self.callbacks)
         eval_flow = sample_generator.create_bug_sample_generator("evaluation", bug_samples_eval, self.callbacks)
 
@@ -303,6 +311,7 @@ if __name__ == '__main__':
     # Training Settings:
     epochs = 20  # Number of training epochs.
     batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
+    dataset_split_fraction = 2  # 2 => 50% training, 50% validation, -1 => 100% training data
     shuffle = True  # Shuffle training and validation samples after each epoch?
     generator_workers = 4  # Number of threads that load/generate the batches in parallel.
     multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
@@ -324,4 +333,4 @@ if __name__ == '__main__':
         sample_prefetch_count=sample_prefetch_count,
         use_multiprocessing=multiprocessing)
 
-    bug_localization_model_trainer.train(epochs, bug_localization_generator, log_level)
+    bug_localization_model_trainer.train(epochs, bug_localization_generator, dataset_split_fraction, log_level)
