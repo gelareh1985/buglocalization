@@ -19,7 +19,7 @@ def load_evaluation_results(path):
     for filename in os.listdir(path):
         
         #if filename.endswith("_topk.csv"):
-        if filename.endswith("_boxplot2.csv"):
+        if filename.endswith("_boxplot1.csv"):
         #if filename.endswith("_2.csv"):
             tbl_filename = filename[:filename.rfind(".")]
             tbl_path = path + tbl_filename + ".csv"
@@ -67,7 +67,8 @@ for table in tables:
         ax=df.plot(kind='line',color=color,title='MAP/MRR from 1st Box-Plot', linestyle='dashed', marker='o', markersize=10)
         ax.set(ylabel='Accuracy', xlabel = 'MAP/MRR')
         plt.show()
-
+    print('average MAP:',mrr_map['MeanAveragePrecision'].mean())
+    print('average MRR:',mrr_map['MeanReciprocalRank'].mean())
 #########################################################################################
 # 2nd Box_plot 
 #########################################################################################
