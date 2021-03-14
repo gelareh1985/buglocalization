@@ -19,7 +19,7 @@ if __name__ == '__main__':
     MATCH_MODEL_ELEMENTS_BY_NEO4J_ID = True
 
     # Evaluation result tables:
-    evaluation_results_folder = "eclipse.jdt.core_evaluation_2021-03-04_02-06-04"
+    evaluation_results_folder = "eclipse.jdt.core_evaluation_2021-03-14_03-01-12_lr-4"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     

@@ -61,5 +61,8 @@ def subgraph_k(
                                       undirected=undirected)
     db_version_parameter = {'db_version': db_version}
     subgraph = graph.run(subgraph_query, db_version_parameter).to_data_frame()
-    subgraph.set_index('index', inplace=True)
+    
+    if not subgraph.empty:
+        subgraph.set_index('index', inplace=True)
+        
     return subgraph

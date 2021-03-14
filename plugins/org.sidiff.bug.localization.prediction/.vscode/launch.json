@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Bug Localization - Prediction",
-            "type": "python",
-            "request": "launch",
-            "program": "src/bug_localization_prediction_test.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-        },
-        {
             "name": "Bug Localization - Training",
             "type": "python",
             "request": "launch",
             "program": "src/bug_localization_training.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
+            "name": "Bug Localization - Prediction",
+            "type": "python",
+            "request": "launch",
+            "program": "src/bug_localization_prediction.py",
             "console": "integratedTerminal",
             "justMyCode": false,
         },

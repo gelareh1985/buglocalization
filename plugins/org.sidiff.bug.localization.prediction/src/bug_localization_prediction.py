@@ -1,116 +1,127 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
-from time import time
-from typing import Generator, List, Tuple, Union, cast
 
-import numpy as np
-from tensorflow import keras
+# ===============================================================================
+# Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
+# ===============================================================================
+from typing import List
 
-from bug_localization_training import BugLocalizationAIModelBuilder
-from buglocalization.dataset.data_set import IBugSample, IDataSet
-from buglocalization.dataset.sample_generator import LocationSampleGenerator
-from buglocalization.utils.common_utils import t
+import tensorflow as tf
 
+from buglocalization.evaluation.evaluation_prediction_results import \
+    BugLocalizationPredictionTest
 
-class BugLocalizationPredictionConfiguration:
+# Only allocate needed memory needed by the application:
+gpus = tf.config.experimental.list_physical_devices('GPU')
 
-    def __init__(self,
-                 bug_localization_model_path: str,
-                 num_samples: List[int],  # TODO: Get this from trained model!
-                 batch_size: int = 50,
-                 prediction_worker: int = 0,
-                 sample_generator_workers: int = 1,
-                 sample_generator_workers_multiprocessing: bool = False,
-                 sample_max_queue_size: int = 10):
-        """
-        The configuration parameters for running the prediction.
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+# ===============================================================================
 
-        Args:
-            bug_localization_model_path (str): Path to the trained Keras bug localization prediction model.
-            num_samples (List[int]): Number of nodes to be sampled at each neigbor level starting from the bug report node
-                                     and the model element (possible bug location).
-            batch_size (int): The number of model element (possible bug location) per batch processed during the prediction.
-                              Defaults to 50.
-            sample_generator_workers (int): Number of workers for location sample generation. Defaults to 1.
-            sample_generator_workers_multiprocessing (bool): True will use multiple processes for each sample generator worker; 
-                                                             False will use thread. Defaults to False.
-            sample_max_queue_size (int): Size of batch queue during prediction. Defaults to 10
-        """
+from multiprocessing import Process
 
-        # Trained bug localization model:
-        self.bug_localization_model_path: str = bug_localization_model_path
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
+from buglocalization.dataset.neo4j_data_set_prediction import \
+    DataSetPredictionNeo4j
+from buglocalization.metamodel.meta_model_uml import create_uml_configuration
+from buglocalization.predictionmodel.bug_localization_model_prediction import \
+    BugLocalizationPredictionConfiguration
+from buglocalization.textembedding.word_to_vector_dictionary import \
+    WordToVectorDictionary
+from buglocalization.utils import common_utils
 
-        # DL Model Prediction Configuration:
-        self.num_samples: List[int] = num_samples  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
-        self.batch_size: int = batch_size
+# Evaluation Result Records:
+# NOTE: Paths should not be too long, causes error (on Windows)!
+project_folder = common_utils.get_project_folder()
+evaluation_results_base_path: str = project_folder + "/evaluation/eclipse.jdt.core"
+bug_localization_model_path = project_folder + "/training/trained_model_2021-02-24_20-37-42_train45_val45_test10" + "/"
+
+# Configuration for bug localization prediction computation:
+prediction_configuration = BugLocalizationPredictionConfiguration(
+
+    # Evaluation Result Records:
+    evaluation_results_base_path=evaluation_results_base_path,
+    
+    # Trained bug localization model:
+    bug_localization_model_path=bug_localization_model_path,
+
+    # DL Model Prediction Configuration:
+    # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
+    num_samples=[20, 10],
+    batch_size=100,
+
+    prediction_worker=2,
+
+    sample_generator_workers=4,
+    sample_generator_workers_multiprocessing=False,
+    sample_max_queue_size=8,
+    
+    # For debugging:
+    log_level=2  # 0-100
+)
+
+# Database connection:
+neo4j_configuration = Neo4jConfiguration(
+    neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
+    neo4j_port=7687,  # port of Neo4j bold port: 7687, 11003
+    neo4j_user="neo4j",
+    neo4j_password="password",
+)
+
+if __name__ == '__main__':
+    
+    def dataset_slice(prediction_worker: int, bug_sample_count: int, dataset_slice_idx: int) -> slice:
+        dataset_slice_count = prediction_worker + 1  # worker plus main process
+        dataset_slice_size = int(bug_sample_count / dataset_slice_count)
         
-        self.prediction_worker = prediction_worker
-
-        self.sample_generator_workers: int = sample_generator_workers
-        self.sample_generator_workers_multiprocessing: bool = sample_generator_workers_multiprocessing
-        self.sample_max_queue_size: int = sample_max_queue_size
-
-
-class BugLocalizationPrediction:
-
-    def predict(self,
-                sample_data: Union[IDataSet, IBugSample],
-                config: BugLocalizationPredictionConfiguration,
-                sample_data_slice: slice = None,
-                log_level=0
-                ) -> Generator[Tuple[IBugSample, np.ndarray], None, None]:
-        """
-        Predicts the bug locations for a given set of bug samples.
-
-        Args:
-            sample_data (Union[IDataSet, IBugSample]): The bug sample(s); given as data set or a single bug.
-            config (PredictionConfiguration): The configuration parameters for running the prediction.
-            log_level (int, optional): For debugging: Logging level 0-100. Defaults to 0.
-            peek_location_samples(int, optional): For debugging: Test only the first N location samples per bug sample. Default to None.
-
-        Yields:
-            Generator[Tuple[IBugSample, np.ndarry], None, None]: A bug sample and an array of prediction pairs (probability, node ID).
-        """
-        print("Start Evaluation ...")
-        start_time_evaluation = time()
-
-        model_builder = BugLocalizationAIModelBuilder()
-        model = model_builder.restore_model(config.bug_localization_model_path)
-
-        prediction_generator = LocationSampleGenerator(
-            batch_size=config.batch_size,
-            shuffle=False,
-            num_samples=config.num_samples,
-            log_level=log_level)
-
-        # Create the second input to the model for passing through the sample IDs to the output:
-        model = prediction_generator.create_prediction_model(model, True)
-
-        if isinstance(sample_data, IBugSample):
-            bug_samples = [cast(IBugSample, sample_data)]
-        else:
-            bug_samples = cast(IDataSet, sample_data).bug_samples
+        dataset_slice_start = dataset_slice_idx * dataset_slice_size
             
-        if sample_data_slice is not None:
-            bug_samples = bug_samples[sample_data_slice]
+        if dataset_slice_idx == dataset_slice_count - 1:
+            dataset_slice_end = bug_sample_count  # last takes remainers
+        else:
+            dataset_slice_end = dataset_slice_start + dataset_slice_size
+            
+        dataset_slice = slice(dataset_slice_start, dataset_slice_end)
+        return dataset_slice
 
-        for bug_sample in bug_samples:
-            print("Start Prediction ...")
-            start_time_prediction = time()
+    log_level = prediction_configuration.log_level
 
-            callbacks: List[keras.callbacks.Callback] = []
-            flow = prediction_generator.create_location_sample_generator("prediction", bug_sample, callbacks)
+    # Modeling Language Meta-Model Configuration:
+    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
+        WordToVectorDictionary(), prediction_configuration.num_samples)
 
-            prediction = model.predict(flow,
-                                       callbacks=callbacks,
-                                       workers=config.sample_generator_workers,
-                                       use_multiprocessing=config.sample_generator_workers_multiprocessing,
-                                       max_queue_size=config.sample_max_queue_size,
-                                       verbose=1 if log_level > 0 else 0)
+    # Test Dataset Containing Bug Samples:
+    dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, log_level=log_level)
+    bug_sample_count = len(dataset.bug_samples)
+    
+    evaluation_results_path_slices = prediction_configuration.evaluation_results_path
+    print("Prediction Results:", evaluation_results_path_slices)
 
-            print("Finished Prediction:", bug_sample.sample_id, "in", t(start_time_prediction) + "s")
-
-            yield bug_sample, prediction
-
-        print("Evaluation Finished:", t(start_time_evaluation))
+    # Multiprocesing?
+    processes: List[Process] = []
+    prediction_worker = prediction_configuration.prediction_worker
+    
+    for dataset_slice_idx in range(1, prediction_worker + 1):  # main process #0 worker #1,...
+        prediction_test = BugLocalizationPredictionTest(evaluation_results_path_slices)
+        dataset_slice_by_idx = dataset_slice(prediction_worker, bug_sample_count, dataset_slice_idx)
+        prediction_process = Process(target=prediction_test.predict, args=(dataset, prediction_configuration, dataset_slice_by_idx, log_level))
+        processes.append(prediction_process)
+        prediction_process.start()
+                
+    # Main process:
+    prediction_test = BugLocalizationPredictionTest(evaluation_results_path_slices)
+    dataset_slice_by_idx = dataset_slice(prediction_worker, bug_sample_count, 0)
+    prediction_test.predict(dataset, prediction_configuration, dataset_slice_by_idx, log_level)
+    
+    # Wait for workers:
+    for process in processes:
+        process.join()
+        
+    print("Prediction Test Finished!")
+        

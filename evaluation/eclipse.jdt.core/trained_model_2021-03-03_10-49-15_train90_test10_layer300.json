@@ -1,0 +1,27 @@
+{
+    "doc_description": "2021-03-03_10-49-15 JDT: Training Data: 90%, Validation Evaluation Data: 0%, Test Evaluation Data: 10%",
+    "optimizer_learning_rate": 0.001,
+    "trainig_epochs": 20,
+    "trainig_batch_size": 20,
+    "dataset_split_fraction": -1,
+    "dataset_shuffle": true,
+    "dataset_generator_workers": 4,
+    "dataset_multiprocessing": true,
+    "dataset_sample_prefetch_count": 8,
+    "log_level": 2,
+    "word_dictionary": {
+        "pretrained_dictionary_name": "GoogleNews-vectors-negative300.bin",
+        "pretrained_dictionary_normalized_name": "GoogleNews-vectors-gensim-normed300.bin",
+        "pretrained_dictionary_feature_size": 300
+    },
+    "graphsage_num_samples": [
+        20,
+        10
+    ],
+    "graphsage_layer_sizes": [
+        300,
+        300
+    ],
+    "graphsage_dropout": 0.0,
+    "graphsage_normalize": "l2"
+}

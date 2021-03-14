@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from threading import Semaphore
-from typing import Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from gensim.models import KeyedVectors
@@ -24,7 +24,7 @@ pretrained_dictionary_feature_size = 300
 
 
 class WordToVectorDictionary:
-
+    
     def dimension(self) -> int:
         return pretrained_dictionary_feature_size
 
@@ -38,6 +38,16 @@ class WordToVectorDictionary:
         model.vectors_norm = model.vectors
         word_vector_size = model.wv.vectors.shape[1]
         return model, word_vector_size
+    
+    def dump(self) -> dict:
+        dump_state: Dict[str, Any] = {}
+            
+        dump_state["pretrained_dictionary_path"] = pretrained_dictionary_path
+        dump_state["pretrained_dictionary_name"] = pretrained_dictionary_name
+        dump_state["pretrained_dictionary_normalized_name"] = pretrained_dictionary_normalized_name
+        dump_state["pretrained_dictionary_feature_size"] = pretrained_dictionary_feature_size
+
+        return dump_state
 
 
 def load_shared_dictionary():
@@ -61,7 +71,7 @@ def save_normalized_dictionary():
     model = KeyedVectors.load_word2vec_format(str(Path(pretrained_dictionary_path + "/" + pretrained_dictionary_name)), binary=True)
     model.init_sims(replace=True)
     model.save(str(Path(pretrained_dictionary_path + "/" + pretrained_dictionary_normalized_name)))
-
+    
 
 if __name__ == '__main__':
 

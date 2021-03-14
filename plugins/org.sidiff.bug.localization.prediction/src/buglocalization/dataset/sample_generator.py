@@ -406,7 +406,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                 print(self.flow.bug_sample.lock.count)
                 self.flow.bug_sample.uninitialize()
 
-        def create_batch(self, start_location_sample: int, training: bool = False) -> Tuple[np.ndarray, np.array]:
+        def create_batch(self, start_location_sample: int) -> Tuple[np.ndarray, np.array]:
 
             # Collect batch of location samples:
             if self.log_level >= 100:
