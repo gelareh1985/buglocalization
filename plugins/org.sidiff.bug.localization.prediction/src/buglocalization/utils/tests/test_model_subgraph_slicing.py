@@ -1,11 +1,13 @@
 from typing import cast
 
+from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.dataset.neo4j_data_set import (BugSampleNeo4j,
                                                     DataSetNeo4j,
                                                     LocationSampleNeo4j,
                                                     Neo4jConfiguration)
 from buglocalization.metamodel.meta_model_uml import create_uml_configuration
-from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
+from buglocalization.textembedding.word_to_vector_dictionary import \
+    WordToVectorDictionary
 
 # List of node IDs from the Neo4j database:
 nodes = [(2059, 7747)]  # ID -> DB Version
@@ -27,7 +29,7 @@ data_set = DataSetNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4
 
 for node in nodes:
     node_id = node[0]
-    node_label: str = data_set.get_label(data_set.run_query_value('MATCH (n) WHERE ID(n) = ' + str(node_id) + ' RETURN n'))
+    node_label: str = query_util.get_label(data_set.run_query_value('MATCH (n) WHERE ID(n) = ' + str(node_id) + ' RETURN n'))
     db_version = node[1]
     
     bug_sample_neo4j = BugSampleNeo4j(data_set, db_version)

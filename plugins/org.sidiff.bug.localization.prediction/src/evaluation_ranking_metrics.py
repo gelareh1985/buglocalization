@@ -12,8 +12,7 @@ from buglocalization.evaluation import evaluation_util as eval_util
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folders = ["eclipse.jdt.core_evaluation_2021-03-04_02-06-04_train90_test10_layer300",
-                                  "eclipse.jdt.core_evaluation_2021-03-04_02-06-04_k2_undirected"]
+    evaluation_results_folders = ["eclipse.jdt.core_evaluation_2021-03-14_03-01-12_lr-4_k2_undirected"]
     
     top_k_values_base = [1, 5, 10, 15, 20, 25, 30, 35]
     

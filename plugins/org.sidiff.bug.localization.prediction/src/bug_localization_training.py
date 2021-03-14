@@ -19,41 +19,49 @@ if gpus:
         print(e)
 # ===============================================================================
 
-import datetime
-import os
-from pathlib import Path
-from time import time
-from typing import List, Tuple
+import json
 
-import stellargraph as sg
-from buglocalization.dataset.data_set import IBugSample, IDataSet
+from tensorflow.keras.utils import plot_model
+
 from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 from buglocalization.dataset.neo4j_data_set_training import \
     DataSetTrainingNeo4j
-from buglocalization.dataset.sample_generator import (BugSampleGenerator,
-                                                      IBugSampleGenerator)
+from buglocalization.dataset.sample_generator import BugSampleGenerator
 from buglocalization.metamodel.meta_model_uml import create_uml_configuration
-from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
-from stellargraph.layer import GraphSAGE, link_classification
-from tensorflow import keras
-from tensorflow.keras.callbacks import CSVLogger
-from tensorflow.keras.utils import Sequence, plot_model
-
-# from tqdm.keras import TqdmCallback  # type: ignore
+from buglocalization.predictionmodel.bug_localization_model_training import (
+    BugLocalizationAIModelBuilder, BugLocalizationAIModelTrainer,
+    DataSetSplitter, TrainigConfiguration)
+from buglocalization.utils import common_utils as utils
 
 # ===============================================================================
 # Environmental Information
 # ===============================================================================
 
-# TODO: Legacy:
-# positve_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\positivesamples/" + "/"  # noqa: E501
-# negative_samples_path:str = r"D:\buglocalization_gelareh_home\data\eclipse.jdt.core_textmodel_samples_encoding_2021-02-02\negativesamples/" + "/"  # noqa: E501
-
 # NOTE: Paths should not be too long, causes error (on Windows)!
-plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
-model_training_save_dir = str(plugin_directory) + '/training/trained_model_' + \
-    datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '/'
-model_training_checkpoint_dir = model_training_save_dir + "checkpoints/"
+project_folder = utils.get_project_folder()
+model_training_base_directory:str = "D:"
+
+doc_description = utils.create_timestamp() + " JDT: Training Data: 90%, Validation Evaluation Data: 0%, Test Evaluation Data: 10%"
+
+# Training Parameter:
+training_configuration = TrainigConfiguration(
+    doc_description=doc_description,
+    model_training_base_directory=model_training_base_directory,
+    optimizer_learning_rate=1e-4,
+    trainig_epochs=20,
+    trainig_batch_size=20,
+    dataset_split_fraction=-1,  # 2 -> 50/50 training test data
+    dataset_shuffle=True,
+    dataset_generator_workers=4,
+    dataset_multiprocessing=True,
+    dataset_sample_prefetch_count=8,
+    graphsage_num_samples=[20, 10],
+    graphsage_layer_sizes=[300, 300],
+    graphsage_dropout=0.0,
+    graphsage_normalize="l2",
+    word_dictionary=None,
+    log_level=2
+)
 
 # Database connection:
 neo4j_configuration = Neo4jConfiguration(
@@ -63,230 +71,27 @@ neo4j_configuration = Neo4jConfiguration(
     neo4j_password="password",
 )
 
-# ===============================================================================
-# Data Processing
-# ===============================================================================
-
-
-class DataSetSplitter:
-
-    def __init__(self, dataset_positive: IDataSet, dataset_negative: IDataSet):
-        self.dataset_positive: IDataSet = dataset_positive
-        self.dataset_negative: IDataSet = dataset_negative
-        self.bug_sample_sequence: List[IBugSample] = self.create_bug_sample_sequence()
-
-    def create_bug_sample_sequence(self) -> List[IBugSample]:
-
-        # Mix positive and negative samples to create a full set of samples
-        # that can be split to create a training and validation set of samples:
-        bug_sample_sequence = []
-        index = 0
-
-        while index < len(self.dataset_positive.bug_samples) or index < len(self.dataset_negative.bug_samples):
-            if index < len(self.dataset_positive.bug_samples):
-                bug_sample_sequence.append(self.dataset_positive.bug_samples[index])
-            if index < len(self.dataset_negative.bug_samples):
-                bug_sample_sequence.append(self.dataset_negative.bug_samples[index])
-
-            index += 1
-
-        return bug_sample_sequence
-
-    def split(self, fraction: int) -> Tuple[List[IBugSample], List[IBugSample]]:
-
-        # Split training and test data:
-        if fraction > 0:
-            split_idx = len(self.bug_sample_sequence) // fraction
-        else:
-            split_idx = len(self.bug_sample_sequence)  # only training data
-
-        bug_samples_train = self.bug_sample_sequence[:split_idx]
-        
-        if split_idx < len(self.bug_sample_sequence):
-            bug_samples_eval = self.bug_sample_sequence[split_idx:]
-        else:
-            bug_samples_eval = []  # only training data
-
-        return bug_samples_train, bug_samples_eval
-
-# ===============================================================================
-# AI Model
-# ===============================================================================
-
-
-class BugLocalizationAIModelBuilder:
-
-    def create_model(self,
-                     num_samples: List[int],
-                     layer_sizes: List[int],
-                     feature_size: int,
-                     checkpoint_dir: str,
-                     dropout: float = 0.0,
-                     normalize="l2",
-                     optimizer_learning_rate:float = 1e-3) -> keras.Model:
-
-        print('Creating a new model')
-        Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
-
-        graphsage = GraphSAGE(
-            n_samples=num_samples,
-            layer_sizes=layer_sizes,
-            input_dim=feature_size,
-            multiplicity=2,  # Link inference!
-            bias=True,
-            dropout=dropout,  # Dropout supplied to each layer: 0 < dropout < 1, 0 means no dropout.
-            normalize=normalize  # l2 or None
-        )
-
-        # Build the model and expose input and output sockets of GraphSAGE model for link prediction
-        x_inp, x_out = graphsage.in_out_tensors()
-
-        prediction = link_classification(
-            output_dim=1, output_act="relu", edge_embedding_method="ip"
-        )(x_out)
-
-        model = keras.Model(inputs=x_inp, outputs=prediction)
-
-        model.compile(
-            optimizer=keras.optimizers.Adam(lr=optimizer_learning_rate),
-            loss=keras.losses.binary_crossentropy,  # two-class classification problem
-            metrics=["acc"],
-        )
-
-        return model
-
-    def restore_model(self, model_dir: str) -> keras.Model:
-        print('Restoring model from', model_dir)
-        # https://stellargraph.readthedocs.io/en/stable/api.html -> stellargraph.custom_keras_layers= {...}
-        return keras.models.load_model(model_dir, custom_objects=sg.custom_keras_layers)
-
-
-class BugLocalizationAIModelTrainer:
-
-    def __init__(self,
-                 dataset_splitter: DataSetSplitter,
-                 model: keras.Model,
-                 num_samples: List[int],
-                 checkpoint_dir: str,
-                 use_multiprocessing: bool = False,
-                 sample_generator_workers: int = 1,
-                 sample_prefetch_count: int = 10):
-
-        self.dataset_splitter: DataSetSplitter = dataset_splitter
-        self.model: keras.Model = model
-        self.num_samples: List[int] = num_samples
-        self.use_multiprocessing = use_multiprocessing
-        self.sample_generator_workers: int = sample_generator_workers
-        self.sample_prefetch_count: int = sample_prefetch_count
-
-        self.callbacks = []
-
-        # This callback saves a SavedModel every epoch (or X batches).
-        self.callbacks.append(self.Timer())
-        self.callbacks.append(keras.callbacks.ModelCheckpoint(filepath=checkpoint_dir, save_freq='epoch'))
-        self.callbacks.append(CSVLogger(checkpoint_dir + "model_history_log.csv", append=True))
-        self.callbacks.append(self.BatchLogger())
-
-    def train(self, epochs: int, sample_generator: IBugSampleGenerator, dataset_split_fraction: int = 2, log_level=0):
-
-        # Initialize training data:
-        bug_samples_train, bug_samples_eval = dataset_splitter.split(dataset_split_fraction)
-        train_flow = sample_generator.create_bug_sample_generator("training", bug_samples_train, self.callbacks)
-        eval_flow = sample_generator.create_bug_sample_generator("evaluation", bug_samples_eval, self.callbacks)
-
-        # # Train Model # #
-        # self.callbacks.append(TqdmCallback(verbose=2)) # logging during training
-        history = self.model.fit(
-            train_flow,
-            epochs=epochs,
-            validation_data=eval_flow,
-            verbose=log_level,
-            use_multiprocessing=self.use_multiprocessing,
-            workers=self.sample_generator_workers,
-            max_queue_size=self.sample_prefetch_count,
-            callbacks=self.callbacks)
-
-        if log_level >= 1:
-            for layer in model.layers:
-                print(layer.get_config(), layer.get_weights())
-
-            sg.utils.plot_history(history)
-
-        # # Save Final Trained Model # #
-        self.model.save(model_training_save_dir)
-
-        # # Evaluate Trained Model # #
-        self.evaluate(eval_flow)
-
-    # TODO: Write to file
-    def evaluate(self, evaluation_flow: Sequence):
-        evaluation_metrics = self.model.evaluate(evaluation_flow)
-
-        print("Evaluation metrics of the model:")
-        for name, val in zip(self.model.metrics_names, evaluation_metrics):
-            print("\t{}: {:0.4f}".format(name, val))
-
-    class Timer(keras.callbacks.Callback):
-
-        def __init__(self):
-            self.mark = time()
-
-        def on_epoch_begin(self, epoch, logs=None):
-            self.mark = time()
-
-        def on_epoch_end(self, epoch, logs=None):
-            duration = time() - self.mark
-            self.mark = time()
-            print("Epoch", epoch, "time:", duration)
-
-    class BatchLogger(keras.callbacks.Callback):
-
-        def __init__(self):
-            self.seen = 0
-
-        def on_train_batch_end(self, batch, logs={}):
-            if 'loss' in logs and 'acc' in logs:
-                print("Training batch", batch, "finished: Accuracy:", logs['acc'], "Loss:", logs['loss'])
-            else:
-                print("Training batch", batch, "finished")
-
-        def on_test_batch_end(self, batch, logs={}):
-            if 'loss' in logs and 'acc' in logs:
-                print("Training batch", batch, "finished: Accuracy:", logs['acc'], "Loss:", logs['loss'])
-            else:
-                print("Training batch", batch, "finished")
-
-
 if __name__ == '__main__':
 
     # ===========================================================================
     # Create AI Model:
     # ===========================================================================
 
-    # Wprd embedding:
-    word_dictionary = WordToVectorDictionary()
-
-    # GraphSAGE Settings:
-    num_samples = [20, 10]  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
-    layer_sizes = [300, 300]  # Size of GraphSAGE hidden layers
-
-    assert len(num_samples) == len(layer_sizes), "The number of neighbor node samples need to be specified per GraphSAGE layer!"
-
-    print('Save Training:', model_training_save_dir)
-
-    # Regularization:
-
-    # Dropout supplied to each GraphSAGE layer: 0 < dropout < 1, 0 means no dropout.
-    # Dropout refers to ignoring neurons during the training phase which are chosen at random to prevent over-fitting.
-    # [https://medium.com/@amarbudhiraja/https-medium-com-amarbudhiraja-learning-less-to-learn-better-dropout-in-deep-machine-learning-74334da4bfc5]
-    dropout = 0.0  # 0.3
-
-    # GraphSAGE input normalization: l2 or None
-    normalize = "l2"
-
+    print('Save Training:', training_configuration.model_training_save_dir)
+    utils.create_folder(training_configuration.model_training_save_dir)
+    
+    with open(training_configuration.model_training_save_dir + 'training_configuration.json', 'w') as outfile:
+        json.dump(training_configuration.dump(), outfile, sort_keys=False, indent=4)
+    
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
     model = bug_localization_model_builder.create_model(
-        num_samples, layer_sizes, word_dictionary.dimension(), model_training_checkpoint_dir, dropout, normalize)
+        num_samples=training_configuration.graphsage_num_samples,
+        layer_sizes=training_configuration.graphsage_layer_sizes, 
+        feature_size=training_configuration.word_dictionary.dimension(), 
+        checkpoint_dir=training_configuration.model_training_checkpoint_dir, 
+        dropout=training_configuration.graphsage_dropout, 
+        normalize=training_configuration.graphsage_normalize,
+        optimizer_learning_rate=training_configuration.optimizer_learning_rate)
 
     # Plot model:
     # Install pydot, pydotplus, graphviz -> https://graphviz.org/download/ -> add to PATH -> reboot -> check os.environ["PATH"]
@@ -297,7 +102,9 @@ if __name__ == '__main__':
     # ===========================================================================
 
     # Modeling Language Meta-Model Configuration:
-    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(word_dictionary, num_samples)
+    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
+        word_dictionary=training_configuration.word_dictionary, 
+        num_samples=training_configuration.graphsage_num_samples)
 
     # Test Dataset Containing Bug Samples:
     dataset_positive = DataSetTrainingNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, is_negative=False)
@@ -307,30 +114,26 @@ if __name__ == '__main__':
     # ===========================================================================
     # Train and Evaluate AI Model:
     # ===========================================================================
-
-    # Training Settings:
-    epochs = 20  # Number of training epochs.
-    batch_size = 20  # Number of bug location samples, please node that each sample has multiple location samples.
-    dataset_split_fraction = 2  # 2 => 50% training, 50% validation, -1 => 100% training data
-    shuffle = True  # Shuffle training and validation samples after each epoch?
-    generator_workers = 4  # Number of threads that load/generate the batches in parallel.
-    multiprocessing = True  # # True -> Workers as process, False -> Workers as threads. Might cause deadlocks with more then 2-3 worker processes!
-    sample_prefetch_count = 8  # Preload some data for fast (GPU) processing
-    log_level = 2  # Some console output for debugging...
-
+    
     bug_localization_generator = BugSampleGenerator(
-        batch_size,
-        shuffle,
-        num_samples,
-        log_level)
+        batch_size=training_configuration.trainig_batch_size,
+        shuffle=training_configuration.dataset_shuffle,
+        num_samples=training_configuration.graphsage_num_samples,
+        log_level=training_configuration.log_level)
 
     bug_localization_model_trainer = BugLocalizationAIModelTrainer(
         dataset_splitter=dataset_splitter,
         model=model,
-        num_samples=num_samples,
-        checkpoint_dir=model_training_checkpoint_dir,
-        sample_generator_workers=generator_workers,
-        sample_prefetch_count=sample_prefetch_count,
-        use_multiprocessing=multiprocessing)
+        num_samples=training_configuration.graphsage_num_samples,
+        checkpoint_dir=training_configuration.model_training_checkpoint_dir,
+        sample_generator_workers=training_configuration.dataset_generator_workers,
+        sample_prefetch_count=training_configuration.dataset_sample_prefetch_count,
+        use_multiprocessing=training_configuration.dataset_multiprocessing)
 
-    bug_localization_model_trainer.train(epochs, bug_localization_generator, dataset_split_fraction, log_level)
+    # # Start training # #
+    bug_localization_model_trainer.train(
+        epochs=training_configuration.trainig_epochs, 
+        sample_generator=bug_localization_generator,
+        model_training_save_dir=training_configuration.model_training_save_dir,
+        dataset_split_fraction=training_configuration.dataset_split_fraction, 
+        log_level=training_configuration.log_level)
