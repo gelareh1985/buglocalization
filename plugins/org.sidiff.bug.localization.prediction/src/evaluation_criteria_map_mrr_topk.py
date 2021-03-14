@@ -8,10 +8,10 @@ import pandas as pd
 import numpy as np
 from IPython.display import display
 
-tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_2021-02-27_15-39-33/"
+#tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_2021-02-27_15-39-33/"
 #tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_2021-03-04_02-06-04_train90_test10_layer300\eclipse.jdt.core_2021-03-04_02-06-04/"
 #tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_evaluation_2021-03-04_02-06-04_k2_undirected/"
-#tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_evaluation_2021-03-04_02-06-04_k2_directed/"
+tables_path = r"D:\buglocalization_gelareh_home\eclipse.jdt.core_evaluation_2021-03-04_02-06-04_k2_directed/"
 
 def load_evaluation_results(path):
     
@@ -132,11 +132,17 @@ p=0.80
 row_num=249
 table_no=0
 list_to_dropout=[]
+total_locations=[]
+total_classes=[]
 for table in tables_predicted:
     ######### Dataframe define size #########
-    df1=table.loc[0:row_num]
+    df1=table.loc[:]
     indx_bug_loc_0=df1.loc[df1.IsLocation==0].index.tolist()  # for mean reciprocal ranks
     indx_bug_loc_1=df1.loc[df1.IsLocation==1].index.tolist()
+    
+    indx_class_locs=df1.loc[df1.MetaType=="['Class']"].index.tolist()
+    total_locations.append(indx_bug_loc_1)
+    total_classes.append(indx_class_locs)
     
     tbls=df1.loc[df1["IsLocation"]==1].index.tolist()
     if(len(tbls)==0):
@@ -173,8 +179,7 @@ print("MAP: ", map_val)
 mrr_val=mean_reciprocal_rank(list_mrr_rank_vals)
 print("MRR: ", mrr_val) 
 # rs = [[0, 0, 1], [0, 1, 0], [1, 0, 0]]
-# print(mean_reciprocal_rank(rs))
-   
+# print(mean_reciprocal_rank(rs))  
 listk=[1,5,10,15]
 topk_final_acc_list=[]
 p_atk_final_acc_list=[]
@@ -207,4 +212,21 @@ for acc in p_atk_final_acc_list:
     print("Precision at k= (", listk[i], "), (accuracy):",acc)     
     i=i+1
  
-
+#print("number of locations for each file (list): ", total_locations)
+sum_locs_per_file_list=[]
+for num_locs_file in total_locations:
+    sum_locs_per_file=sum(num_locs_file)
+    sum_locs_per_file_list.append(sum_locs_per_file)
+#print("sum of all of locations for each file: ", sum_locs_per_file_list)    
+sum_all_location=sum(sum_locs_per_file_list)
+print("sum of all of locations for all files: ", sum_all_location)        
+    
+    
+#print("number of classes for each file (list): ", total_classes)
+sum_classes_per_file_list=[]
+for num_classes_file in total_classes:
+    sum_classes_per_file=sum(num_classes_file)
+    sum_classes_per_file_list.append(sum_classes_per_file)
+#print("sum of all of classes for each file: ", sum_classes_per_file_list)    
+sum_all_classes=sum(sum_classes_per_file_list)
+print("sum of all of classes for all files: ", sum_all_classes) 
