@@ -38,9 +38,9 @@ from buglocalization.utils import common_utils
 
 # Evaluation Result Records:
 # NOTE: Paths should not be too long, causes error (on Windows)!
-project_folder = common_utils.get_project_folder()
+project_folder: str = common_utils.get_project_folder()
 evaluation_results_base_path: str = project_folder + "/evaluation/eclipse.jdt.core"
-bug_localization_model_path = project_folder + "/training/trained_model_2021-02-24_20-37-42_train45_val45_test10" + "/"
+bug_localization_model_path: str = project_folder + "/training/trained_model_2021-02-24_20-37-42_train45_val45_test10" + "/"
 
 # Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(

@@ -6,7 +6,7 @@
 # Configure GPU Device:
 # https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 # ===============================================================================
-import tensorflow as tf  # type: ignore
+import tensorflow as tf
 
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -38,10 +38,10 @@ from buglocalization.utils import common_utils as utils
 # ===============================================================================
 
 # NOTE: Paths should not be too long, causes error (on Windows)!
-project_folder = utils.get_project_folder()
-model_training_base_directory:str = "D:"
+project_folder: str = utils.get_project_folder()
+model_training_base_directory: str = "D:"
 
-doc_description = utils.create_timestamp() + " JDT: Training Data: 90%, Validation Evaluation Data: 0%, Test Evaluation Data: 10%"
+doc_description: str = utils.create_timestamp() + " JDT: Training Data: 90%, Validation Evaluation Data: 0%, Test Evaluation Data: 10%"
 
 # Training Parameter:
 training_configuration = TrainigConfiguration(

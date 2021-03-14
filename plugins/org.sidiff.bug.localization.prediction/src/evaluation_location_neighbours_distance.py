@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from py2neo import Graph
 
-import buglocalization.dataset.neo4j_queries as query
 from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
