@@ -15,7 +15,7 @@ from buglocalization.metamodel.meta_model_uml import MetaModelUML
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folder = "eclipse.jdt.core_evaluation_2021-03-04_02-06-04_train90_test10_layer300"
+    evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
