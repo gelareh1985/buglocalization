@@ -5,32 +5,34 @@ import os
 from pathlib import Path
 
 from buglocalization.evaluation import evaluation_util as eval_util
+from evaluation_ranking_metrics import jdt_project_filter
 
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test_k2_undirected"
+    evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
-    ranking_results, outliers = eval_util.get_ranking_results(eval_util.load_all_evaluation_results(evaluation_results_path))
-    all_expected_locations_df = eval_util.get_all_expected_locations(ranking_results)
-    print("Describe:\n", all_expected_locations_df.describe())
+    ranking_results, outliers = eval_util.get_ranking_results(eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter))
+    # all_relevant_locations_df = eval_util.get_all_relevant_locations(ranking_results)
+    all_relevant_locations_df = eval_util.get_all_top_relevant_locations(ranking_results)
+    print("Describe:\n", all_relevant_locations_df.describe())
     
     # Quantile:
-    quantile = eval_util.box_plot_quantiles(all_expected_locations_df)
+    quantile = eval_util.box_plot_quantiles(all_relevant_locations_df)
     print("Quantile:\n", quantile)
     
     # Outliers:
-    upper_whiskers = eval_util.box_plot_upper_wiskers(all_expected_locations_df)
+    upper_whiskers = eval_util.box_plot_upper_wiskers(all_relevant_locations_df)
     print("Upper Whiskers:", upper_whiskers)
     
-    upper_quantile_q3 = eval_util.box_plot_upper_quantile_q3(all_expected_locations_df)
+    upper_quantile_q3 = eval_util.box_plot_upper_quantile_q3(all_relevant_locations_df)
     print("Upper Quantile Q3:", upper_quantile_q3)
     
-    outliers = all_expected_locations_df[all_expected_locations_df.ranking > upper_whiskers]
+    outliers = all_relevant_locations_df[all_relevant_locations_df.ranking > upper_whiskers]
     print("Outliers ", len(outliers.index), ":\n", outliers)
     
     # Draw top k distribution:
-    boxplot = all_expected_locations_df.boxplot(column=['ranking'], showfliers=False)
+    boxplot = all_relevant_locations_df.boxplot(column=['ranking'], showfliers=False)
     

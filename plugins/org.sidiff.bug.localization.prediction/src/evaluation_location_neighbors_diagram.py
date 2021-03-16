@@ -10,7 +10,7 @@ from py2neo import Graph
 from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
-
+from evaluation_ranking_metrics import jdt_project_filter
 
 if __name__ == '__main__':
 
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
-    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path)
+    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter)
 
     # Output folder:
     evaluation_metrics_path = evaluation_results_path + 'metrics/'

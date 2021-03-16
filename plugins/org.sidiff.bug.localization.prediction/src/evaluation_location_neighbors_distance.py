@@ -1,12 +1,13 @@
 import os
 from pathlib import Path
+
 from py2neo import Graph
 
 from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
-
+from evaluation_ranking_metrics import jdt_project_filter
 
 if __name__ == '__main__':
     
@@ -15,10 +16,10 @@ if __name__ == '__main__':
     UNDIRECTED = True
     
     # Match model elements by Neo4j ID or by model element ID and version?
-    MATCH_MODEL_ELEMENTS_BY_NEO4J_ID = True
+    MATCH_NEO4J_ID = False
 
     # Evaluation result tables:
-    evaluation_results_folder = "eclipse.jdt.core_evaluation_2021-03-14_03-01-12_lr-4"
+    evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
@@ -34,22 +35,22 @@ if __name__ == '__main__':
     # Bug location garph in Neo4j:
     buglocation_graph = Graph(host="localhost", port=7687, user="neo4j", password="password")
 
-    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in eval_util.load_evaluation_results(evaluation_results_path):
+    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in eval_util.load_evaluation_results(evaluation_results_path, jdt_project_filter):
         db_version = int(tbl_info.ModelVersionNeo4j[0])
-        expected_locations = eval_util.get_expected_locations(tbl_predicted)
+        expected_locations = eval_util.get_relevant_locations(tbl_predicted)
         subgraph_model_element_ids = set()
 
         for idx_position, expected_location in expected_locations.iterrows():
             model_element_id = expected_location.ModelElementID
             neo4j_id_stored = expected_location.DatabaseNodeID
             
-            if MATCH_MODEL_ELEMENTS_BY_NEO4J_ID:
-                neo4j_id = neo4j_id_stored
-            else:
+            if MATCH_NEO4J_ID:
                 neo4j_id = query_util.get_neo4j_node_id(buglocation_graph, model_element_id, db_version)
 
                 if (neo4j_id_stored != neo4j_id):
-                    print("WARNING: Neo4j node ID chenged.")
+                    print("WARNING: Neo4j node ID changed.")
+            else:
+                neo4j_id = neo4j_id_stored
 
             labels_mask = list(meta_model.get_bug_location_types())
             subgraph = query_util.subgraph_k(buglocation_graph, neo4j_id, db_version, K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)

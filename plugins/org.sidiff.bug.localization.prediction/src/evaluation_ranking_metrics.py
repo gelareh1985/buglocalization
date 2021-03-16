@@ -9,10 +9,14 @@ import pandas as pd
 
 from buglocalization.evaluation import evaluation_util as eval_util
 
+jdt_project_filter = ['.test', 'converterJclMin', 'library/']  # TODO: Remove from training data set
+
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folders = ["eclipse.jdt.core_evaluation_2021-03-14_03-01-12_lr-4_k2_undirected"]
+    evaluation_results_folders = ["trained_model_2021-03-13_16-16-02_lr-4_layer300_test",
+                                  "trained_model_2021-03-13_16-16-02_lr-4_layer300_test_k2_undirected_aggregated",
+                                  "trained_model_2021-03-13_16-16-02_lr-4_layer300_test_k2_undirected"]
     
     top_k_values_base = [1, 5, 10, 15, 20, 25, 30, 35]
     
@@ -22,10 +26,12 @@ if __name__ == '__main__':
         plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
         evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
-        evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path)
+        evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter)
         
         # Evaluation settings:
-        min_ranks = eval_util.get_ranking_outliers(eval_util.get_ranking_results(evaluation_results)[0])
+        all_ranking_results, outliers = eval_util.get_ranking_results(evaluation_results)
+        all_relevant_locations_df = eval_util.get_all_top_relevant_locations(all_ranking_results)
+        min_ranks = eval_util.get_ranking_outliers(all_relevant_locations_df)
         
         top_k_values = top_k_values_base.copy()
         top_k_values_min_ranks = list(min_ranks[1:])
