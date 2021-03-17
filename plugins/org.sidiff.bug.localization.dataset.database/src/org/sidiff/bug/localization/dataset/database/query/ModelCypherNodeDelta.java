@@ -34,23 +34,13 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 	 */
 	private Set<String> nodeLabels = new HashSet<>();
 	
-	/**
-	 * Nodes with attribute value changes.
-	 */
-	private Set<EObject> modifiedNodes;
-	
 	public ModelCypherNodeDelta(
 			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch, 
 			int newVersion, URI newBaseURI,Map<XMLResource, XMLResource> newResourcesMatch) {
 		super(oldVersion, oldBaseURI, oldResourcesMatch, newVersion, newBaseURI, newResourcesMatch);
 		this.createdNodesBatches = new HashMap<>();
 		this.removedNodesBatches = new HashMap<>();
-		this.modifiedNodes = new HashSet<>();
 		deriveNodeDeltas();
-	}
-	
-	public Set<EObject> getModifiedNodes() {
-		return modifiedNodes;
 	}
 	
 	private void deriveNodeDeltas() {
@@ -110,15 +100,6 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 		// Create query for new node:
 		if (isNewNode(modelElementOld, modelElementNew)) {
 			deriveCreatedNodeBatchQuery(modelElementOld, modelElementNew, modelElementID);
-		} else {
-			if (hasValueChanges(modelElementOld, modelElementNew)) {
-				deriveCreatedNodeBatchQuery(modelElementOld, modelElementNew, modelElementID);
-				
-				// Mark old element with changed attribute value as removed for this version:
-				deriveRemovedNodeBatchQuery(modelElementOld, modelElementID);
-				modifiedNodes.add(modelElementOld);
-				modifiedNodes.add(modelElementNew);
-			} 
 		}
 	}
 
@@ -155,29 +136,6 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 		return (objOld == null); 
 	}
 	
-	private boolean hasValueChanges(EObject objOld, EObject objNew) {
-		for (EAttribute attribute : objOld.eClass().getEAllAttributes()) {
-			if (isConsideredFeature(attribute)) {
-				Object oldValue = objOld.eGet(attribute);
-				Object newValue = objNew.eGet(attribute);
-
-				// compare values:
-				if (hasValueChanged(oldValue, newValue)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean hasValueChanged(Object oldValue, Object newValue) {
-		if (oldValue == newValue) {
-			return false; // includes null == null
-		} else {
-			return (oldValue == null) || !oldValue.equals(newValue);
-		}
-	}
-
 	private void deriveRemovedNode(XMLResource oldResource, EObject oldModelElement) {
 		
 		// model ID of the old version node:
@@ -275,10 +233,9 @@ public class ModelCypherNodeDelta extends ModelCypherDelta {
 //		query.append("CALL { WITH entry ");
 		query.append("MATCH (n:");
 		query.append(label);
-		
-		// NOTE: Assuming that version number is already increased constructIncreaseVersionQuery():
 		query.append(" {__model__element__id__: entry.id}) ");
 		
+		// Match by index:
 		query.append("USING INDEX n:");
 		query.append(label);
 		query.append("(__model__element__id__) ");

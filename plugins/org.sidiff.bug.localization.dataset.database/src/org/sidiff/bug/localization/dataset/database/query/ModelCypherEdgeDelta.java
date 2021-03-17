@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.URI;
@@ -28,19 +27,12 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	 */
 	private Map<String, Map<String, Map<String, List<Map<String, Object>>>>> removedEdgesBatches;
 	
-	/**
-	 * Nodes with attribute value changes.
-	 */
-	Set<EObject> modifiedNodes;
-	
 	public ModelCypherEdgeDelta(
 			int oldVersion, URI oldBaseURI, Map<XMLResource, XMLResource> oldResourcesMatch, 
-			int newVersion, URI newBaseURI,Map<XMLResource, XMLResource> newResourcesMatch,
-			Set<EObject> modifiedNodes) {
+			int newVersion, URI newBaseURI,Map<XMLResource, XMLResource> newResourcesMatch) {
 		super(oldVersion, oldBaseURI, oldResourcesMatch, newVersion, newBaseURI, newResourcesMatch);
 		this.createdEdgesBatches = new HashMap<>();
 		this.removedEdgesBatches = new HashMap<>();
-		this.modifiedNodes = modifiedNodes;
 		deriveEdgeDeltas();
 	}
 
@@ -197,11 +189,6 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 			String targetID = getModelElementID((XMLResource) targetResourceNew, targetNew);
 	
 			if (isCreatedEdge(index, sourceOld, reference, targetResourceNew, targetID, targetNew)) {
-				
-				if (targetID.equals("org.eclipse.jdt.core/Lorg/eclipse/jdt/core/IAnnotatable;")) {
-					System.out.println("ModelCypherEdgeDelta.deriveCreatedEdgeBatchQuery()");
-				}
-				
 				Map<String, Object> createEdgeProperties = new HashMap<>();
 				createEdgeProperties.put("__containment__", reference.isContainment());
 				createEdgeProperties.put("__container__", reference.isContainer());
@@ -244,11 +231,6 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 	}
 
 	private boolean isExistingEdge(int index, EObject source, EReference reference, EObject target) {
-		
-		if (modifiedNodes.contains(source) || modifiedNodes.contains(target)) {
-			return false; // Nodes with attribute value changes will be created as new nodes.
-		}
-		
 		if (reference.isMany()) {
 			@SuppressWarnings("unchecked")
 			List<Object> targets = (List<Object>) source.eGet(reference);

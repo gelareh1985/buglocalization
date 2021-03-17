@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.sidiff.bug.localization.dataset.database.query.ModelCypherAttributeValueDelta;
 import org.sidiff.bug.localization.dataset.database.query.ModelCypherEdgeDelta;
 import org.sidiff.bug.localization.dataset.database.query.ModelCypherNodeDelta;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
@@ -46,13 +47,20 @@ public class ModelDelta {
 		
 		ModelCypherEdgeDelta edgeDeltaDerivation = new ModelCypherEdgeDelta(
 				version - 1, oldBaseURI, oldResourcesMatch,
-				version, newBaseURI, newResourcesMatch, 
-				nodeDeltaDerivation.getModifiedNodes());
+				version, newBaseURI, newResourcesMatch);
 		
 		Map<String, Map<String, Object>> removedEdgeQueries = edgeDeltaDerivation.constructRemovedEdgesQuery();
 		Map<String, Map<String, Object>> createdEdgeQueries = edgeDeltaDerivation.constructCreatedEdgesQuery();
 		
 		time = stopTime(time, "Compute Edge Delta Queries");
+		
+		ModelCypherAttributeValueDelta attributeValueDeltaDerivation = new ModelCypherAttributeValueDelta(
+				version - 1, oldBaseURI, oldResourcesMatch,
+				version, newBaseURI, newResourcesMatch);
+		
+		Map<String, Map<String, Object>> attributeValueChangeQueries = attributeValueDeltaDerivation.constructAttriuteValueChangeQuery();
+		
+		time = stopTime(time, "Compute Attribute Value Delta Queries");
 		
 		/*
 		 * Make sure all nodes have an index for creation of edges.
@@ -61,10 +69,14 @@ public class ModelDelta {
 		
 		/*
 		 * NOTE: Remove old nodes before creating new nodes, e.g., to correctly match
-		 * node with same ID but changed attribute values.
+		 *       node with same ID but changed attribute values.
+		 * NOTE: Attribute value change (which copies the nodes) 
+		 *       - before adding new edges
+		 *       - after removing old edges
 		 */
 		transaction.execute(removedEdgeQueries);
 		transaction.execute(removedNodeQueries);
+		transaction.execute(attributeValueChangeQueries);
 		transaction.execute(createdNodeQueries);
 		transaction.execute(createdEdgeQueries);
 		time = stopTime(time, "Execute Transaction");

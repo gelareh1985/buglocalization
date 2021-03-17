@@ -43,10 +43,10 @@ public class DatasetExportApplication implements IApplication {
 	
 	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
 	//       -> Last Version + 1
-	private int restartWithVersion = 381; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
+	private int restartWithVersion = 4520; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
 	private String restartWithGitVersion = null; // next version hash value or null
-	private boolean startWithFullVersion = false;
-	private String stopOnGitVersion = "28f53155d592e8d12991fab6d60706a44adb05e0";
+	private boolean startWithFullVersion = true;
+	private String stopOnGitVersion = null;
 	private boolean runTestCases = false;
 	
 	@Override
