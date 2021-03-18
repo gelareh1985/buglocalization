@@ -15,19 +15,20 @@ public class WorkspaceHistoryRetrievalProvider {
 	private Supplier<Repository> codeRepository;
 
 	public WorkspaceHistoryRetrievalProvider(
-			Supplier<Repository> codeRepository,
-			FileChangeFilter fileChangeFilter) {
+			Supplier<Repository> codeRepository, 
+			FileChangeFilter fileChangeFilter,
+			boolean flattenHistoryBranches) {
 		this.codeRepository = codeRepository;
 	}
 
 	public WorkspaceHistoryRetrievalProvider(Path codeRepositoryPath) {
 		this.codeRepository = () -> new GitRepository(codeRepositoryPath.toFile());
 	}
-	
+
 	public Repository createCodeRepository() {
 		return codeRepository.get();
 	}
-	
+
 	public void setCodeRepository(Supplier<Repository> codeRepository) {
 		this.codeRepository = codeRepository;
 	}

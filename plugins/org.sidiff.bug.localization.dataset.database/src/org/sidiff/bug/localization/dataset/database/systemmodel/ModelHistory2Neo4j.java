@@ -109,10 +109,11 @@ public class ModelHistory2Neo4j {
 		// Create history incrementally:
 		while (historyIterator.hasNext()) {
 			++databaseVersion;
+			historyIterator.next();
 			
 			// Check out the next version from the repository:
 			Version previousVersion = historyIterator.getOlderVersion();
-			Version currentVersion = historyIterator.next();
+			Version currentVersion = historyIterator.getCurrentVersion();
 			Version nextVersion = historyIterator.getNewerVersion();
 			
 			if ((stopOnGitVersion != null) && currentVersion.getIdentification().equals(stopOnGitVersion)) {
@@ -197,10 +198,11 @@ public class ModelHistory2Neo4j {
 		if ((restartWithVersion != -1) || (restartWithGitVersion != null))  {
 			while (historyIterator.hasNext()) {
 				++datasetVersion;
+				historyIterator.next();
 				
 				// Check out the next version from the repositoy:
 				Version previousVersion = historyIterator.getOlderVersion();
-				Version currentVersion = historyIterator.next();
+				Version currentVersion = historyIterator.getCurrentVersion();
 				Version nextVersion = historyIterator.getNewerVersion();
 				
 				// Initialize incremental delta computation one version earlier:

@@ -5,10 +5,10 @@ import java.nio.file.Path;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.sidiff.bug.localization.common.utilities.workspace.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
-import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.retrieval.util.BugReportUtil;
 
 /**

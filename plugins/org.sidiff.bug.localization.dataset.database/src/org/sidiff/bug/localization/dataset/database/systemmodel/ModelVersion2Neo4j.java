@@ -18,10 +18,7 @@ import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
-import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.TracedVersion;
-import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.DataSet2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
 
@@ -132,9 +129,6 @@ public class ModelVersion2Neo4j {
 			}
 		}
 		
-		// Patch system model:
-		Resource systemModelResource = patchSystemModelVersion(currentResourceSet, currentResources, currentModelVersion, nextModelVersion, bugReport);
-		
 		// Compute and commit model delta:
 		if (commitToDatabase) {
 			modelDelta.commitDelta(currentDatabaseVersion, repositoryBaseURI, previousResources, repositoryBaseURI, currentResources);
@@ -145,7 +139,11 @@ public class ModelVersion2Neo4j {
 			this.nextModelVersionChanges = modelRepository.getChanges(currentModelVersion, nextModelVersion, false);
 			
 			Set<Resource> currentResourcesModifiedNext = new LinkedHashSet<>();
-			currentResourcesModifiedNext.add(systemModelResource);
+			Resource systemModelResource = getSystemModel(currentResourceSet);
+			
+			if (systemModelResource != null) {
+				currentResourcesModifiedNext.add(systemModelResource);
+			}
 			
 			// Load all model from this version which are needed for comparison in the next version:
 			// (The versions can not be loaded after Git checkout.)
@@ -196,39 +194,12 @@ public class ModelVersion2Neo4j {
 		return null;
 	}
 	
-	/**
-	 * Append model version and bug report information from data set.
-	 */
-	// FIXME[WORKAROUND]: Compute this while reverse engineering.
-	protected Resource patchSystemModelVersion(
-			ResourceSet newResourceSet, List<Resource> newResources, 
-			Version buggyVersion, Version fixedVersion, BugReport bugReport) {
+	protected Resource getSystemModel(ResourceSet newResourceSet) {
 		
 		if (newResourceSet.getURIConverter().exists(systemModelURI, null)) {
 			Resource systemModelResource = newResourceSet.getResource(systemModelURI, true);
 			
 			if (!systemModelResource.getContents().isEmpty()) {
-				SystemModel patchedSystemModel = (SystemModel) systemModelResource.getContents().get(0);
-				patchedSystemModel.setName(systemModelName);
-				
-				TracedVersion modelVersion = dataSet2SystemModel.convertVersion(buggyVersion, fixedVersion, bugReport);
-				patchedSystemModel.setVersion(modelVersion);
-				
-				if (modelVersion.getBugreport() != null) {
-					dataSet2SystemModel.relocateModelChanges(patchedSystemModel, modelVersion.getBugreport());
-				}
-				
-				if (!newResources.contains(systemModelResource)) {
-					newResources.add(systemModelResource);
-				}
-				
-				// Store document types:
-				for (View view : patchedSystemModel.getViews()) {
-					if (view.getModel() != null) {
-						view.getDocumentTypes().add(view.getModel().eClass().getEPackage().getNsURI());
-					}
-				}
-				
 				return systemModelResource;
 			}
 		}

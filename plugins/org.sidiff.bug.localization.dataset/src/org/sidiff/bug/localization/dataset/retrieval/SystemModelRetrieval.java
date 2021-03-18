@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.sidiff.bug.localization.common.utilities.logging.LoggerUtil;
+import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
 import org.sidiff.bug.localization.dataset.Activator;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.history.model.History;
@@ -30,14 +31,12 @@ import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.retrieval.storage.SystemModelRepository;
 import org.sidiff.bug.localization.dataset.retrieval.util.WorkspaceUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
-import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.JavaProject2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
 import org.sidiff.bug.localization.dataset.workspace.builder.WorkspaceBuilder;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.model.Project;
 import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
-import org.sidiff.bug.localization.common.utilities.workspace.ProjectUtil;
 
 public class SystemModelRetrieval {
 	
@@ -89,7 +88,6 @@ public class SystemModelRetrieval {
 		
 		if (resume != -1) {
 			versions = versions.subList(0, resume);
-			removeMissingProjects(versions.get(resume), versions.get(resume - 1));
 			this.newProjectAdded = true; 
 		}
 		
@@ -117,7 +115,7 @@ public class SystemModelRetrieval {
 				Version olderVersion = (versions.size() > i + 1) ? versions.get(i + 1) : null;
 				Version version = versions.get(i);
 				Version newerVersion = (i > 0) ? versions.get(i - 1) : null;
-				counter++;
+ 				counter++;
 
 				long time = System.currentTimeMillis();
 				
@@ -125,7 +123,7 @@ public class SystemModelRetrieval {
 				WorkspaceUtil.refreshWorkspace(version, workspace, newProjectAdded);
 				
 				// Clean up older version:
-				clearSystemModelChanges(systemModel); // of last version
+				clearSystemModelVersion(systemModel); // of last version
 				time = stopTime("Checkout Workspace Version: ", time);
 				
 				/* Synchronize before storing new changes in the model repository */
@@ -246,7 +244,7 @@ public class SystemModelRetrieval {
 				if (HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
 					
 					// Java Code -> System Model
-					List<Path> modelProjectFiles =retrieveProjectSystemModelVersion(
+					List<Path> modelProjectFiles = retrieveProjectSystemModelVersion(
 							olderVersion, version, newerVersion, project, workspaceProjectScope, systemModel);
 					modelFiles.addAll(modelProjectFiles);
 					time = stopTime("Discover System Model Project (Name: " + project.getName() + ", Model Files: "
@@ -300,6 +298,8 @@ public class SystemModelRetrieval {
 					systemModel, 
 					projectFileChanges,
 					projectBugLocations,
+					version,
+					newerVersion,
 					initialVersion);
 			
 			if (initialVersion) {
@@ -339,10 +339,8 @@ public class SystemModelRetrieval {
 		}
 	}
 
-	private void clearSystemModelChanges(SystemModel systemModel) {
-		for (View view : systemModel.getViews()) {
-			view.getChanges().clear();
-		}
+	private void clearSystemModelVersion(SystemModel systemModel) {
+		JavaProject2SystemModel.clearSysteModelVersion(systemModel);
 	}
 	
 	public void saveDataSet() {
@@ -350,12 +348,16 @@ public class SystemModelRetrieval {
 		
 		// Store and commit data set for Java model:
 		try {
-			DataSetStorage.save(Paths.get(
+			this.datasetPath = DataSetStorage.save(Paths.get(
 					datasetPath.toString()), 
 					dataset, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Path getDatasetPath() {
+		return datasetPath;
 	}
 	
 	private long stopTime(String text, long time) {
@@ -372,4 +374,5 @@ public class SystemModelRetrieval {
 	public Path getSystemModelRepositoryPath() {
 		return systemModelRepository.getRepositoryPath();
 	}
+
 }

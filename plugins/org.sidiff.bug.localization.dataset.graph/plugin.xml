@@ -13,5 +13,18 @@
             class="org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphPackage"
             genModel="model/graph.genmodel"/>
    </extension>
+   
+   <extension
+         id="buglocalizationgraph"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.sidiff.bug.localization.dataset.BugLocalizationGraphApplication">
+         </run>
+      </application>
+   </extension>
 
 </plugin>

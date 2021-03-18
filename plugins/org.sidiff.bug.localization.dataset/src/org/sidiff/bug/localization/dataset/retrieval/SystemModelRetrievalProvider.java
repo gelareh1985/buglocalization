@@ -4,8 +4,9 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 
 import org.sidiff.bug.localization.dataset.changes.util.FileChangeFilter;
-import org.sidiff.bug.localization.dataset.workspace.filter.JavaProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 
 public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvider {
 	
@@ -32,7 +33,7 @@ public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvi
 	
 	public SystemModelRetrievalProvider(Path codeRepositoryPath) {
 		super(codeRepositoryPath);
-		this.projectFilter =  () -> new JavaProjectFilter(); // new PDEProjectFilter();
+		this.projectFilter =  () -> new TestProjectFilter(new PDEProjectFilter()); // new JavaProjectFilter(); // new PDEProjectFilter();
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().toLowerCase().endsWith(".java");
 		this.intermediateSave = 200;
 	}

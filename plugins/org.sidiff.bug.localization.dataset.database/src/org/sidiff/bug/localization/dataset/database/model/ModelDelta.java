@@ -68,6 +68,7 @@ public class ModelDelta {
 		createNodeKeyAttributes(transaction, nodeDeltaDerivation);
 		
 		/*
+		 * NOTE: Remove edges before nodes.
 		 * NOTE: Remove old nodes before creating new nodes, e.g., to correctly match
 		 *       node with same ID but changed attribute values.
 		 * NOTE: Attribute value change (which copies the nodes) 

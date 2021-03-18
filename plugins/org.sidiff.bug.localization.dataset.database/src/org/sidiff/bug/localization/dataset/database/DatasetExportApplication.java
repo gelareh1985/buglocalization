@@ -9,13 +9,13 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.sidiff.bug.localization.common.utilities.workspace.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.database.model.ModelDelta;
 import org.sidiff.bug.localization.dataset.database.systemmodel.ModelHistory2Neo4j;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
-import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
 public class DatasetExportApplication implements IApplication {
 
@@ -43,7 +43,7 @@ public class DatasetExportApplication implements IApplication {
 	
 	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
 	//       -> Last Version + 1
-	private int restartWithVersion = 4520; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
+	private int restartWithVersion = 8077; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
 	private String restartWithGitVersion = null; // next version hash value or null
 	private boolean startWithFullVersion = true;
 	private String stopOnGitVersion = null;

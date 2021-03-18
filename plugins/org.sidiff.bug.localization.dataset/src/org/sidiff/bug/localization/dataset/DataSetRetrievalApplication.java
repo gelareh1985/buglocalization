@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
+import org.sidiff.bug.localization.common.utilities.workspace.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.configuration.RetrievalConfiguration;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.model.DataSet;
@@ -20,10 +21,9 @@ import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.SystemModelRetrievalProvider;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrieval;
 import org.sidiff.bug.localization.dataset.retrieval.WorkspaceHistoryRetrievalProvider;
-import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 
 /**
- * Converts a Java project including bug reports into an UML model (via MoDisco and ATL transformation).
+ * Converts a Java project including bug reports into an UML model.
  */
 public class DataSetRetrievalApplication implements IApplication {
 
@@ -89,10 +89,10 @@ public class DataSetRetrievalApplication implements IApplication {
 				bugFixHistory.retrieve();
 			} finally {
 				bugFixHistory.saveDataSet();
+				
+				// update data set path to output file:
+				datasetPath = bugFixHistory.getDatasetPath();
 			}
-			
-			// update data set path to output file:
-			datasetPath = bugFixHistory.getDatasetPath();
 		}
 		
 		// Workspace:
@@ -104,10 +104,10 @@ public class DataSetRetrievalApplication implements IApplication {
 				workspaceHistoryRetrieval.retrieve();
 			} finally {
 				workspaceHistoryRetrieval.saveDataSet();
+				
+				// update data set path to output file
+				datasetPath = workspaceHistoryRetrieval.getDatasetPath();
 			}
-			
-			// update data set path to output file
-			datasetPath = workspaceHistoryRetrieval.getDatasetPath();
 		}
 		
 		// Direct System model (Java Model -> System Model):
@@ -116,19 +116,25 @@ public class DataSetRetrievalApplication implements IApplication {
 			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, dataset, datasetPath);
 			
 			try {
-//				// Resume on last intermediate save:
-//				{
+				// Resume on last intermediate save:
+				{
 //					datasetPath = Paths.get(datasetPath.getParent().toString(),
 //							"DataSet_20201120213103_20201121033529.json_3800_b5c1652db351290a42a75d3cdd3241441a4413e2_0e32179056318498bab8548c6d40017d6c717dfd");
 //					dataset = DataSetStorage.load(datasetPath);
-//					
+					
 //					systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, dataset, datasetPath);
-//					systemModelRetrieval.retrieve(resume(dataset, "0e32179056318498bab8548c6d40017d6c717dfd"));
-//				}
+//					
+//					modelDatasetToCodeDataset(dataset);
+//					int resume = resume(dataset, "f3976bead49aa4fe35942cb0c47266733b624403");
+//					systemModelRetrieval.retrieve(resume);
+				}
 				
 				systemModelRetrieval.retrieve();
 			} finally {
 				systemModelRetrieval.saveDataSet();
+				
+				// update data set path to output file
+				datasetPath = systemModelRetrieval.getDatasetPath();
 			}
 		}
 		
@@ -148,6 +154,14 @@ public class DataSetRetrievalApplication implements IApplication {
 		}
 		
 		return resumeIndex;
+	}
+	
+	@SuppressWarnings("unused")
+	private void modelDatasetToCodeDataset(DataSet dataset) {
+		for (Version version : dataset.getHistory().getVersions()) {
+			version.setIdentification(version.getIdentificationTrace());
+			version.setIdentificationTrace(null);
+		}
 	}
 
 	@Override

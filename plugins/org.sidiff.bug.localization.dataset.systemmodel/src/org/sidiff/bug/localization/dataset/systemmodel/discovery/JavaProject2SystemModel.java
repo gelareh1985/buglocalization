@@ -21,10 +21,12 @@ import org.eclipse.uml2.uml.PackageableElement;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
 import org.sidiff.bug.localization.dataset.changes.model.LineChange;
+import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
+import org.sidiff.bug.localization.dataset.systemmodel.TracedVersion;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.views.ViewDescriptions;
@@ -146,6 +148,8 @@ public class JavaProject2SystemModel {
 			SystemModel systemModel, 
 			List<FileChange> projectFileChanges,
 			List<FileChange> projectBugLocations,
+			Version version, 
+			Version newerVersion,
 			boolean initialVersion) {
 		
 		List<Path> fileChanges = new ArrayList<>();
@@ -171,7 +175,8 @@ public class JavaProject2SystemModel {
 		transformation.performWorkspaceUpdate(Collections.singletonList(projectWorkspaceUpdate), workspaceProjectScope);
 		
 		// Add changes to system model:
-		calculateBugLocations(project, projectRepositoryPath, projectBugLocations);
+		calculateSysteModel(systemModel, version, newerVersion,
+				project, projectRepositoryPath, projectBugLocations);
 		
 		for (FileChange fileChange : projectFileChanges) {
 			if (fileChange.getType().equals(FileChangeType.ADD)) {
@@ -282,8 +287,33 @@ public class JavaProject2SystemModel {
 		
 		return modelPackage;
 	}
+	
+	public static void clearSysteModelVersion(SystemModel systemModel) {
+		systemModel.setVersion(null);
+	}
+	
+	private void calculateSysteModel(SystemModel systemModel, Version version, Version newerVersion,
+			IProject project, Path projectRepositoryPath, List<FileChange> projectBugLocations) {
+		
+		TracedVersion modelVersion = dataSet2SystemModel.convertVersion(version, newerVersion, version.getBugReport());
+		systemModel.setVersion(modelVersion);
+		
+		if (modelVersion.getBugreport() != null) {
+			calculateBugLocations(project, projectRepositoryPath, projectBugLocations, modelVersion.getBugreport());
+		}
+		
+		// Store document types:
+		for (View view : systemModel.getViews()) {
+			if (view.getModel() != null) {
+				view.getDocumentTypes().add(view.getModel().eClass().getEPackage().getNsURI());
+			}
+		}
+	}
 
-	private void calculateBugLocations(IProject project, Path projectRepositoryPath, List<FileChange> projectBugLocations) {
+	private void calculateBugLocations(
+			IProject project, Path projectRepositoryPath, List<FileChange> projectBugLocations,
+			org.sidiff.bug.localization.dataset.systemmodel.BugReport bugReport) {
+		
 		if (!projectBugLocations.isEmpty()) {
 			Map<EObject, Change> bugLocations = new HashMap<>();
 			
@@ -339,7 +369,7 @@ public class JavaProject2SystemModel {
 						}
 					} else {
 						bugLocations.put(bugLocation.getLocation(), bugLocation);
-						umlClassDiagramView.getChanges().add(bugLocation);
+						bugReport.getModelLocations().add(bugLocation);
 					}
 				}
 			}

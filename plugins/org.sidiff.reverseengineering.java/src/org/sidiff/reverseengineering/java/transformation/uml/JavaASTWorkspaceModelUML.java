@@ -58,7 +58,9 @@ public class JavaASTWorkspaceModelUML extends JavaASTWorkspaceModel {
 	@Override
 	public void addToWorkspace(EObject projectModel) {
 		if (projectModel instanceof PackageableElement) {
-			workspaceModelRoot.getPackagedElements().add((PackageableElement) projectModel);
+			if (!workspaceModelRoot.getPackagedElements().contains(projectModel)) {
+				workspaceModelRoot.getPackagedElements().add((PackageableElement) projectModel);
+			}
 		}
 	}
 

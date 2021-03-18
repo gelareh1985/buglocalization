@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.retrieval.util;
+package org.sidiff.bug.localization.common.utilities.workspace;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Files;

@@ -21,7 +21,7 @@ if __name__ == '__main__':
     UNDIRECTED = True
 
     # Match model elements by Neo4j ID or by model element ID and version?
-    MATCH_NEO4J_ID = False
+    MATCH_NEO4J_ID = False  # TODO: USING INDEX n:Nlable
 
     # Evaluation result tables:
     evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"

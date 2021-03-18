@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset;
+package org.sidiff.bug.localization.dataset.graph;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,15 +11,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphConstructor;
-import org.sidiff.bug.localization.dataset.graph.BugLocalizationGraphStorage;
+import org.sidiff.bug.localization.common.utilities.workspace.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
 import org.sidiff.bug.localization.dataset.model.DataSet;
 import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
-import org.sidiff.bug.localization.dataset.retrieval.util.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 

@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
@@ -318,6 +319,40 @@ public class GitRepository implements Repository {
 			
 			ObjectId idB = git.getRepository().resolve(versionB.getIdentification() + "^{tree}");
 			return getChanges(idA, idB, lines);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
+	}
+	
+	public List<FileChange> getChangesFlattenCommitTree(Version versionA, Version versionB, boolean lines) {
+		try (Git git = openGitRepository()) {
+			List<FileChange> changes = new ArrayList<>();
+			
+			ObjectId objectIdA = ObjectId.fromString(versionA.getIdentification());
+			ObjectId objectIdB = ObjectId.fromString(versionB.getIdentification());
+			
+			try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+				RevCommit commitA = revWalk.parseCommit(objectIdA);
+				RevCommit commitB = revWalk.parseCommit(objectIdB);
+				revWalk.markStart(commitA);
+				revWalk.markStart(commitB);
+				
+				for (Iterator<RevCommit> iterator = revWalk.iterator(); iterator.hasNext();) {
+					RevCommit nextCommit = iterator.next();
+					
+					if (nextCommit.getId().getName().equals(versionA.getIdentification())) {
+						break;
+					}
+					
+					ObjectId idA = git.getRepository().resolve(nextCommit.getId().getName() + "~1^{tree}");
+					ObjectId idB = git.getRepository().resolve(nextCommit.getId().getName() + "^{tree}");
+					changes.addAll(getChanges(idA, idB, lines));
+					
+			    }
+			}
+			
+			return changes;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

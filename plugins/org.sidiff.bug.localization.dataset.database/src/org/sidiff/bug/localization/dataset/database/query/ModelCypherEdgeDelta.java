@@ -351,7 +351,7 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 		query.append(sourceLabel);
 		query.append("(__model__element__id__) ");
 		
-		query.append("WHERE NOT EXISTS(from.__last__version__) ");
+		query.append("WHERE NOT EXISTS(from.__last__version__) "); // node not removed
 		
 //		query.append("RETURN from LIMIT 1} ");
 		
@@ -366,7 +366,7 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 		query.append(targetLabel);
 		query.append("(__model__element__id__) ");
 		
-		query.append("WHERE NOT EXISTS(to.__last__version__) "); // not removed
+		query.append("WHERE NOT EXISTS(to.__last__version__) "); // node not removed
 		
 //		query.append("RETURN to LIMIT 1} ");
 		
@@ -378,7 +378,7 @@ public class ModelCypherEdgeDelta extends ModelCypherDelta {
 			query.append(edgeLabel);
 			query.append("]->(to) ");
 			
-			query.append("WHERE NOT EXISTS(to.__last__version__) "); // not removed
+			query.append("WHERE NOT EXISTS(rel.__last__version__) "); // edge not removed
 			
 //			query.append("RETURN rel LIMIT 1} ");
 		} else {

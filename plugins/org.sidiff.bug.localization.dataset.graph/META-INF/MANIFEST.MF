@@ -7,7 +7,7 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.sidiff.bug.localization.dataset.graph,
  org.sidiff.bug.localization.dataset.graph.impl,
  org.sidiff.bug.localization.dataset.graph.util
@@ -19,5 +19,7 @@ Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.sidiff.bug.localization.common.utilities,
  org.sidiff.bug.localization.dataset.reports,
  org.eclipse.uml2.uml,
- org.eclipse.uml2.uml.edit
+ org.eclipse.uml2.uml.edit,
+ org.sidiff.bug.localization.dataset
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.sidiff.bug.localization.dataset.graph.Activator
