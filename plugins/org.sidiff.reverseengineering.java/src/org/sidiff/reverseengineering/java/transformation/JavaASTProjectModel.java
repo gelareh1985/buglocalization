@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.jdt.core.dom.IPackageBinding;
+import org.sidiff.reverseengineering.java.configuration.TransformationSettings;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -69,12 +70,11 @@ public abstract class JavaASTProjectModel {
 	 * Matches the given project path to the qualified type names and removes the
 	 * given type from the project model.
 	 * 
-	 * @param baseURI     The path to the main transformation folder.
-	 * @param projectPath A project relative path by folder segments.
-	 * @param typeName    The name of the Java type.
+	 * @param settings The main transformation settings.
+	 * @param removed  The java resource that was removed.
 	 * @return All correspondingly removed workspace resources.
 	 */
-	public abstract void removePackagedElement(URI baseURI, String[] projectPath, String typeName) 
+	public abstract void removePackagedElement(TransformationSettings settings, IResource removed) 
 			throws NoSuchElementException, IOException;
 
 	/**

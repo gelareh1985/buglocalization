@@ -89,7 +89,7 @@ public abstract class JavaASTTransformation extends ASTVisitor {
 
 		IJavaElement javaElement = javaAST.getJavaElement();
 		this.projectName = javaElement.getResource().getProject().getName();
-		this.transformationPath = bindings.getBindingTranslator().getModelPath(projectName, javaElement);
+		this.transformationPath = settings.getModelPath(projectName, javaElement);
 		this.rootModelElements = new ArrayList<>();
 		this.javaToModelTrace = new HashMap<>();
 	}

@@ -283,10 +283,16 @@ public class GitRepository implements Repository {
 				Path workingDirectory = Paths.get(this.workingDirectory.getAbsolutePath());
 				
 				for (Path file : files) {
-					if (Files.exists(workingDirectory.resolve(file))) {
-						git.add().addFilepattern(file.toString().replace("\\", "/")).call();
+					if (file != null) {
+						if (Files.exists(workingDirectory.resolve(file))) {
+							git.add().addFilepattern(file.toString().replace("\\", "/")).call();
+						} else {
+							git.rm().addFilepattern(file.toString().replace("\\", "/")).call();
+						}
 					} else {
-						git.rm().addFilepattern(file.toString().replace("\\", "/")).call();
+						if (Activator.getLogger().isLoggable(Level.SEVERE)) {
+							Activator.getLogger().log(Level.SEVERE, "File to be commited is null!");
+						}
 					}
 				}
 				commit = git.commit().setAllowEmpty(true)
@@ -326,33 +332,41 @@ public class GitRepository implements Repository {
 	}
 	
 	public List<FileChange> getChangesFlattenCommitTree(Version versionA, Version versionB, boolean lines) {
+		
+		
 		try (Git git = openGitRepository()) {
-			List<FileChange> changes = new ArrayList<>();
 			
-			ObjectId objectIdA = ObjectId.fromString(versionA.getIdentification());
-			ObjectId objectIdB = ObjectId.fromString(versionB.getIdentification());
-			
-			try (RevWalk revWalk = new RevWalk(git.getRepository())) {
-				RevCommit commitA = revWalk.parseCommit(objectIdA);
-				RevCommit commitB = revWalk.parseCommit(objectIdB);
-				revWalk.markStart(commitA);
-				revWalk.markStart(commitB);
+			if (versionA == null) {
+				ObjectId idB = git.getRepository().resolve(versionB.getIdentification() + "^{tree}");
+				return getChanges(null, idB, lines);
+			} else {
+				List<FileChange> changes = new ArrayList<>();
 				
-				for (Iterator<RevCommit> iterator = revWalk.iterator(); iterator.hasNext();) {
-					RevCommit nextCommit = iterator.next();
+				ObjectId objectIdA = ObjectId.fromString(versionA.getIdentification());
+				ObjectId objectIdB = ObjectId.fromString(versionB.getIdentification());
+				
+				try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+					RevCommit commitA = revWalk.parseCommit(objectIdA);
+					RevCommit commitB = revWalk.parseCommit(objectIdB);
+					revWalk.markStart(commitA);
+					revWalk.markStart(commitB);
 					
-					if (nextCommit.getId().getName().equals(versionA.getIdentification())) {
-						break;
+					for (Iterator<RevCommit> iterator = revWalk.iterator(); iterator.hasNext();) {
+						RevCommit nextCommit = iterator.next();
+						
+						if (nextCommit.getId().getName().equals(versionA.getIdentification())) {
+							break;
+						}
+						
+						ObjectId idA = git.getRepository().resolve(nextCommit.getId().getName() + "~1^{tree}");
+						ObjectId idB = git.getRepository().resolve(nextCommit.getId().getName() + "^{tree}");
+						changes.addAll(getChanges(idA, idB, lines));
+						
 					}
-					
-					ObjectId idA = git.getRepository().resolve(nextCommit.getId().getName() + "~1^{tree}");
-					ObjectId idB = git.getRepository().resolve(nextCommit.getId().getName() + "^{tree}");
-					changes.addAll(getChanges(idA, idB, lines));
-					
-			    }
+				}
+				
+				return changes;
 			}
-			
-			return changes;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

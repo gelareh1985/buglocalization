@@ -189,7 +189,12 @@ public class JavaProject2SystemModel {
 			}
 		}
 		
-		fileChanges.add(javaToModel.get(project));
+		Path projectModelFile = javaToModel.get(project);
+		
+		if (projectModelFile != null) {
+			fileChanges.add(projectModelFile);
+		}
+		
 		return fileChanges;
 	}
 

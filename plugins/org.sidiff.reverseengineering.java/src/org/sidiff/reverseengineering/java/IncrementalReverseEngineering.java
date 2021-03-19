@@ -260,10 +260,7 @@ public class IncrementalReverseEngineering {
 
 	protected void removeFromProjectModel(JavaASTProjectModel projectModel, IResource removed) {
 		try {
-			projectModel.removePackagedElement(
-					settings.getBaseURI(),
-					removed.getParent().getProjectRelativePath().segments(), 
-					removed.getFullPath().removeFileExtension().lastSegment());
+			projectModel.removePackagedElement(settings, removed);
 			
 			// Remove resources:
 			for (TransformationListener listener : listeners) {

@@ -148,7 +148,7 @@ public class JavaASTBindingResolver {
 					if (isInScope(projectName, binding)) {
 						
 						// Create new workspace proxy binding or common external binding:
-						String[] externalPath = bindingTranslator.getModelPath(projectName, javaElement);
+						String[] externalPath = bindingTranslator.getSettings().getModelPath(projectName, javaElement);
 						URI externalBindingURI = bindingTranslator.getExternalURI(projectName, binding, externalPath, localPath);
 						uniqueBindingKey = externalBindingURI.fragment();
 						EObject newExternalModelElement = createExternalProxy(externalBindingURI, binding, isTypeOf);

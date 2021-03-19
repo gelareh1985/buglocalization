@@ -3,11 +3,11 @@ package org.sidiff.reverseengineering.java.transformation.uml;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -16,6 +16,8 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.UMLFactory;
+import org.sidiff.reverseengineering.java.Activator;
+import org.sidiff.reverseengineering.java.configuration.TransformationSettings;
 import org.sidiff.reverseengineering.java.transformation.JavaASTBindingTranslator;
 import org.sidiff.reverseengineering.java.transformation.JavaASTProjectModel;
 import org.sidiff.reverseengineering.java.util.WorkspaceUtil;
@@ -37,6 +39,8 @@ public class JavaASTProjectModelUML extends JavaASTProjectModel {
 	protected Model projectModelRoot;
 	
 	protected Package defaultPackage;
+	
+	protected TransformationSettings settings;
 
 	/**
 	 * @see {@link JavaASTProjectModel#JavaASTProjectModel(XMLResource, JavaASTBindingTranslator)}
@@ -106,85 +110,94 @@ public class JavaASTProjectModelUML extends JavaASTProjectModel {
 	}
 	
 	@Override
-	public void removePackagedElement(URI baseURI, String[] projectPath, String typeName) 
+	public void removePackagedElement(TransformationSettings settings, IResource removed) 
 			throws NoSuchElementException, IOException {
+		
+		String[] pathFragments = settings.findModelPath(removed, settings.getBaseURI());
+		
+		if (pathFragments == null) {
+			throw new NoSuchElementException(); // could not resolve type element
+		}
 		
 		// Find containing package:
 		Package modelPackage = getProjectPackage();
-		int segment = 0;
-		boolean sourceFolderFound = false;
+		String modelElementName = settings.getModelElementName(removed);
+		PackageableElement typedElement = findPackagedElement(modelPackage, pathFragments, modelElementName);
 		
-		while (segment < projectPath.length) {
-			PackageableElement projectResource = modelPackage.getPackagedElement(projectPath[segment]);
-			
-			// Skip segments until source folder:
-			if (projectResource != null) {
-				// Step into packages:
-				if (projectResource instanceof Package) {
-					modelPackage = (Package) projectResource;
-					sourceFolderFound = true;
-				} else {
-					throw new NoSuchElementException(); // could not resolve package
-				}
-			} else {
-				if (sourceFolderFound) {
-					throw new NoSuchElementException(); // could not resolve package
-				}
-			}
-			
-			++segment;
-		}
-		
-		if (modelPackage == null) {
-			modelPackage = getDefaultPackage();
-		}
-		
-		// Remove typed element:
-		PackageableElement typedElement = modelPackage.getPackagedElement(typeName);
-
 		if (typedElement != null) {
-			
-			// Delete from file system:
-			Path typeModelPath = Paths.get(typedElement.eResource().getURI().resolve(baseURI).toFileString());
-			Files.deleteIfExists(typeModelPath);
 			
 			// Delete from model:
 			EcoreUtil.remove(typedElement);
-
-			// Garbage collect empty packages:
-			while (modelPackage != null) {
-				if (modelPackage.getPackagedElements().isEmpty()) {
-					Package emptyPackage = modelPackage;
-					
-					if (modelPackage.eContainer() instanceof Package) {
-						modelPackage = (Package) modelPackage.eContainer();
-					} else {
-						modelPackage = null;
-					}
-					
-					// Delete from file system:
-					if (typeModelPath.getParent().getFileName().toString().equals(emptyPackage.getName())) {
-						if (WorkspaceUtil.isEmptyFolder(typeModelPath.getParent())) {
-							Files.deleteIfExists(typeModelPath.getParent());
-						}
-					}
-					
-					// Delete from model:
-					EcoreUtil.remove(emptyPackage);
-					
-					if (emptyPackage == defaultPackage) {
-						this.defaultPackage = null;
-					}
-					
-					if (emptyPackage == projectModelRoot) {
-						this.projectModelRoot = null;
-					}
-				} else {
-					break;
+			
+			// Delete from file system:
+			Path typeModelPath = Path.of(settings.getBaseURI().devicePath(), pathFragments);
+				
+			if (!Files.deleteIfExists(typeModelPath)) {
+				if (Activator.isLoggable(Level.SEVERE)) {
+					Activator.getLogger().log(Level.SEVERE, "File not found for deletion:" + typeModelPath);
 				}
 			}
+			
+			// Garbage collect empty packages:
+			garbageCollectPackages(modelPackage, typeModelPath);
+				
 		} else {
 			throw new NoSuchElementException(); // could not resolve type element
+		}
+	}
+
+	private PackageableElement findPackagedElement(Package modelPackage, String[] pathFragments, String modelElementName) {
+		PackageableElement packageableElement = modelPackage.getPackagedElement(pathFragments[1]);
+		
+		for (int i = 2; i < pathFragments.length - 1; i++) {
+			if (packageableElement instanceof Package) {
+				packageableElement = ((Package) packageableElement).getPackagedElement(pathFragments[i]);
+			}
+		}
+		
+		// Try default package:
+		if (packageableElement == null) {
+			modelPackage = getDefaultPackage();
+		}
+		
+		if (packageableElement instanceof Package) {
+			packageableElement = ((Package) packageableElement).getPackagedElement(modelElementName);
+		}
+		
+		return packageableElement;
+	}
+
+	private void garbageCollectPackages(Package modelPackage, Path typeModelPath) throws IOException {
+		while (modelPackage != null) {
+			if (modelPackage.getPackagedElements().isEmpty()) {
+				Package emptyPackage = modelPackage;
+				
+				if (modelPackage.eContainer() instanceof Package) {
+					modelPackage = (Package) modelPackage.eContainer();
+				} else {
+					modelPackage = null;
+				}
+				
+				// Delete from file system:
+				if (typeModelPath.getParent().getFileName().toString().equals(emptyPackage.getName())) {
+					if (WorkspaceUtil.isEmptyFolder(typeModelPath.getParent())) {
+						Files.deleteIfExists(typeModelPath.getParent());
+					}
+				}
+				
+				// Delete from model:
+				EcoreUtil.remove(emptyPackage);
+				
+				if (emptyPackage == defaultPackage) {
+					this.defaultPackage = null;
+				}
+				
+				if (emptyPackage == projectModelRoot) {
+					this.projectModelRoot = null;
+				}
+			} else {
+				break;
+			}
 		}
 	}
 

@@ -14,6 +14,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.sidiff.bug.localization.common.utilities.workspace.ApplicationUtil;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
+import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
@@ -33,8 +34,10 @@ public class GitRewriteApplication implements IApplication {
 	public static final String ARGUMENT_TARGET_REPOSITORY = "-targetrepository";
 
 	private Path datasetPath;
-
+	
 	private DataSet dataset;
+
+	private History history;
 
 	private GitRepository sourceRepository;
 
@@ -45,6 +48,7 @@ public class GitRewriteApplication implements IApplication {
 
 		this.datasetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		this.dataset = DataSetStorage.load(datasetPath);
+		this.history = dataset.getHistory();
 
 		Path sourceRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SOURCE_REPOSITORY);
 		this.sourceRepository = new GitRepository(sourceRepositoryPath.toFile()); 
@@ -52,17 +56,18 @@ public class GitRewriteApplication implements IApplication {
 		Path targetRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_TARGET_REPOSITORY, false);
 		this.targetRepository = new GitRepository(targetRepositoryPath.toFile());
 
-		HistoryIterator historyIterator = new HistoryIterator(dataset.getHistory());
+//		this.history = sourceRepository.getHistory(VersionFilter.FILTER_NOTHING);
+		HistoryIterator historyIterator = new HistoryIterator(history);
 
 		while (historyIterator.hasNext()) {
 			System.out.println("Remaining Versions: " + (historyIterator.nextIndex() + 1));
 			Version currentVersion = historyIterator.next();
 			
-			sourceRepository.checkout(dataset.getHistory(), currentVersion);
+			sourceRepository.checkout(history, currentVersion);
 			RevCommit currentSourceCommit = sourceRepository.getCurrentCommit();
 
 			// Copy changes of the current version from the source to the target repository:
-			copyChangesFromSourceToTargetRepository(currentVersion);
+			copyChangesFromSourceToTargetRepository(historyIterator.getOlderVersion(), currentVersion);
 
 			// Do changes to current version in the target repository:
 			processVersion(
@@ -78,7 +83,13 @@ public class GitRewriteApplication implements IApplication {
 			
 			// Update data set version ID:
 			RevCommit currentTargetCommit = targetRepository.getCurrentCommit();
-			currentVersion.setIdentification(currentTargetCommit.getId().getName());
+			currentVersion.setIdentificationTrace(currentTargetCommit.getId().getName());
+		}
+		
+		for (Version version : history.getVersions()) {
+			String trace = version.getIdentification();
+			version.setIdentification(version.getIdentificationTrace());
+			version.setIdentificationTrace(trace);
 		}
 
 		// Save rewritten data set:
@@ -91,8 +102,9 @@ public class GitRewriteApplication implements IApplication {
 	public void stop() {
 	}
 
-	private void copyChangesFromSourceToTargetRepository(Version currentVersion) throws IOException {
-		for (FileChange fileChange : sourceRepository.getChanges(currentVersion, false)) {
+	private void copyChangesFromSourceToTargetRepository(Version olderVersion, Version currentVersion) throws IOException {
+		for (FileChange fileChange : sourceRepository.getChanges(olderVersion, currentVersion, false)) {
+		// for (FileChange fileChange : sourceRepository.getChangesFlattenCommitTree(olderVersion, currentVersion, false)) {
 			Path sourceFile = getSourceRepositoryFile(fileChange.getLocation());
 			Path targetFile = getTargetRepositoryFile(fileChange.getLocation());
 			
@@ -109,57 +121,7 @@ public class GitRewriteApplication implements IApplication {
 
 	protected void processVersion(Version olderVersion, Version currentVersion, Version newerVersion) throws Exception {
 		// TODO: Perform updates on the current version in the target repository:
-		
-//		// Clean up system model references in data set...
-//		for (Project project : currentVersion.getWorkspace().getProjects()) {
-//			Path systemModel = getTargetRepositoryFile(project.getSystemModel());
-//			
-//			if (!Files.exists(systemModel)) {
-//				project.setSystemModel(null);
-//				
-//				if (Activator.getLogger().isLoggable(Level.WARNING)) {
-//					Activator.getLogger().log(Level.WARNING, "Clean up system model reference: " + currentVersion + " " + project);
-//				}
-//			}
-//		}
-//		
-//		// Clean up system model changes...
-//		SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider();
-//		
-//		for (Project project : currentVersion.getWorkspace().getProjects()) {
-//			if (!HistoryUtil.hasChanges(project, currentVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
-//				if (HistoryUtil.hasChanges(project, olderVersion.getFileChanges(), systemModelProvider.getFileChangeFilter())) {
-//					if (project.getSystemModel() != null) {
-//						Path systemModelFile = getTargetRepositoryFile(project.getSystemModel());
-//						SystemModel systemModel = SystemModelFactory.eINSTANCE.createSystemModel(systemModelFile);
-//						boolean hasChanged = clearSystemModelChanges(systemModel, systemModelFile);
-//						
-//						if (hasChanged && Activator.getLogger().isLoggable(Level.WARNING)) {
-//							Activator.getLogger().log(Level.WARNING, "Clean up system model changes: " + systemModelFile);
-//						}
-//					}
-//				}
-//			}
-//		}
 	}
-	
-//	private boolean clearSystemModelChanges(SystemModel systemModel, Path systemModelFile) throws IOException {
-//		boolean hasChanged = false;
-//		
-//		for (View view : systemModel.getViews()) {
-//			if (!view.getChanges().isEmpty()) {
-//				view.getChanges().clear();
-//				hasChanged = true;
-//			}
-//		}
-//		
-//		if (hasChanged) {
-//			storeSystemModel(systemModelFile, systemModel);
-//			return true;
-//		}
-//		
-//		return false;
-//	}
 	
 	protected void storeSystemModel(Path systemModelFile, SystemModel systemModel) {
 		systemModel.setURI(URI.createFileURI(systemModelFile.toString()));
@@ -167,8 +129,10 @@ public class GitRewriteApplication implements IApplication {
 	}
 	
 	protected void copyFile(Path source, Path target) throws IOException {
-		Files.createDirectories(target.getParent());
-		Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+		if (Files.exists(source)) {
+			Files.createDirectories(target.getParent());
+			Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+		}
 	}
 	
 	protected void deleteFile(Path target) throws IOException {
@@ -192,14 +156,6 @@ public class GitRewriteApplication implements IApplication {
 
 	public void setDatasetPath(Path datasetPath) {
 		this.datasetPath = datasetPath;
-	}
-
-	public DataSet getDataset() {
-		return dataset;
-	}
-
-	public void setDataset(DataSet dataset) {
-		this.dataset = dataset;
 	}
 
 	public GitRepository getSourceRepository() {
