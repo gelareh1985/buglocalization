@@ -1,11 +1,15 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.sidiff.bug.localization.dataset.changes.util.FileChangeFilter;
-import org.sidiff.bug.localization.dataset.workspace.filter.PDEProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.JavaProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
 
 public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvider {
@@ -33,7 +37,16 @@ public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvi
 	
 	public SystemModelRetrievalProvider(Path codeRepositoryPath) {
 		super(codeRepositoryPath);
-		this.projectFilter =  () -> new TestProjectFilter(new PDEProjectFilter()); // new JavaProjectFilter(); // new PDEProjectFilter();
+		// new JavaProjectFilter()
+		// new PDEProjectFilter()
+		// new TestProjectFilter()
+		// new ProjectNameFilter()
+		Set<String> filteredProjectNames = new HashSet<>(Arrays.asList(new String[] {
+				"converterJclMin", "converterJclMin1.5", "converterJclMin1.7",
+				"converterJclMin1.8", "converterJclMin9", "converterJclMin10",
+				"converterJclMin11", "converterJclMin12", "converterJclMin12",
+				"converterJclMin13", "converterJclMin14", "converterJclMin15"})); 
+		this.projectFilter =  () -> new ProjectNameFilter(new TestProjectFilter(new JavaProjectFilter()), filteredProjectNames);
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().toLowerCase().endsWith(".java");
 		this.intermediateSave = 200;
 	}
