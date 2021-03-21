@@ -28,7 +28,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.obeonetwork.dsl.uml2.core.api.wizards.UmlProjectUtils;
 import org.obeonetwork.dsl.uml2.core.wizard.AbstractNewUmlModelWizard;
-import org.obeonetwork.dsl.uml2.dashboard.services.DashboardServices;
 import org.obeonetwork.dsl.uml2.design.UMLDesignerPlugin;
 import org.obeonetwork.dsl.uml2.design.api.utils.UmlViewpoints;
 import org.obeonetwork.dsl.uml2.design.internal.wizards.Messages;
@@ -160,8 +159,6 @@ public class UmlModelWizard extends AbstractNewUmlModelWizard {
 				}
 			}
 
-			// Open the dashboard
-			DashboardServices.INSTANCE.openDashboard(project);
 			// Open the contextual help
 			// Context ids are defined in the html/contexts.xml file in
 			// org.obeonetwork.dsl.uml2.design.doc project.

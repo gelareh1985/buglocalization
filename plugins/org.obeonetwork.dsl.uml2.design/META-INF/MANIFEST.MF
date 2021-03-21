@@ -33,7 +33,6 @@ Require-Bundle: com.google.guava;bundle-version="[15.0.0,22.0.0)",
  org.eclipse.uml2.uml.edit;bundle-version="[5.0.0,6.0.0)",
  org.eclipse.uml2.uml.editor;bundle-version="[5.0.0,6.0.0)",
  org.eclipse.uml2.uml.resources;bundle-version="[5.0.0,6.0.0)",
- org.obeonetwork.dsl.uml2.dashboard;bundle-version="[9.0.0,10.0.0)",
  org.obeonetwork.dsl.uml2.core.design
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

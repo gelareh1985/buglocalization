@@ -15,7 +15,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
-import org.obeonetwork.dsl.uml2.core.ProjectNatureUml;
 import org.obeonetwork.dsl.uml2.core.UMLDesignerCorePlugin;
 import org.obeonetwork.dsl.uml2.core.internal.wizards.Messages;
 import org.obeonetwork.dsl.uml2.core.internal.wizards.newproject.InitUmlModel;
@@ -64,7 +63,6 @@ public abstract class AbstractNewUmlModelWizard extends BasicNewProjectResourceW
 			final String[] natures = description.getNatureIds();
 			final String[] newNatures = new String[natures.length + 1];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-			newNatures[natures.length] = ProjectNatureUml.NATURE_ID;
 
 			// validate the natures
 			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
