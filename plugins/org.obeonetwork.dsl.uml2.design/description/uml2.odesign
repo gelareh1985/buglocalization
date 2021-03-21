@@ -182,7 +182,7 @@
               </initialOperation>
               <containerViewVariable name="containerView"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramCreationDescription" name="Create activity diagram from operation" label="Activity diagram" titleExpression="aql:self.name+' Activity Diagram'" browseExpression="aql:self.oclAsType(uml::Operation).method->filter(uml::Activity)->asSequence()->first()">
               <initialOperation>
@@ -190,25 +190,25 @@
               </initialOperation>
               <containerViewVariable name="containerView"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramNavigationDescription" name="Open activity diagram from package" label="Open Activity diagram" browseExpression="aql:self.eContents()->filter(uml::Activity)" navigationNameExpression="aql:'Open '+self.name+' Activity Diagram'">
               <containerViewVariable name="containerView"/>
               <containerVariable name="container"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramNavigationDescription" name="Open activity diagram from classifier" label="Open Activity diagram" navigationNameExpression="aql:'Open '+self.name+' Activity Diagram'">
               <containerViewVariable name="containerView"/>
               <containerVariable name="container"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramNavigationDescription" name="Open activity diagram from operation" label="Open Activity diagram" browseExpression="aql:self.method->filter(uml::Activity)" navigationNameExpression="aql:'Open '+self.name+' Activity Diagram'">
               <containerViewVariable name="containerView"/>
               <containerVariable name="container"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']"/>
             </ownedTools>
           </subSections>
           <subSections name="State Machine diagram">
@@ -225,7 +225,7 @@
               </initialOperation>
               <containerViewVariable name="containerView"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State Machine Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State%20Machine%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramCreationDescription" documentation="Create a new StateMachine" name="State Machine for Operation" label="State Machine diagram" browseExpression="aql:self.eContainer(uml::BehavioredClassifier).eContents()->filter(uml::StateMachine)->last()">
               <initialOperation>
@@ -244,13 +244,13 @@
               </initialOperation>
               <containerViewVariable name="containerView"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State Machine Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State%20Machine%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramNavigationDescription" name="Open statemachine from package" label="Open Statemachine diagram" browseExpression="aql:self.eContents()->filter(uml::StateMachine)" navigationNameExpression="aql:'Open '+self.name+' State Machine Diagram'">
               <containerViewVariable name="containerView"/>
               <containerVariable name="container"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State Machine Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State%20Machine%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramCreationDescription" name="Create statemachine diagram from State" label="State Machine diagram" precondition="feature:isSubmachineState" titleExpression="aql:self.submachine.name + ' State Machine Diagram'" browseExpression="feature:submachine">
               <initialOperation>
@@ -258,19 +258,19 @@
               </initialOperation>
               <containerViewVariable name="containerView"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State Machine Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State%20Machine%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramNavigationDescription" name="Open statemachine diagram" label="Open State Machine diagram" navigationNameExpression="aql:'Open '+self.name+' State Machine Diagram'">
               <containerViewVariable name="containerView"/>
               <containerVariable name="container"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State Machine Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State%20Machine%20Diagram']"/>
             </ownedTools>
             <ownedTools xsi:type="tool_1:DiagramNavigationDescription" name="Open statemachine from State" browseExpression="feature:submachine" navigationNameExpression="aql:'Open '+self.name+' State Machine Diagram'">
               <containerViewVariable name="containerView"/>
               <containerVariable name="container"/>
               <representationNameVariable name="diagramName"/>
-              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State Machine Diagram']"/>
+              <diagramDescription href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='State%20Machine%20Diagram']"/>
             </ownedTools>
           </subSections>
           <subSections name="Sequence diagram">
@@ -568,7 +568,7 @@
                     </initialOperation>
                   </buttons>
                   <page name="EditDialogPage">
-                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@pages.0"/>
+                    <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@pages.0"/>
                   </page>
                 </subModelOperations>
               </firstModelOperations>
@@ -1333,10 +1333,18 @@
         </filters>
       </filters>
       <validationSet name="callCheckAggregationCompositeAssociation">
-        <ownedRules xsi:type="validation:SemanticValidationRule" level="ERROR" message="This is not a binary association as required for composite or aggregation." targetClass="uml.Association" name="isValidAggregationCompositeAssociation">
+        <ownedRules xsi:type="validation:SemanticValidationRule" name="isValidAggregationCompositeAssociation" level="ERROR" message="This is not a binary association as required for composite or aggregation." targetClass="uml.Association">
           <audits auditExpression="service:isValidAggregationCompositeAssociation"/>
         </ownedRules>
       </validationSet>
+      <layout xsi:type="description_1:CustomLayoutConfiguration" id="org.eclipse.elk.graphviz.dot" label="Graphviz Dot" description="Layered drawings of directed graphs. The algorithm aims edges in the same direction (top to bottom, or left to right) and then attempts to avoid edge crossings and reduce edge length. Edges are routed as spline curves and are thus drawn very smoothly. This algorithm is very suitable for state machine and activity diagrams, where the direction of edges has an important role.">
+        <layoutOptions xsi:type="description_1:DoubleLayoutOption" id="org.eclipse.elk.graphviz.labelDistance" value="4.0">
+          <targets>EDGE</targets>
+        </layoutOptions>
+        <layoutOptions xsi:type="description_1:DoubleLayoutOption" id="org.eclipse.elk.spacing.nodeNode" value="30.0">
+          <targets>PARENT</targets>
+        </layoutOptions>
+      </layout>
       <defaultLayer name="Class" reusedMappings="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@defaultLayer/@nodeMappings[name='Empty%20Diagram']">
         <nodeMappings name="CD_BrokenAssociation" semanticCandidatesExpression="service:getBrokenAssociations" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="Association">
           <style xsi:type="style:BundledImageDescription" labelExpression="aql:self.name +' : (Association with missing ends)'" shape="dot">
@@ -1478,7 +1486,7 @@
             <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
           </style>
         </containerMappings>
-        <containerMappings name="CD_Class" detailDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Create%20activity%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Composite%20structure%20diagram']/@ownedTools[name='Create%20Composite%20Structure%20Diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Create%20statemachine%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Create%20class%20diagram%20from%20component'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Create%20class%20diagram%20from%20class']" navigationDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Sequence%20diagram']/@ownedTools[name='Open%20sequence%20diagram%20from%20class'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Open%20activity%20diagram%20from%20classifier'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Open%20statemachine%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Open%20a%20class%20diagram%20from%20component'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Open%20a%20class%20diagram%20from%20component']" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticCandidatesExpression="service:self.getSemanticCandidatesClasses" createElements="false" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.Class" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" dropDescriptions="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Drop%20Attributes%20or%20Operations']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
+        <containerMappings name="CD_Class" detailDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Create%20activity%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Composite%20structure%20diagram']/@ownedTools[name='Create%20Composite%20Structure%20Diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Create%20statemachine%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Create%20class%20diagram%20from%20component'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Create%20class%20diagram%20from%20class']" navigationDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Sequence%20diagram']/@ownedTools[name='Open%20sequence%20diagram%20from%20class'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Open%20activity%20diagram%20from%20classifier'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Open%20statemachine%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Open%20a%20class%20diagram%20from%20component'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Open%20a%20class%20diagram%20from%20component']" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticCandidatesExpression="service:self.getSemanticCandidatesClasses" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.Class" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" dropDescriptions="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Drop%20Attributes%20or%20Operations']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
           <style xsi:type="style:FlatContainerStyleDescription" arcWidth="5" arcHeight="5" borderSizeComputationExpression="1" labelSize="9" labelExpression="service:computeUmlLabel" tooltipExpression="service:computeTooltip" roundedCorner="true" widthComputationExpression="service:defaultWidth" heightComputationExpression="service:defaultHeight" backgroundStyle="Liquid" foregroundColor="//@userColorsPalettes[name='UMLPalette']/@entries[name='lighter%20blue']">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_blue']"/>
             <labelFormat>bold</labelFormat>
@@ -1494,7 +1502,7 @@
             </style>
           </conditionnalStyles>
         </containerMappings>
-        <containerMappings name="CD_Interface" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" createElements="false" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.Interface" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" dropDescriptions="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Drop%20Attributes%20or%20Operations']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
+        <containerMappings name="CD_Interface" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.Interface" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" dropDescriptions="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Drop%20Attributes%20or%20Operations']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
           <style xsi:type="style:FlatContainerStyleDescription" arcWidth="5" arcHeight="5" borderSizeComputationExpression="1" labelSize="9" labelExpression="service:computeUmlLabel" tooltipExpression="service:computeTooltip" roundedCorner="true" widthComputationExpression="service:defaultWidth" heightComputationExpression="service:defaultHeight" backgroundStyle="Liquid" foregroundColor="//@userColorsPalettes[name='UMLPalette']/@entries[name='lighter%20purple']">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='purple']"/>
             <labelFormat>bold</labelFormat>
@@ -1510,7 +1518,7 @@
             </style>
           </conditionnalStyles>
         </containerMappings>
-        <containerMappings name="CD_DataType" preconditionExpression="aql:self.oclIsTypeOf(uml::DataType)" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" createElements="false" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.DataType" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
+        <containerMappings name="CD_DataType" preconditionExpression="aql:self.oclIsTypeOf(uml::DataType)" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.DataType" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
           <style xsi:type="style:FlatContainerStyleDescription" arcWidth="5" arcHeight="5" borderSizeComputationExpression="1" labelSize="9" labelExpression="service:computeUmlLabel" tooltipExpression="service:computeTooltip" roundedCorner="true" widthComputationExpression="service:defaultWidth" heightComputationExpression="service:defaultHeight" backgroundStyle="Liquid" foregroundColor="//@userColorsPalettes[name='UMLPalette']/@entries[name='lighter%20green']">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_green']"/>
             <labelFormat>bold</labelFormat>
@@ -1526,7 +1534,7 @@
             </style>
           </conditionnalStyles>
         </containerMappings>
-        <containerMappings name="CD_PrimitiveType" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" createElements="false" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.PrimitiveType" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
+        <containerMappings name="CD_PrimitiveType" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.PrimitiveType" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
           <style xsi:type="style:FlatContainerStyleDescription" arcWidth="5" arcHeight="5" borderSizeComputationExpression="1" labelSize="9" labelExpression="service:computeUmlLabel" tooltipExpression="service:computeTooltip" roundedCorner="true" widthComputationExpression="service:defaultWidth" heightComputationExpression="service:defaultHeight" backgroundStyle="Liquid">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_blue']"/>
             <labelFormat>bold</labelFormat>
@@ -1544,7 +1552,7 @@
             </style>
           </conditionnalStyles>
         </containerMappings>
-        <containerMappings name="CD_Enumeration" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" createElements="false" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.Enumeration" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
+        <containerMappings name="CD_Enumeration" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.Enumeration" reusedBorderedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Qualifier']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
           <subNodeMappings name="CD_EnumerationLiteral" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticCandidatesExpression="feature:ownedLiteral" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.EnumerationLiteral">
             <style xsi:type="style:SquareDescription" labelExpression="service:computeUmlLabel" labelAlignment="LEFT" sizeComputationExpression="1">
               <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='chocolate']"/>
@@ -1569,7 +1577,7 @@
             </style>
           </conditionnalStyles>
         </containerMappings>
-        <containerMappings name="CD_Package" detailDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Create%20activity%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Deployment%20diagram']/@ownedTools[name='Create%20deployment%20diagram%20from%20package'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Component%20diagram']/@ownedTools[name='Create%20component%20diagram%20from%20package'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Create%20class%20diagram%20from%20package'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Use%20case%20diagram']/@ownedTools[name='Create%20Use%20Case%20Diagram%20from%20package']" pasteDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='existingElements']/@ownedTools[name='Paste']" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" createElements="false" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.Package" dropDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='existingElements']/@ownedTools[name='Drop%20From%20Diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='existingElements']/@ownedTools[name='Drop%20From%20TreeView']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@nodeMappings[name='CD_Association_NAry']" reusedContainerMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Package'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Enumeration'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Interface'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_PrimitiveType'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_DataType'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_AssociationClass']">
+        <containerMappings name="CD_Package" detailDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Create%20activity%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Deployment%20diagram']/@ownedTools[name='Create%20deployment%20diagram%20from%20package'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Component%20diagram']/@ownedTools[name='Create%20component%20diagram%20from%20package'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Class%20diagram']/@ownedTools[name='Create%20class%20diagram%20from%20package'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Use%20case%20diagram']/@ownedTools[name='Create%20Use%20Case%20Diagram%20from%20package']" pasteDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='existingElements']/@ownedTools[name='Paste']" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.Package" dropDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='existingElements']/@ownedTools[name='Drop%20From%20Diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='existingElements']/@ownedTools[name='Drop%20From%20TreeView']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@nodeMappings[name='CD_Association_NAry']" reusedContainerMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Package'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Enumeration'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Interface'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_PrimitiveType'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_DataType'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_AssociationClass']">
           <style xsi:type="style:FlatContainerStyleDescription" arcWidth="5" arcHeight="5" borderSizeComputationExpression="1" labelSize="9" labelExpression="service:computeUmlLabel" labelAlignment="LEFT" tooltipExpression="service:computeTooltip" roundedCorner="true" widthComputationExpression="service:defaultWidth" heightComputationExpression="service:defaultHeight" backgroundStyle="GradientTopToBottom" foregroundColor="//@userColorsPalettes[name='UMLPalette']/@entries[name='Containment%20Background']">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_blue']"/>
             <labelFormat>bold</labelFormat>
@@ -1587,7 +1595,7 @@
             </style>
           </conditionnalStyles>
         </containerMappings>
-        <containerMappings name="CD_AssociationClass" detailDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Create%20activity%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Composite%20structure%20diagram']/@ownedTools[name='Create%20Composite%20Structure%20Diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Create%20statemachine%20diagram']" navigationDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Sequence%20diagram']/@ownedTools[name='Open%20sequence%20diagram%20from%20class'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Open%20activity%20diagram%20from%20classifier'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Open%20statemachine%20diagram']" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticCandidatesExpression="aql:diagram.getVisibleAssociationClass(containerView.oclAsType(viewpoint::DSemanticDecorator).target)" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" domainClass="uml.AssociationClass" dropDescriptions="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Drop%20Attributes%20or%20Operations']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
+        <containerMappings name="CD_AssociationClass" detailDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Create%20activity%20diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Composite%20structure%20diagram']/@ownedTools[name='Create%20Composite%20Structure%20Diagram'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Create%20statemachine%20diagram']" navigationDescriptions="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Sequence%20diagram']/@ownedTools[name='Open%20sequence%20diagram%20from%20class'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='Activity%20diagram']/@ownedTools[name='Open%20activity%20diagram%20from%20classifier'] //@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='navigations']/@subSections[name='State%20Machine%20diagram']/@ownedTools[name='Open%20statemachine%20diagram']" deletionDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='profiles']/@ownedTools[name='DEL_Profilable%20Element']" labelDirectEdit="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='directEdit']/@ownedTools[name='NamedElementServiceDirectEdit']" semanticCandidatesExpression="aql:diagram.getVisibleAssociationClass(containerView.oclAsType(viewpoint::DSemanticDecorator).target)" semanticElements="service:getSemanticElements" doubleClickDescription="//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Reused%20Description']/@toolSection/@subSections[name='properties']/@ownedTools[name='Open%20properties%20wizard']" synchronizationLock="true" domainClass="uml.AssociationClass" dropDescriptions="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Drop%20Attributes%20or%20Operations']" reusedNodeMappings="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Property'] //@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_ReusedMappingForFeatures']/@subNodeMappings[name='CD_Operation']" childrenPresentation="List">
           <style xsi:type="style:FlatContainerStyleDescription" arcWidth="5" arcHeight="5" borderSizeComputationExpression="1" labelSize="9" labelExpression="service:computeUmlLabel" tooltipExpression="service:computeTooltip" roundedCorner="true" widthComputationExpression="service:defaultWidth" heightComputationExpression="service:defaultHeight" backgroundStyle="Liquid" foregroundColor="//@userColorsPalettes[name='UMLPalette']/@entries[name='lighter%20blue']">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_blue']"/>
             <labelFormat>bold</labelFormat>
@@ -1655,7 +1663,7 @@
                     </buttons>
                     <page name="D_CD_CreatePackage_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Package']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.0/@groups.0"/>
                     <groups name="D_CD_CreatePackage_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -1720,7 +1728,7 @@
                     </buttons>
                     <page name="D_CD_CreateInterface_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Interface']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.2/@groups.0"/>
                     <groups name="D_CD_CreateInterface_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -1818,7 +1826,7 @@
                       <page name="D_CD_CreateDataType_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='DataTypes']/@tools.2/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.2/@groups.0"/>
                       <groups name="D_CD_CreateDataType_GeneralGroup" semanticCandidateExpression="var:self">
                         <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
-                    </groups>
+                      </groups>
                     </subModelOperations>
                   </subModelOperations>
                 </firstModelOperations>
@@ -1853,7 +1861,7 @@
                     </buttons>
                     <page name="D_CD_CreateProperty_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Property']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.5/@groups.0"/>
                     <groups name="D_CD_CreateProperty_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -1882,10 +1890,10 @@
                   </buttons>
                   <page name="D_CD_CreateOperation_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Operation']/@initialOperation/@firstModelOperations/@subModelOperations.0/@groups.0"/>
                   <groups name="D_CD_CreateOperation_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
-                    </groups>
+                    <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                  </groups>
                   <groups name="D_CD_CreateOperation_ParametersGroup">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.3"/>
+                    <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.3"/>
                   </groups>
                 </subModelOperations>
               </firstModelOperations>
@@ -1918,7 +1926,7 @@
                     </buttons>
                     <page name="D_CD_CreateLiteral_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Literal']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.2/@groups.0"/>
                     <groups name="D_CD_CreateLiteral_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -1965,7 +1973,7 @@
                     </buttons>
                     <page name="D_CD_CreateQualifier_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Qualifier']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.1/@groups.0"/>
                     <groups name="D_CD_CreateQualifier_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -3021,7 +3029,7 @@
                   </buttons>
                   <page name="D_CS_CreateProperty_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Composite%20Structure%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='CS_Create_Part']/@initialOperation/@firstModelOperations/@subModelOperations.2/@groups.0"/>
                   <groups name="D_CS_CreateProperty_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                    <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                   </groups>
                 </subModelOperations>
               </firstModelOperations>
@@ -3381,7 +3389,7 @@
                     </buttons>
                     <page name="D_CO_CreateComponent_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Component%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Component']/@tools.0/@initialOperation/@firstModelOperations/@subModelOperations.1/@groups.0"/>
                     <groups name="D_CO_CreateComponent_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </firstModelOperations>
@@ -3469,7 +3477,7 @@
                     </buttons>
                     <page name="D_CO_CreateInterface_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Component%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Interface']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.1/@groups.0"/>
                     <groups name="D_CO_CreateInterface_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                   <subModelOperations xsi:type="tool_1:CreateView" mapping="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Component%20Diagram']/@defaultLayer/@nodeMappings[name='CO_RequiredInterface']" containerViewExpression="var:containerView"/>
@@ -3967,7 +3975,7 @@
                       <page name="D_DE_CreateNestedExecutionEnvironment_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Deployment%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Create%20Execution%20Environment']/@initialOperation/@firstModelOperations/@subModelOperations.1/@subModelOperations.0/@subModelOperations.1/@groups.0"/>
                       <groups name="D_DE_CreateNestedExecutionEnvironment_GeneralGroup" semanticCandidateExpression="var:self">
                         <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
-                   	  </groups>
+                      </groups>
                     </subModelOperations>
                   </subModelOperations>
                 </subModelOperations>
@@ -4506,7 +4514,7 @@
                     </buttons>
                     <page name="D_SD_CreateActor_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Sequence%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='CR_Actor']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.2/@groups.0"/>
                     <groups name="D_SD_CreateActor_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -5044,7 +5052,7 @@
                     </buttons>
                     <page name="D_PD_CreatePackage_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Package']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.1/@groups.0"/>
                     <groups name="D_PD_CreatePackage_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -5069,7 +5077,7 @@
                     </buttons>
                     <page name="D_PD_CreateProfile_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@toolSections.1/@ownedTools[name='Profile']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.1/@groups.0"/>
                     <groups name="D_PD_CreateProfile_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -5096,7 +5104,7 @@
                     </buttons>
                     <page name="D_PD_CreateStereotype_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Stereotype']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.1/@groups.0"/>
                     <groups name="D_PD_CreateStereotype_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -5120,7 +5128,7 @@
                     </buttons>
                     <page name="D_PD_CreateImportMetaclass_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@toolSections.2/@ownedTools[name='Import%20Metaclass']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.0/@groups.0"/>
                     <groups name="D_PD_CreateImportMetaclass_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -5247,7 +5255,7 @@
                     </buttons>
                     <page name="D_PD_CreateProperty_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@toolSections.3/@ownedTools[name='Property']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.4/@groups.0"/>
                     <groups name="D_PD_CreateProperty_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
@@ -5275,7 +5283,7 @@
                     </buttons>
                     <page name="D_PD_CreateLiteral_DefaultPage" semanticCandidateExpression="var:self" groups="//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@toolSections.3/@ownedTools[name='Literal']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.2/@groups.0"/>
                     <groups name="D_PD_CreateLiteral_GeneralGroup" semanticCandidateExpression="var:self">
-                        <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+                      <extends href="../../org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
                     </groups>
                   </subModelOperations>
                 </subModelOperations>
