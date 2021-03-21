@@ -31,6 +31,12 @@ public class UIServices {
 	 * A singleton instance to be accessed by other java services.
 	 */
 	public static final UIServices INSTANCE = new UIServices();
+	
+	// TODO: Workaround to allow fixed node sizes:
+	public static int DEFAULT_HEIGHT = 10;
+	
+	// TODO: Workaround to allow fixed node sizes:
+	public static int DEFAULT_WIDTH = 12;
 
 	/**
 	 * Hidden constructor.
@@ -45,7 +51,7 @@ public class UIServices {
 	 * @return The default height.
 	 */
 	public int defaultHeight() {
-		return 10;
+		return DEFAULT_HEIGHT;
 	}
 
 	/**
@@ -54,7 +60,7 @@ public class UIServices {
 	 * @return The default width.
 	 */
 	public int defaultWidth() {
-		return 12;
+		return DEFAULT_WIDTH;
 	}
 
 	/**
