@@ -62,12 +62,12 @@ public class JsonUtil {
 		return builder.create().fromJson(jsonElement, type);
 	}
 	
-	public static  <T> T parse(Path dataSetPath, Class<T> type) throws FileNotFoundException {
-		return parse(dataSetPath, type, getBuilderInstance());
+	public static  <T> T parse(Path jsonPath, Class<T> type) throws FileNotFoundException {
+		return parse(jsonPath, type, getBuilderInstance());
 	}
 	
-	public static  <T> T parse(Path dataSetPath, Class<T> type, GsonBuilder builder) throws FileNotFoundException {
-		try (JsonReader reader = new JsonReader(new FileReader(dataSetPath.toFile()))) {
+	public static  <T> T parse(Path jsonPath, Class<T> type, GsonBuilder builder) throws FileNotFoundException {
+		try (JsonReader reader = new JsonReader(new FileReader(jsonPath.toFile()))) {
 			T data = builder.create().fromJson(reader, type);
 			return data;
 		} catch (IOException e) {

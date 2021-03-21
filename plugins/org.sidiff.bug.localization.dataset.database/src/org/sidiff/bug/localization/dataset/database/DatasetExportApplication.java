@@ -41,12 +41,15 @@ public class DatasetExportApplication implements IApplication {
 	 *  Experimental Flags:
 	 */
 	
-	// TODO: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
-	//       -> Last Version + 1
-	private int restartWithVersion = 8077; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
+	// Restart Database Export:
+	// (1) Query returns last version: MATCH (n:TracedVersion) RETURN n ORDER BY n.__initial__version__ DESC LIMIT 1
+	// (2) Last version plus 1 to get restart version
+	// (3) To continue export set restartWithFullVersion = false!
+	// (4) Remove -clear flag from program arguments!
+ 	private int restartWithVersion = -1; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
 	private String restartWithGitVersion = null; // next version hash value or null
-	private boolean startWithFullVersion = true;
-	private String stopOnGitVersion = null;
+	private boolean restartWithFullVersion = false;
+	private String stopOnGitVersion = null; // "28f53155d592e8d12991fab6d60706a44adb05e0";
 	private boolean runTestCases = false;
 	
 	@Override
@@ -76,10 +79,10 @@ public class DatasetExportApplication implements IApplication {
 			if ((restartWithVersion != -1) || (restartWithGitVersion != null)) {
 				// Restart conversion...
 				modelHistory2Neo4j.setRestartWithVersion(restartWithVersion);
-				modelHistory2Neo4j.setStartWithFullVersion(startWithFullVersion);
+				modelHistory2Neo4j.setStartWithFullVersion(restartWithFullVersion);
 				modelHistory2Neo4j.setRestartWithGitVersion(restartWithGitVersion);
 				
-				if (startWithFullVersion) {
+				if (restartWithFullVersion) {
 					modelHistory2Neo4j.clearDatabase();
 				}
 			} else {

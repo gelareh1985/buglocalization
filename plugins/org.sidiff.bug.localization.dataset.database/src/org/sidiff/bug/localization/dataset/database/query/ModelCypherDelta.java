@@ -233,12 +233,12 @@ public class ModelCypherDelta {
 						Object[] cypherValues = new Object[values.size()];
 						
 						for (int i = 0; i < values.size(); i++) {
-							cypherValues[i] = toCypherValue(values.get(i), attribute);
+							cypherValues[i] = toCypherSingleValue(attribute, values.get(i));
 						}
 						
 						return cypherValues;
 					} else {
-						return toCypherValue(value, attribute);
+						return toCypherSingleValue(attribute, value);
 					}
 				}
 			}
@@ -246,7 +246,7 @@ public class ModelCypherDelta {
 		return null;
 	}
 	
-	protected Object toCypherValue(Object value, EAttribute attribute) {
+	protected Object toCypherSingleValue(EAttribute attribute, Object value) {
 		if ((value instanceof Boolean) || (value instanceof Number)) {
 			return value;
 		} else {

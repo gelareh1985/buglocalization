@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.sidiff.bug.localization.category"
+            name="IdentiBug Bug Localization">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               id="org.sidiff.bug.localization.ui.menu"
+               label="IdentiBug">
+         </menu>
+      </menuContribution>
+   </extension>
+
+</plugin>

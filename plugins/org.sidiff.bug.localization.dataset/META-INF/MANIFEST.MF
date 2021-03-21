@@ -11,22 +11,18 @@ Export-Package: org.sidiff.bug.localization.dataset,
  org.sidiff.bug.localization.dataset.retrieval,
  org.sidiff.bug.localization.dataset.retrieval.storage,
  org.sidiff.bug.localization.dataset.retrieval.util
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.emf.compare,
+ org.eclipse.jgit,
+ org.eclipse.uml2.uml,
  org.sidiff.bug.localization.common.utilities,
+ org.sidiff.bug.localization.dataset.changes,
+ org.sidiff.bug.localization.dataset.fixes,
  org.sidiff.bug.localization.dataset.history,
  org.sidiff.bug.localization.dataset.reports,
- org.sidiff.bug.localization.dataset.workspace,
- org.eclipse.core.resources,
  org.sidiff.bug.localization.dataset.systemmodel,
- org.sidiff.bug.localization.dataset.fixes,
- org.eclipse.modisco.java,
- org.sidiff.bug.localization.dataset.changes,
- org.eclipse.emf.common,
- org.eclipse.uml2.common,
- org.eclipse.uml2.uml,
- org.eclipse.jgit,
- org.eclipse.emf.compare,
- org.sidiff.bug.localization.model2adjlist
+ org.sidiff.bug.localization.dataset.workspace
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.sidiff.bug.localization.retrieval
 Bundle-ActivationPolicy: lazy

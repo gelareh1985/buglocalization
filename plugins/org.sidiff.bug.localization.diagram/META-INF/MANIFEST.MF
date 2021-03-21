@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Diagram Generator
+Bundle-SymbolicName: org.sidiff.bug.localization.diagram;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sidiff.bug.localization.diagram.Activator
+Require-Bundle: org.eclipse.core.filesystem,
+ org.eclipse.core.runtime,
+ org.eclipse.emf.edit.ui,
+ org.eclipse.emf.transaction,
+ org.eclipse.gmf.runtime.diagram.ui,
+ org.eclipse.sirius.common,
+ org.eclipse.sirius.diagram.elk,
+ org.eclipse.sirius.diagram.ui,
+ org.eclipse.sirius.ui,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.uml2.uml,
+ org.obeonetwork.dsl.uml2.core.design,
+ org.sidiff.bug.localization.common.utilities
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: org.sidiff.bug.localization.diagram
+Bundle-ActivationPolicy: lazy

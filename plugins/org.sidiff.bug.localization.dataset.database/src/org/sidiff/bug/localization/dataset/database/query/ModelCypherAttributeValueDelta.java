@@ -118,7 +118,7 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 				
 				// compare values:
 				if (hasValueChanged(oldValue, newValue)) {
-					attributeValueChangeProperties.put(attribute.getName(), toCypherValue(newValue, attribute));
+					attributeValueChangeProperties.put(attribute.getName(), toCypherValue(modelElementNew, attribute));
 				}
 			}
 		}
