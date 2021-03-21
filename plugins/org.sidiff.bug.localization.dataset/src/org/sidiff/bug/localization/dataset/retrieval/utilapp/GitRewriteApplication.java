@@ -3,7 +3,6 @@ package org.sidiff.bug.localization.dataset.retrieval.utilapp;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 
@@ -17,9 +16,8 @@ import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeTy
 import org.sidiff.bug.localization.dataset.history.model.History;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
+import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
-import org.sidiff.bug.localization.dataset.model.DataSet;
-import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 
 /**
@@ -33,10 +31,6 @@ public class GitRewriteApplication implements IApplication {
 
 	public static final String ARGUMENT_TARGET_REPOSITORY = "-targetrepository";
 
-	private Path datasetPath;
-	
-	private DataSet dataset;
-
 	private History history;
 
 	private GitRepository sourceRepository;
@@ -46,17 +40,13 @@ public class GitRewriteApplication implements IApplication {
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 
-		this.datasetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
-		this.dataset = DataSetStorage.load(datasetPath);
-		this.history = dataset.getHistory();
-
 		Path sourceRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SOURCE_REPOSITORY);
 		this.sourceRepository = new GitRepository(sourceRepositoryPath.toFile()); 
 
 		Path targetRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_TARGET_REPOSITORY, false);
 		this.targetRepository = new GitRepository(targetRepositoryPath.toFile());
 
-//		this.history = sourceRepository.getHistory(VersionFilter.FILTER_NOTHING);
+		this.history = sourceRepository.getHistory(VersionFilter.FILTER_NOTHING);
 		HistoryIterator historyIterator = new HistoryIterator(history);
 
 		while (historyIterator.hasNext()) {
@@ -92,9 +82,6 @@ public class GitRewriteApplication implements IApplication {
 			version.setIdentificationTrace(trace);
 		}
 
-		// Save rewritten data set:
-		saveDataSet();
-
 		return IApplication.EXIT_OK;
 	}
 
@@ -103,8 +90,7 @@ public class GitRewriteApplication implements IApplication {
 	}
 
 	private void copyChangesFromSourceToTargetRepository(Version olderVersion, Version currentVersion) throws IOException {
-		for (FileChange fileChange : sourceRepository.getChanges(olderVersion, currentVersion, false)) {
-		// for (FileChange fileChange : sourceRepository.getChangesFlattenCommitTree(olderVersion, currentVersion, false)) {
+		for (FileChange fileChange : sourceRepository.getChangesFlattenCommitTree(olderVersion, currentVersion, false)) {
 			Path sourceFile = getSourceRepositoryFile(fileChange.getLocation());
 			Path targetFile = getTargetRepositoryFile(fileChange.getLocation());
 			
@@ -137,25 +123,6 @@ public class GitRewriteApplication implements IApplication {
 	
 	protected void deleteFile(Path target) throws IOException {
 		Files.deleteIfExists(target);
-	}
-
-	public void saveDataSet() {
-		// Store and commit data set for Java model:
-		try {
-			DataSetStorage.save(Paths.get(
-					datasetPath.toString()), 
-					dataset, true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public Path getDatasetPath() {
-		return datasetPath;
-	}
-
-	public void setDatasetPath(Path datasetPath) {
-		this.datasetPath = datasetPath;
 	}
 
 	public GitRepository getSourceRepository() {
