@@ -548,6 +548,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
                     if (labelText.length() > 0) {
                         ElkLabel label = ElkGraphUtil.createLabel(topNode);
                         label.setText(labelText);
+                        label.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                     }
                 } else {
                     topNode.setLocation(childAbsoluteBounds.x, childAbsoluteBounds.y);
@@ -568,6 +569,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
                 if (labelText.length() > 0) {
                     ElkLabel label = ElkGraphUtil.createLabel(topNode);
                     label.setText(labelText);
+                    label.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME
                 }
             } else {
                 topNode.setLocation(rootBounds.x, rootBounds.y);
@@ -1026,6 +1028,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
             } else if (obj instanceof IGraphicalEditPart) {
                 ElkLabel newNodeLabel = createNodeLabel(mapping, (IGraphicalEditPart) obj, currentEditPart, parentLayoutNode, elkTargetToOptionsOverrideMap);
                 if (newNodeLabel != null) {
+                	newNodeLabel.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                     parentLayoutNode.getLabels().add(newNodeLabel);
                 }
             }
@@ -1112,6 +1115,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
         if (eObj instanceof DNode && ((NodeStyle) ((DNode) eObj).getStyle()).getLabelPosition() == LabelPosition.NODE_LITERAL) {
             ElkLabel newNodeLabel = createNodeLabel(mapping, nodeEditPart, (IGraphicalEditPart) nodeEditPart.getParent(), parentElkNode, elkTargetToOptionsOverrideMap);
             if (newNodeLabel != null) {
+            	newNodeLabel.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                 newNode.getLabels().add(newNodeLabel);
             }
         }
@@ -1278,6 +1282,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
 
                 if (text != null) {
                     ElkLabel portLabel = ElkGraphUtil.createLabel(port);
+                    portLabel.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                     applyOptionsRelatedToElementTarget(portLabel, elkTargetToOptionsOverrideMap);
                     portLabel.setText(text);
                     mapping.getGraphMap().put(portLabel, portChildObj);
@@ -1432,7 +1437,8 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
                 }
                 EnumSet<NodeLabelPlacement> enumSet = EnumSet.of(insideLabelPlacement, horizontalLabelPlacement, verticalNodeLabelPlacement);
                 label.setProperty(CoreOptions.NODE_LABELS_PLACEMENT, enumSet);
-
+                
+                label.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                 return label;
             }
         }
@@ -1694,6 +1700,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
 
                 if (labelText != null && labelText.length() > 0) {
                     ElkLabel label = ElkGraphUtil.createLabel(edge);
+                    label.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                     applyOptionsRelatedToElementTarget(label, elkTargetToOptionsOverrideMap);
                     if (!placement.isPresent()) {
                         switch (labelEditPart.getKeyPoint()) {
@@ -1724,6 +1731,7 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
                     // add the label to the mapping anyway so it is reset to its
                     // reference location
                     ElkLabel label = ElkGraphUtil.createLabel(null);
+                    label.setProperty(CoreOptions.FONT_SIZE, 14); // FIXME: If missing produces NPE in Dot layout
                     mapping.getGraphMap().put(label, labelEditPart);
                 }
             }
