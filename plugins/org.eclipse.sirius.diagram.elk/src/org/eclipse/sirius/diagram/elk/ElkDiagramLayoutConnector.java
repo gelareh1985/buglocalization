@@ -202,6 +202,8 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
     @Inject
     private IGraphLayoutEngine graphLayoutEngine;
 
+	public static boolean NO_NODE_LAYOUT = false; // TODO: Workaround allows fixed node sizes
+
     /**
      * Export the given layout graph in a file. The file will be saved in the directory specified in java.io.tmpdir vm
      * argument.
@@ -1082,6 +1084,10 @@ public class ElkDiagramLayoutConnector implements IDiagramLayoutConnector {
         // GraphicalEditPart, double).
         double shadowBorderSize = ElkDiagramLayoutConnector.getShadowBorderSize(nodeEditPart);
         newNode.setDimensions(childAbsoluteBounds.width - shadowBorderSize, childAbsoluteBounds.height - shadowBorderSize);
+        
+       if (NO_NODE_LAYOUT) {
+        	newNode.setProperty(CoreOptions.NO_LAYOUT, true); // TODO: Workaround allows fixed node sizes
+        }
 
         // useful to debug.
         if (nodeEditPart instanceof AbstractDNodeListCompartmentEditPart || nodeEditPart instanceof AbstractDNodeContainerCompartmentEditPart) {
