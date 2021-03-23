@@ -200,7 +200,7 @@ public class GitRepository implements Repository {
 		return true;
 	}
 	
-	private boolean checkout(String identification) {
+	public boolean checkout(String identification) {
 		try (Git git = openGitRepository()) {
 			
 			// Check out specific version:
@@ -270,6 +270,8 @@ public class GitRepository implements Repository {
 	
 	@Override
 	public String commit(String authorName, String authorEmail, String message, String username, String password, List<Path> files) {
+		// NOTE: Set modified files -> JGit add . is very slow: https://bugs.eclipse.org/bugs/show_bug.cgi?id=494323 
+		
 		try (Git git = openGitRepository()) {
 			RevCommit commit = null;
 			

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.equinox.app.IApplication;
@@ -18,14 +20,14 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.GitRepository;
 import org.sidiff.bug.localization.dataset.history.repository.filter.VersionFilter;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
+import org.sidiff.bug.localization.dataset.model.DataSet;
+import org.sidiff.bug.localization.dataset.model.util.DataSetStorage;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 
 /**
  * Helper application to post-process a Git repository.
  */
 public class GitRewriteApplication implements IApplication {
-
-	public static final String ARGUMENT_DATASET = "-dataset";
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-sourcerepository";
 
@@ -36,7 +38,7 @@ public class GitRewriteApplication implements IApplication {
 	private GitRepository sourceRepository;
 
 	private GitRepository targetRepository;
-
+	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 
@@ -45,9 +47,16 @@ public class GitRewriteApplication implements IApplication {
 
 		Path targetRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_TARGET_REPOSITORY, false);
 		this.targetRepository = new GitRepository(targetRepositoryPath.toFile());
+		
+		// Reset to latest version:
+		sourceRepository.checkout("master");
 
+		// Read history:
 		this.history = sourceRepository.getHistory(VersionFilter.FILTER_NOTHING);
 		HistoryIterator historyIterator = new HistoryIterator(history);
+		
+		DataSet dataset = new DataSet();
+		dataset.setHistory(history);
 
 		while (historyIterator.hasNext()) {
 			System.out.println("Remaining Versions: " + (historyIterator.nextIndex() + 1));
@@ -57,7 +66,7 @@ public class GitRewriteApplication implements IApplication {
 			RevCommit currentSourceCommit = sourceRepository.getCurrentCommit();
 
 			// Copy changes of the current version from the source to the target repository:
-			copyChangesFromSourceToTargetRepository(historyIterator.getOlderVersion(), currentVersion);
+			List<Path> changedFiles = copyChangesFromSourceToTargetRepository(historyIterator.getOlderVersion(), currentVersion);
 
 			// Do changes to current version in the target repository:
 			processVersion(
@@ -69,7 +78,8 @@ public class GitRewriteApplication implements IApplication {
 			targetRepository.commit(
 					currentSourceCommit.getAuthorIdent().getName(),
 					currentSourceCommit.getAuthorIdent().getEmailAddress(), 
-					currentSourceCommit.getFullMessage(), null, null);
+					currentSourceCommit.getFullMessage(), null, null,
+					changedFiles); // Set modified files -> JGit add . is slow: https://bugs.eclipse.org/bugs/show_bug.cgi?id=494323 
 			
 			// Update data set version ID:
 			RevCommit currentTargetCommit = targetRepository.getCurrentCommit();
@@ -81,28 +91,45 @@ public class GitRewriteApplication implements IApplication {
 			version.setIdentification(version.getIdentificationTrace());
 			version.setIdentificationTrace(trace);
 		}
+		
+		saveDataSet(dataset, sourceRepository.getWorkingDirectory().resolve("dataset.json"));
 
 		return IApplication.EXIT_OK;
+	}
+	
+	public Path saveDataSet(DataSet dataset, Path datasetPath) {
+		try {
+			return DataSetStorage.save(datasetPath, dataset, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
 	public void stop() {
 	}
 
-	private void copyChangesFromSourceToTargetRepository(Version olderVersion, Version currentVersion) throws IOException {
+	private List<Path> copyChangesFromSourceToTargetRepository(Version olderVersion, Version currentVersion) throws IOException {
+		List<Path> changedFiles = new ArrayList<>();
+		
 		for (FileChange fileChange : sourceRepository.getChangesFlattenCommitTree(olderVersion, currentVersion, false)) {
 			Path sourceFile = getSourceRepositoryFile(fileChange.getLocation());
 			Path targetFile = getTargetRepositoryFile(fileChange.getLocation());
 			
 			if (fileChange.getType().equals(FileChangeType.DELETE)) {
 				deleteFile(targetFile);
+				changedFiles.add(fileChange.getLocation());
 			} 
 			
-			if (fileChange.getType().equals(FileChangeType.ADD) 
+			else if (fileChange.getType().equals(FileChangeType.ADD) 
 					|| fileChange.getType().equals(FileChangeType.MODIFY)) {
 				copyFile(sourceFile, targetFile);
+				changedFiles.add(fileChange.getLocation());
 			}
 		}
+		
+		return changedFiles;
 	}
 
 	protected void processVersion(Version olderVersion, Version currentVersion, Version newerVersion) throws Exception {
