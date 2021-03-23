@@ -226,10 +226,6 @@ Contributors:
                   <iterate
                         ifEmpty="false"
                         operator="and">
-                     <test
-                           forcePluginActivation="true"
-                           property="org.obeonetwork.dsl.uml2.design.Extend">
-                     </test>
                      <instanceof
                            value="org.eclipse.uml2.uml.Package">
                      </instanceof>

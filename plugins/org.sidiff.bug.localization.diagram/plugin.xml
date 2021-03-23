@@ -34,12 +34,12 @@
       <command
             categoryId="org.sidiff.bug.localization.category"
             id="org.sidiff.bug.localization.diagram.createclassdiagram"
-            name="Create Class Diagram">
+            name="Create Class Diagram From .uml">
       </command>
       <command
             categoryId="org.sidiff.bug.localization.category"
             id="org.sidiff.bug.localization.diagram.generateall"
-            name="Generate All Class Diagrams">
+            name="Generate All Class Diagrams From .json">
       </command>
    </extension>
 </plugin>

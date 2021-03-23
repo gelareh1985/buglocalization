@@ -2,9 +2,12 @@ package org.sidiff.bug.localization.diagram.sirius;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -15,6 +18,7 @@ import org.eclipse.sirius.business.api.dialect.DialectManager;
 import org.eclipse.sirius.business.api.helper.SiriusResourceHelper;
 import org.eclipse.sirius.business.api.session.Session;
 import org.eclipse.sirius.business.api.session.SessionManager;
+import org.eclipse.sirius.common.tools.api.resource.ImageFileFormat;
 import org.eclipse.sirius.diagram.elk.ElkDiagramLayoutConnector;
 import org.eclipse.sirius.tools.api.command.semantic.AddSemanticResourceCommand;
 import org.eclipse.sirius.ui.business.api.dialect.DialectUIManager;
@@ -25,8 +29,10 @@ import org.eclipse.sirius.viewpoint.DRepresentation;
 import org.eclipse.sirius.viewpoint.description.RepresentationDescription;
 import org.eclipse.sirius.viewpoint.description.Viewpoint;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.obeonetwork.dsl.uml2.core.internal.services.UIServices;
-import org.sidiff.bug.localization.common.utilities.emf.ItemProviderUtil;
 
 /**
  * Creates Sirius diagrams for a given model element and its contained elements.
@@ -44,9 +50,11 @@ public class ModelDiagramCreator {
 
 	private Session session;
 
-	private RepresentationDescription representation;
+	private RepresentationDescription representationDescription;
 	
-	private DRepresentation represenation;
+	private DRepresentation representation;
+	
+	private IEditorPart editor;
 	
 	private String diagramType;
 	
@@ -67,10 +75,10 @@ public class ModelDiagramCreator {
 			throw new IOException("Something went wrong. Try to delete .aird diagram and retry!");
 		}
 
-		this.representation = findRepresentation(session, modelElementInSession, diagramType);
+		this.representationDescription = findRepresentation(session, modelElementInSession, diagramType);
 	}
-
-	public void createLayoutedRepresentation(int[] fixedNodeSize, boolean openEditor, IProgressMonitor monitor) throws IOException {
+	
+	public IEditorPart createLayoutedRepresentation(int[] fixedNodeSize, boolean openEditor, IProgressMonitor monitor) throws IOException {
 		int[] defaultNodeSize = null;
 		
 		try {
@@ -88,7 +96,7 @@ public class ModelDiagramCreator {
 
 			// open editor:
 			if (openEditor) {
-				openRepresentation(getRepresentationDescription(), name, monitor);
+				this.editor = openRepresentation(getRepresentationDescription(), name, monitor);
 			}
 		} finally {
 			 // TODO: Workaround force fixed node sizes
@@ -98,13 +106,25 @@ public class ModelDiagramCreator {
 				UIServices.DEFAULT_HEIGHT = defaultNodeSize[1];
 			}
 		}
+		return null;
+	}
+	
+	public void saveAndCloseEditor() {
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		page.saveEditor(editor, false);
+		
+		for (IEditorReference editorRef : PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getEditorReferences()) {
+			if (editorRef.getEditor(false).equals(editor)) {
+				page.closeEditors(new IEditorReference[] {editorRef}, false);
+			}
+		}
 	}
 
 	public String createRepresentation(IProgressMonitor monitor) {
-		String name = getUniqueDiagramName(modelElementInSession, session, representation);
+		String name = getUniqueDiagramName(modelElementInSession, session, representationDescription);
 		
 		SiriusUtil.edit(session.getTransactionalEditingDomain(), () -> {
-			this.represenation = DialectManager.INSTANCE.createRepresentation(name, modelElementInSession, representation, session, monitor);
+			this.representation = DialectManager.INSTANCE.createRepresentation(name, modelElementInSession, representationDescription, session, monitor);
 		});
 		
 		return name;
@@ -191,7 +211,17 @@ public class ModelDiagramCreator {
 	}
 
 	protected String getDiagramName(EObject modelElement) {
-		return ItemProviderUtil.getTextByObject(modelElement);
+		return modelElement.eResource().getURI().trimFileExtension().lastSegment();
+	}
+	
+	public void export(IPath outputPath, ImageFileFormat imageFormat, boolean exportToHtml, boolean exportDecorations) {
+		if (outputPath == null) {
+			outputPath = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(sessionResourceURI.toPlatformString(true))
+					.getParent().getLocation();
+		}
+		new DiagramExportAction(session, Collections.singleton(representation), 
+				outputPath, imageFormat, exportToHtml, exportDecorations);
 	}
 
 	public EObject getModelElement() {
@@ -207,11 +237,11 @@ public class ModelDiagramCreator {
 	}
 
 	public RepresentationDescription getRepresentationDescription() {
-		return representation;
+		return representationDescription;
 	}
 
 	public DRepresentation getRepresentation() {
-		return represenation;
+		return representation;
 	}
 
 	public String getDiagramType() {

@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.sirius.common.tools.api.resource.ImageFileFormat;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -40,6 +41,9 @@ public class CreateClassDiagramHandler extends AbstractHandler {
 			try {
 				ModelDiagramCreator creator = new ModelDiagramCreator((EObject) selected, "Class Diagram", monitor);
 				creator.createLayoutedRepresentation(new int[] {20, 10}, true, monitor);
+				creator.saveAndCloseEditor();
+				
+				creator.export(null, ImageFileFormat.SVG, true, true);
 			} catch (IOException e) {
 				showError(e.getMessage());
 			}
