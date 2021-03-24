@@ -41,6 +41,8 @@ public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvi
 		// new PDEProjectFilter()
 		// new TestProjectFilter()
 		// new ProjectNameFilter()
+		
+		// TODO: Put this in data set configuration:
 		Set<String> filteredProjectNames = new HashSet<>(Arrays.asList(new String[] {
 				"converterJclMin", "converterJclMin1.5", "converterJclMin1.7",
 				"converterJclMin1.8", "converterJclMin9", "converterJclMin10",
