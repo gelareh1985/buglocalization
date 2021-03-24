@@ -12,8 +12,6 @@ from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from evaluation_ranking_metrics import jdt_project_filter
 
-# TODO: Add diagram aggregation
-
 if __name__ == '__main__':
 
     # Evaluation result tables:
@@ -39,6 +37,7 @@ if __name__ == '__main__':
     diagram_neighbor_sizes = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
     
     save_diagram = True
+    diagram_aggregation = True
 
     for k_neighbor in k_neighbors:
         print("Experiment: k neighbor:", k_neighbor)
@@ -66,7 +65,8 @@ if __name__ == '__main__':
                     SAVE_DIAGRAM=save_diagram,
                     diagram_save_path=evaluation_results_path,
                     K_NEIGHBOURS=k_neighbor,
-                    UNDIRECTED=True)
+                    UNDIRECTED=True,
+                    DIAGRAM_AGGREGATION=diagram_aggregation)
                 top_k_ranking_accuracy_result = eval_util.top_k_ranking_accuracy(found_in_top_k, not_found_in_top_k)
                 evaluation.at[diagram_size, top_k_value] = top_k_ranking_accuracy_result
 

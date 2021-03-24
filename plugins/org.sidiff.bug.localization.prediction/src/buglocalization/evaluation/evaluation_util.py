@@ -168,18 +168,27 @@ def get_first_relevant_subgraph_location(tbl_predicted: pd.DataFrame,
                                          meta_model: MetaModel,
                                          K_NEIGHBOURS: int,
                                          UNDIRECTED: bool,
-                                         DIAGRAM_NEIGHBOR_SIZE: int) -> Optional[Tuple[pd.Series, pd.DataFrame, pd.DataFrame]]:
+                                         DIAGRAM_NEIGHBOR_SIZE: int,
+                                         DIAGRAM_AGGREGATION: bool = True) -> Optional[Tuple[pd.Series, pd.DataFrame, pd.DataFrame]]:
+
+    locations_added_to_subgraphs: Set[int] = set()
 
     for ranking_idx, ranking_location in top_k_ranking.iterrows():
-        labels_mask = list(meta_model.get_bug_location_types())
-        subgraph_k = query_util.subgraph_k(graph, ranking_location.DatabaseNodeID, db_version,
-                                           K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)
-        subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
-        ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
-        top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(DIAGRAM_NEIGHBOR_SIZE)
+        node_id = ranking_location.DatabaseNodeID
+        
+        if node_id not in locations_added_to_subgraphs:
+            labels_mask = list(meta_model.get_bug_location_types())
+            subgraph_k = query_util.subgraph_k(graph, ranking_location.DatabaseNodeID, db_version,
+                                            K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)
+            subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
+            ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
+            top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(DIAGRAM_NEIGHBOR_SIZE)
 
-        if 1 in top_k_ranking_of_subgraph_k.IsLocation.to_list() or ranking_location.IsLocation == 1:
-            return ranking_location, top_k_ranking_of_subgraph_k, subgraph_k
+            if DIAGRAM_AGGREGATION:
+                locations_added_to_subgraphs.update(subgraph_k.index.to_list())
+
+            if 1 in top_k_ranking_of_subgraph_k.IsLocation.to_list() or ranking_location.IsLocation == 1:
+                return ranking_location, top_k_ranking_of_subgraph_k, subgraph_k
 
     return None
 
@@ -192,7 +201,8 @@ def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataF
                                     diagram_save_path: str = None,
                                     SAVE_DIAGRAM: bool = False,
                                     K_NEIGHBOURS: int = 0,
-                                    UNDIRECTED: bool = True) -> Tuple[int, int]:
+                                    UNDIRECTED: bool = True,
+                                    DIAGRAM_AGGREGATION: bool = True) -> Tuple[int, int]:
     """
     Args:
         TOP_RANKING_K (int, optional): Compute for top k ranking positions
@@ -219,9 +229,10 @@ def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataF
             found_in_top_k += 1
         # Is node indirectly contained by subgraph (K_NEIGHBOURS,DIAGRAM_SIZE)
         else:
-            first_expected_location = get_first_relevant_subgraph_location(tbl_predicted, graph, db_version,
-                                                                           top_k_ranking_subgraph_location, meta_model,
-                                                                           K_NEIGHBOURS, UNDIRECTED, DIAGRAM_NEIGHBOR_SIZE)
+            first_expected_location = get_first_relevant_subgraph_location(
+                tbl_predicted, graph, db_version,
+                top_k_ranking_subgraph_location, meta_model,
+                K_NEIGHBOURS, UNDIRECTED, DIAGRAM_NEIGHBOR_SIZE, DIAGRAM_AGGREGATION)
 
             if first_expected_location is not None:
                 found_in_top_k += 1
