@@ -69,7 +69,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.sidiff.bug.localization.dataset.retrieval.utilapp.GitRewriteApplication">
+               class="org.sidiff.bug.localization.dataset.GitRebaseApplication">
          </run>
       </application>
    </extension>

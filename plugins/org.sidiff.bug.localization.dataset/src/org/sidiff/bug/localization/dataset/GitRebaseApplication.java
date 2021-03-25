@@ -1,4 +1,4 @@
-package org.sidiff.bug.localization.dataset.retrieval.utilapp;
+package org.sidiff.bug.localization.dataset;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.equinox.app.IApplication;
@@ -27,7 +28,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 /**
  * Helper application to post-process a Git repository.
  */
-public class GitRewriteApplication implements IApplication {
+public class GitRebaseApplication implements IApplication {
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-sourcerepository";
 
@@ -93,6 +94,9 @@ public class GitRewriteApplication implements IApplication {
 		}
 		
 		saveDataSet(dataset, sourceRepository.getWorkingDirectory().resolve("dataset.json"));
+		
+		Activator.getLogger().log(Level.INFO, "Rebase Finished");
+		Activator.getLogger().log(Level.INFO, "To optimize disc space run: git gc --auto");
 
 		return IApplication.EXIT_OK;
 	}
