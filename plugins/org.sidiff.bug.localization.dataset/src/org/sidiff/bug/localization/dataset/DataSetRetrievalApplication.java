@@ -110,24 +110,30 @@ public class DataSetRetrievalApplication implements IApplication {
 			}
 		}
 		
+		// TODO: To run all phases in once, we should clear the workspace at this point, i.e., at least remove all existing projects. 
+		
 		// Direct System model (Java Model -> System Model):
 		if (retrieveSystemModelHistory) {
 			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(codeRepositoryPath);
 			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, dataset, datasetPath);
 			
 			try {
-				// Resume on last intermediate save:
-				{
-//					datasetPath = Paths.get(datasetPath.getParent().toString(),
-//							"DataSet_20201120213103_20201121033529.json_3800_b5c1652db351290a42a75d3cdd3241441a4413e2_0e32179056318498bab8548c6d40017d6c717dfd");
+//				// Resume on last intermediate save:
+//				// (1) Uncomment resume code and comment systemModelRetrieval.retrieve(); 
+//				// (2) Copy last commit <Model Repo> from latest data set checkpoint file name to resume(...): DataSet_<Timestamo>.json_<Version Counter>_<Code Repo>_<Model Repo>
+//				// (3) To avoid long path names rename data set checkpoint file to DataSet_checkpoint.json
+//				// (4) Reset mode Git repository to <Model Repo> commit
+//				// (5) Restart application 
+//				{
+//					datasetPath = Paths.get(datasetPath.getParent().toString(), "DataSet_checkpoint.json");
 //					dataset = DataSetStorage.load(datasetPath);
-					
+//					
 //					systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, dataset, datasetPath);
 //					
-//					modelDatasetToCodeDataset(dataset);
-//					int resume = resume(dataset, "f3976bead49aa4fe35942cb0c47266733b624403");
+//					//// modelDatasetToCodeDataset(dataset);
+//					int resume = resume(dataset, "0e32179056318498bab8548c6d40017d6c717dfd");
 //					systemModelRetrieval.retrieve(resume);
-				}
+//				}
 				
 				systemModelRetrieval.retrieve();
 			} finally {

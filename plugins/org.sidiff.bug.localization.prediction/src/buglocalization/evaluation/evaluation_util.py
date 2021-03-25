@@ -8,15 +8,13 @@ import pandas as pd
 from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.metamodel.meta_model import MetaModel
 from py2neo import Graph
-from buglocalization.diagrams import diagram_util as dia_util
-import re
 
 
-def load_evaluation_results(path: str, 
-                            filters: List[str], 
+def load_evaluation_results(path: str,
+                            filters: List[str],
                             at_leat_one_relevant: bool = True) -> Generator[Tuple[str, pd.DataFrame, str, pd.DataFrame], None, None]:
     filtered = 0
-    
+
     for filename in os.listdir(path):
         if filename.endswith("_info.csv"):
             evaluation_filename = filename[:filename.rfind("_")]
@@ -28,7 +26,7 @@ def load_evaluation_results(path: str,
             tbl_predicted_file = evaluation_filename + "_prediction.csv"
             tbl_predicted_path = path + tbl_predicted_file
             tbl_predicted = pd.read_csv(tbl_predicted_path, sep=';', header=0)
-            
+
             # TODO
             # tbl_predicted = tbl_predicted[~tbl_predicted.ModelElementID.str.contains(
             #     '.test') & ~tbl_predicted.ModelElementID.str.contains(
@@ -36,7 +34,7 @@ def load_evaluation_results(path: str,
             #     'library')]
             # tbl_predicted = tbl_predicted[~any(re.findall(".test|converterJclMin|library", tbl_predicted.ModelElementID))]
             # tbl_predicted.reset_index(inplace=True)
-            
+
             if filters is not None:
                 for filter_word in filters:
                     tbl_predicted = tbl_predicted[~tbl_predicted.ModelElementID.str.contains(filter_word)]
@@ -47,12 +45,12 @@ def load_evaluation_results(path: str,
             else:
                 print("Filtered (no relevant locations):", tbl_predicted_file)
                 filtered += 1
-                
+
     print("Number of Filtered:", filtered)
 
 
-def load_all_evaluation_results(path: str, 
-                                filters: List[str], 
+def load_all_evaluation_results(path: str,
+                                filters: List[str],
                                 at_leat_one_relevant: bool = True) -> List[Tuple[str, pd.DataFrame, str, pd.DataFrame]]:
     return list(load_evaluation_results(path, filters, at_leat_one_relevant))
 
@@ -162,24 +160,39 @@ def get_subgraph_location_ids(tbl_predicted: pd.DataFrame,
 
 
 def get_first_relevant_subgraph_location(tbl_predicted: pd.DataFrame,
+                                         TOP_RANKING_K: int,
                                          graph: Graph,
                                          db_version: int,
-                                         top_k_ranking: pd.DataFrame,
                                          meta_model: MetaModel,
-                                         K_NEIGHBOURS: int,
+                                         K_NEIGHBOUR_DISTANCE: int,
                                          UNDIRECTED: bool,
-                                         DIAGRAM_NEIGHBOR_SIZE: int) -> Optional[Tuple[pd.Series, pd.DataFrame, pd.DataFrame]]:
+                                         DIAGRAM_SIZE: int,
+                                         DIAGRAM_AGGREGATION: bool = True) -> Optional[Tuple[pd.Series, pd.DataFrame, pd.DataFrame]]:
 
-    for ranking_idx, ranking_location in top_k_ranking.iterrows():
-        labels_mask = list(meta_model.get_bug_location_types())
-        subgraph_k = query_util.subgraph_k(graph, ranking_location.DatabaseNodeID, db_version,
-                                           K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)
-        subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
-        ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
-        top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(DIAGRAM_NEIGHBOR_SIZE)
+    locations_added_to_subgraphs: Set[int] = set()
+    current_ranking_idx = 0  # Need to be recalculated when using diagram aggregation.
 
-        if 1 in top_k_ranking_of_subgraph_k.IsLocation.to_list() or ranking_location.IsLocation == 1:
-            return ranking_location, top_k_ranking_of_subgraph_k, subgraph_k
+    for ranking_idx, ranking_location in tbl_predicted.iterrows():
+        if current_ranking_idx >= TOP_RANKING_K:
+            break
+        
+        node_id = ranking_location.DatabaseNodeID
+
+        if node_id not in locations_added_to_subgraphs:
+            current_ranking_idx += 1
+            
+            labels_mask = list(meta_model.get_bug_location_types())
+            subgraph_k = query_util.subgraph_k(graph, ranking_location.DatabaseNodeID, db_version,
+                                               K_NEIGHBOUR_DISTANCE, UNDIRECTED, meta_model, labels_mask)
+            subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
+            ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
+            top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(DIAGRAM_SIZE)
+
+            if DIAGRAM_AGGREGATION:
+                locations_added_to_subgraphs.update(subgraph_k.index.to_list())
+
+            if 1 in top_k_ranking_of_subgraph_k.IsLocation.to_list() or ranking_location.IsLocation == 1:
+                return ranking_location, top_k_ranking_of_subgraph_k, subgraph_k
 
     return None
 
@@ -188,19 +201,19 @@ def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataF
                                     meta_model: MetaModel,
                                     graph: Graph,
                                     TOP_RANKING_K: int,
-                                    DIAGRAM_NEIGHBOR_SIZE,
-                                    diagram_save_path: str = None,
-                                    SAVE_DIAGRAM: bool = False,
-                                    K_NEIGHBOURS: int = 0,
-                                    UNDIRECTED: bool = True) -> Tuple[int, int]:
+                                    DIAGRAM_SIZE: int,
+                                    K_NEIGHBOUR_DISTANCE: int = 0,
+                                    UNDIRECTED: bool = True,
+                                    DIAGRAM_AGGREGATION: bool = True) -> Tuple[int, int]:
     """
     Args:
         TOP_RANKING_K (int, optional): Compute for top k ranking positions
         DIAGRAM_SIZE (int, optional): Size of the diagram:. Defaults to 60.
         SAVE_DIAGRAM (bool, optional): Write diagram nodes and edges as Json-File. Defaults to False.
         K_NEIGHBOURS (int, optional): Hops from the expected locations. Defaults to 2.
-        UNDIRECTED (bool, optional): [description]. Defaults to True.
-
+        UNDIRECTED (bool, optional): Follow undirected edges on diagram slicing. Defaults to True.
+        DIAGRAM_AGGREGATION (bool, optional): If a node of the input ranking is already contained in a 
+          higher ranked diagram it will the ranking position will not be considered again.Defaults to True.
 
     Returns:
         (int, int): [0] Number of ranking that contain at least on expexted location in top k.
@@ -219,21 +232,12 @@ def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataF
             found_in_top_k += 1
         # Is node indirectly contained by subgraph (K_NEIGHBOURS,DIAGRAM_SIZE)
         else:
-            first_expected_location = get_first_relevant_subgraph_location(tbl_predicted, graph, db_version,
-                                                                           top_k_ranking_subgraph_location, meta_model,
-                                                                           K_NEIGHBOURS, UNDIRECTED, DIAGRAM_NEIGHBOR_SIZE)
+            first_expected_location = get_first_relevant_subgraph_location(
+                tbl_predicted, TOP_RANKING_K, graph, db_version, meta_model,
+                K_NEIGHBOUR_DISTANCE, UNDIRECTED, DIAGRAM_SIZE, DIAGRAM_AGGREGATION)
 
             if first_expected_location is not None:
                 found_in_top_k += 1
-
-                if SAVE_DIAGRAM and diagram_save_path is not None:
-                    ranking_location_id = first_expected_location[0].DatabaseNodeID
-                    top_k_ranking_of_subgraph_k = first_expected_location[1]
-                    ranked_node_ids = top_k_ranking_of_subgraph_k.DatabaseNodeID.to_list()
-                    ranked_node_ids.append(ranking_location_id)
-
-                    diagram_graph = dia_util.slice_diagram(graph, db_version, ranked_node_ids)
-                    dia_util.save_diagram(diagram_graph, diagram_save_path + tbl_predicted_file + "_diagram.json")
             else:
                 not_found_in_top_k += 1
 

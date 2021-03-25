@@ -12,8 +12,6 @@ from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from evaluation_ranking_metrics import jdt_project_filter
 
-# TODO: Add diagram aggregation
-
 if __name__ == '__main__':
 
     # Evaluation result tables:
@@ -36,15 +34,14 @@ if __name__ == '__main__':
     # # Evaluations # #
     k_neighbors = [0, 2]
     top_k_values = [1, 5, 10, 15, 20, 25, 30, 35]
-    diagram_neighbor_sizes = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
-    
-    save_diagram = True
+    diagram_sizes = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+    diagram_aggregation = True
 
     for k_neighbor in k_neighbors:
         print("Experiment: k neighbor:", k_neighbor)
 
         # [diagram_sizes (index), top_k_ranking_accuracy@top_k_values]
-        evaluation = pd.DataFrame(columns=top_k_values, index=diagram_neighbor_sizes)
+        evaluation = pd.DataFrame(columns=top_k_values, index=diagram_sizes)
         evaluation.index.names = ['diagram_sizes']
 
         # Diagram size has no effect if no neigbors are considered:
@@ -54,7 +51,7 @@ if __name__ == '__main__':
         for top_k_value in top_k_values:
             print("Experiment: top k value:", top_k_value)
 
-            for diagram_size in diagram_neighbor_sizes:
+            for diagram_size in diagram_sizes:
                 print("Experiment: diagram size:", diagram_size)
 
                 found_in_top_k, not_found_in_top_k = eval_util.top_k_ranking_subgraph_location(
@@ -62,11 +59,10 @@ if __name__ == '__main__':
                     meta_model=meta_model,
                     graph=buglocation_graph,
                     TOP_RANKING_K=top_k_value,
-                    DIAGRAM_NEIGHBOR_SIZE=diagram_size,
-                    SAVE_DIAGRAM=save_diagram,
-                    diagram_save_path=evaluation_results_path,
-                    K_NEIGHBOURS=k_neighbor,
-                    UNDIRECTED=True)
+                    DIAGRAM_SIZE=diagram_size,
+                    K_NEIGHBOUR_DISTANCE=k_neighbor,
+                    UNDIRECTED=True,
+                    DIAGRAM_AGGREGATION=diagram_aggregation)
                 top_k_ranking_accuracy_result = eval_util.top_k_ranking_accuracy(found_in_top_k, not_found_in_top_k)
                 evaluation.at[diagram_size, top_k_value] = top_k_ranking_accuracy_result
 
@@ -84,3 +80,4 @@ if __name__ == '__main__':
         # Save evaluation:
         filename = 'k_neighbor_' + str(k_neighbor) + '.csv'
         evaluation.to_csv(evaluation_metrics_path + filename, sep=';')
+        

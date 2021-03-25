@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -28,6 +29,10 @@ public class Neo4jJsonToEcoreUML {
 
 		UMLPackage umlPackage = UMLPackage.eINSTANCE;
 		UMLFactory umlFactory = UMLFactory.eINSTANCE;
+		
+		ResourceSet resourceSet = new ResourceSetImpl();
+		XMLResource sliceResource = (XMLResource) resourceSet
+				.createResource(URI.createFileURI(diagramJsonPath.toString()).appendFileExtension("uml"));
 
 		// Convert nodes:
 		Map<Integer, Neo4jJsonNode> nodesById = diagram.getNodesById();
@@ -55,6 +60,8 @@ public class Neo4jJsonToEcoreUML {
 					Object attributeValue = attributeType.getEAttributeType().getEPackage().getEFactoryInstance()
 							.createFromString(attributeType.getEAttributeType(), stringValue);
 					modelElement.eSet(attributeType, attributeValue);
+				} else if (attribute.getKey().equals("__model__element__id__")) {
+					sliceResource.setID(modelElement, attribute.getValue().toString());
 				}
 			}
 		}
@@ -89,8 +96,6 @@ public class Neo4jJsonToEcoreUML {
 			}
 		}
 		
-		ResourceSet resourceSet = new ResourceSetImpl();
-		Resource sliceResource = resourceSet.createResource(URI.createFileURI(diagramJsonPath.toString()).appendFileExtension("uml"));
 		sliceResource.getContents().add(umlModel);
 		
 		return sliceResource;

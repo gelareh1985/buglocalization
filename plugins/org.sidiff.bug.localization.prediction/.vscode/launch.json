@@ -53,6 +53,14 @@
             "justMyCode": false,
         },
         {
+            "name": "Bug Localization - Evaluation Diagram Generation",
+            "type": "python",
+            "request": "launch",
+            "program": "src/evaluation_diagram_generation.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",
