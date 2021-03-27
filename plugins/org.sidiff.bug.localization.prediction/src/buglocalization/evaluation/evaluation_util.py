@@ -166,7 +166,7 @@ def get_first_relevant_subgraph_location(tbl_predicted: pd.DataFrame,
                                          meta_model: MetaModel,
                                          K_NEIGHBOUR_DISTANCE: int,
                                          UNDIRECTED: bool,
-                                         DIAGRAM_SIZE: int,
+                                         NUMBER_OF_NEIGHBORS: int,
                                          DIAGRAM_AGGREGATION: bool = True) -> Optional[Tuple[pd.Series, pd.DataFrame, pd.DataFrame]]:
 
     locations_added_to_subgraphs: Set[int] = set()
@@ -186,7 +186,7 @@ def get_first_relevant_subgraph_location(tbl_predicted: pd.DataFrame,
                                                K_NEIGHBOUR_DISTANCE, UNDIRECTED, meta_model, labels_mask)
             subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
             ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
-            top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(DIAGRAM_SIZE)
+            top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(NUMBER_OF_NEIGHBORS)
 
             if DIAGRAM_AGGREGATION:
                 locations_added_to_subgraphs.update(subgraph_k.index.to_list())
@@ -201,7 +201,7 @@ def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataF
                                     meta_model: MetaModel,
                                     graph: Graph,
                                     TOP_RANKING_K: int,
-                                    DIAGRAM_SIZE: int,
+                                    NUMBER_OF_NEIGHBORS: int,
                                     K_NEIGHBOUR_DISTANCE: int = 0,
                                     UNDIRECTED: bool = True,
                                     DIAGRAM_AGGREGATION: bool = True) -> Tuple[int, int]:
@@ -234,7 +234,7 @@ def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataF
         else:
             first_expected_location = get_first_relevant_subgraph_location(
                 tbl_predicted, TOP_RANKING_K, graph, db_version, meta_model,
-                K_NEIGHBOUR_DISTANCE, UNDIRECTED, DIAGRAM_SIZE, DIAGRAM_AGGREGATION)
+                K_NEIGHBOUR_DISTANCE, UNDIRECTED, NUMBER_OF_NEIGHBORS, DIAGRAM_AGGREGATION)
 
             if first_expected_location is not None:
                 found_in_top_k += 1

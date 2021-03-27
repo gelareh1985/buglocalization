@@ -48,7 +48,7 @@ public class DatasetExportApplication implements IApplication {
 	// (4) Remove -clear flag from program arguments!
  	private int restartWithVersion = -1; // - a91432e57593fe231224dea56f5a9f1421127114//7927;//7928; // next version number or -1
 	private String restartWithGitVersion = null; // next version hash value or null
-	private boolean restartWithFullVersion = false;
+	private boolean restartWithFullVersion = false; // cleans database!
 	private String stopOnGitVersion = null; // "28f53155d592e8d12991fab6d60706a44adb05e0";
 	private boolean runTestCases = false;
 	

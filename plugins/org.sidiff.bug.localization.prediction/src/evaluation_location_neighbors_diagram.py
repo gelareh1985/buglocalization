@@ -34,15 +34,15 @@ if __name__ == '__main__':
     # # Evaluations # #
     k_neighbors = [0, 2]
     top_k_values = [1, 5, 10, 15, 20, 25, 30, 35]
-    diagram_sizes = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+    numbers_of_neighbors = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
     diagram_aggregation = True
 
     for k_neighbor in k_neighbors:
         print("Experiment: k neighbor:", k_neighbor)
 
         # [diagram_sizes (index), top_k_ranking_accuracy@top_k_values]
-        evaluation = pd.DataFrame(columns=top_k_values, index=diagram_sizes)
-        evaluation.index.names = ['diagram_sizes']
+        evaluation = pd.DataFrame(columns=top_k_values, index=numbers_of_neighbors)
+        evaluation.index.names = ['number_of_neighbors']
 
         # Diagram size has no effect if no neigbors are considered:
         if k_neighbor == 0:
@@ -51,20 +51,20 @@ if __name__ == '__main__':
         for top_k_value in top_k_values:
             print("Experiment: top k value:", top_k_value)
 
-            for diagram_size in diagram_sizes:
-                print("Experiment: diagram size:", diagram_size)
+            for number_of_neighbors in numbers_of_neighbors:
+                print("Experiment: diagram size:", number_of_neighbors)
 
                 found_in_top_k, not_found_in_top_k = eval_util.top_k_ranking_subgraph_location(
                     evaluation_results=evaluation_results,
                     meta_model=meta_model,
                     graph=buglocation_graph,
                     TOP_RANKING_K=top_k_value,
-                    DIAGRAM_SIZE=diagram_size,
+                    NUMBER_OF_NEIGHBORS=number_of_neighbors,
                     K_NEIGHBOUR_DISTANCE=k_neighbor,
                     UNDIRECTED=True,
                     DIAGRAM_AGGREGATION=diagram_aggregation)
                 top_k_ranking_accuracy_result = eval_util.top_k_ranking_accuracy(found_in_top_k, not_found_in_top_k)
-                evaluation.at[diagram_size, top_k_value] = top_k_ranking_accuracy_result
+                evaluation.at[number_of_neighbors, top_k_value] = top_k_ranking_accuracy_result
 
                 print("Found:", found_in_top_k, "Not found:", not_found_in_top_k)
                 print("Top k Accuracy:", top_k_ranking_accuracy_result)

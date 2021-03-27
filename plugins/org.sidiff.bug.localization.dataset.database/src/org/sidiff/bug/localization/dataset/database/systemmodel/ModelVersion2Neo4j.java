@@ -17,7 +17,6 @@ import org.sidiff.bug.localization.dataset.database.model.ModelDelta;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
-import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.DataSet2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
@@ -67,39 +66,38 @@ public class ModelVersion2Neo4j {
 	}
 
 	public void initialize(
-			Version previousVersion, Version newModelVersion, Version nextModelVersion, 
-			BugReport bugReport, int newDatabaseVersion) {
+			Version previousVersion, Version newModelVersion, 
+			Version nextModelVersion, int newDatabaseVersion) {
 		
 		internal_commitDelta(
 				previousVersion, newModelVersion, nextModelVersion, 
-				bugReport, newDatabaseVersion, false);
+				newDatabaseVersion, false);
 	}
 
 	public void commitInitial(
-			Version newModelVersion, Version nextModelVersion, 
-			BugReport bugReport, int newDatabaseVersion) {
+			Version newModelVersion, Version nextModelVersion, int newDatabaseVersion) {
 		
 		if (createResourceSet().getURIConverter().exists(systemModelURI, null)) {
 			internal_commitDelta(
 					null, newModelVersion, nextModelVersion, 
-					bugReport, newDatabaseVersion, true);
+					newDatabaseVersion, true);
 		} else {
 			System.err.println("Missing the system model:" + systemModelURI);
 		}
 	}
 	
 	public void commitDelta(
-			Version previousVersion, Version currentModelVersion, Version nextModelVersion,
-			BugReport bugReport, int newDatabaseVersion) {
+			Version previousVersion, Version currentModelVersion, 
+			Version nextModelVersion, int newDatabaseVersion) {
 		
 		internal_commitDelta(
 				previousVersion, currentModelVersion, nextModelVersion, 
-				bugReport, newDatabaseVersion, true);
+				newDatabaseVersion, true);
 	}
 	
 	private void internal_commitDelta(
 			Version previousVersion, Version currentModelVersion, Version nextModelVersion,
-			BugReport bugReport, int currentDatabaseVersion, boolean commitToDatabase) {
+			int currentDatabaseVersion, boolean commitToDatabase) {
 		
 		ResourceSet currentResourceSet = createResourceSet();
 		List<Resource> currentResources = new ArrayList<>();
@@ -139,11 +137,6 @@ public class ModelVersion2Neo4j {
 			this.nextModelVersionChanges = modelRepository.getChanges(currentModelVersion, nextModelVersion, false);
 			
 			Set<Resource> currentResourcesModifiedNext = new LinkedHashSet<>();
-			Resource systemModelResource = getSystemModel(currentResourceSet);
-			
-			if (systemModelResource != null) {
-				currentResourcesModifiedNext.add(systemModelResource);
-			}
 			
 			// Load all model from this version which are needed for comparison in the next version:
 			// (The versions can not be loaded after Git checkout.)

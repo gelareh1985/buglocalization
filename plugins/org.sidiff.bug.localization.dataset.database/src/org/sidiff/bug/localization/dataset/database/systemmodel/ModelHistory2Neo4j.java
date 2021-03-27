@@ -14,7 +14,6 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.history.util.HistoryIterator;
 import org.sidiff.bug.localization.dataset.model.DataSet;
-import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 
 public class ModelHistory2Neo4j {
 	
@@ -135,16 +134,12 @@ public class ModelHistory2Neo4j {
 			time = stopTime(time, "Checkout");
 
 			// Database: Compute and make an atomic commit of the new model version:
-			BugReport bugReport = getBugReport(currentVersion, nextVersion);
-			
 			if (startWithFullVersion && (databaseVersion == restartWithVersion)) {
 				incrementalModelDelta.commitInitial(
-						currentVersion, nextVersion, 
-						bugReport, databaseVersion);
+						currentVersion, nextVersion, databaseVersion);
 			} else {
 				incrementalModelDelta.commitDelta(
-						previousVersion, currentVersion, nextVersion,
-						bugReport, databaseVersion);
+						previousVersion, currentVersion, nextVersion, databaseVersion);
 			}
 		}
 	}
@@ -183,14 +178,6 @@ public class ModelHistory2Neo4j {
 		
 		return false;
 	}
-
-	private BugReport getBugReport(Version currentVersion, Version nextVersion) {
-		if (onlyBuggyVersions) {
-			return currentVersion.getBugReport();
-		} else {
-			return (nextVersion != null) ? nextVersion.getBugReport() : null;
-		}
-	}
 	
 	private int fastforwardHistoryIteration(History history, HistoryIterator historyIterator, ModelVersion2Neo4j incrementalModelDelta) {
 		int datasetVersion = -1;
@@ -210,12 +197,10 @@ public class ModelHistory2Neo4j {
 						|| (nextVersion.getIdentification().equals(restartWithGitVersion))) {
 					
 					modelRepository.checkout(history, currentVersion);
-					BugReport bugReport = (nextVersion != null) ? nextVersion.getBugReport() : null;
 					
 					if (!startWithFullVersion) {
 						incrementalModelDelta.initialize(
-								previousVersion, currentVersion, nextVersion, 
-								bugReport, datasetVersion);
+								previousVersion, currentVersion, nextVersion, datasetVersion);
 					}
 					
 					if (restartWithVersion == -1) {

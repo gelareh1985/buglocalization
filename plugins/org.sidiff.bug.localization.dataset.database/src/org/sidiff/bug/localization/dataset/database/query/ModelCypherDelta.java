@@ -23,7 +23,7 @@ public class ModelCypherDelta {
 	/**
 	 * URI protocol for model IDs generated from URIs.
 	 */
-	private static final String URI_PROTOCOL = "file:/";
+	private static final String URI_PROTOCOL = "location:/";
 
 	/**
 	 * Neo4J database version of old model
@@ -122,8 +122,15 @@ public class ModelCypherDelta {
 		
 		if (modelElementID.startsWith(URI_PROTOCOL)) {
 			try {
-				modelElement = resource.getEObject(URI.createURI(modelElementID).fragment());
-			} catch (IllegalArgumentException e) {
+				String id = URI.createURI(modelElementID).fragment();
+				modelElement = resource.getEObject(id);
+				
+				// NOTE: Ecore resolves hierarchical URIs also if the resolved element has an attached XMID,
+				//       so check if the resolved element really matches the generated location URI.
+				if (!EcoreUtil.getURI(modelElement).fragment().equals(id)) {
+					modelElement = null; 
+				}
+			} catch (Throwable e) {
 				// e.g. if no value for //parameterTypes/@upperValue URI
 				return null;
 			}
