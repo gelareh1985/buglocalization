@@ -131,70 +131,108 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 	
 	public Map<String, Map<String, Object>> constructAttriuteValueChangeQuery() {
 		if (!attributeValueChangeBatches.isEmpty()) {
-			Map<String, Map<String, Object>> attributeValueChangeQueriesByLabel = new HashMap<>();
+			Map<String, Object> attributeValueChangeBatchesByLabel = new HashMap<>();
+			List<String> labels = new ArrayList<>();
 			
-			for (Entry<String, List<Map<String, Object>>> removeNodesForLabel : attributeValueChangeBatches.entrySet()) {
-				String query = constructAttributeValueChangeQuery(removeNodesForLabel.getKey());
-				
-				Map<String, Object> removeNodesBatch = new HashMap<>();
-				removeNodesBatch.put("batch", removeNodesForLabel.getValue());
-				
-				attributeValueChangeQueriesByLabel.put(query, removeNodesBatch);
+			for (Entry<String, List<Map<String, Object>>> avcNodesForLabel : attributeValueChangeBatches.entrySet()) {
+				String label = avcNodesForLabel.getKey();
+				labels.add(label);
+				attributeValueChangeBatchesByLabel.put("batch_" + label, avcNodesForLabel.getValue());
 			}
 			
-			return attributeValueChangeQueriesByLabel;
+			Map<String, Map<String, Object>> attributeValueChangeQuery = new HashMap<>();
+			String query = constructAttributeValueChangeQuery(labels);
+			attributeValueChangeQuery.put(query, attributeValueChangeBatchesByLabel);
+			return attributeValueChangeQuery;
 		} else {
 			return Collections.emptyMap();
 		}
 	}
 	
-	private String constructAttributeValueChangeQuery(String label) {
+	private String constructAttributeValueChangeQuery(List<String> labels) {
 		StringBuffer query = new StringBuffer();
-		query.append("UNWIND $batch as entry ");
 		
-		query.append("MATCH (n: ");
-		query.append(label);
-		query.append(" {__model__element__id__: entry.id}) ");
+		// Match by index per label:
+		// NOTE: The nodes need to be copied in a single call of cloneNode to also copy the edges between them.
+		query.append("CALL {");
 		
-		// Match by index:
-		query.append("USING INDEX n:");
-		query.append(label);
-		query.append("(__model__element__id__) ");
+		for (int i = 0; i < labels.size(); i++) {
+			String label = labels.get(i);
+			
+			query.append(" UNWIND $batch_");
+			query.append(label);
+			query.append(" AS entry ");
+			
+			query.append("MATCH (n: ");
+			query.append(label);
+			query.append(" {__model__element__id__: entry.id}) ");
+			
+			query.append("USING INDEX n:");
+			query.append(label);
+			query.append("(__model__element__id__) ");
+			
+			query.append("WHERE NOT EXISTS(n.__last__version__) "); // not removed
+			
+			query.append("WITH COLLECT([n, entry]) AS nodes_");
+			query.append(label);
+			
+			for (int j = 0; j < i; j++) {
+				query.append(", nodes_");
+				query.append(labels.get(j));
+			}
+		}
 		
-		query.append("WHERE NOT EXISTS(n.__last__version__) "); // not removed
+		query.append(" RETURN ");
 		
+		for (int i = 0; i < labels.size(); i++) {
+			query.append("nodes_");
+			query.append(labels.get(i));
+			
+			if (i < (labels.size() - 1)) {
+				query.append(" + ");
+			}
+		}
+
 		// Copy node with attribute value change:
-		query.append("WITH entry, COLLECT(DISTINCT n) AS oldNodes CALL apoc.refactor.cloneNodes(oldNodes, true) YIELD input, output ");
+		query.append(" AS nodes_entries } WITH nodes_entries  ");
+		query.append("UNWIND nodes_entries AS node_entry WITH node_entry, COLLECT(node_entry[0]) AS oldNodes ");
+		query.append("CALL apoc.refactor.cloneNodes(oldNodes, true) YIELD input, output ");
+		query.append("SET output += node_entry[1].properties "); // Apply attribute value change and node version.
 		
 		// Remove old changed node (after copy):
-		query.append("WITH entry, oldNodes, output AS newNodes UNWIND oldNodes AS oldNode SET oldNode.__last__version__ = ");
+		query.append("WITH oldNodes, output AS newNodes FOREACH( oldNode IN oldNodes | SET oldNode.__last__version__ = ");
 		query.append(getOldVersion());
-		query.append(" ");
-		
-		// Apply attribute value change:
-		query.append("WITH entry, oldNodes, newNodes UNWIND newNodes AS newNode ");
-		query.append("SET newNode += entry.properties ");
-		
-		// Copy only edges that exists in the new version:
-		query.append("WITH oldNodes, newNodes  UNWIND newNodes AS newNode ");
-		query.append("MATCH (newNode)-[de]-() WHERE de.__last__version__ <= ");
-		query.append(getOldVersion());
-		query.append(" ");
-		query.append("DELETE de ");
-		
-		// Set versions of new changed node edges:
-		query.append("WITH oldNodes, newNodes  UNWIND newNodes AS newNode ");
-		query.append("MATCH (newNode)-[ne]-() ");
-		query.append("SET ne.__initial__version__ = ");
-		query.append(getNewVersion());
-		query.append(" ");
-		query.append("REMOVE ne.__last__version__ ");
+		query.append(" ) ");
 		
 		// Set versions of old changed node edges:
 		query.append("WITH oldNodes, newNodes  UNWIND oldNodes AS oldNode ");
-		query.append("MATCH (oldNode)-[oe]-() ");
+		query.append("MATCH (oldNode)-[oe]-()  ");
 		query.append("SET oe.__last__version__ = ");
 		query.append(getOldVersion());
+		
+		// Set versions of new changed node edges:
+		// NOTE: WHERE NOT newTarget IN oldNodes -> to be deleted
+		query.append("WITH oldNodes, newNodes ");
+		query.append("MATCH (newNodes)-[ne]-(newTarget) WHERE NOT newTarget IN oldNodes "); 
+		query.append("SET ne.__initial__version__ = ");
+		query.append(getNewVersion());
+		
+		// - Copy only edges that exists in the new version:
+		// - If neighbor nodes are copied, copy the edges between them, not the origin:
+		//   -> Mark all edges of old node as with last version.
+		//   -> Remove edges between cloned nodes and origin nodes.
+		// FIXME: For some unknown reason this has to be executed last; otherwise the subsequent queries have no effect?!
+		query.append("WITH oldNodes, newNodes ");
+		query.append("MATCH (newNodes)-[de]-() WHERE de.__last__version__ <= ");
+		query.append(getOldVersion());
+		query.append(" DELETE de ");
+		
+		// NOTE: Remove edges between cloned nodes and origin nodes -> mark and removed by previous queries!
+		// query.append("WITH collect(input) AS origins, collect(output) AS cloned ");
+		//...
+		// query.append("WITH origins, cloned ");
+		// query.append("MATCH (clone)-[edgeClone]-(cloneTarget) WHERE clone IN cloned AND ID(cloneTarget) IN origins ");
+		// query.append("DELETE edgeClone ");
 		
 		return query.toString();
 	}
