@@ -44,8 +44,7 @@ public class DataSet2SystemModel {
 	
 	public org.sidiff.bug.localization.dataset.systemmodel.TracedVersion convertVersion(Version version, Version nextVersion, BugReport bugReport) {
 		org.sidiff.bug.localization.dataset.systemmodel.TracedVersion eVersion = SystemModelFactory.eINSTANCE.createTracedVersion();
-		eVersion.setCodeVersionID(version.getIdentificationTrace());
-		eVersion.setModelVersionID(version.getIdentification());
+		eVersion.setCodeVersionID(version.getIdentification()); 
 		eVersion.setDate(convertDate(version.getDate()));
 		eVersion.setAuthor(version.getAuthor());
 		eVersion.setCommitMessage(version.getCommitMessage());
