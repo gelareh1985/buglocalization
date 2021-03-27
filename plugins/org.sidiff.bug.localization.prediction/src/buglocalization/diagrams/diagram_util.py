@@ -52,7 +52,7 @@ def save_first_relevant_diagram(evaluation_results: List[Tuple[str, pd.DataFrame
                                 meta_model: MetaModel,
                                 graph: Graph,
                                 TOP_RANKING_K: int,
-                                DIAGRAM_SIZE: int,
+                                NUMBER_OF_NEIGHBORS: int,
                                 diagram_save_path: str,
                                 K_NEIGHBOUR_DISTANCE: int = 0,
                                 UNDIRECTED: bool = True,
@@ -74,7 +74,7 @@ def save_first_relevant_diagram(evaluation_results: List[Tuple[str, pd.DataFrame
         
         first_expected_location = eval_util.get_first_relevant_subgraph_location(
             tbl_predicted, TOP_RANKING_K, graph, db_version, meta_model,
-            K_NEIGHBOUR_DISTANCE, UNDIRECTED, DIAGRAM_SIZE, DIAGRAM_AGGREGATION)
+            K_NEIGHBOUR_DISTANCE, UNDIRECTED, NUMBER_OF_NEIGHBORS, DIAGRAM_AGGREGATION)
 
         if first_expected_location is not None:
             ranking_location_id = first_expected_location[0].DatabaseNodeID

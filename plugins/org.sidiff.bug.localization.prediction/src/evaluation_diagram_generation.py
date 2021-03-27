@@ -45,7 +45,7 @@ if __name__ == '__main__':
             meta_model=meta_model,
             graph=buglocation_graph,
             TOP_RANKING_K=top_k_value,
-            DIAGRAM_SIZE=diagram_size,
+            NUMBER_OF_NEIGHBORS=diagram_size,
             diagram_save_path=diagram_save_path,
             K_NEIGHBOUR_DISTANCE=k_neighbor,
             UNDIRECTED=True,
