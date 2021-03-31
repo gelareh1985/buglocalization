@@ -3,3 +3,5 @@ plugins/org.sidiff.bug.localization.prediction/data/GoogleNews-vectors-gensim-no
 plugins/org.sidiff.bug.localization.prediction/data/GoogleNews-vectors-gensim-normed300.bin
 evaluation/eclipse.jdt.core/trained_model_2021-02-05_03-38-53_train90_test10/
 plugins/org.sidiff.bug.localization.prediction/trained_model_2021-02-05_03-38-53_train90_test10/
+plugins/org.sidiff.bug.localization.prediction/docker/neo4j_buglocalization_test/data/databases/neo4j/database_lock
+plugins/org.sidiff.bug.localization.prediction/docker/neo4j_eval/data/databases/neo4j/database_lock

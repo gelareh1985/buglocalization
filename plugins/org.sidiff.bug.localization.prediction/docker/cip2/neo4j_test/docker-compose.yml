@@ -1,7 +1,7 @@
 version: "3"
 services:
   neo4j:
-    container_name: neo4j_training
+    container_name: neo4j_test
     image: neo4j:latest
     # For the connection between the application container and the Neo4j container:
     networks: 
