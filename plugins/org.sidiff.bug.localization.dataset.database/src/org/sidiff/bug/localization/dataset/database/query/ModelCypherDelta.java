@@ -85,6 +85,9 @@ public class ModelCypherDelta {
 		}
 	}
 	
+	protected ModelCypherDelta() {
+	}
+	
 	private URI getBaseURI(XMLResource resource) {
 		if (commonBaseURI != null) {
 			return commonBaseURI;

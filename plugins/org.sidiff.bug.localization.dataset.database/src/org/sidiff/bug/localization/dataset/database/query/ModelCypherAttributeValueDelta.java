@@ -1,6 +1,7 @@
 package org.sidiff.bug.localization.dataset.database.query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
+import org.sidiff.bug.localization.dataset.database.transaction.Neo4jUtil;
 
 public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 
@@ -45,6 +48,9 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		super(oldVersion, oldBaseURI, oldResourcesMatch, newVersion, newBaseURI, newResourcesMatch);
 		this.attributeValueChangeBatches = new HashMap<>();
 		deriveAttributeValueDeltas();
+	}
+	
+	protected ModelCypherAttributeValueDelta() {
 	}
 
 	private void deriveAttributeValueDeltas() {
@@ -104,11 +110,11 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 	}
 	
 	private void deriveAttributeValueChangeBatchQuery(EObject modelElementOld, EObject modelElementNew, String modelElementID) {
-		Map<String, Object> removeNode = new HashMap<>(2);
-		removeNode.put("id", modelElementID);
+		Map<String, Object> avcNode = new HashMap<>(2);
+		avcNode.put("id", modelElementID);
 		
 		Map<String, Object> attributeValueChangeProperties = new HashMap<>(1);
-		removeNode.put("properties", attributeValueChangeProperties);
+		avcNode.put("properties", attributeValueChangeProperties);
 		attributeValueChangeProperties.put("__initial__version__", getNewVersion());
 		
 		for (EAttribute attribute : modelElementOld.eClass().getEAllAttributes()) {
@@ -124,14 +130,17 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		}
 		
 		String label = toCypherLabel(modelElementOld.eClass());
-		List<Map<String, Object>> removeNodesOfLabel = attributeValueChangeBatches.getOrDefault(label, new ArrayList<>());
-		removeNodesOfLabel.add(removeNode);
-		attributeValueChangeBatches.put(label, removeNodesOfLabel);
+		List<Map<String, Object>> avcNodesOfLabel = attributeValueChangeBatches.getOrDefault(label, new ArrayList<>());
+		avcNodesOfLabel.add(avcNode);
+		attributeValueChangeBatches.put(label, avcNodesOfLabel);
 	}
 	
 	public Map<String, Map<String, Object>> constructAttriuteValueChangeQuery() {
 		if (!attributeValueChangeBatches.isEmpty()) {
 			Map<String, Object> attributeValueChangeBatchesByLabel = new HashMap<>();
+			attributeValueChangeBatchesByLabel.put("oldVersion", getOldVersion());
+			attributeValueChangeBatchesByLabel.put("newVersion", getNewVersion());
+			
 			List<String> labels = new ArrayList<>();
 			
 			for (Entry<String, List<Map<String, Object>>> avcNodesForLabel : attributeValueChangeBatches.entrySet()) {
@@ -166,74 +175,185 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 			query.append("MATCH (n: ");
 			query.append(label);
 			query.append(" {__model__element__id__: entry.id}) ");
-			
 			query.append("USING INDEX n:");
 			query.append(label);
 			query.append("(__model__element__id__) ");
-			
 			query.append("WHERE NOT EXISTS(n.__last__version__) "); // not removed
 			
-			query.append("WITH COLLECT([n, entry]) AS nodes_");
-			query.append(label);
+			// Copy node with attribute value change:
+			query.append("CALL apoc.refactor.cloneNodes([n], false) YIELD input, output ");
+			query.append("SET output += entry.properties "); // Apply attribute value change and node version.
 			
-			for (int j = 0; j < i; j++) {
-				query.append(", nodes_");
-				query.append(labels.get(j));
+			if (i == 0) {
+				query.append("WITH COLLECT(n) AS nodeOrigins, COLLECT([toString(input), output]) AS nodes ");
+			} else {
+				query.append("WITH nodeOrigins + COLLECT(n) AS nodeOrigins, nodes + COLLECT([toString(input), output]) AS nodes ");
 			}
 		}
 		
-		query.append(" RETURN ");
-		
-		for (int i = 0; i < labels.size(); i++) {
-			query.append("nodes_");
-			query.append(labels.get(i));
-			
-			if (i < (labels.size() - 1)) {
-				query.append(" + ");
-			}
-		}
-
-		// Copy node with attribute value change:
-		query.append(" AS nodes_entries } WITH nodes_entries  ");
-		query.append("UNWIND nodes_entries AS node_entry WITH node_entry, COLLECT(node_entry[0]) AS oldNodes ");
-		query.append("CALL apoc.refactor.cloneNodes(oldNodes, true) YIELD input, output ");
-		query.append("SET output += node_entry[1].properties "); // Apply attribute value change and node version.
+		query.append("RETURN apoc.map.fromPairs(nodes) AS nodeTrace, nodeOrigins ");
+		query.append("} ");
 		
 		// Remove old changed node (after copy):
-		query.append("WITH oldNodes, output AS newNodes FOREACH( oldNode IN oldNodes | SET oldNode.__last__version__ = ");
-		query.append(getOldVersion());
-		query.append(" ) ");
+		query.append("WITH nodeTrace, nodeOrigins ");
+		query.append("FOREACH(nodeOrigin IN nodeOrigins | SET nodeOrigin.__last__version__ = $oldVersion) ");
 		
-		// Set versions of old changed node edges:
-		query.append("WITH oldNodes, newNodes  UNWIND oldNodes AS oldNode ");
-		query.append("MATCH (oldNode)-[oe]-()  ");
-		query.append("SET oe.__last__version__ = ");
-		query.append(getOldVersion());
+		// Process copied origin  nodes:
+		query.append("WITH nodeTrace, nodeOrigins ");
+		query.append("UNWIND nodeOrigins AS nodeOrigin ");
 		
-		// Set versions of new changed node edges:
-		// NOTE: WHERE NOT newTarget IN oldNodes -> to be deleted
-		query.append("WITH oldNodes, newNodes ");
-		query.append("MATCH (newNodes)-[ne]-(newTarget) WHERE NOT newTarget IN oldNodes "); 
-		query.append("SET ne.__initial__version__ = ");
-		query.append(getNewVersion());
+		// Collect all edges between copied origin nodes and not copied boundary nodes:
+		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, [] AS tasks ");
+		query.append("OPTIONAL MATCH (nodeOrigin)-[outgoingBoundaryRel]->(boundaryNode) WHERE NOT boundaryNode IN nodeOrigins AND NOT EXISTS(outgoingBoundaryRel.__last__version__) ");
+		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, CASE WHEN outgoingBoundaryRel IS NOT NULL THEN tasks + [[outgoingBoundaryRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(outgoingBoundaryRel), properties(outgoingBoundaryRel), boundaryNode]] ELSE tasks END AS tasks ");
+//		query.append("CALL apoc.create.relationship(apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(outgoingBoundaryRel), properties(outgoingBoundaryRel), boundaryNode) YIELD rel ");
+//		query.append("SET rel.__initial__version__ = $newVersion ");
+//		query.append("SET outgoingBoundaryRel.__last__version__ = $oldVersion ");
 		
-		// - Copy only edges that exists in the new version:
-		// - If neighbor nodes are copied, copy the edges between them, not the origin:
-		//   -> Mark all edges of old node as with last version.
-		//   -> Remove edges between cloned nodes and origin nodes.
-		// FIXME: For some unknown reason this has to be executed last; otherwise the subsequent queries have no effect?!
-		query.append("WITH oldNodes, newNodes ");
-		query.append("MATCH (newNodes)-[de]-() WHERE de.__last__version__ <= ");
-		query.append(getOldVersion());
-		query.append(" DELETE de ");
+		query.append("OPTIONAL MATCH (nodeOrigin)<-[incomingBoundaryRel]-(boundaryNode) WHERE NOT boundaryNode IN nodeOrigins AND NOT EXISTS(incomingBoundaryRel.__last__version__) ");
+		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, CASE WHEN incomingBoundaryRel IS NOT NULL THEN tasks + [[incomingBoundaryRel, boundaryNode, type(incomingBoundaryRel), properties(incomingBoundaryRel), apoc.map.get(nodeTrace, toString(ID(nodeOrigin)))]] ELSE tasks END AS tasks ");
+//		query.append("CALL apoc.create.relationship(boundaryNode, type(incomingBoundaryRel), properties(incomingBoundaryRel), apoc.map.get(nodeTrace, toString(ID(nodeOrigin)))) YIELD rel ");
+//		query.append("SET rel.__initial__version__ = $newVersion ");
+//		query.append("SET incomingBoundaryRel.__last__version__ = $oldVersion ");
 		
-		// NOTE: Remove edges between cloned nodes and origin nodes -> mark and removed by previous queries!
-		// query.append("WITH collect(input) AS origins, collect(output) AS cloned ");
-		//...
-		// query.append("WITH origins, cloned ");
-		// query.append("MATCH (clone)-[edgeClone]-(cloneTarget) WHERE clone IN cloned AND ID(cloneTarget) IN origins ");
-		// query.append("DELETE edgeClone ");
+		// Collect all edges between copied origin nodes:
+		query.append("OPTIONAL MATCH (nodeOrigin)-[originRel]->(originTarget) WHERE originTarget IN nodeOrigins AND NOT EXISTS(originRel.__last__version__) ");
+		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, CASE WHEN originRel IS NOT NULL THEN tasks + [[originRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(originRel), properties(originRel), apoc.map.get(nodeTrace, toString(ID(originTarget)))]] ELSE tasks END AS tasks ");
+//		query.append("CALL apoc.create.relationship(apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(originRel), properties(originRel), apoc.map.get(nodeTrace, toString(ID(originTarget)))) YIELD rel ");
+//		query.append("SET rel.__initial__version__ = $newVersion ");
+//		query.append("SET originRel.__last__version__ = $oldVersion ");
+		
+		query.append("UNWIND tasks AS task ");
+		//// query.append("CREATE (result:Result {result: apoc.convert.toString(task)}) "); // for debugging
+		query.append("CALL apoc.create.relationship(task[1], task[2], task[3], task[4]) YIELD rel AS copyRel ");
+		query.append("CALL apoc.create.setRelProperty(task[0], '__last__version__', $oldVersion) YIELD rel AS originRel ");
+//		query.append("SET task[0].__last__version__ = $oldVersion ");
+		query.append("SET copyRel.__initial__version__ = $newVersion ");
 		
 		return query.toString();
+	}
+	
+	// TEST //
+	public static void main(String[] args) {
+		String databaseURI = "bolt://localhost:7687";
+		String databaseName = "neo4j";
+		String databasePassword = "password";
+		
+		// Create test data:
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
+			Neo4jUtil.clearDatabase(transaction);
+		}
+		
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
+			for (String label : new String[] {"A", "B", "C", "X"}) {
+				StringBuffer indexQuery = new StringBuffer();
+				indexQuery.append("CREATE INDEX " + label + "___model__element__id__ IF NOT EXISTS FOR (n:" + label + ") ON (n.__model__element__id__)");
+				transaction.execute(indexQuery.toString());
+			}
+			
+			transaction.commit();
+			transaction.awaitIndexOnline();
+		}
+		
+		StringBuffer createQuery = new StringBuffer();
+		
+		// Nodes:
+		createQuery.append("CREATE (a:A {name:'a', __model__element__id__:'a'}) ");
+		createQuery.append("SET a.__initial__version__ = 22 ");
+		
+		createQuery.append("CREATE (b:B {name:'b', __model__element__id__:'b'}) ");
+		createQuery.append("SET b.__initial__version__ = 23 ");
+		
+		createQuery.append("CREATE (c:C {name:'c', __model__element__id__:'c'}) ");
+		createQuery.append("SET c.__initial__version__ = 0 ");
+		
+		createQuery.append("CREATE (d:B {name:'d', __model__element__id__:'d'}) ");
+		createQuery.append("SET d.__initial__version__ = 30 ");
+		
+		createQuery.append("CREATE (e:A {name:'e', __model__element__id__:'e'}) ");
+		createQuery.append("SET e.__initial__version__ = 42 ");
+		
+		createQuery.append("CREATE (x:X {name:'x', __model__element__id__:'X'}) ");
+		createQuery.append("SET x.__initial__version__ = 23 ");
+		createQuery.append("SET x.__last__version__ = 42 ");
+		
+		// Edges:
+		createQuery.append("CREATE (a)-[relAB:r]->(b) ");
+		createQuery.append("SET relAB.__initial__version__ = 23 ");
+		createQuery.append("SET relAB.name = 'relAB' ");
+		
+		createQuery.append("CREATE (b)-[relBC:t]->(c) ");
+		createQuery.append("SET relBC.__initial__version__ = 23 ");
+		createQuery.append("SET relBC.name = 'relBC' ");
+		
+		createQuery.append("CREATE (c)<-[relCD:e]-(d) ");
+		createQuery.append("SET relCD.__initial__version__ = 31 ");
+		createQuery.append("SET relCD.name = 'relAB' ");
+		
+		createQuery.append("CREATE (d)<-[relDE:r]-(e) ");
+		createQuery.append("SET relDE.__initial__version__ = 42 ");
+		createQuery.append("SET relDE.name = 'relDE' ");
+		
+		createQuery.append("CREATE (c)-[relCX:e]->(x) ");
+		createQuery.append("SET relCX.__initial__version__ = 25 ");
+		createQuery.append("SET relCX.__last__version__ = 42 ");
+		createQuery.append("SET relCX.name = 'relCX' ");
+		
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
+			transaction.execute(createQuery.toString());
+			transaction.commit();
+		}
+		
+		// Create test query:
+		ModelCypherAttributeValueDelta avcDelta = new ModelCypherAttributeValueDelta();
+		String avcQuery = avcDelta.constructAttributeValueChangeQuery(Arrays.asList(new String[] {"B", "C"}));
+		
+		Map<String, Object> attributeValueChangeBatchesByLabel = new HashMap<>();
+		attributeValueChangeBatchesByLabel.put("oldVersion", 42);
+		attributeValueChangeBatchesByLabel.put("newVersion", 43);
+		
+		// AVC Node B:
+		Map<String, Object> avcNodeB = new HashMap<>(2);
+		avcNodeB.put("id", "b");
+		
+		Map<String, Object> attributeValueChangePropertiesB = new HashMap<>(1);
+		avcNodeB.put("properties", attributeValueChangePropertiesB);
+		attributeValueChangePropertiesB.put("__initial__version__", 43);
+		
+		List<Object> batch_B = new ArrayList<>();
+		batch_B.add(avcNodeB);
+		attributeValueChangeBatchesByLabel.put("batch_B", batch_B);
+		
+		// AVC Node C:
+		Map<String, Object> avcNodeC = new HashMap<>(2);
+		avcNodeC.put("id", "c");
+		
+		Map<String, Object> attributeValueChangePropertiesC = new HashMap<>(1);
+		avcNodeC.put("properties", attributeValueChangePropertiesC);
+		attributeValueChangePropertiesC.put("__initial__version__", 43);
+		
+		List<Object> batch_C = new ArrayList<>();
+		batch_C.add(avcNodeC);
+		attributeValueChangeBatchesByLabel.put("batch_C", batch_C);
+		
+		Map<String, Map<String, Object>> attributeValueChangeQuery = new HashMap<>();
+		attributeValueChangeQuery.put(avcQuery, attributeValueChangeBatchesByLabel);
+		
+		// AVC Node D:
+		Map<String, Object> avcNodeD = new HashMap<>(2);
+		avcNodeD.put("id", "d");
+		
+		Map<String, Object> attributeValueChangePropertiesD = new HashMap<>(1);
+		avcNodeD.put("properties", attributeValueChangePropertiesD);
+		attributeValueChangePropertiesD.put("__initial__version__", 43);
+		
+		batch_B.add(avcNodeD);
+		
+		// Run test query:
+		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
+			transaction.execute(attributeValueChangeQuery);
+			transaction.commit();
+		}
+		
 	}
 }
