@@ -27,14 +27,6 @@ def load_evaluation_results(path: str,
             tbl_predicted_path = path + tbl_predicted_file
             tbl_predicted = pd.read_csv(tbl_predicted_path, sep=';', header=0)
 
-            # TODO
-            # tbl_predicted = tbl_predicted[~tbl_predicted.ModelElementID.str.contains(
-            #     '.test') & ~tbl_predicted.ModelElementID.str.contains(
-            #     'converterJclMin') & ~tbl_predicted.ModelElementID.str.contains(
-            #     'library')]
-            # tbl_predicted = tbl_predicted[~any(re.findall(".test|converterJclMin|library", tbl_predicted.ModelElementID))]
-            # tbl_predicted.reset_index(inplace=True)
-
             if filters is not None:
                 for filter_word in filters:
                     tbl_predicted = tbl_predicted[~tbl_predicted.ModelElementID.str.contains(filter_word)]

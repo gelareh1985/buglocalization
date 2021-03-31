@@ -15,8 +15,10 @@ if __name__ == '__main__':
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
     ranking_results, outliers = eval_util.get_ranking_results(eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter))
-    # all_relevant_locations_df = eval_util.get_all_relevant_locations(ranking_results)
-    all_relevant_locations_df = eval_util.get_all_top_relevant_locations(ranking_results)
+    all_relevant_locations_df = eval_util.get_all_relevant_locations(ranking_results)
+    # all_relevant_locations_df = eval_util.get_all_top_relevant_locations(ranking_results)
+    print("Numbers of potential locations (first):", len(ranking_results[0].index))
+    print("Numbers of potential locations (last):", len(ranking_results[len(ranking_results) - 1].index))
     print("Describe:\n", all_relevant_locations_df.describe())
     
     # Quantile:
