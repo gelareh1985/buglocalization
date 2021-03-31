@@ -39,8 +39,6 @@ public class ModelVersion2Neo4j {
 	
 	protected DataSet2SystemModel dataSet2SystemModel;
 	
-	private boolean onlyBuggyVersions = false;
-	
 	private ExecutorService modelUnloadThread;
 	
 	public ModelVersion2Neo4j(Repository modelRepository, URI systemModelURI, Neo4jTransaction transaction) {
@@ -51,14 +49,6 @@ public class ModelVersion2Neo4j {
 		this.systemModelName = systemModelURI.lastSegment().substring(0, systemModelURI.lastSegment().lastIndexOf("."));
 		this.dataSet2SystemModel = new DataSet2SystemModel();
 		this.modelUnloadThread = Executors.newSingleThreadExecutor();
-	}
-
-	public boolean isOnlyBuggyVersions() {
-		return onlyBuggyVersions;
-	}
-
-	public void setOnlyBuggyVersions(boolean onlyBuggyVersions) {
-		this.onlyBuggyVersions = onlyBuggyVersions;
 	}
 
 	public void clearDatabase() {
