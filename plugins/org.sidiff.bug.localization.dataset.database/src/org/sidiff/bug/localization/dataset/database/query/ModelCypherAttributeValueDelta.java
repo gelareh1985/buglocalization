@@ -198,37 +198,28 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		query.append("WITH nodeTrace, nodeOrigins ");
 		query.append("FOREACH(nodeOrigin IN nodeOrigins | SET nodeOrigin.__last__version__ = $oldVersion) ");
 		
-		// Process copied origin  nodes:
-		query.append("WITH nodeTrace, nodeOrigins ");
-		query.append("UNWIND nodeOrigins AS nodeOrigin ");
+		// Collect edges to be copied:
+		query.append("WITH nodeTrace, nodeOrigins");
 		
 		// Collect all edges between copied origin nodes and not copied boundary nodes:
-		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, [] AS tasks ");
-		query.append("OPTIONAL MATCH (nodeOrigin)-[outgoingBoundaryRel]->(boundaryNode) WHERE NOT boundaryNode IN nodeOrigins AND NOT EXISTS(outgoingBoundaryRel.__last__version__) ");
-		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, CASE WHEN outgoingBoundaryRel IS NOT NULL THEN tasks + [[outgoingBoundaryRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(outgoingBoundaryRel), properties(outgoingBoundaryRel), boundaryNode]] ELSE tasks END AS tasks ");
-//		query.append("CALL apoc.create.relationship(apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(outgoingBoundaryRel), properties(outgoingBoundaryRel), boundaryNode) YIELD rel ");
-//		query.append("SET rel.__initial__version__ = $newVersion ");
-//		query.append("SET outgoingBoundaryRel.__last__version__ = $oldVersion ");
-		
-		query.append("OPTIONAL MATCH (nodeOrigin)<-[incomingBoundaryRel]-(boundaryNode) WHERE NOT boundaryNode IN nodeOrigins AND NOT EXISTS(incomingBoundaryRel.__last__version__) ");
-		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, CASE WHEN incomingBoundaryRel IS NOT NULL THEN tasks + [[incomingBoundaryRel, boundaryNode, type(incomingBoundaryRel), properties(incomingBoundaryRel), apoc.map.get(nodeTrace, toString(ID(nodeOrigin)))]] ELSE tasks END AS tasks ");
-//		query.append("CALL apoc.create.relationship(boundaryNode, type(incomingBoundaryRel), properties(incomingBoundaryRel), apoc.map.get(nodeTrace, toString(ID(nodeOrigin)))) YIELD rel ");
-//		query.append("SET rel.__initial__version__ = $newVersion ");
-//		query.append("SET incomingBoundaryRel.__last__version__ = $oldVersion ");
+		query.append(", [(nodeOrigin)-[outgoingBoundaryRel]->(boundaryNode) WHERE nodeOrigin IN nodeOrigins AND NOT boundaryNode IN nodeOrigins AND NOT EXISTS(outgoingBoundaryRel.__last__version__) ");
+		query.append("| [outgoingBoundaryRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(outgoingBoundaryRel), properties(outgoingBoundaryRel), boundaryNode]]");
 		
 		// Collect all edges between copied origin nodes:
-		query.append("OPTIONAL MATCH (nodeOrigin)-[originRel]->(originTarget) WHERE originTarget IN nodeOrigins AND NOT EXISTS(originRel.__last__version__) ");
-		query.append("WITH nodeOrigins, nodeOrigin, nodeTrace, CASE WHEN originRel IS NOT NULL THEN tasks + [[originRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(originRel), properties(originRel), apoc.map.get(nodeTrace, toString(ID(originTarget)))]] ELSE tasks END AS tasks ");
-//		query.append("CALL apoc.create.relationship(apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(originRel), properties(originRel), apoc.map.get(nodeTrace, toString(ID(originTarget)))) YIELD rel ");
-//		query.append("SET rel.__initial__version__ = $newVersion ");
-//		query.append("SET originRel.__last__version__ = $oldVersion ");
+		query.append(" + [(nodeOrigin)<-[incomingBoundaryRel]-(boundaryNode) WHERE nodeOrigin IN nodeOrigins AND NOT boundaryNode IN nodeOrigins AND NOT EXISTS(incomingBoundaryRel.__last__version__) ");
+		query.append("| [incomingBoundaryRel, boundaryNode, type(incomingBoundaryRel), properties(incomingBoundaryRel), apoc.map.get(nodeTrace, toString(ID(nodeOrigin)))]]");
 		
-		query.append("UNWIND tasks AS task ");
-		//// query.append("CREATE (result:Result {result: apoc.convert.toString(task)}) "); // for debugging
-		query.append("CALL apoc.create.relationship(task[1], task[2], task[3], task[4]) YIELD rel AS copyRel ");
-		query.append("CALL apoc.create.setRelProperty(task[0], '__last__version__', $oldVersion) YIELD rel AS originRel ");
-//		query.append("SET task[0].__last__version__ = $oldVersion ");
-		query.append("SET copyRel.__initial__version__ = $newVersion ");
+		query.append(" + [(nodeOrigin)-[originRel]->(originTarget) WHERE nodeOrigin IN nodeOrigins AND originTarget IN nodeOrigins AND NOT EXISTS(originRel.__last__version__) ");
+		query.append("| [originRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(originRel), properties(originRel), apoc.map.get(nodeTrace, toString(ID(originTarget)))]] ");
+		query.append("AS copyRels ");
+		
+		//// query.append(" CREATE (result:Result {result: apoc.convert.toString(tasks)}) "); //// for debugging
+		
+		// Copy edges [rel, source, type, properties, target]:
+		query.append("UNWIND copyRels AS copyRel ");
+		query.append("CALL apoc.create.relationship(copyRel[1], copyRel[2], copyRel[3], copyRel[4]) YIELD rel AS copiedRel ");
+		query.append("CALL apoc.create.setRelProperty(copyRel[0], '__last__version__', $oldVersion) YIELD rel AS originRel ");
+		query.append("SET copiedRel.__initial__version__ = $newVersion ");
 		
 		return query.toString();
 	}
@@ -238,6 +229,8 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		String databaseURI = "bolt://localhost:7687";
 		String databaseName = "neo4j";
 		String databasePassword = "password";
+		
+		int example = 1;
 		
 		// Create test data:
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
@@ -298,6 +291,16 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		createQuery.append("SET relCX.__initial__version__ = 25 ");
 		createQuery.append("SET relCX.__last__version__ = 42 ");
 		createQuery.append("SET relCX.name = 'relCX' ");
+		
+		if (example >= 1) {
+			createQuery.append("CREATE (e)<-[invRelDE:r]-(d) ");
+			createQuery.append("SET invRelDE.__initial__version__ = 42 ");
+			createQuery.append("SET invRelDE.name = 'invRelDE' ");
+			
+			createQuery.append("CREATE (d)-[relDB:e]->(b) ");
+			createQuery.append("SET relDB.__initial__version__ = 42 ");
+			createQuery.append("SET relDB.name = 'relDB' ");
+		}
 		
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
 			transaction.execute(createQuery.toString());
