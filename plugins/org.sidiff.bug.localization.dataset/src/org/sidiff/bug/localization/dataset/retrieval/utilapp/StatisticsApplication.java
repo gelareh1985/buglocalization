@@ -117,7 +117,7 @@ public class StatisticsApplication implements IApplication {
 		
 		Path systemModelRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SYSTEM_MODEL_REPOSITORY);
 		this.systemModelRepository = new SystemModelRepository(systemModelRepositoryPath, dataSet);
-		this.provider = new SystemModelRetrievalProvider(null);
+		this.provider = new SystemModelRetrievalProvider();
 		
 		this.productStatistic = new ProductStatistic();
 		this.projectStatistics = new LinkedHashMap<>();

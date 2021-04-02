@@ -28,6 +28,8 @@ public class BugFixMessageIDMatcher {
 		
 		addKeyword("bug", true, true);
 		addKeyword("fix", true, true);
+		addKeyword("\\[", false, true);
+		addKeyword("\\]", true, false);
 		compilePatterns();
 	}
 	
@@ -50,17 +52,17 @@ public class BugFixMessageIDMatcher {
 		Matcher matcher = pattern.matcher(commitMessage);
 		
 		if (matcher.find( )) {
-			try {
-				for (String groupName : bugIdGroupNames) {
-					String matchedBugID = matcher.group(groupName);
-					
-					if (matchedBugID != null) {
+			for (String groupName : bugIdGroupNames) {
+				String matchedBugID = matcher.group(groupName);
+
+				if (matchedBugID != null) {
+					try {
 						return Integer.valueOf(matchedBugID);
+					} catch (NumberFormatException e) {
+						Activator.getLogger().log(Level.WARNING,
+								"Clould not parse bug ID: " + matcher.group(1) + " From message: " + commitMessage);
 					}
 				}
-			} catch (NumberFormatException e) {
-				Activator.getLogger().log(Level.WARNING,
-						"Clould not parse bug ID: " + matcher.group(1) + " From message: " + commitMessage);
 			}
 		}
 		

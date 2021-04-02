@@ -31,6 +31,7 @@
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog  -dataset &quot;${project_loc:/org.sidiff.bug.localization.dataset.domain.eclipse}/datasets/eclipse.jdt.core/DataSet_20210325103732_systemmodel.json&quot; -modelrepository &quot;D:\git\eclipse.jdt.core_uml.class&quot; -databaseconnection &quot;bolt://localhost:7687&quot; -databasename &quot;neo4j&quot; -databaseuser &quot;neo4j&quot; -databasepassword &quot;password&quot;"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms4000m -Xmx4000m"/>
     <booleanAttribute key="pde.generated.config" value="false"/>
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="org.eclipse.emf.cdo.explorer.ui.product"/>

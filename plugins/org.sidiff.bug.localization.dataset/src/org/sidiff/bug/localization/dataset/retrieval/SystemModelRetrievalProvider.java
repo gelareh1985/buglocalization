@@ -1,16 +1,14 @@
 package org.sidiff.bug.localization.dataset.retrieval;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.sidiff.bug.localization.dataset.changes.util.FileChangeFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.JavaProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectFilter;
 import org.sidiff.bug.localization.dataset.workspace.filter.ProjectNameFilter;
-import org.sidiff.bug.localization.dataset.workspace.filter.TestProjectFilter;
+import org.sidiff.bug.localization.dataset.workspace.filter.ProjectPathFilter;
 
 public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvider {
 	
@@ -35,22 +33,15 @@ public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvi
 	 */
 	private boolean includeMethodBodies = false;
 	
-	public SystemModelRetrievalProvider(Path codeRepositoryPath) {
+	public SystemModelRetrievalProvider(Path codeRepositoryPath, List<String> projectNameFilter, String projectPathFilter) {
 		super(codeRepositoryPath);
-		// new JavaProjectFilter()
-		// new PDEProjectFilter()
-		// new TestProjectFilter()
-		// new ProjectNameFilter()
-		
-		// TODO: Put this in data set configuration:
-		Set<String> filteredProjectNames = new HashSet<>(Arrays.asList(new String[] {
-				"converterJclMin", "converterJclMin1.5", "converterJclMin1.7",
-				"converterJclMin1.8", "converterJclMin9", "converterJclMin10",
-				"converterJclMin11", "converterJclMin12", "converterJclMin12",
-				"converterJclMin13", "converterJclMin14", "converterJclMin15"})); 
-		this.projectFilter =  () -> new ProjectNameFilter(new TestProjectFilter(new JavaProjectFilter()), filteredProjectNames);
+		this.projectFilter =  () -> new ProjectPathFilter(new ProjectNameFilter(new JavaProjectFilter(), projectNameFilter), projectPathFilter);
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().toLowerCase().endsWith(".java");
 		this.intermediateSave = 200;
+	}
+	
+	public SystemModelRetrievalProvider() {
+		super(null);
 	}
 	
 	public ProjectFilter createProjectFilter() {

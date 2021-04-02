@@ -66,7 +66,8 @@ public class TestDriverApplication extends DataSetRetrievalApplication {
 		
 		// System model:
 		{
-			SystemModelRetrievalProvider systemModelRetrievalProvider = new SystemModelRetrievalProvider(codeRepositoryPath);
+			SystemModelRetrievalProvider systemModelRetrievalProvider = new SystemModelRetrievalProvider(
+					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter());
 			{
 				filterProjects(systemModelRetrievalProvider, FILTER_PROJECTS);
 			}

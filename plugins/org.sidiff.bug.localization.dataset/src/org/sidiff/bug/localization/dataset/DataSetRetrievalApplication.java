@@ -114,7 +114,8 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		// Direct System model (Java Model -> System Model):
 		if (retrieveSystemModelHistory) {
-			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(codeRepositoryPath);
+			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(
+					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter());
 			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, dataset, datasetPath);
 			
 			try {

@@ -161,6 +161,20 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 	private String constructAttributeValueChangeQuery(List<String> labels) {
 		StringBuffer query = new StringBuffer();
 		
+		// TODO: More efficient solution for: WHERE nodeOrigin IN nodeOrigins
+		//
+		//       [originPath IN apoc.coll.flatten([nodeOrigin In nodeOrigins | (nodeOrigin)-->()]) | LAST(RELATIONSHIPS(originPath))] AS originRels
+		//       WITH nodeTrace, originRels, 
+		//       [originRel IN originRels WHERE endEnd(originRel) IN nodeOrigins AND NOT EXISTS(originRel.__last__version__)
+		//		 | [originRel, 
+		//          apoc.map.get(nodeTrace, toString(ID(startNode(originRel)))),
+		//          type(originRel), properties(originRel), 
+		//          apoc.map.get(nodeTrace, 
+		//          toString(ID(endEnd(originRel))))
+		//         ]
+		//       ]
+		//       AS copyRels
+		
 		// Match by index per label:
 		// NOTE: The nodes need to be copied in a single call of cloneNode to also copy the edges between them.
 		query.append("CALL {");
