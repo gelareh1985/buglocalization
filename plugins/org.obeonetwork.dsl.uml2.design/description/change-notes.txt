@@ -1,0 +1,4 @@
+- enabled model element synchronization
+- added GraphViz Dot as layouting algorithm
+- FIXME: Layout ELK algorithm does not support tree-style routing on UML generalizations
+  - WORKAROUND: Set routing style to straight 
