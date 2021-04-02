@@ -1,7 +1,7 @@
 version: "3"
 services:
   neo4j:
-    container_name: neo4j_test
+    container_name: neo4j_training
     image: neo4j:latest
     # For the connection between the application container and the Neo4j container:
     networks: 
@@ -11,7 +11,7 @@ services:
       - ./data:/data
       # Plugins folder will contain the .jar file, if you want to use APOC library:
       - ./plugins:/plugins
-      # Import folder will contain the files (JSON or CSV)that you would like to load and perform any Cypher query:
+      # Import folder will contain the files (JSON or CSV) that you would like to load and perform any Cypher query:
       - ./import:/import
     # Ports section details the GUI port 7474 and binary protocol BOLT port 7687:
     ports:
