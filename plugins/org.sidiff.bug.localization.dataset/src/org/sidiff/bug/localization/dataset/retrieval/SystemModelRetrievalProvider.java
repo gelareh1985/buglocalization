@@ -35,7 +35,13 @@ public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvi
 	
 	public SystemModelRetrievalProvider(Path codeRepositoryPath, List<String> projectNameFilter, String projectPathFilter) {
 		super(codeRepositoryPath);
-		this.projectFilter =  () -> new ProjectPathFilter(new ProjectNameFilter(new JavaProjectFilter(), projectNameFilter), projectPathFilter);
+		
+		if ((projectNameFilter != null) && (projectPathFilter != null)) {
+			this.projectFilter =  () -> new ProjectPathFilter(new ProjectNameFilter(new JavaProjectFilter(), projectNameFilter), projectPathFilter);
+		} else {
+			this.projectFilter =  () -> new JavaProjectFilter();
+		}
+		
 		this.fileChangeFilter = (fileChange) -> !fileChange.getLocation().toString().toLowerCase().endsWith(".java");
 		this.intermediateSave = 200;
 	}
