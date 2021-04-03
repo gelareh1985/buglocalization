@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.sidiff.bug.localization.diagram.neo4j.Neo4jJsonToEcoreUML;
 import org.sidiff.bug.localization.diagram.sirius.ModelDiagramCreator;
+import org.sidiff.bug.localization.diagram.transformations.CreateAssociations;
 
 public class GenerateAllDiagramsHandler extends AbstractHandler {
 
@@ -67,7 +68,7 @@ public class GenerateAllDiagramsHandler extends AbstractHandler {
 				Resource sliceResource = neo4jJsonToEcoreUML.convert(resources.getLocation().toFile().toPath());
 				Model sliceRoot = (Model) sliceResource.getContents().get(0);
 
-				// WORKAROUND: Remove nested packages:
+				// FIXME: WORKAROUND: Remove nested packages for diagram generation.
 				List<PackageableElement> nestedElements = new ArrayList<>();
 				Set<Package> toBeRemoved = new HashSet<>();
 
@@ -86,6 +87,10 @@ public class GenerateAllDiagramsHandler extends AbstractHandler {
 				for (Package packageToBeRemoved : toBeRemoved) {
 					EcoreUtil.remove(packageToBeRemoved);
 				}
+				
+				// Apply model transformations:
+				CreateAssociations createAssociations = new CreateAssociations();
+				createAssociations.apply(sliceRoot);
 
 				// Save UML resource:
 				sliceResource.setURI(URI
