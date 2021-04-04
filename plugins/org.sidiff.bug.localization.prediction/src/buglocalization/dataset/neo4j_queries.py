@@ -5,6 +5,46 @@
 from typing import List
 
 
+def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[str]=[]) -> str:
+    # $nodeID, $sampleLayer1, ... constraints with path variable pathK
+    # FIXME: To be tested -> No connected subgraph for node
+    
+    # Create layer constraints:
+    layer_constraints: List[str] = []
+    k = len(num_samples)
+    
+    for layer in range(k):
+        # NOTE: Filter graph by model version:
+        layer_constraint = by_version('LAST(NODES(pathK))')
+        
+        # NOTE: Filter system model wrapper:
+        layer_constraint += ' AND NOT TYPE(LAST(RELATIONSHIPS(pathK))) = "modelLocations"'
+        
+        if len(user_layer_constraints) > layer:
+            layer_constraint += ' AND (' + user_layer_constraints[layer] + ')'
+
+        layer_constraints.append(layer_constraint)
+    
+    # Create query:
+    query = 'MATCH (startNode) WHERE ID(startNode) = $node_id'
+    query += ' WITH [startNode] AS layerK, apoc.coll.toSet([startNode]) AS sampledNodes'
+
+    # Create each layer:
+    # NOTE: Consider only one edge between adjacent nodes apoc.coll.toSet([pathK IN ... ])
+    # NOTE: Prevent cycles: WHERE NOT LAST(NODES(pathK)) IN sampledNodes
+    # => Maximize the possible different nodes in the sampling graph within the given num_samples boundary.
+    for layer in range(k):
+        query += ' WITH [nodeK IN layerK | (nodeK)--()] AS pathsK, sampledNodes'
+        query += ' WITH apoc.coll.flatten([pathsKPerNode IN pathsK'
+        query += ' | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode '
+        query += ' WHERE NOT LAST(NODES(pathK)) IN sampledNodes AND (' + layer_constraints[layer - 1] + ')'
+        query += ' | LAST(NODES(pathK))]), ' + str(num_samples[layer - 1]) + ' )]) AS layerK, sampledNodes'
+        query += ' WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes'
+    
+    query += ' UNWIND sampledNodes AS sampledNode RETURN ID(sampledNode) AS nodes'
+    return query
+
+
 def buggy_versions() -> str:
     match = 'MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e)'
     returns = ' RETURN DISTINCT b.__initial__version__ AS versions ORDER BY versions'
