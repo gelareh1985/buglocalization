@@ -143,7 +143,7 @@ class LocationSampleTrainingNeo4j(LocationSampleNeo4j):
         if isinstance(bug_sample, BugSampleTrainingNeo4j):
             _bug_localization_subgraph_edges, node_ids = self.bug_localization_subgraph_edges(bug_sample)
             subgraph, bug_location_pair = bug_sample.load_bug_location_subgraph(
-                self.neo4j_model_location, _bug_localization_subgraph_edges, bug_sample.db_version)
+                self.neo4j_model_location, _bug_localization_subgraph_edges, node_ids, bug_sample.db_version)
 
             self._graph = subgraph
             self._bug_report = bug_location_pair[0]

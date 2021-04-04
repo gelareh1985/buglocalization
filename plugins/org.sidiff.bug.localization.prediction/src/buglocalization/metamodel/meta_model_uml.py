@@ -42,7 +42,7 @@ class MetaModelUML(MetaModel):
         slicing = TypbasedGraphSlicing()
         
         # User constraint:
-        layer_constraint = 'NOT LABELS(LAST(NODES(pathK))) IN ["InstanceValue", "LiteralBoolean", ' 
+        layer_constraint = 'NOT LABELS(LAST(NODES(pathK)))[0] IN ["InstanceValue", "LiteralBoolean", ' 
         layer_constraint += '"LiteralInteger", "LiteralReal", "LiteralString", "LiteralUnlimitedNatural"]'
         layer_constraints: List[str] = []
         

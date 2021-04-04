@@ -171,6 +171,7 @@ class BugSampleNeo4j(IBugSample):
 
     def load_bug_location_subgraph(self, node_id: int,
                                    bug_localization_subgraph_edges: DataFrame,
+                                   node_ids:Set[int],
                                    db_version: int) -> Tuple[StellarGraph, Tuple[int, int]]:
 
         nodes_trace: Dict[int, int] = {}
@@ -240,6 +241,10 @@ class BugSampleNeo4j(IBugSample):
             subgraph_node_id = len(subgraph_nodes_model)
             nodes_trace[node_id] = subgraph_node_id
             subgraph_nodes_model.append(self.model_nodes[node_id])
+            
+        # Test:
+        if len(node_ids) != len(nodes_trace):
+            print("WARNING: Filtered ", len(node_ids) - len(nodes_trace), "of", len(node_ids), "nodes from subgraph.")
 
         # =======================================================================
         # Bug Report Graph: (append to model graph)

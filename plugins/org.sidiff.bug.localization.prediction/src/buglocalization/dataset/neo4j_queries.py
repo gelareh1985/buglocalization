@@ -14,11 +14,15 @@ def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[st
     
     for layer in range(0, k):
         # NOTE: Filter graph by model version:
-        layer_constraint = by_version('LAST(NODES(pathK))')
+        layer_constraint = by_version('LAST(RELATIONSHIPS(pathK))')
+        
+        # To be sure, test the node version, but not necessary if 
+        # the DB is consistent w.r.t. the relationships.
+        layer_constraint += ' AND ' + by_version('LAST(NODES(pathK))')
         
         # NOTE: Filter system model wrapper:
-        layer_constraint += ' AND NOT TYPE(LAST(RELATIONSHIPS(pathK))) = "modelLocations"'
-        layer_constraint += ' AND NOT LABELS(LAST(NODES(pathK))) IN ["InstanceValue", "LiteralBoolean", "LiteralInteger", "LiteralReal", "LiteralString", "LiteralUnlimitedNatural"]'
+        layer_constraint += ' AND NOT (TYPE(LAST(RELATIONSHIPS(pathK))) = "location" AND LABELS(LAST(NODES(pathK)))[0] = "Change")'
+        layer_constraint += ' AND NOT (TYPE(LAST(RELATIONSHIPS(pathK))) = "model" AND LABELS(LAST(NODES(pathK)))[0] = "View")'
         
         if len(user_layer_constraints) > layer:
             layer_constraint += ' AND (' + user_layer_constraints[layer] + ')'
@@ -37,8 +41,8 @@ def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[st
         query += ' WITH [nodeK IN layerK | (nodeK)--()] AS pathsK, sampledNodes'
         query += ' WITH apoc.coll.flatten([pathsKPerNode IN pathsK'
         query += ' | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode '
-        query += ' WHERE NOT LAST(NODES(pathK)) IN sampledNodes AND (' + layer_constraints[layer - 1] + ')'
-        query += ' | LAST(NODES(pathK))]), ' + str(num_samples[layer - 1]) + ' )]) AS layerK, sampledNodes'
+        query += ' WHERE NOT LAST(NODES(pathK)) IN sampledNodes AND (' + layer_constraints[layer] + ')'
+        query += ' | LAST(NODES(pathK))]), ' + str(num_samples[layer]) + ' )]) AS layerK, sampledNodes'
         query += ' WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes'
     
     query += ' UNWIND sampledNodes AS sampledNode RETURN ID(sampledNode) AS nodes'
