@@ -7,18 +7,18 @@ from typing import List
 
 def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[str]=[]) -> str:
     # $nodeID, $sampleLayer1, ... constraints with path variable pathK
-    # FIXME: To be tested -> No connected subgraph for node
     
     # Create layer constraints:
     layer_constraints: List[str] = []
     k = len(num_samples)
     
-    for layer in range(k):
+    for layer in range(0, k):
         # NOTE: Filter graph by model version:
         layer_constraint = by_version('LAST(NODES(pathK))')
         
         # NOTE: Filter system model wrapper:
         layer_constraint += ' AND NOT TYPE(LAST(RELATIONSHIPS(pathK))) = "modelLocations"'
+        layer_constraint += ' AND NOT LABELS(LAST(NODES(pathK))) IN ["InstanceValue", "LiteralBoolean", "LiteralInteger", "LiteralReal", "LiteralString", "LiteralUnlimitedNatural"]'
         
         if len(user_layer_constraints) > layer:
             layer_constraint += ' AND (' + user_layer_constraints[layer] + ')'
@@ -33,7 +33,7 @@ def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[st
     # NOTE: Consider only one edge between adjacent nodes apoc.coll.toSet([pathK IN ... ])
     # NOTE: Prevent cycles: WHERE NOT LAST(NODES(pathK)) IN sampledNodes
     # => Maximize the possible different nodes in the sampling graph within the given num_samples boundary.
-    for layer in range(k):
+    for layer in range(0, k):
         query += ' WITH [nodeK IN layerK | (nodeK)--()] AS pathsK, sampledNodes'
         query += ' WITH apoc.coll.flatten([pathsKPerNode IN pathsK'
         query += ' | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode '
@@ -42,6 +42,44 @@ def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[st
         query += ' WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes'
     
     query += ' UNWIND sampledNodes AS sampledNode RETURN ID(sampledNode) AS nodes'
+    
+    """ NOTE: For testing:
+    MATCH (startNode) WHERE ID(startNode) = 10160 
+    WITH [startNode] AS layerK, apoc.coll.toSet([startNode]) AS sampledNodes
+        
+    WITH [nodeK IN layerK | (nodeK)--()] AS pathsK, sampledNodes
+    WITH apoc.coll.flatten([pathsKPerNode IN pathsK | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode 
+        WHERE NOT LAST(NODES(pathK)) IN sampledNodes | LAST(NODES(pathK))]), 2)]) AS layerK, sampledNodes
+    WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes
+        
+    RETURN sampledNodes
+ 
+    - Filter multiple paths over the same node: 
+        WITH apoc.coll.toSet(layerK) AS layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes
+    """
+
+    """ TODO: Direct sampling of layers!?
+    MATCH (startNode) WHERE ID(startNode) = 10160 
+    WITH [[startNode]] AS layerK, [] AS layers 
+    WITH layerK, layers + [layerK] AS layers
+        
+    WITH apoc.coll.flatten(layerK) AS prevLayerK, layers
+    WITH [prevNodeK IN prevLayerK | (prevNodeK)--()] AS pathsK, layers
+    WITH [pathsKPerNode IN pathsK | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode | LAST(NODES(pathK))]), 2)] AS layerK, layers
+    WITH layerK, layers + [layerK] AS layers
+        
+    RETURN layers
+    
+    Test:    
+    RETURN apoc.coll.flatten(
+        [(a)-[e]-(b) WHERE a IN apoc.coll.flatten(layers[0]) AND b IN apoc.coll.flatten(layers[1]) | [a,e,b]]
+        +
+        [(a)-[e]-(b) WHERE a IN apoc.coll.flatten(layers[1]) AND b IN apoc.coll.flatten(layers[2]) | [a,e,b]]
+        +
+        [(a)-[e]-(b) WHERE a IN apoc.coll.flatten(layers[2]) AND b IN apoc.coll.flatten(layers[3]) | [a,e,b]]
+    )
+    """
+    
     return query
 
 
