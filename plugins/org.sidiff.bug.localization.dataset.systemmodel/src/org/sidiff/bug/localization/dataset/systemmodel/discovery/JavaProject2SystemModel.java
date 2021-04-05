@@ -15,10 +15,14 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange;
 import org.sidiff.bug.localization.dataset.changes.model.FileChange.FileChangeType;
 import org.sidiff.bug.localization.dataset.changes.model.LineChange;
 import org.sidiff.bug.localization.dataset.history.model.Version;
+import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
@@ -144,7 +148,9 @@ public class JavaProject2SystemModel {
 			Set<String> workspaceProjectScope, 
 			SystemModel systemModel, 
 			List<FileChange> projectFileChanges,
-			Version version, 
+			List<FileChange> projectBugLocations,
+			Version version,
+			Version newerVersion,
 			boolean initialVersion) {
 		
 		List<Path> fileChanges = new ArrayList<>();
@@ -170,7 +176,7 @@ public class JavaProject2SystemModel {
 		transformation.performWorkspaceUpdate(Collections.singletonList(projectWorkspaceUpdate), workspaceProjectScope);
 		
 		// Add changes to system model:
-		calculateSysteModel(systemModel, version, project, projectRepositoryPath, projectFileChanges);
+		calculateSysteModel(systemModel, version, newerVersion, project, projectRepositoryPath, projectBugLocations);
 		
 		for (FileChange fileChange : projectFileChanges) {
 			if (fileChange.getType().equals(FileChangeType.ADD)) {
@@ -251,33 +257,39 @@ public class JavaProject2SystemModel {
 	}
 
 	private Change createModelChange(IResource workspaceResource, LineChange lineChange, EObject modelElement) {
-		int quantification = lineChange.getEndA() - lineChange.getBeginA();
-		quantification += lineChange.getEndB() - lineChange.getBeginB();
-		
-		Change change = SystemModelFactory.eINSTANCE.createChange();
-		change.setOriginalResource(workspaceResource.toString());
-		change.setLocation(modelElement);
-		change.setQuantification(quantification);
-		change.setType(dataSet2SystemModel.convertChange(lineChange));
-		return change;
+		if (modelElement != null) {
+			int quantification = lineChange.getEndA() - lineChange.getBeginA();
+			quantification += lineChange.getEndB() - lineChange.getBeginB();
+			
+			Change change = SystemModelFactory.eINSTANCE.createChange();
+			change.setOriginalResource(workspaceResource.toString());
+			change.setLocation(modelElement);
+			change.setQuantification(quantification);
+			change.setType(dataSet2SystemModel.convertChange(lineChange));
+			return change;
+		}
+		return null;
 	}
 	
 	public static void clearSysteModelVersion(SystemModel systemModel) {
 		systemModel.setVersion(null);
 	}
 	
-	private void calculateSysteModel(SystemModel systemModel, Version version,
-			IProject project, Path projectRepositoryPath, List<FileChange> projectFileChanges) {
+	private void calculateSysteModel(SystemModel systemModel, Version buggyVersion, Version fixedVersion, 
+			IProject project, Path projectRepositoryPath, List<FileChange> projectBugLocations) {
 		
 		TracedVersion modelVersion = (TracedVersion) systemModel.getVersion(); 
 				
 		if (modelVersion == null) {
-			modelVersion = dataSet2SystemModel.convertVersion(version, version.getBugReport());
+			BugReport bugReport = fixedVersion != null ? fixedVersion.getBugReport() : null;
+			modelVersion = dataSet2SystemModel.convertVersion(buggyVersion, bugReport);
 			systemModel.setVersion(modelVersion);
 		}
 		
-		List<Change> changeLocations = calculateModificationLocations(project, projectRepositoryPath, projectFileChanges);
-		modelVersion.getChanges().addAll(changeLocations);
+		if (!projectBugLocations.isEmpty()) {
+			List<Change> changeLocations = calculateBugLocations(project, projectRepositoryPath, projectBugLocations);
+			modelVersion.getBugreport().getModelLocations().addAll(changeLocations);
+		}
 		
 		// Store document types:
 		for (View view : systemModel.getViews()) {
@@ -291,7 +303,7 @@ public class JavaProject2SystemModel {
 		}
 	}
 
-	private List<Change> calculateModificationLocations(
+	private List<Change> calculateBugLocations(
 			IProject project, Path projectRepositoryPath, List<FileChange> projectFileChanges) {
 		
 		if (!projectFileChanges.isEmpty()) {
@@ -302,18 +314,25 @@ public class JavaProject2SystemModel {
 				Change changeLocation = null;
 				
 				// Calculate change location:
-				if (fileChange.getType().equals(FileChangeType.MODIFY)) {
+				if (fileChange.getType().equals(FileChangeType.ADD)) {
+					// Resource created in fixed version is not yet present in buggy version!
+					Model workspaceRoot = (Model) settings.getWorkspaceModel().getContents().get(0);
+					EObject container = findClosestPackage(fileChange, workspaceRoot);
+					LineChange lineChange = fileChange.getLines().get(0);
+					
+					if (container != null) {
+						addChange(changeLocations, createModelChange(workspaceResource, lineChange, container));
+					} else {
+						addChange(changeLocations, createModelChange(workspaceResource, lineChange, workspaceRoot));
+					}
+				} else {
 					if ((fileChange.getLines() != null) && (!fileChange.getLines().isEmpty())) {
 						for (LineChange lineChange : fileChange.getLines()) {
-							EObject beginModelElement = codeToModel.getModelElement(workspaceResource, lineChange.getBeginA());
-							EObject endModelElement = codeToModel.getModelElement(workspaceResource, lineChange.getEndA());
+							EObject beginModelElementA = codeToModel.getModelElement(workspaceResource, lineChange.getBeginA());
+							addChange(changeLocations, createModelChange(workspaceResource, lineChange, beginModelElementA));
 							
-							if (beginModelElement != endModelElement) {
-								changeLocation = createModelChange(workspaceResource, lineChange, beginModelElement);
-								changeLocation = createModelChange(workspaceResource, lineChange, endModelElement);
-							} else {
-								changeLocation = createModelChange(workspaceResource, lineChange, beginModelElement);
-							}
+							EObject endModelElementA = codeToModel.getModelElement(workspaceResource, lineChange.getEndA());
+							addChange(changeLocations, createModelChange(workspaceResource, lineChange, endModelElementA));
 						}
 					} else {
 						// Fallback solution...
@@ -323,21 +342,8 @@ public class JavaProject2SystemModel {
 						changeLocation.setLocation(modelElement);
 						changeLocation.setQuantification(1);
 						changeLocation.setType(dataSet2SystemModel.convertChange(fileChange));
-					}
-				}
-				
-				// Insert/merge change in system model:
-				if (changeLocation != null) {
-					if (changeLocations.containsKey(changeLocation.getLocation())) {
-						Change existingChange = changeLocations.get(changeLocation.getLocation());
-						existingChange.setQuantification(existingChange.getQuantification() + changeLocation.getQuantification());
 						
-						// e.g. delete and create
-						if (!existingChange.getType().equals(changeLocation.getType())) {
-							existingChange.setType(ChangeType.MODIFY);
-						}
-					} else {
-						changeLocations.put(changeLocation.getLocation(), changeLocation);
+						addChange(changeLocations, changeLocation);
 					}
 				}
 			}
@@ -345,6 +351,47 @@ public class JavaProject2SystemModel {
 		}
 		
 		return Collections.emptyList();
+	}
+	
+	private EObject findClosestPackage(FileChange fileChange, Model workspaceRoot) {
+		String[] filePath = URI.createFileURI(fileChange.getLocation().toString()).segments();
+		
+		// Find containing package:
+		Package modelPackage = workspaceRoot;
+		int segment = 0;
+		
+		while (segment < filePath.length) {
+			PackageableElement projectResource = modelPackage.getPackagedElement(filePath[segment]);
+			
+			// Skip segments until project/source folder:
+			if (projectResource != null) {
+				// Step into packages:
+				if (projectResource instanceof Package) {
+					modelPackage = (Package) projectResource;
+				}
+			}
+			
+			++segment;
+		}
+		
+		return modelPackage;
+	}
+	
+	private void addChange(Map<EObject, Change> changeLocations, Change changeLocation) {
+		// Insert/merge change in system model:
+		if (changeLocation != null) {
+			if (changeLocations.containsKey(changeLocation.getLocation())) {
+				Change existingChange = changeLocations.get(changeLocation.getLocation());
+				existingChange.setQuantification(existingChange.getQuantification() + changeLocation.getQuantification());
+				
+				// e.g. delete and create
+				if (!existingChange.getType().equals(changeLocation.getType())) {
+					existingChange.setType(ChangeType.MODIFY);
+				}
+			} else {
+				changeLocations.put(changeLocation.getLocation(), changeLocation);
+			}
+		}
 	}
 
 }

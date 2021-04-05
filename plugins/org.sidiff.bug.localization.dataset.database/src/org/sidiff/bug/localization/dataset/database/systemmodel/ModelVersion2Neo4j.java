@@ -17,6 +17,7 @@ import org.sidiff.bug.localization.dataset.database.model.ModelDelta;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
+import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.DataSet2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
@@ -119,6 +120,7 @@ public class ModelVersion2Neo4j {
 		
 		// Compute and commit model delta:
 		if (commitToDatabase) {
+			setModelVersionID(currentResourceSet, currentModelVersion);
 			modelDelta.commitDelta(currentDatabaseVersion, repositoryBaseURI, previousResources, repositoryBaseURI, currentResources);
 		}
 		
@@ -148,6 +150,11 @@ public class ModelVersion2Neo4j {
 			
 			this.previousResources = new ArrayList<>(currentResourcesModifiedNext);
 		}
+	}
+
+	private void setModelVersionID(ResourceSet currentResourceSet, Version currentModelVersion) {
+		SystemModel systemModel = (SystemModel) currentResourceSet.getResource(systemModelURI, true).getContents().get(0);
+		systemModel.getVersion().setModelVersionID(currentModelVersion.getIdentification());
 	}
 
 	protected ResourceSet createResourceSet() {

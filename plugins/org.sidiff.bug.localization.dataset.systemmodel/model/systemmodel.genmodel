@@ -9,7 +9,7 @@
     importOrganizing="true">
   <foreignModel>systemmodel.ecore</foreignModel>
   <genPackages prefix="SystemModel" basePackage="org.sidiff.bug.localization.dataset"
-      disposableProviderFactory="true" ecorePackage="systemmodel.ecore#/">
+      resource="XMI" disposableProviderFactory="true" ecorePackage="systemmodel.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="systemmodel.ecore#//ChangeType">
       <genEnumLiterals ecoreEnumLiteral="systemmodel.ecore#//ChangeType/Add"/>
       <genEnumLiterals ecoreEnumLiteral="systemmodel.ecore#//ChangeType/Delete"/>

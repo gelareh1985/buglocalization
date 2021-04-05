@@ -266,13 +266,21 @@ public class SystemModelRetrieval {
 			try {
 				long time = System.currentTimeMillis();
 				
+				// Calculate changed files in project:
+				// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+				// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+				List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
+				List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
+				
+				
 				// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
 				// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-				if (HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
+				if (HistoryUtil.hasChanges(olderVersion, projectFileChanges, projectBugLocations)) {
 					
 					// Java Code -> System Model
 					List<Path> modelProjectFiles = retrieveProjectSystemModelVersion(
-							olderVersion, version, newerVersion, project, workspaceProjectScope, systemModel);
+							olderVersion, version, newerVersion, project, workspaceProjectScope, 
+							projectFileChanges, projectBugLocations, systemModel);
 					modelFiles.addAll(modelProjectFiles);
 					time = stopTime("Discover System Model Project (Name: " + project.getName() + ", Model Files: "
 							+ ((olderVersion == null) ? "*" : modelProjectFiles.size()) + "): ", time);
@@ -295,6 +303,8 @@ public class SystemModelRetrieval {
 			Version newerVersion, 
 			Project project,
 			Set<String> workspaceProjectScope,
+			List<FileChange> projectFileChanges, 
+			List<FileChange> projectBugLocations,
 			SystemModel systemModel) 
 					throws IOException {
 		
@@ -309,11 +319,6 @@ public class SystemModelRetrieval {
 
 		if ((workspaceProject != null) && ProjectUtil.isJavaProject(workspaceProject)) {
 			
-			// Calculate changed files in project:
-			// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-			// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-			List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
-			
 			// Discover the system model of the project version:
 			boolean initialVersion = !transformedProjects.contains(project.getFolder().toString());
 			
@@ -323,7 +328,9 @@ public class SystemModelRetrieval {
 					workspaceProjectScope, 
 					systemModel, 
 					projectFileChanges,
+					projectBugLocations,
 					version,
+					newerVersion,
 					initialVersion);
 			
 			if (initialVersion) {
@@ -353,6 +360,14 @@ public class SystemModelRetrieval {
 		}
 		
 		return removed;
+	}
+
+	private List<FileChange> getBugLocations(Version version, Version newerVersion) {
+		if ((version != null) && (newerVersion != null) && (newerVersion.hasBugReport())) {
+			return newerVersion.getBugReport().getBugLocations();
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	private void clearSystemModelVersion(SystemModel systemModel) {
