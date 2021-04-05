@@ -2,16 +2,21 @@
  */
 package org.sidiff.bug.localization.dataset.systemmodel.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.sidiff.bug.localization.dataset.systemmodel.BugReport;
+import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
 import org.sidiff.bug.localization.dataset.systemmodel.Version;
 
@@ -28,6 +33,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.Version;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getAuthor <em>Author</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getCommitMessage <em>Commit Message</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getBugreport <em>Bugreport</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.VersionImpl#getChanges <em>Changes</em>}</li>
  * </ul>
  *
  * @generated
@@ -122,6 +128,16 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 	 * @ordered
 	 */
 	protected BugReport bugreport;
+
+	/**
+	 * The cached value of the '{@link #getChanges() <em>Changes</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getChanges()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Change> changes;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -285,10 +301,25 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 	 * @generated
 	 */
 	@Override
+	public EList<Change> getChanges() {
+		if (changes == null) {
+			changes = new EObjectContainmentEList<Change>(Change.class, this, SystemModelPackage.VERSION__CHANGES);
+		}
+		return changes;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case SystemModelPackage.VERSION__BUGREPORT:
 				return basicSetBugreport(null, msgs);
+			case SystemModelPackage.VERSION__CHANGES:
+				return ((InternalEList<?>)getChanges()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -311,6 +342,8 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 				return getCommitMessage();
 			case SystemModelPackage.VERSION__BUGREPORT:
 				return getBugreport();
+			case SystemModelPackage.VERSION__CHANGES:
+				return getChanges();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -320,6 +353,7 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
@@ -337,6 +371,10 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 				return;
 			case SystemModelPackage.VERSION__BUGREPORT:
 				setBugreport((BugReport)newValue);
+				return;
+			case SystemModelPackage.VERSION__CHANGES:
+				getChanges().clear();
+				getChanges().addAll((Collection<? extends Change>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -365,6 +403,9 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 			case SystemModelPackage.VERSION__BUGREPORT:
 				setBugreport((BugReport)null);
 				return;
+			case SystemModelPackage.VERSION__CHANGES:
+				getChanges().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -387,6 +428,8 @@ public class VersionImpl extends MinimalEObjectImpl.Container implements Version
 				return COMMIT_MESSAGE_EDEFAULT == null ? commitMessage != null : !COMMIT_MESSAGE_EDEFAULT.equals(commitMessage);
 			case SystemModelPackage.VERSION__BUGREPORT:
 				return bugreport != null;
+			case SystemModelPackage.VERSION__CHANGES:
+				return changes != null && !changes.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -8,9 +8,7 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.reports.model.BugReport;
 import org.sidiff.bug.localization.dataset.reports.model.BugReportComment;
 import org.sidiff.bug.localization.dataset.systemmodel.ChangeType;
-import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
-import org.sidiff.bug.localization.dataset.systemmodel.View;
 
 public class DataSet2SystemModel {
 	
@@ -42,7 +40,7 @@ public class DataSet2SystemModel {
 		}
 	}
 	
-	public org.sidiff.bug.localization.dataset.systemmodel.TracedVersion convertVersion(Version version, Version nextVersion, BugReport bugReport) {
+	public org.sidiff.bug.localization.dataset.systemmodel.TracedVersion convertVersion(Version version, BugReport bugReport) {
 		org.sidiff.bug.localization.dataset.systemmodel.TracedVersion eVersion = SystemModelFactory.eINSTANCE.createTracedVersion();
 		eVersion.setCodeVersionID(version.getIdentification()); 
 		eVersion.setDate(convertDate(version.getDate()));
@@ -62,8 +60,8 @@ public class DataSet2SystemModel {
 			eBugReport.setResolution(bugReport.getResolution());
 			eBugReport.setStatus(bugReport.getStatus());
 			eBugReport.setSummary(bugReport.getSummary());
-			eBugReport.setBugfixTime(nextVersion.getDate().toString());
-			eBugReport.setBugfixCommit(nextVersion.getCommitMessage());
+			eBugReport.setBugfixTime(version.getDate().toString());
+			eBugReport.setBugfixCommit(version.getCommitMessage());
 			
 			eVersion.setBugreport(eBugReport);
 		
@@ -88,12 +86,6 @@ public class DataSet2SystemModel {
 		}
 		
 		return eVersion;
-	}
-	
-	public void relocateModelChanges(SystemModel systemModel, org.sidiff.bug.localization.dataset.systemmodel.BugReport eBugReport) {
-		for (View view : systemModel.getViews()) {
-			eBugReport.getModelLocations().addAll(view.getChanges());
-		}
 	}
 	
 	public String convertDate(Instant date) {

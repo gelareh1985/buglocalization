@@ -27,6 +27,7 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getQuantification <em>Quantification</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getLocation <em>Location</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getOriginalResource <em>Original Resource</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ChangeImpl#getModelElementURI <em>Model Element URI</em>}</li>
  * </ul>
  *
  * @generated
@@ -101,6 +102,26 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 	 * @ordered
 	 */
 	protected String originalResource = ORIGINAL_RESOURCE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getModelElementURI() <em>Model Element URI</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getModelElementURI()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String MODEL_ELEMENT_URI_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getModelElementURI() <em>Model Element URI</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getModelElementURI()
+	 * @generated
+	 * @ordered
+	 */
+	protected String modelElementURI = MODEL_ELEMENT_URI_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -236,6 +257,29 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 	 * @generated
 	 */
 	@Override
+	public String getModelElementURI() {
+		return modelElementURI;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setModelElementURI(String newModelElementURI) {
+		String oldModelElementURI = modelElementURI;
+		modelElementURI = newModelElementURI;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SystemModelPackage.CHANGE__MODEL_ELEMENT_URI, oldModelElementURI, modelElementURI));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case SystemModelPackage.CHANGE__TYPE:
@@ -247,6 +291,8 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 				return basicGetLocation();
 			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
 				return getOriginalResource();
+			case SystemModelPackage.CHANGE__MODEL_ELEMENT_URI:
+				return getModelElementURI();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -270,6 +316,9 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 				return;
 			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
 				setOriginalResource((String)newValue);
+				return;
+			case SystemModelPackage.CHANGE__MODEL_ELEMENT_URI:
+				setModelElementURI((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -295,6 +344,9 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
 				setOriginalResource(ORIGINAL_RESOURCE_EDEFAULT);
 				return;
+			case SystemModelPackage.CHANGE__MODEL_ELEMENT_URI:
+				setModelElementURI(MODEL_ELEMENT_URI_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -315,6 +367,8 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 				return location != null;
 			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
 				return ORIGINAL_RESOURCE_EDEFAULT == null ? originalResource != null : !ORIGINAL_RESOURCE_EDEFAULT.equals(originalResource);
+			case SystemModelPackage.CHANGE__MODEL_ELEMENT_URI:
+				return MODEL_ELEMENT_URI_EDEFAULT == null ? modelElementURI != null : !MODEL_ELEMENT_URI_EDEFAULT.equals(modelElementURI);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -335,6 +389,8 @@ public class ChangeImpl extends MinimalEObjectImpl.Container implements Change {
 		result.append(quantification);
 		result.append(", originalResource: ");
 		result.append(originalResource);
+		result.append(", modelElementURI: ");
+		result.append(modelElementURI);
 		result.append(')');
 		return result.toString();
 	}

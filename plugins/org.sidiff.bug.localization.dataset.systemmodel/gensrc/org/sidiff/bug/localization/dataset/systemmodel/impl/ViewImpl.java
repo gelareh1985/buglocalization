@@ -16,11 +16,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.InternalEList;
-
-import org.sidiff.bug.localization.dataset.systemmodel.Change;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
@@ -37,7 +33,6 @@ import org.sidiff.bug.localization.dataset.systemmodel.View;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getDocumentTypes <em>Document Types</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getKind <em>Kind</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getModel <em>Model</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewImpl#getChanges <em>Changes</em>}</li>
  * </ul>
  *
  * @generated
@@ -82,16 +77,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	 * @ordered
 	 */
 	protected EObject model;
-
-	/**
-	 * The cached value of the '{@link #getChanges() <em>Changes</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getChanges()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<Change> changes;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -237,19 +222,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 	 * @generated
 	 */
 	@Override
-	public EList<Change> getChanges() {
-		if (changes == null) {
-			changes = new EObjectContainmentEList<Change>(Change.class, this, SystemModelPackage.VIEW__CHANGES);
-		}
-		return changes;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case SystemModelPackage.VIEW__SYSTEM:
@@ -270,8 +242,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 		switch (featureID) {
 			case SystemModelPackage.VIEW__SYSTEM:
 				return basicSetSystem(null, msgs);
-			case SystemModelPackage.VIEW__CHANGES:
-				return ((InternalEList<?>)getChanges()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -307,8 +277,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			case SystemModelPackage.VIEW__MODEL:
 				if (resolve) return getModel();
 				return basicGetModel();
-			case SystemModelPackage.VIEW__CHANGES:
-				return getChanges();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -335,10 +303,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			case SystemModelPackage.VIEW__MODEL:
 				setModel((EObject)newValue);
 				return;
-			case SystemModelPackage.VIEW__CHANGES:
-				getChanges().clear();
-				getChanges().addAll((Collection<? extends Change>)newValue);
-				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -363,9 +327,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 			case SystemModelPackage.VIEW__MODEL:
 				setModel((EObject)null);
 				return;
-			case SystemModelPackage.VIEW__CHANGES:
-				getChanges().clear();
-				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -386,8 +347,6 @@ public class ViewImpl extends DescribableElementImpl implements View {
 				return KIND_EDEFAULT == null ? kind != null : !KIND_EDEFAULT.equals(kind);
 			case SystemModelPackage.VIEW__MODEL:
 				return model != null;
-			case SystemModelPackage.VIEW__CHANGES:
-				return changes != null && !changes.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

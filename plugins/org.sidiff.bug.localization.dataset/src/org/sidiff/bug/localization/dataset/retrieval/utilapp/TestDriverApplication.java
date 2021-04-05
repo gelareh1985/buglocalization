@@ -27,7 +27,7 @@ public class TestDriverApplication extends DataSetRetrievalApplication {
 	private static String[] FILTER_PROJECTS = {}; // {"org.eclipse.jdt.core", "org.eclipse.jdt.apt.core"};
 
 	@Override
-	protected void start(Path datasetPath, DataSet dataset, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {		
+	protected void start(Path datasetPath, DataSet dataset, DataSet datasetTrace, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {		
 		String codeRepositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
 		Path codeRepositoryPath = Paths.get(retrievalConfiguration.getLocalRepositoryPath().toString(), dataset.getName());
 		
@@ -72,7 +72,7 @@ public class TestDriverApplication extends DataSetRetrievalApplication {
 				filterProjects(systemModelRetrievalProvider, FILTER_PROJECTS);
 			}
 			
-			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelRetrievalProvider, dataset, datasetPath);
+			SystemModelRetrieval systemModel = new SystemModelRetrieval(systemModelRetrievalProvider, datasetPath, dataset, datasetTrace);
 			systemModel.retrieve();
 			systemModel.saveDataSet();
 		}

@@ -19,7 +19,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getDocumentTypes <em>Document Types</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getKind <em>Kind</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getModel <em>Model</em>}</li>
- *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.View#getChanges <em>Changes</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getView()
@@ -106,17 +105,5 @@ public interface View extends DescribableElement {
 	 * @generated
 	 */
 	void setModel(EObject value);
-
-	/**
-	 * Returns the value of the '<em><b>Changes</b></em>' containment reference list.
-	 * The list contents are of type {@link org.sidiff.bug.localization.dataset.systemmodel.Change}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Changes</em>' containment reference list.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getView_Changes()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<Change> getChanges();
 
 } // View
