@@ -121,8 +121,9 @@ class BugSamplePredictionNeo4j(BugSampleNeo4j):
             model_locations = self.run_query_by_version(query.nodes_in_version(model_location_types))
 
             for model_location in model_locations['nodes']:
-                if model_location not in model_library_nodes_by_type:
-                    nodes_id = model_location.identity
+                nodes_id = model_location.identity
+                
+                if nodes_id not in model_library_nodes_by_type:
                     self.location_samples.append(LocationSamplePredictionNeo4j(nodes_id, model_location_types, label=nodes_id))
 
         if log_level >= 4:
