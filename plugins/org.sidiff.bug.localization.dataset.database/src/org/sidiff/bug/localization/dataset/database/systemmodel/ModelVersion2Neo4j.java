@@ -19,6 +19,7 @@ import org.sidiff.bug.localization.dataset.history.model.Version;
 import org.sidiff.bug.localization.dataset.history.repository.Repository;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
+import org.sidiff.bug.localization.dataset.systemmodel.TracedVersion;
 import org.sidiff.bug.localization.dataset.systemmodel.discovery.DataSet2SystemModel;
 import org.sidiff.bug.localization.dataset.systemmodel.util.UMLUtil;
 
@@ -153,8 +154,19 @@ public class ModelVersion2Neo4j {
 	}
 
 	private void setModelVersionID(ResourceSet currentResourceSet, Version currentModelVersion) {
-		SystemModel systemModel = (SystemModel) currentResourceSet.getResource(systemModelURI, true).getContents().get(0);
-		systemModel.getVersion().setModelVersionID(currentModelVersion.getIdentification());
+		Resource systemModelResource = currentResourceSet.getResource(systemModelURI, true);
+		
+		if (systemModelResource != null) {
+			SystemModel systemModel = (SystemModel) systemModelResource.getContents().get(0);
+			
+			if (systemModel.getVersion() == null) {
+				TracedVersion version = SystemModelFactory.eINSTANCE.createTracedVersion();
+				version.setCodeVersionID(currentModelVersion.getIdentificationTrace());
+				systemModel.setVersion(version);
+			}
+			
+			systemModel.getVersion().setModelVersionID(currentModelVersion.getIdentification());
+		}
 	}
 
 	protected ResourceSet createResourceSet() {
