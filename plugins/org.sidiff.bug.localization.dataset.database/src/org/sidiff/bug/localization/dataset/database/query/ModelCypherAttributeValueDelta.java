@@ -21,7 +21,8 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 	// NOTE: Nodes that have changed attribute values need to be copied inside 
 	//       of the database to get also all none resource internal edges.
 	
-	/* TEST (attribute value changes, cross-resource containment, added and removed incident nodes):
+	// TEST: See main method below...
+	/* TEST: In JDT data - attribute value changes, cross-resource containment, added and removed incident nodes:
 		"identity": 96445,
 		"labels": ["Class"],
 		"properties": {
@@ -236,13 +237,15 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		return query.toString();
 	}
 	
-	// TEST //
+	/*
+	 *  TEST: example -> 0, 1
+	 */
 	public static void main(String[] args) {
 		String databaseURI = "bolt://localhost:7687";
 		String databaseName = "neo4j";
 		String databasePassword = "password";
 		
-		int example = 0;
+		int example = 1;
 		
 		// Create test data:
 		try (Neo4jTransaction transaction = new Neo4jTransaction(databaseURI, databaseName, databasePassword)) {
