@@ -99,11 +99,7 @@ public class BugLocalizationGraphConstructor {
 	}
 	
 	protected Set<EObject> collectBugLocations(SystemModel systemModel) {
-		Set<EObject> bugLocations = new LinkedHashSet<>();
-		
-		for (View view : systemModel.getViews())  {
-			view.getChanges().stream().map(Change::getLocation).forEach(bugLocations::add);
-		}
+		Set<EObject> bugLocations = new LinkedHashSet<>(systemModel.getVersion().getChanges());
 		
 		if (bugLocations.contains(null)) {
 			bugLocations.remove(null);
@@ -155,24 +151,20 @@ public class BugLocalizationGraphConstructor {
 	}
 	
 	private void createPositiveSampleBugLocalizationGraph(Set<EObject> bugLocalizationGraph) {
-		for (View view : buggySystemModel.getViews())  {
-			Set<EObject> bugLocations = view.getChanges().stream().map(Change::getLocation).collect(Collectors.toSet());
-			bugLocalizationGraph.addAll(createLocalBugLocalizationGraph(view.getModel(), bugLocations));
-		}
+		List<EObject> models = buggySystemModel.getViews().stream().map(View::getModel).collect(Collectors.toList());
+		Set<EObject> bugLocations = buggySystemModel.getVersion().getChanges().stream().map(Change::getLocation).collect(Collectors.toSet());
+		bugLocalizationGraph.addAll(createLocalBugLocalizationGraph(models, bugLocations));
 	}
 	
 	public Set<EObject> createNegativeSampleBugLocalizationGraph(boolean bugReportComments, Set<EObject> negativeSampleBugLocations) {
-		
 		Set<EObject> bugLocalizationGraph = collectBugReportGraph(bugReportComments); // keeps order
 		createNegativeSampleBugLocalizationGraph(bugLocalizationGraph, negativeSampleBugLocations);
 		return bugLocalizationGraph;
 	}
 	
 	private void createNegativeSampleBugLocalizationGraph(Set<EObject> bugLocalizationGraph, Set<EObject> negativeSampleBugLocations) {
-		
-		for (View view : buggySystemModel.getViews())  {
-			bugLocalizationGraph.addAll(createLocalBugLocalizationGraph(view.getModel(), negativeSampleBugLocations));
-		}
+		List<EObject> models = buggySystemModel.getViews().stream().map(View::getModel).collect(Collectors.toList());
+		bugLocalizationGraph.addAll(createLocalBugLocalizationGraph(models, negativeSampleBugLocations));
 	}
 
 	/**
@@ -341,7 +333,7 @@ public class BugLocalizationGraphConstructor {
 		return adjacentLabels;
 	}
 
-	protected Set<EObject> createLocalBugLocalizationGraph(EObject model, Set<EObject> locations) {
+	protected Set<EObject> createLocalBugLocalizationGraph(List<EObject> models, Set<EObject> locations) {
 		Set<EObject> modelElements = new LinkedHashSet<>();
 		Set<EObject> childTree = new LinkedHashSet<>();
 		
@@ -403,7 +395,7 @@ public class BugLocalizationGraphConstructor {
 		 * Incoming Elements of Child Tree (within Model):
 		 */
 		
-		modelElements.addAll(ModelUtil.collectIncomingReferences(model, childTree, 
+		modelElements.addAll(ModelUtil.collectIncomingReferences(models, childTree, 
 				(type) -> {
 					KNeighbourSettings kNeighbourSettings = findKNeighbourSettings(type);
 					

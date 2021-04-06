@@ -10,11 +10,11 @@ import org.sidiff.bug.localization.dataset.workspace.model.Project;
 
 public class HistoryUtil {
 	
-	public static boolean hasChanges(Project project, Version olderVersion, Version version, FileChangeFilter fileChangeFilter) {
+	public static boolean hasChanges(Version olderVersion, List<FileChange> projectFileChanges, List<FileChange> projectBugLocations) {
 		if (olderVersion == null) {
 			return true; // initial version
 		} else {
-			return hasChanges(project, version.getFileChanges(), fileChangeFilter);
+			return !projectFileChanges.isEmpty() || !projectBugLocations.isEmpty();
 		}
 	}
 

@@ -9,7 +9,7 @@
     importOrganizing="true">
   <foreignModel>systemmodel.ecore</foreignModel>
   <genPackages prefix="SystemModel" basePackage="org.sidiff.bug.localization.dataset"
-      disposableProviderFactory="true" ecorePackage="systemmodel.ecore#/">
+      resource="XMI" disposableProviderFactory="true" ecorePackage="systemmodel.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="systemmodel.ecore#//ChangeType">
       <genEnumLiterals ecoreEnumLiteral="systemmodel.ecore#//ChangeType/Add"/>
       <genEnumLiterals ecoreEnumLiteral="systemmodel.ecore#//ChangeType/Delete"/>
@@ -41,7 +41,6 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//View/kind"/>
       <genFeatures notify="false" children="true" createChild="false" propertySortChoices="true"
           ecoreFeature="ecore:EReference systemmodel.ecore#//View/model"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//View/changes"/>
     </genClasses>
     <genClasses ecoreClass="systemmodel.ecore#//DescribableElement">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//DescribableElement/name"/>
@@ -52,6 +51,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Change/quantification"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemmodel.ecore#//Change/location"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Change/originalResource"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Change/modelElementURI"/>
     </genClasses>
     <genClasses ecoreClass="systemmodel.ecore#//ViewDescription">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//ViewDescription/viewKind"/>
@@ -62,6 +62,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/author"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//Version/commitMessage"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//Version/bugreport"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemmodel.ecore#//Version/changes"/>
     </genClasses>
     <genClasses ecoreClass="systemmodel.ecore#//BugReport">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemmodel.ecore#//BugReport/id"/>

@@ -1,6 +1,8 @@
 package org.sidiff.bug.localization.dataset.workspace.filter;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -11,9 +13,9 @@ public class ProjectNameFilter implements ProjectFilter {
 	
 	private Set<String> projectNames;
 	
-	public ProjectNameFilter(ProjectFilter parentFilter, Set<String> projectNames) {
+	public ProjectNameFilter(ProjectFilter parentFilter, Collection<String> projectNames) {
 		this.parentFilter = parentFilter;
-		this.projectNames = projectNames;
+		this.projectNames = new HashSet<>(projectNames);
 	}
 
 	@Override

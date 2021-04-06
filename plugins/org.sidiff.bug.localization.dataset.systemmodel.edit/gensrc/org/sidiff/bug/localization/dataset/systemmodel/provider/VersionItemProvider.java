@@ -172,6 +172,7 @@ public class VersionItemProvider
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(SystemModelPackage.Literals.VERSION__BUGREPORT);
+			childrenFeatures.add(SystemModelPackage.Literals.VERSION__CHANGES);
 		}
 		return childrenFeatures;
 	}
@@ -234,6 +235,7 @@ public class VersionItemProvider
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case SystemModelPackage.VERSION__BUGREPORT:
+			case SystemModelPackage.VERSION__CHANGES:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 				return;
 		}
@@ -260,6 +262,11 @@ public class VersionItemProvider
 			(createChildParameter
 				(SystemModelPackage.Literals.VERSION__BUGREPORT,
 				 SystemModelFactory.eINSTANCE.createTracedBugReport()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(SystemModelPackage.Literals.VERSION__CHANGES,
+				 SystemModelFactory.eINSTANCE.createChange()));
 	}
 
 	/**

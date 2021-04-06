@@ -5,8 +5,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -40,9 +42,11 @@ import org.sidiff.bug.localization.dataset.workspace.model.Workspace;
 
 public class SystemModelRetrieval {
 	
+	private Path datasetPath;
+	
 	private DataSet dataset;
 	
-	private Path datasetPath;
+	private Map<String, Version> datasetTrace;
 	
 	private Path codeRepositoryPath;
 	
@@ -69,15 +73,31 @@ public class SystemModelRetrieval {
 	
 	public SystemModelRetrieval(
 			SystemModelRetrievalProvider systemModelProvider, 
-			DataSet dataset, Path datasetPath) {
+			Path datasetPath,
+			DataSet dataset,
+			DataSet dataSetTrace) {
 		
 		this.systemModelProvider = systemModelProvider;
-		this.dataset = dataset;
 		this.datasetPath = datasetPath;
+		this.dataset = dataset;
+		this.datasetTrace = getDataSetTrace(dataSetTrace);
 		
-		this.newProjectAdded = true; 
+		this.newProjectAdded = true;
 	}
 	
+	private Map<String, Version> getDataSetTrace(DataSet dataSetTrace) {
+		if (dataSetTrace != null) {
+			Map<String, Version> trace = new HashMap<>();
+			
+			for (Version version : dataSetTrace.getHistory().getVersions()) {
+				trace.put(version.getIdentification(), version);
+			}
+			
+			return trace;
+		}
+		return null;
+	}
+
 	public void retrieve() throws IOException {
 		retrieve(-1);
 	}
@@ -129,6 +149,13 @@ public class SystemModelRetrieval {
 				/* Synchronize before storing new changes in the model repository */
 				waitForCommit(); 
 				time = stopTime("Commit System Model Version (waiting): ", time);
+				
+				// Apply history trace:
+ 				if (datasetTrace != null) {
+ 					Version versionTrace = datasetTrace.get(version.getIdentification());
+ 					version.setIdentification(versionTrace.getIdentificationTrace());
+ 					version.setDate(versionTrace.getDate());
+ 				}
 				
 				// Workspace -> System Model:
 				List<Path> removedModelResources = removeMissingProjects(olderVersion, version);
@@ -239,13 +266,21 @@ public class SystemModelRetrieval {
 			try {
 				long time = System.currentTimeMillis();
 				
+				// Calculate changed files in project:
+				// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
+				// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
+				List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
+				List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
+				
+				
 				// javaSystemModel -> null: Java model has no changes or could not be computed in the previous step.
 				// OPTIMIZATION: Recalculate changed projects only (and initial versions).
-				if (HistoryUtil.hasChanges(project, olderVersion, version, systemModelProvider.getFileChangeFilter())) {
+				if (HistoryUtil.hasChanges(olderVersion, projectFileChanges, projectBugLocations)) {
 					
 					// Java Code -> System Model
 					List<Path> modelProjectFiles = retrieveProjectSystemModelVersion(
-							olderVersion, version, newerVersion, project, workspaceProjectScope, systemModel);
+							olderVersion, version, newerVersion, project, workspaceProjectScope, 
+							projectFileChanges, projectBugLocations, systemModel);
 					modelFiles.addAll(modelProjectFiles);
 					time = stopTime("Discover System Model Project (Name: " + project.getName() + ", Model Files: "
 							+ ((olderVersion == null) ? "*" : modelProjectFiles.size()) + "): ", time);
@@ -268,6 +303,8 @@ public class SystemModelRetrieval {
 			Version newerVersion, 
 			Project project,
 			Set<String> workspaceProjectScope,
+			List<FileChange> projectFileChanges, 
+			List<FileChange> projectBugLocations,
 			SystemModel systemModel) 
 					throws IOException {
 		
@@ -281,12 +318,6 @@ public class SystemModelRetrieval {
 		IProject workspaceProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.getName());
 
 		if ((workspaceProject != null) && ProjectUtil.isJavaProject(workspaceProject)) {
-			
-			// Calculate changed files in project:
-			// NOTE: We are only interested in the change location of the buggy version, i.e., the version before the bug fix.
-			// NOTE: Changes V_Old -> V_New are stored in V_new as V_A -> V_B
-			List<FileChange> projectFileChanges =  HistoryUtil.getChanges(project, version.getFileChanges(), systemModelProvider.getFileChangeFilter());
-			List<FileChange> projectBugLocations = HistoryUtil.getChanges(project, getBugLocations(version, newerVersion), systemModelProvider.getFileChangeFilter());
 			
 			// Discover the system model of the project version:
 			boolean initialVersion = !transformedProjects.contains(project.getFolder().toString());

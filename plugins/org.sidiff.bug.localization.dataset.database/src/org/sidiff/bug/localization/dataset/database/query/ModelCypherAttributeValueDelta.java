@@ -21,7 +21,8 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 	// NOTE: Nodes that have changed attribute values need to be copied inside 
 	//       of the database to get also all none resource internal edges.
 	
-	/* TEST (attribute value changes, cross-resource containment, added and removed incident nodes):
+	// TEST: See main method below...
+	/* TEST: In JDT data - attribute value changes, cross-resource containment, added and removed incident nodes:
 		"identity": 96445,
 		"labels": ["Class"],
 		"properties": {
@@ -199,18 +200,30 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		query.append("FOREACH(nodeOrigin IN nodeOrigins | SET nodeOrigin.__last__version__ = $oldVersion) ");
 		
 		// Collect edges to be copied:
-		query.append("WITH nodeTrace, nodeOrigins");
+		query.append("WITH nodeTrace, nodeOrigins, ");
+		query.append("apoc.coll.flatten([nodeOrigin In nodeOrigins | (nodeOrigin)-->()]) AS outgoingOriginPaths, ");
+		query.append("apoc.coll.flatten([nodeOrigin In nodeOrigins | (nodeOrigin)<--()]) AS incomingOriginPaths ");
 		
 		// Collect all edges between copied origin nodes and not copied boundary nodes:
-		query.append(", [(nodeOrigin)-[outgoingBoundaryRel]->(boundaryNode) WHERE nodeOrigin IN nodeOrigins AND NOT boundaryNode IN nodeOrigins AND NOT EXISTS(outgoingBoundaryRel.__last__version__) ");
-		query.append("| [outgoingBoundaryRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(outgoingBoundaryRel), properties(outgoingBoundaryRel), boundaryNode]]");
+		query.append("WITH [outgoingOriginPath IN outgoingOriginPaths WHERE NOT LAST(NODES(outgoingOriginPath)) IN nodeOrigins AND NOT EXISTS(LAST(RELATIONSHIPS(outgoingOriginPath)).__last__version__) ");
+		query.append("| [LAST(RELATIONSHIPS(outgoingOriginPath)),  ");
+		query.append("apoc.map.get(nodeTrace, toString(ID(NODES(outgoingOriginPath)[0]))),"); // copied outgoing origin node
+		query.append("type(LAST(RELATIONSHIPS(outgoingOriginPath))), properties(LAST(RELATIONSHIPS(outgoingOriginPath))), ");
+		query.append("LAST(NODES(outgoingOriginPath))]] ");   // outgoing boundary node
+		
+		query.append(" + [incomingOriginPath IN incomingOriginPaths WHERE NOT LAST(NODES(incomingOriginPath)) IN nodeOrigins AND NOT EXISTS(LAST(RELATIONSHIPS(incomingOriginPath)).__last__version__) ");
+		query.append("| [LAST(RELATIONSHIPS(incomingOriginPath)), ");
+		query.append("LAST(NODES(incomingOriginPath)), "); // incoming boundary node
+		query.append("type(LAST(RELATIONSHIPS(incomingOriginPath))), properties(LAST(RELATIONSHIPS(incomingOriginPath))), ");
+		query.append("apoc.map.get(nodeTrace, toString(ID(NODES(incomingOriginPath)[0])))]] "); // copied incoming origin node
 		
 		// Collect all edges between copied origin nodes:
-		query.append(" + [(nodeOrigin)<-[incomingBoundaryRel]-(boundaryNode) WHERE nodeOrigin IN nodeOrigins AND NOT boundaryNode IN nodeOrigins AND NOT EXISTS(incomingBoundaryRel.__last__version__) ");
-		query.append("| [incomingBoundaryRel, boundaryNode, type(incomingBoundaryRel), properties(incomingBoundaryRel), apoc.map.get(nodeTrace, toString(ID(nodeOrigin)))]]");
+		query.append(" + [outgoingOriginPath IN outgoingOriginPaths WHERE LAST(NODES(outgoingOriginPath)) IN nodeOrigins AND NOT EXISTS(LAST(RELATIONSHIPS(outgoingOriginPath)).__last__version__) ");
+		query.append("| [LAST(RELATIONSHIPS(outgoingOriginPath)), ");
+		query.append("apoc.map.get(nodeTrace, toString(ID(NODES(outgoingOriginPath)[0]))), "); // copied origin node
+		query.append("type(LAST(RELATIONSHIPS(outgoingOriginPath))), properties(LAST(RELATIONSHIPS(outgoingOriginPath))), ");
+		query.append(" apoc.map.get(nodeTrace, toString(ID(LAST(NODES(outgoingOriginPath)))))]] ");  // copied origin node
 		
-		query.append(" + [(nodeOrigin)-[originRel]->(originTarget) WHERE nodeOrigin IN nodeOrigins AND originTarget IN nodeOrigins AND NOT EXISTS(originRel.__last__version__) ");
-		query.append("| [originRel, apoc.map.get(nodeTrace, toString(ID(nodeOrigin))), type(originRel), properties(originRel), apoc.map.get(nodeTrace, toString(ID(originTarget)))]] ");
 		query.append("AS copyRels ");
 		
 		//// query.append(" CREATE (result:Result {result: apoc.convert.toString(tasks)}) "); //// for debugging
@@ -224,7 +237,9 @@ public class ModelCypherAttributeValueDelta extends ModelCypherDelta {
 		return query.toString();
 	}
 	
-	// TEST //
+	/*
+	 *  TEST: example -> 0, 1
+	 */
 	public static void main(String[] args) {
 		String databaseURI = "bolt://localhost:7687";
 		String databaseName = "neo4j";

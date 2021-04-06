@@ -16,6 +16,7 @@ Bundle-Activator: org.sidiff.bug.localization.dataset.systemmodel.Activator
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.emf.ecore.xmi;visibility:=reexport,
  org.eclipse.uml2.uml,
  org.sidiff.bug.localization.common.utilities,
  org.sidiff.bug.localization.dataset.changes,

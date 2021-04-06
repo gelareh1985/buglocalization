@@ -62,6 +62,7 @@ public class ChangeItemProvider
 			addQuantificationPropertyDescriptor(object);
 			addLocationPropertyDescriptor(object);
 			addOriginalResourcePropertyDescriptor(object);
+			addModelElementURIPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -155,6 +156,28 @@ public class ChangeItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Model Element URI feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addModelElementURIPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_Change_modelElementURI_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_Change_modelElementURI_feature", "_UI_Change_type"),
+				 SystemModelPackage.Literals.CHANGE__MODEL_ELEMENT_URI,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This returns Change.gif.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -196,6 +219,7 @@ public class ChangeItemProvider
 			case SystemModelPackage.CHANGE__TYPE:
 			case SystemModelPackage.CHANGE__QUANTIFICATION:
 			case SystemModelPackage.CHANGE__ORIGINAL_RESOURCE:
+			case SystemModelPackage.CHANGE__MODEL_ELEMENT_URI:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}

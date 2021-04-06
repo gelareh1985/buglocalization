@@ -222,8 +222,8 @@ class BugLocalizationAIModelTrainer:
         train_flow = sample_generator.create_bug_sample_generator("training", bug_samples_train, self.callbacks)
         eval_flow = sample_generator.create_bug_sample_generator("evaluation", bug_samples_eval, self.callbacks)
 
-        print("Training Samples:", len(bug_samples_train), " Batches:", len(train_flow))
-        print("Evaluation Samples:", len(bug_samples_eval), "Batches:", len(eval_flow))
+        print("Training Samples (positive + negative):", len(bug_samples_train), " Batches:", len(train_flow))
+        print("Evaluation Samples (positive + negative):", len(bug_samples_eval), "Batches:", len(eval_flow))
 
         # # Train Model # #
         # self.callbacks.append(TqdmCallback(verbose=2)) # logging during training

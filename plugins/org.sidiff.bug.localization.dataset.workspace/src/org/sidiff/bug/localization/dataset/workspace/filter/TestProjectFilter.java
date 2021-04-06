@@ -21,6 +21,6 @@ public class TestProjectFilter implements ProjectFilter {
 	public boolean filter(String name, Path path) {
 		return parentFilter.filter(name, path)
 				|| name.contains(".test") 
-				|| ((path.getParent() != null) && (path.getParent().toString().matches("(.*?test.*?)|.*?Test.*?")));
+				|| ((path.getParent() != null) && (path.getParent().toString().matches(".*?test.*?|.*?Test.*?")));
 	}
 }

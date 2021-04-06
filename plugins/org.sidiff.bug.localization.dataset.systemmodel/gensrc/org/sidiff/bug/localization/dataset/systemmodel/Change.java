@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getQuantification <em>Quantification</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getLocation <em>Location</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getOriginalResource <em>Original Resource</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getModelElementURI <em>Model Element URI</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getChange()
@@ -115,5 +116,27 @@ public interface Change extends EObject {
 	 * @generated
 	 */
 	void setOriginalResource(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Model Element URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Model Element URI</em>' attribute.
+	 * @see #setModelElementURI(String)
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getChange_ModelElementURI()
+	 * @model unique="false"
+	 * @generated
+	 */
+	String getModelElementURI();
+
+	/**
+	 * Sets the value of the '{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getModelElementURI <em>Model Element URI</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Model Element URI</em>' attribute.
+	 * @see #getModelElementURI()
+	 * @generated
+	 */
+	void setModelElementURI(String value);
 
 } // Change

@@ -20,6 +20,10 @@ public class DataSet {
 	
 	private List<String> bugtrackerProducts;
 	
+	private List<String> projectNameFilter;
+	
+	private String  projectPathFilter;
+	
 	private String timestamp;
 	
 	private Path systemModel;
@@ -83,10 +87,26 @@ public class DataSet {
 		return bugtrackerProducts;
 	}
 
-	public void setBugtrackerProduct(List<String> bugtrackerProduct) {
-		this.bugtrackerProducts = bugtrackerProduct;
+	public void setBugtrackerProducts(List<String> bugtrackerProducts) {
+		this.bugtrackerProducts = bugtrackerProducts;
 	}
 	
+	public List<String> getProjectNameFilter() {
+		return projectNameFilter;
+	}
+
+	public void setProjectNameFilter(List<String> projectNameFilter) {
+		this.projectNameFilter = projectNameFilter;
+	}
+
+	public String getProjectPathFilter() {
+		return projectPathFilter;
+	}
+
+	public void setProjectPathFilter(String projectPathFilter) {
+		this.projectPathFilter = projectPathFilter;
+	}
+
 	public String getTimestamp() {
 		return timestamp;
 	}

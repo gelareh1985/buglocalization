@@ -35,7 +35,6 @@ public class ModelHistory2Neo4j {
 	
 	private int reopenSession = 10; // prevent resource leaks...
 	
-	// TODO: Implement filter...
 	private boolean onlyBuggyVersions = false;
 	
 	public ModelHistory2Neo4j(Repository modelRepository, Neo4jTransaction transaction) {

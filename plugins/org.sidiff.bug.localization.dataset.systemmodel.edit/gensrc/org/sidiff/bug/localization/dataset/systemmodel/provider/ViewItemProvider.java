@@ -15,8 +15,6 @@ import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
-
-import org.sidiff.bug.localization.dataset.systemmodel.SystemModelFactory;
 import org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage;
 import org.sidiff.bug.localization.dataset.systemmodel.View;
 
@@ -134,7 +132,6 @@ public class ViewItemProvider extends DescribableElementItemProvider {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(SystemModelPackage.Literals.VIEW__MODEL);
-			childrenFeatures.add(SystemModelPackage.Literals.VIEW__CHANGES);
 		}
 		return childrenFeatures;
 	}
@@ -194,9 +191,6 @@ public class ViewItemProvider extends DescribableElementItemProvider {
 			case SystemModelPackage.VIEW__KIND:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
-			case SystemModelPackage.VIEW__CHANGES:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-				return;
 		}
 		super.notifyChanged(notification);
 	}
@@ -211,11 +205,6 @@ public class ViewItemProvider extends DescribableElementItemProvider {
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-
-		newChildDescriptors.add
-			(createChildParameter
-				(SystemModelPackage.Literals.VIEW__CHANGES,
-				 SystemModelFactory.eINSTANCE.createChange()));
 	}
 
 }

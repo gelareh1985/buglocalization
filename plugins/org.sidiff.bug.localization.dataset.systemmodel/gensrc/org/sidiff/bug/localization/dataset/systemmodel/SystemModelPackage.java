@@ -278,22 +278,13 @@ public interface SystemModelPackage extends EPackage {
 	int VIEW__MODEL = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
-	 * The feature id for the '<em><b>Changes</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int VIEW__CHANGES = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 4;
-
-	/**
 	 * The number of structural features of the '<em>View</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int VIEW_FEATURE_COUNT = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 5;
+	int VIEW_FEATURE_COUNT = DESCRIBABLE_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>View</em>' class.
@@ -351,13 +342,22 @@ public interface SystemModelPackage extends EPackage {
 	int CHANGE__ORIGINAL_RESOURCE = 3;
 
 	/**
+	 * The feature id for the '<em><b>Model Element URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE__MODEL_ELEMENT_URI = 4;
+
+	/**
 	 * The number of structural features of the '<em>Change</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_FEATURE_COUNT = 4;
+	int CHANGE_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Change</em>' class.
@@ -479,13 +479,22 @@ public interface SystemModelPackage extends EPackage {
 	int VERSION__BUGREPORT = 4;
 
 	/**
+	 * The feature id for the '<em><b>Changes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VERSION__CHANGES = 5;
+
+	/**
 	 * The number of structural features of the '<em>Version</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int VERSION_FEATURE_COUNT = 5;
+	int VERSION_FEATURE_COUNT = 6;
 
 	/**
 	 * The number of operations of the '<em>Version</em>' class.
@@ -704,6 +713,15 @@ public interface SystemModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TRACED_VERSION__BUGREPORT = VERSION__BUGREPORT;
+
+	/**
+	 * The feature id for the '<em><b>Changes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TRACED_VERSION__CHANGES = VERSION__CHANGES;
 
 	/**
 	 * The feature id for the '<em><b>Code Version ID</b></em>' attribute.
@@ -1144,17 +1162,6 @@ public interface SystemModelPackage extends EPackage {
 	EReference getView_Model();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.sidiff.bug.localization.dataset.systemmodel.View#getChanges <em>Changes</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Changes</em>'.
-	 * @see org.sidiff.bug.localization.dataset.systemmodel.View#getChanges()
-	 * @see #getView()
-	 * @generated
-	 */
-	EReference getView_Changes();
-
-	/**
 	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.DescribableElement <em>Describable Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1241,6 +1248,17 @@ public interface SystemModelPackage extends EPackage {
 	EAttribute getChange_OriginalResource();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.sidiff.bug.localization.dataset.systemmodel.Change#getModelElementURI <em>Model Element URI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Model Element URI</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.Change#getModelElementURI()
+	 * @see #getChange()
+	 * @generated
+	 */
+	EAttribute getChange_ModelElementURI();
+
+	/**
 	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.ViewDescription <em>View Description</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1325,6 +1343,17 @@ public interface SystemModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getVersion_Bugreport();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getChanges <em>Changes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Changes</em>'.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.Version#getChanges()
+	 * @see #getVersion()
+	 * @generated
+	 */
+	EReference getVersion_Changes();
 
 	/**
 	 * Returns the meta object for class '{@link org.sidiff.bug.localization.dataset.systemmodel.BugReport <em>Bug Report</em>}'.
@@ -1749,14 +1778,6 @@ public interface SystemModelPackage extends EPackage {
 		EReference VIEW__MODEL = eINSTANCE.getView_Model();
 
 		/**
-		 * The meta object literal for the '<em><b>Changes</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference VIEW__CHANGES = eINSTANCE.getView_Changes();
-
-		/**
 		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.impl.DescribableElementImpl <em>Describable Element</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1825,6 +1846,14 @@ public interface SystemModelPackage extends EPackage {
 		EAttribute CHANGE__ORIGINAL_RESOURCE = eINSTANCE.getChange_OriginalResource();
 
 		/**
+		 * The meta object literal for the '<em><b>Model Element URI</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE__MODEL_ELEMENT_URI = eINSTANCE.getChange_ModelElementURI();
+
+		/**
 		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.impl.ViewDescriptionImpl <em>View Description</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1891,6 +1920,14 @@ public interface SystemModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference VERSION__BUGREPORT = eINSTANCE.getVersion_Bugreport();
+
+		/**
+		 * The meta object literal for the '<em><b>Changes</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference VERSION__CHANGES = eINSTANCE.getVersion_Changes();
 
 		/**
 		 * The meta object literal for the '{@link org.sidiff.bug.localization.dataset.systemmodel.impl.BugReportImpl <em>Bug Report</em>}' class.

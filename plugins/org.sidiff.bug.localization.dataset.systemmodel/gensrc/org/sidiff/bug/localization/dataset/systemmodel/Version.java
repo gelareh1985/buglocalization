@@ -2,6 +2,7 @@
  */
 package org.sidiff.bug.localization.dataset.systemmodel;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getAuthor <em>Author</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getCommitMessage <em>Commit Message</em>}</li>
  *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getBugreport <em>Bugreport</em>}</li>
+ *   <li>{@link org.sidiff.bug.localization.dataset.systemmodel.Version#getChanges <em>Changes</em>}</li>
  * </ul>
  *
  * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getVersion()
@@ -134,5 +136,17 @@ public interface Version extends EObject {
 	 * @generated
 	 */
 	void setBugreport(BugReport value);
+
+	/**
+	 * Returns the value of the '<em><b>Changes</b></em>' containment reference list.
+	 * The list contents are of type {@link org.sidiff.bug.localization.dataset.systemmodel.Change}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Changes</em>' containment reference list.
+	 * @see org.sidiff.bug.localization.dataset.systemmodel.SystemModelPackage#getVersion_Changes()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<Change> getChanges();
 
 } // Version

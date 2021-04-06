@@ -117,7 +117,7 @@ public class StatisticsApplication implements IApplication {
 		
 		Path systemModelRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SYSTEM_MODEL_REPOSITORY);
 		this.systemModelRepository = new SystemModelRepository(systemModelRepositoryPath, dataSet);
-		this.provider = new SystemModelRetrievalProvider(null);
+		this.provider = new SystemModelRetrievalProvider();
 		
 		this.productStatistic = new ProductStatistic();
 		this.projectStatistics = new LinkedHashMap<>();
@@ -289,12 +289,10 @@ public class StatisticsApplication implements IApplication {
 					if (buggyProject != null) {
 						ProjectStatistic projectStatistic = getProjectStatistic(buggyProject);
 
-						View classDiagramView = umlSystemModel.getViewByKind(ViewDescriptions.UML_CLASS_DIAGRAM);
+						projectStatistic.umlBugFixLocations += umlSystemModel.getVersion().getChanges().size(); // project
+						productStatistic.umlBugFixLocations += umlSystemModel.getVersion().getChanges().size(); // product
 
-						projectStatistic.umlBugFixLocations += classDiagramView.getChanges().size(); // project
-						productStatistic.umlBugFixLocations += classDiagramView.getChanges().size(); // product
-
-						for (Change bugFixLocation : classDiagramView.getChanges()) {
+						for (Change bugFixLocation : umlSystemModel.getVersion().getChanges()) {
 							projectStatistic.umlBugFixQuantification += bugFixLocation.getQuantification(); // project
 							productStatistic.umlBugFixQuantification += bugFixLocation.getQuantification(); // product
 						}

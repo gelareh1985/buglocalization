@@ -33,6 +33,8 @@ public class DataSetRetrievalApplication implements IApplication {
 	
 	public static final String ARGUMENT_DATASET = "-dataset";
 	
+	public static final String ARGUMENT_DATASET_TRACE = "-datasettrace";
+	
 	public static final String ARGUMENT_CONFIGURATION = "-retrieval";
 	
 	public static final String ARGUMENT_BUG_HISTORY = "-bughistory";
@@ -62,6 +64,12 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		Path dataSetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
 		DataSet dataSet = DataSetStorage.load(dataSetPath);
+		DataSet dataSetTrace = null;
+		
+		if (ApplicationUtil.containsProgramArgument(context, ARGUMENT_DATASET_TRACE)) {
+			Path dataSetTracePath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET_TRACE);
+			dataSetTrace = DataSetStorage.load(dataSetTracePath);
+		}
 		
 		Path retrievalConfigurationPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_CONFIGURATION);
 		RetrievalConfiguration retrievalConfiguration = JsonUtil.parse(retrievalConfigurationPath, RetrievalConfiguration.class);
@@ -70,12 +78,12 @@ public class DataSetRetrievalApplication implements IApplication {
 		this.retrieveWorkspaceHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_WORKSPACE_HISTORY);
 		this.retrieveSystemModelHistory = ApplicationUtil.containsProgramArgument(context, ARGUMENT_SYSTEM_MODEL_HISTORY);
 		
-		start(dataSetPath, dataSet, retrievalConfigurationPath, retrievalConfiguration);
+		start(dataSetPath, dataSet, dataSetTrace, retrievalConfigurationPath, retrievalConfiguration);
 		
 		return IApplication.EXIT_OK;
 	}
 	
-	protected void start(Path datasetPath, DataSet dataset, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {
+	protected void start(Path datasetPath, DataSet dataset, DataSet dataSetTrace, Path retrievalConfigurationPath, RetrievalConfiguration retrievalConfiguration) throws IOException {
 		String codeRepositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
 		Path codeRepositoryPath = Paths.get(retrievalConfiguration.getLocalRepositoryPath().toString(), dataset.getName());
 		
@@ -114,8 +122,9 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		// Direct System model (Java Model -> System Model):
 		if (retrieveSystemModelHistory) {
-			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(codeRepositoryPath);
-			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, dataset, datasetPath);
+			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(
+					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter());
+			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, datasetPath, dataset, dataSetTrace);
 			
 			try {
 //				// Resume on last intermediate save:

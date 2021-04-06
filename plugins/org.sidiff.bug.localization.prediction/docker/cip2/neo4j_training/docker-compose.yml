@@ -16,7 +16,7 @@ services:
     # https://neo4j.com/docs/operations-manual/current/reference/configuration-settings/#configuration-settings
     environment:
       - NEO4J_dbms_memory_heap_initial__size=1G
-      - NEO4J_dbms_memory_heap_max__size=6G
+      - NEO4J_dbms_memory_heap_max__size=4G
       - NEO4J_dbms_memory_pagecache_size=2G
       - NEO4J_dbms_tx__state_memory__allocation=ON_HEAP
       - NEO4J_dbms_default__listen__address=0.0.0.0
