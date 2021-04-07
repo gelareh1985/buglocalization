@@ -27,6 +27,11 @@ services:
       - NEO4J_dbms_tx__state_memory__allocation=ON_HEAP
       - NEO4J_dbms_default__listen__address=0.0.0.0
       - NEO4J_dbms_default__database=neo4j
+      # APOC
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4JLABS_PLUGINS=["apoc"]
       # user/password or none
       - NEO4J_AUTH=neo4j/password
     restart: unless-stopped
