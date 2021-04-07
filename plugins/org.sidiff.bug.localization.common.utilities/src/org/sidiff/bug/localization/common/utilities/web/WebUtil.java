@@ -35,6 +35,14 @@ public class WebUtil {
 		return StringEscapeUtils.escapeJava(response);
 	}
 	
+	public static String unescapeXML(String response) {
+		return StringEscapeUtils.unescapeXml(response);
+	}
+	
+	public static String escapeXML(String response) {
+		return StringEscapeUtils.escapeXml10(response);
+	}
+	
 	public static String request(String requestURL) throws IOException {
 		URL url = new URL(requestURL);
 

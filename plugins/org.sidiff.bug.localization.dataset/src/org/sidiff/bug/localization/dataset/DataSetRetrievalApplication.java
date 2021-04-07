@@ -6,6 +6,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.sidiff.bug.localization.common.utilities.json.JsonUtil;
@@ -87,6 +91,12 @@ public class DataSetRetrievalApplication implements IApplication {
 		String codeRepositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
 		Path codeRepositoryPath = Paths.get(retrievalConfiguration.getLocalRepositoryPath().toString(), dataset.getName());
 		
+		try {
+			enableAutoBuild(false);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		
 		// Bug fixes:
 		if (retrieveBugFixHistory) {
 			BugFixHistoryRetrievalProvider bugFixHistoryConfig = new BugFixHistoryRetrievalProvider(
@@ -155,6 +165,18 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		Activator.getLogger().log(Level.INFO, "Retrieval Finished");
 		Activator.getLogger().log(Level.INFO, "To optimize disc space run: git gc --auto");
+	}
+	
+	public static boolean enableAutoBuild(boolean enable) throws CoreException {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceDescription desc = workspace.getDescription();
+		boolean isAutoBuilding = desc.isAutoBuilding();
+		
+		if (isAutoBuilding != enable) {
+			desc.setAutoBuilding(enable);
+			workspace.setDescription(desc);
+		}
+		return isAutoBuilding;
 	}
 	
 	@SuppressWarnings("unused")

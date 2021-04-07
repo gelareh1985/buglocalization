@@ -90,7 +90,10 @@ public class GitRepository implements Repository {
 	
 	@Override
 	public boolean reset() {
-		return checkout(initialVersion.getName());
+		if (initialVersion != null) {
+			return checkout(initialVersion.getName());
+		}
+		return true;
 	}
 	
 	private Git openGitRepository() throws IOException {

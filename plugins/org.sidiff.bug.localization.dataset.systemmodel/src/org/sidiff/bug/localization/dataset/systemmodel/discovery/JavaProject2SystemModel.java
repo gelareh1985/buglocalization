@@ -304,12 +304,12 @@ public class JavaProject2SystemModel {
 	}
 
 	private List<Change> calculateBugLocations(
-			IProject project, Path projectRepositoryPath, List<FileChange> projectFileChanges) {
+			IProject project, Path projectRepositoryPath, List<FileChange> projectBugLocations) {
 		
-		if (!projectFileChanges.isEmpty()) {
+		if (!projectBugLocations.isEmpty()) {
 			Map<EObject, Change> changeLocations = new HashMap<>();
 			
-			for (FileChange fileChange : projectFileChanges) {
+			for (FileChange fileChange : projectBugLocations) {
 				IResource workspaceResource = changeToResource(project, projectRepositoryPath, fileChange);
 				Change changeLocation = null;
 				
