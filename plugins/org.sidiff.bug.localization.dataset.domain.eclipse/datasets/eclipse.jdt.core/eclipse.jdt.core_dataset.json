@@ -3,10 +3,5 @@
   "repositoryHost": "https://git.eclipse.org",
   "repositoryPath": "/r/jdt/eclipse.jdt.core.git",
   "bugtrackerHost": "https://bugs.eclipse.org",
-  "bugtrackerProducts": ["JDT", "Platform"],
-  "projectNameFilter": ["converterJclMin", "converterJclMin1.5", "converterJclMin1.7", 
-                        "converterJclMin1.8", "converterJclMin9", "converterJclMin10",
-                        "converterJclMin11", "converterJclMin12", "converterJclMin12",
-                        "converterJclMin13", "converterJclMin14", "converterJclMin15"],
-  "projectPathFilter": ".*?test.*?|.*?Test.*?"
+  "bugtrackerProducts": ["Platform", "JDT"]
 }

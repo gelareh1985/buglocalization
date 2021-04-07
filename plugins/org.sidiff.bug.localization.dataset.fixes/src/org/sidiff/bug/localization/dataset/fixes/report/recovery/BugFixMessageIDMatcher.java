@@ -26,21 +26,27 @@ public class BugFixMessageIDMatcher {
 		this.patterns = new ArrayList<>();
 		this.bugIdGroupNames = new ArrayList<>();
 		
-		addKeyword("bug", true, true);
-		addKeyword("fix", true, true);
-		addKeyword("\\[", false, true);
-		addKeyword("\\]", true, false);
+		addKeyword("bug", true, true, true);
+		addKeyword("fix", true, true, true);
+		addKeyword("\\[", false, true, false);
+		addKeyword("\\]", true, false, false);
 		compilePatterns();
 	}
 	
-	public void addKeyword(String keyword, boolean searchIDBefore, boolean searchIDAfter) {
+	public void addKeyword(String keyword, boolean searchIDBefore, boolean searchIDAfter, boolean withWhitespace) {
+		String matchWhitespace = "";
+		
+		if (withWhitespace) {
+			matchWhitespace = "\s";
+		}
+		
 		if (searchIDBefore) {
 			String bugIdGroupName = getNewBugIdGroupName();
-			addPattern(".*?(?<" + bugIdGroupName + ">\\d+).*?" + keyword + ".*?", bugIdGroupName);
+			addPattern(".*?" + matchWhitespace + "(?<" + bugIdGroupName + ">\\d+)" + matchWhitespace + ".*?" + keyword + ".*?", bugIdGroupName);
 		}
 		if (searchIDAfter) {
 			String bugIdGroupName = getNewBugIdGroupName();
-			addPattern(".*?" + keyword + ".*?(?<" + bugIdGroupName + ">\\d+).*?", bugIdGroupName);
+			addPattern(".*?" + keyword + ".*?" + matchWhitespace + "(?<" + bugIdGroupName + ">\\d+)" + matchWhitespace + ".*?", bugIdGroupName);
 		}
 	}
 	

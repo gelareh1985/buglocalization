@@ -3,5 +3,7 @@
   "repositoryHost": "https://git.eclipse.org",
   "repositoryPath": "/r/platform/eclipse.platform.swt.git",
   "bugtrackerHost": "https://bugs.eclipse.org",
-  "bugtrackerProducts": ["Platform", "Community"]
+  "bugtrackerProducts": ["Platform", "Community"],
+  "projectNameFilter": [".test", ".example"],
+  "projectPathFilter": ".*?tests.*?|.*?examples.*?|.*?features.*?"
 }
