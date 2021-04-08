@@ -45,10 +45,11 @@ class IDataSet:
 
 class IBugSample:
 
-    def __init__(self, dataset: IDataSet, sample_id: str):
+    def __init__(self, dataset: IDataSet, sample_id: str, version: int):
         self.lock: Optional[CountingLock] = None
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
+        self.version = version
         self.location_samples: List[ILocationSample] = []
         
     def __getstate__(self):

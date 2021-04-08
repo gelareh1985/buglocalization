@@ -165,7 +165,7 @@ class BaseSequence(Sequence):
                     try:
                         location_sample.initialize(bug_sample, self.log_level)  # see finally
 
-                        bug_location_pair = (location_sample.bug_report(), location_sample.model_location())
+                        bug_location_pair = (location_sample.bug_report(), location_sample.model_location(), bug_sample.version)
                         bug_location_label = location_sample.label()
                         
                         bug_location_pairs.append(bug_location_pair)

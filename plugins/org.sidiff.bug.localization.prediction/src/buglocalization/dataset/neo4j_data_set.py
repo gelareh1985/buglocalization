@@ -135,8 +135,7 @@ class BugSampleNeo4j(IBugSample):
     dataset: DataSetNeo4j
 
     def __init__(self, dataset: DataSetNeo4j, db_version: int):
-        super().__init__(dataset, "version:" + str(db_version))
-        self.db_version: int = db_version
+        super().__init__(dataset, "version:" + str(db_version), db_version)
         self.edge_columns = ['source', 'target']
 
         # Bug report and locations:
@@ -195,7 +194,7 @@ class BugSampleNeo4j(IBugSample):
         return bug_locations_by_container
 
     def run_query_by_version(self, query: str, parameters: Dict[str, Any] = None, set_index: bool = True) -> DataFrame:
-        default_parameter = {'db_version': self.db_version}
+        default_parameter = {'db_version': self.version}
 
         if parameters is not None:
             for parameter_name, value in parameters.items():
@@ -205,7 +204,7 @@ class BugSampleNeo4j(IBugSample):
         return df
     
     def run_query_by_version_value(self, query: str, parameters: Dict[str, Any] = None, set_index: bool = True) -> DataFrame:
-        default_parameter = {'db_version': self.db_version}
+        default_parameter = {'db_version': self.version}
 
         if parameters is not None:
             for parameter_name, value in parameters.items():

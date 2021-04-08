@@ -63,7 +63,7 @@ class Neo4jGraphSAGELinkGenerator:
         self.num_samples = num_samples
         self.batch_size = batch_size
         self.num_workers = num_workers
-        
+
         self.node_self_embedding: Any = None
         self.executor: Any = None
         self.sampler: Any = None
@@ -76,24 +76,32 @@ class Neo4jGraphSAGELinkGenerator:
             self.node_self_embedding = self.meta_model.get_node_self_embedding()
             self.node_self_embedding.load()
             self.executor = ThreadPoolExecutor(max_workers=self.num_workers)
-            self.sampler = Neo4jSampledBreadthFirstWalk(self.node_self_embedding.get_graph())
-            
+            self.sampler = Neo4jSampledBreadthFirstWalk(
+                self.node_self_embedding.get_graph(),
+                self.meta_model.get_slicing_criterion())
+
     def __getstate__(self):
         # Do not expose the executor (for multiprocessing) which fails on pickle.
         state = dict(self.__dict__)
 
         if 'node_self_embedding' in state:
             state['node_self_embedding'] = None
-            
+
         if 'executor' in state:
             state['executor'] = None
-            
+
         if 'sampler' in state:
             state['sampler'] = None
 
         return state
 
-    def flow(self, link_ids: List[Tuple[int, int]], targets: List[Union[float, int]] = None, shuffle: bool = False, seed: int = None):
+    def flow(self, link_ids: List[Tuple[int, int, int]],
+             targets: List[Union[float, int]] = None,
+             shuffle: bool = False, seed: int = None):
+        """
+        link_ids -> [bug report, location, version]
+        """
+
         self.initialize()
         batch_size = self.batch_size
 
@@ -110,19 +118,19 @@ class Neo4jGraphSAGELinkGenerator:
             seed=seed,
         )
 
-    def __sample_features_nodes(self, head_nodes: List[Tuple[int, int]], batch_num: int):
-        nodes_per_hop: List[List[int]] = self.sampler.run(nodes=head_nodes, n=1, n_size=self.num_samples)
+    def __sample_features_nodes(self, versions: List[int], head_nodes: List[int], batch_num: int):
+        versioned_nodes_per_hop: List[List[List[int]]] = self.sampler.run(versions=versions, nodes=head_nodes, n=1, n_size=self.num_samples)
 
         # batch_nodes = np.concatenate(nodes_per_hop)
-        batch_features = self.node_self_embedding.node_to_vector(nodes_per_hop)
+        batch_features = self.node_self_embedding.node_to_vector(versioned_nodes_per_hop)
 
         features = self.reformat_feature_array(
-            nodes_per_hop, batch_features, len(head_nodes)
+            versioned_nodes_per_hop, batch_features, len(head_nodes)
         )
 
         return features
 
-    def sample_features(self, head_links: List[Tuple[int, int]], batch_num: int):
+    def sample_features(self, head_links: List[Tuple[int, int, int]], batch_num: int):
         """
         Collect the features of the nodes sampled from Neo4j,
         and return these as a list of feature arrays for the GraphSAGE
@@ -143,8 +151,9 @@ class Neo4jGraphSAGELinkGenerator:
         features_source, features_target = self.threaded_feature_sampling(
             self.executor,
             self.__sample_features_nodes,
-            [edge[0] for edge in head_links],
-            [edge[1] for edge in head_links],
+            [edge[2] for edge in head_links],  # version
+            [edge[0] for edge in head_links],  # node_list_1
+            [edge[1] for edge in head_links],  # node_list_2
             batch_num,
         )
 
@@ -175,11 +184,12 @@ class Neo4jGraphSAGELinkGenerator:
 
         return features
 
-    def threaded_feature_sampling(self, executor, sample_function, node_list_1, node_list_2, batch_num):
+    def threaded_feature_sampling(self, executor, sample_function,
+                                  versions: List[int], node_list_1: List[int], node_list_2: List[int], batch_num):
 
         future_samples = [
-            executor.submit(sample_function, node_list_1, batch_num,),
-            executor.submit(sample_function, node_list_2, batch_num,),
+            executor.submit(sample_function, versions, node_list_1, batch_num,),
+            executor.submit(sample_function, versions, node_list_2, batch_num,),
         ]
 
         features_source, features_target = (
@@ -196,10 +206,11 @@ class Neo4jSampledBreadthFirstWalk:
     It can be used to extract a random sub-graph starting from a set of initial nodes from Neo4j database.
     """
 
-    def __init__(self, graph: Graph):
+    def __init__(self, graph: Graph, slicing_criterion: str):
         self.graph = graph
+        self.slicing_criterion = slicing_criterion
 
-    def run(self, nodes=None, n=1, n_size=None) -> List[List[int]]:
+    def run(self, versions: List[int], nodes: List[int], n=1, n_size=None) -> List[List[List[int]]]:
         """
         Send queries to Neo4j graph databases and collect sampled breadth-first walks starting from
         the root nodes.
@@ -215,21 +226,21 @@ class Neo4jSampledBreadthFirstWalk:
             A list of lists, each list is a sequence of sampled node ids at a certain hop.
         """
 
-        samples = [[head_node for head_node in nodes for _ in range(n)]]
-        neighbor_query = self._bfs_neighbor_query(sampling_direction="BOTH")
+        samples = [[[nodes[head_node_idx], versions[head_node_idx]] for head_node_idx in range(len(nodes)) for _ in range(n)]]
+        neighbor_query = self._bfs_neighbor_query(sampling_direction="BOTH", slicing_criterion=self.slicing_criterion)
 
         # this sends O(number of hops) queries to the database, because the code is cleanest like that
         for num_sample in n_size:
             cur_nodes = samples[-1]
             result = self.graph.run(
                 neighbor_query,
-                parameters={"node_id_list": cur_nodes, "num_samples": num_sample},
+                parameters={"versioned_node_id_list": cur_nodes, "num_samples": num_sample},
             )
             samples.append(result.data()[0]["next_samples"])
 
         return samples
 
-    def _bfs_neighbor_query(self, sampling_direction):
+    def _bfs_neighbor_query(self, sampling_direction, slicing_criterion):
         """
         Generate the Cypher neighbor sampling query for a batch of nodes.
         Args:
@@ -245,12 +256,13 @@ class Neo4jSampledBreadthFirstWalk:
 
         return f"""
             // expand the list of node id in seperate rows of ids.
-            UNWIND $node_id_list AS node_id
+            UNWIND $versioned_node_id_list AS versioned_node_id
+            WITH versioned_node_id[0] AS node_id, versioned_node_id[1] AS db_version
             // for each node id in every row, collect the random list of its neighbors.
             CALL apoc.cypher.run(
                 'MATCH(cur_node) WHERE ID(cur_node) = $node_id
                 // find the neighbors
-                MATCH (cur_node){direction_arrow}(neighbors)
+                MATCH (cur_node){direction_arrow}(neighbors) {slicing_criterion}
                 // collect neighbors in a list
                 WITH CASE collect(neighbors) WHEN [] THEN [null] ELSE collect(neighbors) END AS in_neighbors_list
                 // pick random nodes with replacement -> If fewer neighbors than $num_samples, missing slots will be filled with duplicates.
@@ -258,8 +270,9 @@ class Neo4jSampledBreadthFirstWalk:
                 // pull the ids of the sampled nodes only
                 UNWIND sampled AS nn
                 // collect ignores nulls, so re-handle the no-neighbours case to ensure we get [null, null, ...] output
-                WITH CASE collect(ID(nn)) WHEN [] THEN sampled ELSE collect(ID(nn)) END AS in_samples_list
+                WITH CASE collect([ID(nn), $db_version]) WHEN [] THEN sampled ELSE collect([ID(nn), $db_version]) END AS in_samples_list
                 RETURN in_samples_list',
-                {{ node_id: node_id, num_samples: $num_samples  }}) YIELD value
+                // parameters for apoc.cypher.run
+                {{ node_id: node_id, db_version: db_version, num_samples: $num_samples  }}) YIELD value
             RETURN apoc.coll.flatten(collect(value.in_samples_list)) AS next_samples
             """

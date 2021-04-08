@@ -75,7 +75,7 @@ class MetaModel:
         """
         raise NotImplementedError()
 
-    def get_slicing_criterion(self) -> TypbasedGraphSlicing:
+    def get_slicing_criterion(self) -> str:
         """
 
         Args:
@@ -94,22 +94,6 @@ class MetaModel:
             int: The maximal number of parents to be searched. Default to 2. 0 is off.
         """
         return 2
-    
-    
-class TypbasedGraphSlicing:
-
-    def __init__(self):
-        self.type_label_to_graph_slicing: Dict[str, List[str]] = {}
-
-    def add_type(self, type_label: str, graph_slicing):
-        self.type_label_to_graph_slicing[type_label] = graph_slicing
-
-    def get_types(self) -> List[str]:
-        return list(self.type_label_to_graph_slicing.keys())
-
-    def get_slicing(self, type_label: str) -> List[str]:
-        return self.type_label_to_graph_slicing[type_label]
-
 
 class NodeSelfEmbedding:
 
@@ -129,12 +113,12 @@ class NodeSelfEmbedding:
         """
         raise NotImplementedError()
 
-    def node_to_vector(self, nodes_per_hop: List[List[int]]) -> np.ndarray:
+    def node_to_vector(self, nodes_per_hop: List[List[List[int]]]) -> np.ndarray:
         """
         Get the numeric feature vectors for the specified nodes.
 
         Args:
-            nodes (List[int]): List of node IDs.
+            nodes (List[List[List[int]]]): List of node layers with pairs consisting of a node ID and a version.
         Returns:
             Numpy array containing the node features for the requested nodes.
         """
