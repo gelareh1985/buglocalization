@@ -9,9 +9,11 @@ from typing import Any, Callable, List, Optional, Tuple, Union, final
 import numpy as np
 import pandas as pd
 from buglocalization.dataset.data_set import IBugSample, ILocationSample
-from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
+from buglocalization.dataset.sample_neo4j_mapper import \
+    Neo4jGraphSAGELinkGenerator
+from buglocalization.metamodel.meta_model import MetaModel, NodeSelfEmbedding
 from buglocalization.utils.common_utils import t
-from stellargraph.mapper import GraphSAGELinkGenerator, StellarGraph
+from py2neo import Graph
 from tensorflow import keras
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import concatenate
@@ -25,13 +27,11 @@ from tensorflow.keras.utils import Sequence
 # https://www.tensorflow.org/guide/keras/train_and_evaluate#using_a_kerasutilssequence_object_as_input
 # ===============================================================================
 
-# Use with caution, to ignore exceptions during sample generation!
-RETURN_DUMMY_SAMPLES_ON_EXCEPTION = False
-
 
 class IBugSampleGenerator:
 
     def create_bug_sample_generator(self, name: str,
+                                    meta_model: MetaModel,
                                     bug_samples: List[IBugSample],
                                     callbacks: List[keras.callbacks.Callback]) -> Sequence:
         """
@@ -53,6 +53,7 @@ class IBugSampleGenerator:
 class ILocationSampleGenerator:
 
     def create_location_sample_generator(self, name: str,
+                                         meta_model: MetaModel,
                                          bug_sample: IBugSample,
                                          callbacks: List[keras.callbacks.Callback]) -> Sequence:
         """
@@ -120,6 +121,7 @@ class BaseSequence(Sequence):
 
     def __init__(self, name: str,
                  samples: Union[List[IBugSample], List[ILocationSample]],
+                 meta_model: MetaModel,
                  batch_size: int,
                  shuffle: bool,
                  num_samples: List[int],
@@ -134,100 +136,58 @@ class BaseSequence(Sequence):
         self.reshape_input: Optional[Callable] = reshape_input
         self.log_level: int = log_level
 
+        # Generates one batch at a time -> as adapter to StellarGraph API:
+        self.graph_sage_generator = Neo4jGraphSAGELinkGenerator(meta_model, num_samples)
+
     def create_batch(self, start_sample: int) -> Tuple[np.ndarray, np.array]:
         raise NotImplementedError
 
-    def combine_to_batch(self, sample_count: int, bug_location_samples: List[Tuple]):
-        input_node_count = self.get_input_node_count()
-        bug_location_input_batch = []  # List of input nodes of the GraphSAGE model
-        label_type = self.get_lable_type(bug_location_samples)
-        bug_location_label_batch = np.empty(shape=(sample_count), dtype=label_type)
+    def create_location_sequence(self, samples: List[Tuple[IBugSample, Optional[slice]]]) -> Tuple[np.ndarray, np.array]:
+        bug_location_pairs = []
+        bug_location_labels = []
+        
+        for sample in samples:
+            bug_sample = sample[0]
+            location_sample_slice = sample[1]
+            
+            try:
+                if self.log_level >= 3:
+                    print('+++++ Sample', bug_sample.sample_id, '+++++')
+                
+                # Select location slice?
+                if location_sample_slice is not None:
+                    location_samples = bug_sample.location_samples[location_sample_slice]
+                else:
+                    bug_sample.initialize(self.log_level)  # see finally
+                    location_samples = bug_sample.location_samples
 
-        # Copy input shape with full batch size:
-        for input_node_idx in range(input_node_count):
-            input_type, samples_per_layer, feature_size = self.get_input_shape(input_node_idx, bug_location_samples, True)
-            bug_location_input_batch.append(np.empty(shape=(sample_count, samples_per_layer, feature_size), dtype=input_type))
+                for location_sample in location_samples:
+                    try:
+                        location_sample.initialize(bug_sample, self.log_level)  # see finally
 
-        # Combine samples:
-        current_sample_idx = 0
-
-        for bug_location_inputs, bug_location_labels in bug_location_samples:
-            for bug_location_sample_idx in range(len(bug_location_labels)):
-
-                # Input nodes:
-                for input_node in range(input_node_count):
-                    bug_location_input_batch[input_node][current_sample_idx] = bug_location_inputs[input_node][bug_location_sample_idx]
-
-                # Output lables:
-                bug_location_label_batch[current_sample_idx] = bug_location_labels[bug_location_sample_idx]
-
-                current_sample_idx += 1
-
-        return bug_location_input_batch, bug_location_label_batch
-
-    # TODO: Compute or read shape from model!?
-
-    def get_lable_type(self, bug_location_samples: List):
-        lable_type = bug_location_samples[0][1].dtype
-        return lable_type
-
-    def get_input_node_count(self) -> int:
-        return (len(self.num_samples) + 1) * 2
-
-    def get_input_shape(self, input_node_idx: int, bug_location_samples: List, has_labels: bool) -> Tuple[np.dtype, np.float32, np.float32]:
-        # Input layer size (x2): 1
-        # Hidden layer size (x2): np.cumprod(self.num_samples[:current_layer])
-        # Input-Layer-A, Input-Layer-B, 1.Layer-A, 1.Layer-B, 2.Layer-A, 2.Layer-B, ...
-        if has_labels:
-            # Tuple with input and lable:
-            input_node_sample = bug_location_samples[0][0][input_node_idx]
+                        bug_location_pair = (location_sample.bug_report(), location_sample.model_location())
+                        bug_location_label = location_sample.label()
+                        
+                        bug_location_pairs.append(bug_location_pair)
+                        
+                        if bug_location_label is not None:
+                            bug_location_labels.append(bug_location_label)
+                    except:
+                        print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
+                    finally:
+                        location_sample.uninitialize()  # Free memory:
+            finally:
+                if location_sample_slice is None:
+                    bug_sample.uninitialize()  # Free memory:
+        
+        # Create location sequence                
+        if not bug_location_labels:
+            flow = self.graph_sage_generator.flow(bug_location_pairs)
         else:
-            # input only:
-            input_node_sample = bug_location_samples[0][input_node_idx]
-        input_shape = input_node_sample.shape
-        input_type = input_node_sample.dtype
-        samples_per_layer = input_shape[1]
-        feature_size = input_shape[2]
+            flow = self.graph_sage_generator.flow(bug_location_pairs, bug_location_labels)
 
-        return input_type, samples_per_layer, feature_size
-
-    def create_location_sequence(self, bug_sample: IBugSample, location_sample: ILocationSample) -> Sequence:
-        try:
-            location_sample.initialize(bug_sample, self.log_level)  # see finally
-
-            graph = location_sample.graph()
-            bug_location_pairs = [(location_sample.bug_report(), location_sample.model_location())]
-            bug_location_label = location_sample.label()
-
-            # Read Keras Sequence from StellarGraph (should only be one):
-            graph_sage_generator = GraphSAGELinkGenerator(graph, len(bug_location_pairs), num_samples=self.num_samples)
-
-            if bug_location_label is not None:
-                flow = graph_sage_generator.flow(bug_location_pairs, [bug_location_label])
-            else:
-                flow = graph_sage_generator.flow(bug_location_pairs)
-
-            return flow
-        except:
-            print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1])
-
-            if RETURN_DUMMY_SAMPLES_ON_EXCEPTION:
-                # TODO: Log and investigate if we came here!
-                # Return a dummy sample as last rescue before crashing the evaluation:
-                print("  Return Dummy Sample...")
-                dummy_edges = pd.DataFrame(columns=["source", "target"])
-                dummy_nodes = np.asarray(
-                    [np.random.random_sample(WordToVectorDictionary().dimension()),
-                     np.random.random_sample(WordToVectorDictionary().dimension())])
-                dummy_graph = StellarGraph(nodes=dummy_nodes, edges=dummy_edges)
-                graph_sage_dummy_generator = GraphSAGELinkGenerator(dummy_graph, 1, num_samples=self.num_samples)
-                dummy_flow = graph_sage_dummy_generator.flow([(0, 1)], [0])
-                return dummy_flow
-            else:
-                raise
-        finally:
-            # Free memory:
-            location_sample.uninitialize()
+        assert len(flow) == 1, "Expected a single batch!"
+        return flow.__getitem__(0)
 
     def __len__(self):
         """Denotes the number of batches per epoch"""
@@ -263,10 +223,12 @@ class BaseSequence(Sequence):
 class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 
     def create_bug_sample_generator(self, name: str,
+                                    meta_model: MetaModel,
                                     bug_samples: List[IBugSample],
                                     callbacks: List[keras.callbacks.Callback]) -> Sequence:
 
         flow = self.BugSampleSequence(name,
+                                      meta_model,
                                       self.batch_size,
                                       self.shuffle,
                                       self.num_samples,
@@ -279,6 +241,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
     class BugSampleSequence(BaseSequence):
 
         def __init__(self, name: str,
+                     meta_model: MetaModel,
                      batch_size: int,
                      shuffle: bool,
                      num_samples: List[int],
@@ -287,7 +250,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                      reshape_input: Callable = None,
                      log_level: int = 0):
 
-            super().__init__(name, bug_samples, batch_size, shuffle, num_samples, reshape_input, log_level)
+            super().__init__(name, bug_samples, meta_model, batch_size, shuffle, num_samples, reshape_input, log_level)
             callbacks.append(self.SequenceCallback(self))
             self.bug_samples: List[IBugSample] = bug_samples
 
@@ -300,39 +263,17 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
                 start_time = -1
 
             end_bug_sample = min(start_bug_sample + self.batch_size, len(self.bug_samples))  # index exlusive
-            bug_sample_sequences: List[Tuple] = []
-            sample_count = 0
+            samples: List[Tuple[IBugSample, Optional[slice]]] = []
 
             for bug_sample_idx in range(start_bug_sample, end_bug_sample):
                 bug_sample: IBugSample = self.bug_samples[bug_sample_idx]
+                samples.append((bug_sample, None))
 
-                try:
-                    if self.log_level >= 3:
-                        print('+++++ Sample', bug_sample.sample_id, '+++++')
-
-                    bug_sample.initialize(self.log_level)  # see finally
-
-                    for bug_location in bug_sample:
-                        flow = self.create_location_sequence(bug_sample, bug_location)
-
-                        for batch_num in range(len(flow)):
-                            bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
-                            bug_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
-                            sample_count += len(bug_location_sample_label)
-
-                finally:
-                    # Free memory:
-                    bug_sample.uninitialize()
+            bug_location_input_batch, bug_location_label_batch = self.create_location_sequence(samples)
 
             if self.log_level >= 100:
                 print("Compute Sample Batch", t(start_time))
                 start_time = time()
-
-            # Combine as input batch:
-            bug_location_input_batch, bug_location_label_batch = self.combine_to_batch(sample_count, bug_sample_sequences)
-
-            if self.log_level >= 100:
-                print("Combine to batch", t(start_time))
 
             return bug_location_input_batch, bug_location_label_batch
 
@@ -340,10 +281,12 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
 class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
 
     def create_location_sample_generator(self, name: str,
+                                         meta_model: MetaModel,
                                          bug_sample: IBugSample,
                                          callbacks: List[keras.callbacks.Callback]) -> Sequence:
 
         flow = self.LocationSampleSequence(name,
+                                           meta_model,
                                            self.batch_size,
                                            self.shuffle,
                                            self.num_samples,
@@ -357,6 +300,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
     class LocationSampleSequence(BaseSequence):
 
         def __init__(self, name: str,
+                     meta_model: MetaModel,
                      batch_size: int,
                      shuffle: bool,
                      num_samples: List[int],
@@ -372,7 +316,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
             print('Initialized location samples:', len(location_samples), 'in:', t(start_time))
             start_time = time()
 
-            super().__init__(name, location_samples, batch_size, shuffle, num_samples, reshape_input, log_level)
+            super().__init__(name, location_samples, meta_model, batch_size, shuffle, num_samples, reshape_input, log_level)
             callbacks.append(self.SequenceCallback(self))
             callbacks.append(self.LocationSampleSequenceCallback(self))
 
@@ -415,26 +359,12 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                 start_time = -1
 
             end_location_sample = min(start_location_sample + self.batch_size, len(self.location_samples))  # index exlusive
-            location_sample_sequences: List[Tuple] = []
-            sample_count = 0
-
-            for location_sample_idx in range(start_location_sample, end_location_sample):
-                location_sample: ILocationSample = self.location_samples[location_sample_idx]
-                flow = self.create_location_sequence(self.bug_sample, location_sample)
-
-                for batch_num in range(len(flow)):
-                    bug_location_sample_inputs, bug_location_sample_label = flow.__getitem__(batch_num)
-                    location_sample_sequences.append((bug_location_sample_inputs, bug_location_sample_label))
-                    sample_count += len(bug_location_sample_label)
-
+            samples = slice(start_location_sample, end_location_sample)
+            
+            bug_location_input_batch, bug_location_label_batch = self.create_location_sequence([(self.bug_sample, samples)])
+            
             if self.log_level >= 100:
                 print("Compute Sample Batch", t(start_time))
                 start_time = time()
-
-            # Combine as input batch:
-            bug_location_input_batch, bug_location_label_batch = self.combine_to_batch(sample_count, location_sample_sequences)
-
-            if self.log_level >= 100:
-                print("Combine to batch", t(start_time))
 
             return bug_location_input_batch, bug_location_label_batch

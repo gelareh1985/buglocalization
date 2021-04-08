@@ -248,13 +248,13 @@ def nodes_by_type(labels: str) -> str:
     return 'MATCH (n:' + labels + ') RETURN ID(n) AS index, n as nodes'
 
 
-def nodes_in_version(labels: str = '', model_element_id: str = '') -> str:
+def nodes_in_version(labels: str = '', model_element_id: str = '', returns: str = 'RETURN ID(n) AS index, n AS nodes') -> str:
     # $db_version: int
     if labels != '':
         labels = ':' + labels
     if model_element_id != '':
         model_element_id = ' { __model__element__id__: "' + model_element_id + '"}'
-    return 'MATCH (n' + labels + model_element_id + ') WHERE ' + by_version('n') + ' RETURN ID(n) AS index, n AS nodes'
+    return 'MATCH (n' + labels + model_element_id + ') WHERE ' + by_version('n') + ' ' + returns
 
 
 def nodes_by_types_in_version(labels: List[str], by_node_id: bool) -> str:

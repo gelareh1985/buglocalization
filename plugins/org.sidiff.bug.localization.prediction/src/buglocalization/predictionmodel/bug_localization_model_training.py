@@ -8,6 +8,7 @@ from typing import List, Tuple
 import stellargraph as sg
 from buglocalization.dataset.data_set import IBugSample, IDataSet
 from buglocalization.dataset.sample_generator import IBugSampleGenerator
+from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.textembedding.word_to_vector_dictionary import \
     WordToVectorDictionary
 from buglocalization.utils import common_utils as utils
@@ -215,12 +216,13 @@ class BugLocalizationAIModelTrainer:
         self.callbacks.append(CSVLogger(checkpoint_dir + "model_history_log.csv", append=True))
         self.callbacks.append(self.BatchLogger())
 
-    def train(self, epochs: int, sample_generator: IBugSampleGenerator, model_training_save_dir: str, dataset_split_fraction: int = 2, log_level=0):
+    def train(self, meta_model: MetaModel, epochs: int, sample_generator: IBugSampleGenerator, 
+              model_training_save_dir: str, dataset_split_fraction: int = 2, log_level=0):
 
         # Initialize training data:
         bug_samples_train, bug_samples_eval = self.dataset_splitter.split(dataset_split_fraction)
-        train_flow = sample_generator.create_bug_sample_generator("training", bug_samples_train, self.callbacks)
-        eval_flow = sample_generator.create_bug_sample_generator("evaluation", bug_samples_eval, self.callbacks)
+        train_flow = sample_generator.create_bug_sample_generator("training", meta_model, bug_samples_train, self.callbacks)
+        eval_flow = sample_generator.create_bug_sample_generator("evaluation", meta_model, bug_samples_eval, self.callbacks)
 
         print("Training Samples (positive + negative):", len(bug_samples_train), " Batches:", len(train_flow))
         print("Evaluation Samples (positive + negative):", len(bug_samples_eval), "Batches:", len(eval_flow))

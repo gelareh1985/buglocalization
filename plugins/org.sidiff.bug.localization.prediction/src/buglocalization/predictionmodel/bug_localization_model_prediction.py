@@ -9,6 +9,7 @@ import numpy as np
 from bug_localization_training import BugLocalizationAIModelBuilder
 from buglocalization.dataset.data_set import IBugSample, IDataSet
 from buglocalization.dataset.sample_generator import LocationSampleGenerator
+from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.utils import common_utils as utils
 from buglocalization.utils.common_utils import t
 from tensorflow import keras
@@ -65,6 +66,7 @@ class BugLocalizationPredictionConfiguration:
 class BugLocalizationPrediction:
 
     def predict(self,
+                meta_model: MetaModel,
                 sample_data: Union[IDataSet, IBugSample],
                 config: BugLocalizationPredictionConfiguration,
                 sample_data_slice: slice = None,
@@ -110,7 +112,7 @@ class BugLocalizationPrediction:
             start_time_prediction = time()
 
             callbacks: List[keras.callbacks.Callback] = []
-            flow = prediction_generator.create_location_sample_generator("prediction", bug_sample, callbacks)
+            flow = prediction_generator.create_location_sample_generator("prediction", meta_model, bug_sample, callbacks)
 
             prediction = model.predict(flow,
                                        callbacks=callbacks,

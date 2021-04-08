@@ -7,40 +7,24 @@ from __future__ import annotations
 from typing import Dict, List, Set
 
 import numpy as np
-import pandas as pd
-
-
-class TypbasedGraphSlicing:
-
-    def __init__(self):
-        self.type_label_to_graph_slicing: Dict[str, List[str]] = {}
-
-    def add_type(self, type_label: str, graph_slicing):
-        self.type_label_to_graph_slicing[type_label] = graph_slicing
-
-    def get_types(self) -> List[str]:
-        return list(self.type_label_to_graph_slicing.keys())
-
-    def get_slicing(self, type_label: str) -> List[str]:
-        return self.type_label_to_graph_slicing[type_label]
-
-
-class NodeSelfEmbedding:
-
-    def load(self):
-        ...
-
-    def unload(self):
-        ...
-
-    def get_dimension(self) -> int:
-        raise NotImplementedError()
-
-    def node_to_vector(self, node: pd.Series) -> np.ndarray:
-        raise NotImplementedError()
+from py2neo import Graph
 
 
 class MetaModel:
+    
+    def get_graph(self) -> Graph:
+        """
+        Returns:
+            Graph: The database storing the model.
+        """
+        raise NotImplementedError()
+    
+    def get_node_self_embedding(self) -> NodeSelfEmbedding:
+        """
+        Returns:
+            NodeSelfEmbedding: Get the numeric feature vectors for specified nodes.
+        """
+        raise NotImplementedError()
     
     def get_bug_report_node_types(self) -> List[str]:
         """
@@ -91,7 +75,7 @@ class MetaModel:
         """
         raise NotImplementedError()
 
-    def get_slicing_criterion(self, num_samples: List[int]) -> TypbasedGraphSlicing:
+    def get_slicing_criterion(self) -> TypbasedGraphSlicing:
         """
 
         Args:
@@ -102,8 +86,6 @@ class MetaModel:
         """
         raise NotImplementedError()
     
-    # # TODO: Create/Move to Training Configuration # #
-    
     def find_bug_location_by_container(self) -> int:
         """
         Find container of bug location if the type is not in specified location.
@@ -113,11 +95,48 @@ class MetaModel:
         """
         return 2
     
-    def filter_comments_newer_as_bugfix(self) -> bool:
-        """
-        Filter out all bug report comments that were written after the bug fix was commited.
+    
+class TypbasedGraphSlicing:
 
-        Returns:
-            int: True to enable the filter. Default to False.
+    def __init__(self):
+        self.type_label_to_graph_slicing: Dict[str, List[str]] = {}
+
+    def add_type(self, type_label: str, graph_slicing):
+        self.type_label_to_graph_slicing[type_label] = graph_slicing
+
+    def get_types(self) -> List[str]:
+        return list(self.type_label_to_graph_slicing.keys())
+
+    def get_slicing(self, type_label: str) -> List[str]:
+        return self.type_label_to_graph_slicing[type_label]
+
+
+class NodeSelfEmbedding:
+
+    def load(self):
+        ...
+
+    def unload(self):
+        ...
+
+    def get_dimension(self) -> int:
+        raise NotImplementedError()
+    
+    def get_graph(self) -> Graph:
         """
-        return True
+        Returns:
+            Graph: The database storing the model.
+        """
+        raise NotImplementedError()
+
+    def node_to_vector(self, nodes_per_hop: List[List[int]]) -> np.ndarray:
+        """
+        Get the numeric feature vectors for the specified nodes.
+
+        Args:
+            nodes (List[int]): List of node IDs.
+        Returns:
+            Numpy array containing the node features for the requested nodes.
+        """
+        size = sum([len(nodes) for nodes in nodes_per_hop])
+        return np.zeros(shape=(size, self.get_dimension()), dtype=np.float32)

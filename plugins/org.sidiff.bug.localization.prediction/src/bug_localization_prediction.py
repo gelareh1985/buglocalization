@@ -12,6 +12,7 @@ import tensorflow as tf
 
 from buglocalization.evaluation.evaluation_prediction_results import \
     BugLocalizationPredictionTest
+from buglocalization.metamodel.meta_model_uml import MetaModelUML
 
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -29,7 +30,6 @@ from multiprocessing import Process
 from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 from buglocalization.dataset.neo4j_data_set_prediction import \
     DataSetPredictionNeo4j
-from buglocalization.metamodel.meta_model_uml import create_uml_configuration
 from buglocalization.predictionmodel.bug_localization_model_prediction import \
     BugLocalizationPredictionConfiguration
 from buglocalization.textembedding.word_to_vector_dictionary import \
@@ -44,7 +44,7 @@ bug_localization_model_path: str = project_folder + "/training/trained_model_202
 
 # Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(
-
+    
     # Evaluation Result Records:
     evaluation_results_base_path=evaluation_results_base_path,
     
@@ -93,11 +93,10 @@ if __name__ == '__main__':
     log_level = prediction_configuration.log_level
 
     # Modeling Language Meta-Model Configuration:
-    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
-        WordToVectorDictionary(), prediction_configuration.num_samples)
+    meta_model = MetaModelUML(neo4j_configuration, WordToVectorDictionary(), prediction_configuration.num_samples)
 
     # Test Dataset Containing Bug Samples:
-    dataset = DataSetPredictionNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, log_level=log_level)
+    dataset = DataSetPredictionNeo4j(meta_model, neo4j_configuration, log_level=log_level)
     bug_sample_count = len(dataset.bug_samples)
     
     evaluation_results_path_slices = prediction_configuration.evaluation_results_path

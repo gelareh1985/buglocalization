@@ -6,18 +6,13 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-import numpy as np
-import pandas as pd
 from buglocalization.dataset import neo4j_queries as query
 from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.dataset.data_set import (IBugSample, IDataSet,
                                               ILocationSample)
-from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
-                                                  TypbasedGraphSlicing)
-from buglocalization.utils.common_utils import t
+from buglocalization.metamodel.meta_model import MetaModel
 from pandas.core.frame import DataFrame
 from py2neo import Graph, Node
-from stellargraph import StellarGraph
 
 # ===============================================================================
 # Neo4j Data Connector:
@@ -58,8 +53,6 @@ class DataSetNeo4j(IDataSet):
 
     def __init__(self,
                  meta_model: MetaModel,
-                 node_self_embedding: NodeSelfEmbedding,
-                 typebased_slicing: TypbasedGraphSlicing,
                  neo4j_config: Neo4jConfiguration,
                  is_negative: bool = False,
                  list_bug_samples: bool = True):
@@ -74,8 +67,6 @@ class DataSetNeo4j(IDataSet):
 
         # Meta-model configuration
         self.meta_model: MetaModel = meta_model
-        self.node_self_embedding: NodeSelfEmbedding = node_self_embedding
-        self.typebased_slicing: TypbasedGraphSlicing = typebased_slicing
 
         # Load all (uninitialized) bug samples:
         if list_bug_samples:
@@ -148,169 +139,24 @@ class BugSampleNeo4j(IBugSample):
         self.db_version: int = db_version
         self.edge_columns = ['source', 'target']
 
-        # Model graph nodes: index -> embedding
-        self.model_nodes: Dict[int, np.ndarray] = {}
-
-        # Bug report graph:
-        self.bug_report_node_id: int = -1
-        self.bug_report_nodes: Dict[int, np.ndarray] = {}
-        # StellarGraph requires Panda Data Frames as edges
-        self.bug_report_edges: DataFrame = None
+        # Bug report and locations:
+        self.bug_report: int = -1
         self.bug_locations: Set[Tuple[int, str]] = set()  # node ID -> meta-type
         
-    # # Load graphs from Neo4j # #
+    # # Load node pairs from Neo4j # #
 
-    def load_model_nodes(self,
-                         model_meta_type_labels: List[str],
-                         node_ids: List[int] = None,
-                         log_level: int = 0):
-        self.load_node_embeddings(model_meta_type_labels,
-                                  nodes_embeddings=self.model_nodes,
-                                  to_be_embedded_node_ids=node_ids,
-                                  log_level=log_level)
-
-    def load_bug_location_subgraph(self, node_id: int,
-                                   bug_localization_subgraph_edges: DataFrame,
-                                   db_version: int) -> Tuple[StellarGraph, Tuple[int, int]]:
-
-        nodes_trace: Dict[int, int] = {}
-        edges_ids = set()
-
-        subgraph_nodes_model: List[np.ndarray] = []
-        subgraph_edges_model: List[Tuple] = []
-
-        # =======================================================================
-        # Model Graph:
-        # =======================================================================
-        if not bug_localization_subgraph_edges.empty:
-
-            for report_edge_index, report_edge in bug_localization_subgraph_edges.iterrows():
-
-                # FIXME[Workaround]: Filter duplicated edges from Neo4j:
-                if report_edge_index not in edges_ids:
-                    edges_ids.add(report_edge_index)
-
-                    subgraph_source_node_id = None
-                    subgraph_target_node_id = None
-                    source_node_id = report_edge['source']
-                    target_node_id = report_edge['target']
-
-                    # Source:
-                    if subgraph_source_node_id is None:
-                        if source_node_id not in nodes_trace:
-                            if source_node_id in self.model_nodes:
-                                subgraph_source_node_id = len(subgraph_nodes_model)
-                                nodes_trace[source_node_id] = subgraph_source_node_id
-                                subgraph_nodes_model.append(self.model_nodes[source_node_id])
-                        else:
-                            subgraph_source_node_id = nodes_trace[source_node_id]
-
-                    # Target:
-                    if subgraph_target_node_id is None:
-                        if target_node_id not in nodes_trace:
-                            if target_node_id in self.model_nodes:
-                                subgraph_target_node_id = len(subgraph_nodes_model)
-                                nodes_trace[target_node_id] = subgraph_target_node_id
-                                subgraph_nodes_model.append(self.model_nodes[target_node_id])
-                        else:
-                            subgraph_target_node_id = nodes_trace[target_node_id]
-
-                    # Is report_edge included in subgraph?
-                    if subgraph_source_node_id is not None and subgraph_target_node_id is not None:
-                        subgraph_edges_model.append((subgraph_source_node_id, subgraph_target_node_id))
-
-        # Only the initial given node is contained in subgraph:
-        if not subgraph_nodes_model:
-            if node_id in self.model_nodes:
-                subgraph_node_id = len(subgraph_nodes_model)
-                nodes_trace[node_id] = subgraph_node_id
-                subgraph_nodes_model.append(self.model_nodes[node_id])
-
-        if not subgraph_nodes_model:
-            message = "No (subgraph) embedding found for node: ID " + str(node_id)
-            message += "in version " + str(db_version)
-            message += "embedded model nodes " + str(len(self.model_nodes))
-            message += " bug report ID " + str(self.bug_report_node_id) + "."
-            message += " Sample not initialized or uninitialized?"
-            raise Exception(message)
-
-        # Fallback
-        if node_id not in nodes_trace:
-            print("WARNING: No connected subgraph for node:", node_id, "in version", db_version)
-            subgraph_node_id = len(subgraph_nodes_model)
-            nodes_trace[node_id] = subgraph_node_id
-            subgraph_nodes_model.append(self.model_nodes[node_id])
-
-        # =======================================================================
-        # Bug Report Graph: (append to model graph)
-        # =======================================================================
-
-        for report_node_id, report_node_embedding in self.bug_report_nodes.items():
-            subgraph_node_id = len(subgraph_nodes_model)
-            nodes_trace[report_node_id] = subgraph_node_id
-            subgraph_nodes_model.append(report_node_embedding)
-
-        for report_edge_index, report_edge in self.bug_report_edges.iterrows():
-            source_node_id = report_edge['source']
-            target_node_id = report_edge['target']
-            subgraph_node_source = nodes_trace[source_node_id]
-            subgraph_node_target = nodes_trace[target_node_id]
-            subgraph_edges_model.append((subgraph_node_source, subgraph_node_target))
-
-        # =======================================================================
-        # StellarGraph of Bug Localization Subgraph:
-        # =======================================================================
-
-        if len(subgraph_nodes_model) > 1000:
-            print("WARNING: Large Sub-Graph Created - Nodes:", len(subgraph_nodes_model))
-            print("  Bug Report:", str(self.bug_report_node_id))
-            print("  Model Node:", str(node_id))
-            print("  Is Negative Sample:", str(self.dataset.is_negative))
-
-        model_subgraph_edges_dataframe = pd.DataFrame(subgraph_edges_model, columns=self.edge_columns)
-        subgraph_nodes_model_array = np.asarray(subgraph_nodes_model)
-
-        graph = StellarGraph(nodes=subgraph_nodes_model_array,
-                             edges=model_subgraph_edges_dataframe)
-
-        return graph, (nodes_trace[self.bug_report_node_id], nodes_trace[node_id])
-
-    def load_bug_report(self, locate_by_container: int, filter_comments_newer_as_bugfix: bool, log_level: int = 0):
+    def load_bug_report(self):
 
         # Bug report node:
-        bug_report_node_frame = self.run_query_by_version(query.nodes_in_version('TracedBugReport'))
+        bug_report_node_frame = self.run_query_by_version(
+            query.nodes_in_version('TracedBugReport', returns='RETURN ID(n) AS index'))
         assert len(bug_report_node_frame.index) == 1
-        self.bug_report_node_id = bug_report_node_frame.index[0]
+        return int(bug_report_node_frame.index[0])
 
-        # Bug report graph:
-        bug_report_meta_type_labels = self.dataset.meta_model.get_bug_report_node_types()
-        self.bug_report_nodes = {}
-        self.load_node_embeddings(bug_report_meta_type_labels, self.bug_report_nodes)
-        self.bug_report_edges = self.run_query_by_version(query.edges_in_version(
-            'TracedBugReport', 'comments', 'BugReportComment', return_nodes=True))
-
-        # Filter comments that were written after the corresponding bug fix was commited:
-        if filter_comments_newer_as_bugfix:
-            comment_count = len(self.bug_report_edges.index)
-            fix_commit_time = bug_report_node_frame.nodes.iloc[0]['bugfixTime']
-            
-            self.bug_report_edges.drop(
-                # Compare UTC time text string:
-                self.bug_report_edges[self.bug_report_edges.target_node.map(lambda n: n['creationTime']) > fix_commit_time].index, 
-                inplace=True)
-            
-            if log_level >= 10:
-                print("Bug report comments dropped:", comment_count - len(self.bug_report_edges.index), "of", comment_count)
-
-        self.bug_report_edges.drop(['source_node'], axis=1, inplace=True)
-        self.bug_report_edges.drop(['target_node'], axis=1, inplace=True)
-        
-        # Bug locations:
-        self.bug_locations = self.load_bug_locations(locate_by_container)
-
-    def load_bug_locations(self, locate_by_container: int) -> Set[Tuple[int, str]]:
+    def load_bug_locations(self, locate_by_container: int):
         bug_locations: Set[Tuple[int, str]] = set()
-        bug_location_edges = self.run_query_by_version(query.edges_in_version('Change', 'location', return_nodes=True))
+        bug_location_edges = self.run_query_by_version(
+            query.edges_in_version('Change', 'location', return_nodes=True))
 
         for edge_idx, edge in bug_location_edges.iterrows():
             # location edges point at model elements:
@@ -348,50 +194,6 @@ class BugSampleNeo4j(IBugSample):
 
         return bug_locations_by_container
 
-    def load_node_embeddings(self,
-                             meta_type_labels: List[str],
-                             nodes_embeddings: Dict[int, np.ndarray],
-                             to_be_embedded_node_ids: List[int] = None,
-                             embedded_node_ids: List[int] = None,
-                             log_level: int = 0) -> None:
-        """
-        Args:
-            meta_type_labels (List[str]): All meta-types to be embedded.
-            embedding (NodeSelfEmbedding): The embedding algorithm.
-            nodes_embeddings (Dict[int, np.ndarray], optional): The dictionary for the node ID -> embedding. Defaults to {}.
-            to_be_embedded_node_ids (List[int], optional): Nodes to be emdedded; will be filtered by given meta-type. Defaults to None.
-            embedded_node_ids (List[int], optional): The nodes that were added to the embedding dictionary. Defaults to None.
-
-        Returns:
-            Dict[int, np.ndarray]: The node ID -> embedding dictionary.
-        """
-
-        # Filter by label:
-        query_nodes_in_version_parameter: Dict[str, Any] = {'labels': meta_type_labels}
-
-        # Filter by given node IDs?
-        if to_be_embedded_node_ids is not None:
-            query_nodes_in_version_parameter['node_ids'] = to_be_embedded_node_ids
-            query_nodes_in_version = query.nodes_by_types_in_version(meta_type_labels, True)
-        else:
-            query_nodes_in_version = query.nodes_by_types_in_version(meta_type_labels, False)
-        
-        nodes_in_version = self.run_query_by_version(query_nodes_in_version, query_nodes_in_version_parameter)
-        
-        if log_level >= 5:
-            print("Start embedding of", len(nodes_in_version.index), "nodes...")
-
-        if not nodes_in_version.empty:
-            for node_id, node in nodes_in_version.iterrows():
-                nodes_embedding = self.node_to_vector(node_id, node)
-                nodes_embeddings[node_id] = nodes_embedding
-
-                if embedded_node_ids is not None:
-                    embedded_node_ids.append(node_id)
-
-    def node_to_vector(self, node_id: int, node: pd.Series) -> np.ndarray:
-        return self.dataset.node_self_embedding.node_to_vector(node)
-
     def run_query_by_version(self, query: str, parameters: Dict[str, Any] = None, set_index: bool = True) -> DataFrame:
         default_parameter = {'db_version': self.db_version}
 
@@ -412,43 +214,15 @@ class BugSampleNeo4j(IBugSample):
         df = self.dataset.run_query_value(query, default_parameter)
         return df
 
-    def load_subgraph_edges(self, node_id: int, slicing_queries: List[str]) -> Tuple[DataFrame, Set[int]]:
-        node_ids: Set[int] = set()
-        node_ids.add(node_id)
-
-        for query_nodes in slicing_queries:
-            self.read_node_ids(query_nodes, node_id, node_ids)
-
-        query_edges = query.edges_from_nodes_in_version()
-        parameters = {'node_ids': list(node_ids)}
-        edges = self.run_query_by_version(query_edges, parameters)
-
-        if len(node_ids) > 500:
-            print("WARNING: Large Sub Graph Found: ", len(node_ids), "node", node_id)
-            for query_nodes in slicing_queries:
-                print(query_nodes)
-
-        return edges, node_ids
-
-    def read_node_ids(self, query: str, node_id: int, node_ids: Set[int]):
-        parameters = {'node_id': node_id, 'db_version': self.db_version}
-
-        for row in self.dataset.run_query_to_table(query, parameters):
-            for entry in row:
-                node_ids.add(entry)
-
 
 class LocationSampleNeo4j(ILocationSample):
 
-    def __init__(self, neo4j_model_location: int, model_location_type: str, label: int):
+    def __init__(self, model_location: int, bug_report: int, label: int):
         super().__init__()
-        self.neo4j_model_location: int = neo4j_model_location
-        self.mode_location_type: str = model_location_type
 
         self._label: int = label
-        self._graph: Optional[StellarGraph] = None
-        self._model_location: Optional[int] = None
-        self._bug_report: Optional[int] = None
+        self._model_location: int = model_location
+        self._bug_report: int = bug_report
 
     def label(self) -> int:
         return self._label
@@ -456,20 +230,8 @@ class LocationSampleNeo4j(ILocationSample):
     def is_negative(self) -> bool:
         return self._label == 0
 
-    def graph(self) -> StellarGraph:
-        if self._graph is not None:
-            return self._graph
-        else:
-            raise Exception("Graph is missing. Location sample not initialized?")
-
     def bug_report(self) -> int:
-        if self._bug_report is not None:
-            return self._bug_report
-        else:
-            raise Exception("Bug Report is missing. Location sample not initialized?")
+        return self._bug_report
 
     def model_location(self) -> int:
-        if self._model_location is not None:
-            return self._model_location
-        else:
-            raise Exception("Model AST element location is missing. Location sample not initialized?")
+        return self._model_location
