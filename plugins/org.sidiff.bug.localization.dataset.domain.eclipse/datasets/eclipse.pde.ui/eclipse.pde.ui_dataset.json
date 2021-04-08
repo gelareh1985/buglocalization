@@ -3,5 +3,5 @@
   "repositoryHost": "https://git.eclipse.org",
   "repositoryPath": "/r/pde/eclipse.pde.ui.git",
   "bugtrackerHost": "https://bugs.eclipse.org",
-  "bugtrackerProducts": ["Platform, PDE"]
+  "bugtrackerProducts": ["Platform", "PDE"]
 }
