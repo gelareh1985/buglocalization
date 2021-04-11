@@ -8,6 +8,10 @@ def t(start_time: float) -> str:
     return "{:.3f}".format(time() - start_time) + "s"
 
 
+def start_t() -> float:
+    return time()
+
+
 def get_project_folder() -> str:
     return str(Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.parent)  # from this module location
 

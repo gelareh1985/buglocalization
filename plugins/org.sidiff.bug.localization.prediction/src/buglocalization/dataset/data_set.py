@@ -111,7 +111,6 @@ class ILocationSample:
         self.lock: Optional[CountingLock] = None
         
     def __getstate__(self):
-        print("ILocationSample")
         
         # Return a copy for parallel multiprocessing:
         self._lock().lock.acquire()

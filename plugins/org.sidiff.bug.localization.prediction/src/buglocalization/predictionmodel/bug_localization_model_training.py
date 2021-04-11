@@ -40,6 +40,8 @@ class TrainigConfiguration:
                  graphsage_dropout: float = 0.0,
                  graphsage_normalize: str = "l2",
                  word_dictionary: WordToVectorDictionary = None,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1,
                  log_level: int = 2) -> None:
         
         # Doc description:
@@ -67,6 +69,9 @@ class TrainigConfiguration:
             self.word_dictionary: WordToVectorDictionary = word_dictionary
         else:
             self.word_dictionary = WordToVectorDictionary()
+        
+        self.embedding_cache_local = embedding_cache_local
+        self.embedding_cache_limit = embedding_cache_limit
 
         # GraphSAGE Settings:
         self.graphsage_num_samples = graphsage_num_samples  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.

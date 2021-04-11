@@ -26,6 +26,8 @@ class BugLocalizationPredictionConfiguration:
                  sample_generator_workers: int = 1,
                  sample_generator_workers_multiprocessing: bool = False,
                  sample_max_queue_size: int = 10,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1,
                  log_level: int = 2):
         """
         The configuration parameters for running the prediction.
@@ -58,6 +60,9 @@ class BugLocalizationPredictionConfiguration:
         self.sample_generator_workers: int = sample_generator_workers
         self.sample_generator_workers_multiprocessing: bool = sample_generator_workers_multiprocessing
         self.sample_max_queue_size: int = sample_max_queue_size
+        
+        self.embedding_cache_local = embedding_cache_local
+        self.embedding_cache_limit = embedding_cache_limit
         
         # For debugging:
         self.log_level: int = log_level  # 0-100

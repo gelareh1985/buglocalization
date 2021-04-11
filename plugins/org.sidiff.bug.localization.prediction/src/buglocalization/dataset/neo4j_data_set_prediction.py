@@ -12,8 +12,7 @@ from buglocalization.dataset.neo4j_data_set import (BugSampleNeo4j,
                                                     DataSetNeo4j,
                                                     LocationSampleNeo4j,
                                                     Neo4jConfiguration)
-from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
-                                                  TypbasedGraphSlicing)
+from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.utils.common_utils import t
 
 # ===============================================================================

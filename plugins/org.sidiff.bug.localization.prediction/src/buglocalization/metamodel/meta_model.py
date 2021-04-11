@@ -95,6 +95,7 @@ class MetaModel:
         """
         return 2
 
+
 class NodeSelfEmbedding:
 
     def load(self):

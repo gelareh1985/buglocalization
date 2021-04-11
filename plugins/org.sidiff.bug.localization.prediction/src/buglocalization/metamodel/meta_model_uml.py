@@ -20,14 +20,17 @@ class MetaModelUML(MetaModel):
 
     def __init__(self, neo4j_configuration: Neo4jConfiguration = None,
                  word_dictionary: WordToVectorDictionary = None,
-                 num_samples: List[int] = None) -> None:
+                 num_samples: List[int] = None,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1) -> None:
 
         super().__init__()
         self.neo4j_configuration = neo4j_configuration
 
         # Node Embedding Configuration:
         if word_dictionary:
-            self.node_self_embedding = UMLNodeSelfEmbedding(self, word_dictionary)
+            self.node_self_embedding = UMLNodeSelfEmbedding(
+                self, word_dictionary, embedding_cache_local, embedding_cache_limit)
 
         # Graph Slicing Configuration:
         if num_samples:
@@ -102,11 +105,11 @@ class MetaModelUML(MetaModel):
 
     def get_bug_location_negative_sample_count(self) -> Dict[str, int]:
         bug_location_negative_samples_per_type = {
-            # "Package",
+            # "Package": 10,
             "Class": 20,
             "Interface": 20,
             "Enumeration": 10,
-            # "DataType": 10,  # only in library 
+            # "DataType": 10,  # only in library
             # "Operation": 10,
             # "Property": 10
         }
@@ -159,7 +162,10 @@ class MetaModelUML(MetaModel):
 class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
     def __init__(self, meta_model: MetaModel,
-                 word_dictionary: WordToVectorDictionary, stopwords={}, unescape=True):
+                 word_dictionary: WordToVectorDictionary, 
+                 stopwords={}, unescape=True,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1):
 
         self.meta_model: MetaModel = meta_model
         self.graph: Any = None
@@ -171,7 +177,13 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
         self.unescape = unescape
 
         self.dictionary_words: Optional[Dict[str, np.ndarray]] = None
+        self.embedding_cache_limit = embedding_cache_limit
+        self.embedding_cache_local = embedding_cache_local  # Compute cache per process?
         self.embedding_cache: Dict[int, np.ndarray] = {}
+        
+        # Compute embeddings for all nodes in the database:
+        if not self.embedding_cache_local:
+            self.copmute_node_self_embedding_chache()
 
     def __getstate__(self):
         # Do not expose the dictionary (for multiprocessing) which fails on pickle.
@@ -179,27 +191,25 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
         if 'dictionary_words' in state:
             state['dictionary_words'] = None
-            
+
         if 'graph' in state:
             state['graph'] = None
-            
-        if 'embedding_cache' in state:
-            state['embedding_cache'] = {}
+
+        # Should we share the embeddings for all processes?
+        if self.embedding_cache_local:
+            if 'embedding_cache' in state:
+                state['embedding_cache'] = {}
 
         return state
 
-    def load(self):
+    def load(self, load_dictionary: bool = False):
         if self.graph is None:
             self.graph = self.meta_model.get_graph()
-            
-        if self.dictionary_words is None:
-            print("Start Loading Dictionary...")
 
-            # use empty dict {} for testing
-            # self.dictionary_words = KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)
+        if self.dictionary_words is None and (load_dictionary or self.embedding_cache_local):
+            print("Start Loading Dictionary...")
             self.dictionary_words, dictionary_words_length = self.word_dictionary.dictionary()
             assert dictionary_words_length == self.dictionary_words_length, "Word feature size is inconsistently specified!"
-
             print("Finished Loading Dictionary")
 
     def unload(self):
@@ -208,23 +218,50 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
     def get_dimension(self) -> int:
         return self.dictionary_words_length
-    
+
     def get_graph(self) -> Graph:
         return self.graph
 
     def node_to_vector(self, versioned_nodes_per_hop: List[List[List[int]]]) -> np.ndarray:
+
+        # Get empty feature vector of proper size:
         features = super().node_to_vector(versioned_nodes_per_hop)
+
+        # Check if all required node self embeddings are in the chache:
+        if self.embedding_cache_local:
+            self.update_node_self_embedding_chache(versioned_nodes_per_hop)
+
+        # Add embeddings to feature vector:
+        features_idx = 0
+
+        for node_and_version in versioned_nodes_per_hop:
+            for node, version in node_and_version:
+                if node is not None:  # node embedding will be [0, 0, ...]
+                    features[features_idx] = self.embedding_cache[node]
+                    features_idx += 1
+
+        # Check if cache limit is exceeded:
+        if self.embedding_cache_local:
+            if self.embedding_cache_limit > 0:
+                if len(self.embedding_cache) > self.embedding_cache_limit:
+                    self.embedding_cache = {}
+
+        return features
+
+    def update_node_self_embedding_chache(self, versioned_nodes_per_hop: List[List[List[int]]]):
         unseen_nodes = set()
-        
+
         # Check if embeddings in chache:
-        for nodes in versioned_nodes_per_hop:
-            for node, version in nodes:
-                if node not in self.embedding_cache:
-                    unseen_nodes.add(node)  # collect for a single query
-        
+        for node_and_version in versioned_nodes_per_hop:
+            for node, version in node_and_version:
+                if node is not None:
+                    if node not in self.embedding_cache:
+                        unseen_nodes.add(node)  # collect for a single query
+
         # Compute new embeddings:
         if len(unseen_nodes) > 0:
-            neo4j_nodes = self.graph.run('MATCH (n) WHERE ID(n) IN $node_ids RETURN n', {'node_ids': list(unseen_nodes)}).to_table()
+            neo4j_nodes = self.graph.run('MATCH (n) WHERE ID(n) IN $node_ids RETURN n',
+                                         {'node_ids': list(unseen_nodes)}).to_table()
 
             for neo4j_node in neo4j_nodes:
                 neo4j_node = neo4j_node[0]
@@ -237,15 +274,29 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
                 embedding = self.text_to_vector(text)
                 self.embedding_cache[neo4j_node.identity] = embedding
 
-        # Add embeddings to feature vector:
+    def copmute_node_self_embedding_chache(self):
+        self.load(load_dictionary=True)
         features_idx = 0
-        
-        for nodes in versioned_nodes_per_hop:
-            for node, version in nodes:
-                features[features_idx] = self.embedding_cache[node]
+
+        for label in self.type_to_properties:
+            neo4j_nodes = self.graph.run('MATCH (n:' + label + ') RETURN n').to_table()
+
+            for neo4j_node in neo4j_nodes:
+                neo4j_node = neo4j_node[0]
                 features_idx += 1
-                
-        return features
+                text = ""
+
+                if (features_idx % 10000 == 0):
+                    print(features_idx, "of", len(neo4j_nodes), "embedded")
+
+                for property_name in self.get_properties(neo4j_node):
+                    value = self.get_property(neo4j_node, property_name)
+                    text += " " + str(value)
+
+                embedding = self.text_to_vector(text)
+                self.embedding_cache[neo4j_node.identity] = embedding
+
+        self.unload()
 
     def get_property(self, node: Node, property_name: str) -> str:
         return node[property_name]
