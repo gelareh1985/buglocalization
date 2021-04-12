@@ -38,7 +38,7 @@ public class DatasetSplitApplication {
 		System.out.println("MATCH (n) WHERE n.__initial__version__ >= " + splitDatabaseVersion + " DELETE n");
 		System.out.println();
 		System.out.println("Create >test< data set from full data set:");
-		System.out.println("MATCH (n)-[r]->() WHERE r.__last__version__ < " + splitDatabaseVersion + "DELETE r");
+		System.out.println("MATCH (n)-[r]->() WHERE r.__last__version__ < " + splitDatabaseVersion + " DELETE r");
 		System.out.println("MATCH (n) WHERE n.__last__version__ < " + splitDatabaseVersion + " DELETE n");
 	}
 	
