@@ -30,6 +30,8 @@ public class DatasetSplitApplication {
 		System.out.println("./bin/neo4j-admin dump --database=neo4j --to=./backups/neo4j-eclipse.jdt.core_samples.dump");
 		System.out.println("./bin/neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples.dump --database=neo4j --force");
 		System.out.println();
+		System.out.println("List versions by: " + queryListBugReportsWithModelChanges);
+		System.out.println();
 		System.out.println("Bug Repors with model bug locations: " + buggyVersions.size());
 		System.out.println("With " + split + " split on index: " + splitIdx + " version ID: " + splitVersionID + " database version number: " + splitDatabaseVersion);
 		System.out.println();
