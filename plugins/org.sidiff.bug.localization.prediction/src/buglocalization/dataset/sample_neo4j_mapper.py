@@ -254,6 +254,20 @@ class Neo4jSampledBreadthFirstWalk:
         """
         direction_arrow = {"BOTH": "--", "IN": "<--", "OUT": "-->"}[sampling_direction]
 
+        # FIXME: This query is very inefficient for nodes with a high number of neighbors, e.g., model library nodes.
+        #
+        # Workaround A: Compute a reasonable limit = num_sample * epoche:
+        # MATCH (cur_node){direction_arrow}(neighbors) {slicing_criterion}
+        # WITH neighbors LIMIT {limit}
+        #
+        # Workaround B: Use SKIP with different random step sizes. (The skip value can not be ccmputed from a variable.):
+        # MATCH (cur_node){direction_arrow}(neighbors) {slicing_criterion}
+        # RETURN neighbors LIMIT {num_sample}
+        # UNION MATCH (cur_node){direction_arrow}(neighbors) {slicing_criterion}
+        # RETURN neighbors SKIP toInteger(rand()*10) LIMIT {num_sample}
+        # UNION MATCH (cur_node){direction_arrow}(neighbors) {slicing_criterion}
+        # WITH neighbors SKIP toInteger(rand()*100) LIMIT {num_sample}
+
         return f"""
             // expand the list of node id in seperate rows of ids.
             UNWIND $versioned_node_id_list AS versioned_node_id
