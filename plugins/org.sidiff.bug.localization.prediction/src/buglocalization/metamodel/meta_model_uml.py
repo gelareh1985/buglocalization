@@ -105,13 +105,13 @@ class MetaModelUML(MetaModel):
 
     def get_bug_location_negative_sample_count(self) -> Dict[str, int]:
         bug_location_negative_samples_per_type = {
-            # "Package": 10,
-            "Class": 20,
-            "Interface": 20,
-            "Enumeration": 10,
-            # "DataType": 10,  # only in library
-            # "Operation": 10,
-            # "Property": 10
+            # "Package",
+            "Class": 5,
+            "Interface": 5,
+            "Enumeration": 2,
+            "DataType": 1,
+            # "Operation",
+            # "Property"
         }
         return bug_location_negative_samples_per_type
 
