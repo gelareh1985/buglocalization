@@ -9,6 +9,7 @@ import numpy as np
 from bug_localization_training import BugLocalizationAIModelBuilder
 from buglocalization.dataset.data_set import IBugSample, IDataSet
 from buglocalization.dataset.sample_generator import LocationSampleGenerator
+from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.utils import common_utils as utils
 from buglocalization.utils.common_utils import t
 from tensorflow import keras
@@ -25,6 +26,8 @@ class BugLocalizationPredictionConfiguration:
                  sample_generator_workers: int = 1,
                  sample_generator_workers_multiprocessing: bool = False,
                  sample_max_queue_size: int = 10,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1,
                  log_level: int = 2):
         """
         The configuration parameters for running the prediction.
@@ -58,6 +61,9 @@ class BugLocalizationPredictionConfiguration:
         self.sample_generator_workers_multiprocessing: bool = sample_generator_workers_multiprocessing
         self.sample_max_queue_size: int = sample_max_queue_size
         
+        self.embedding_cache_local = embedding_cache_local
+        self.embedding_cache_limit = embedding_cache_limit
+        
         # For debugging:
         self.log_level: int = log_level  # 0-100
 
@@ -65,6 +71,7 @@ class BugLocalizationPredictionConfiguration:
 class BugLocalizationPrediction:
 
     def predict(self,
+                meta_model: MetaModel,
                 sample_data: Union[IDataSet, IBugSample],
                 config: BugLocalizationPredictionConfiguration,
                 sample_data_slice: slice = None,
@@ -110,7 +117,7 @@ class BugLocalizationPrediction:
             start_time_prediction = time()
 
             callbacks: List[keras.callbacks.Callback] = []
-            flow = prediction_generator.create_location_sample_generator("prediction", bug_sample, callbacks)
+            flow = prediction_generator.create_location_sample_generator("prediction", meta_model, bug_sample, callbacks)
 
             prediction = model.predict(flow,
                                        callbacks=callbacks,

@@ -8,6 +8,7 @@ from typing import Dict, List, Union, cast
 
 import numpy as np
 import pandas as pd
+from buglocalization.metamodel.meta_model import MetaModel
 
 from buglocalization.predictionmodel.bug_localization_model_prediction import (
     BugLocalizationPrediction, BugLocalizationPredictionConfiguration)
@@ -58,7 +59,7 @@ class BugLocalizationPredictionTest:
 
     def get_file_name(self, bug_sample: BugSamplePredictionNeo4j):
         dataset: DataSetPredictionNeo4j = bug_sample.dataset
-        query_database_version_parameter = {'db_version': bug_sample.db_version}
+        query_database_version_parameter = {'db_version': bug_sample.version}
 
         query_bug_report_id = query.property_value_in_version('TracedBugReport', 'id')
         bug_report_id = dataset.run_query_value(query_bug_report_id, query_database_version_parameter)
@@ -66,13 +67,13 @@ class BugLocalizationPredictionTest:
         query_model_version = query.model_repo_version_by_db_version()
         model_version = dataset.run_query_value(query_model_version, query_database_version_parameter)
 
-        return str(bug_sample.db_version) + '_' + 'bug' + str(bug_report_id) + '_' + model_version
+        return str(bug_sample.version) + '_' + 'bug' + str(bug_report_id) + '_' + model_version
 
     def record_evaluation_results(
             self, path: str, bug_sample: BugSamplePredictionNeo4j, prediction: np.ndarray, prediction_runtime: float, sort: bool = True):
         dataset: DataSetPredictionNeo4j = bug_sample.dataset
         meta_model = dataset.meta_model
-        query_database_version_parameter = {'db_version': bug_sample.db_version}
+        query_database_version_parameter = {'db_version': bug_sample.version}
 
         # Tables:
         prediction_results_columns = ["DatabaseNodeID", "Prediction", "IsLocation", "MetaType", "ModelElementID"]
@@ -148,7 +149,7 @@ class BugLocalizationPredictionTest:
 
         # ModelVersionNeo4j
         model_version_neo4j_col = bug_sample_info_columns[0]
-        bug_sample_info[model_version_neo4j_col] = [bug_sample.db_version]
+        bug_sample_info[model_version_neo4j_col] = [bug_sample.version]
 
         # ModelVersionRepository
         model_version_repository_col = bug_sample_info_columns[1]
@@ -237,6 +238,7 @@ class BugLocalizationPredictionTest:
             dump(bug_location_graph, outfile, indent=4, sort_keys=True)
 
     def predict(self,
+                meta_model: MetaModel,
                 sample_data: Union[IDataSet, IBugSample],
                 prediction_configuration: BugLocalizationPredictionConfiguration,
                 samples_slice: slice = None,
@@ -244,7 +246,7 @@ class BugLocalizationPredictionTest:
 
         # Initialize Bug Localization Prediction:
         prediction = BugLocalizationPrediction()
-        prediction_generator = prediction.predict(sample_data, prediction_configuration, samples_slice, log_level)
+        prediction_generator = prediction.predict(meta_model, sample_data, prediction_configuration, samples_slice, log_level)
 
         start_time_prediction = time()
         bug_sample_counter = 0

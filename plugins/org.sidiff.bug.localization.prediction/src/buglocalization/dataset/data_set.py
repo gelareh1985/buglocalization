@@ -45,13 +45,15 @@ class IDataSet:
 
 class IBugSample:
 
-    def __init__(self, dataset: IDataSet, sample_id: str):
+    def __init__(self, dataset: IDataSet, sample_id: str, version: int):
         self.lock: Optional[CountingLock] = None
         self.dataset: IDataSet = dataset
         self.sample_id: str = sample_id
+        self.version = version
         self.location_samples: List[ILocationSample] = []
         
     def __getstate__(self):
+    
         # Return a copy for parallel multiprocessing:
         self._lock().lock.acquire()
         state = dict(self.__dict__)
@@ -109,6 +111,7 @@ class ILocationSample:
         self.lock: Optional[CountingLock] = None
         
     def __getstate__(self):
+        
         # Return a copy for parallel multiprocessing:
         self._lock().lock.acquire()
         state = dict(self.__dict__)
@@ -157,13 +160,6 @@ class ILocationSample:
             Optional[Union[float, int]]: The expected result for training, or the model element ID as "sample ID" for prediction.
         """
         return -1
-
-    def graph(self) -> StellarGraph:
-        """
-        Returns:
-            StellarGraph: The graph which will be used for sampling paths to neigbors form the given bug report and model element location.
-        """
-        raise NotImplementedError()
 
     def bug_report(self) -> Union[int, str]:
         """

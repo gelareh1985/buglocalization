@@ -4,89 +4,58 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 import numpy as np
-import pandas as pd
-from buglocalization.dataset.neo4j_queries import by_version, where_version
-from buglocalization.metamodel.meta_model import (MetaModel, NodeSelfEmbedding,
-                                                  TypbasedGraphSlicing)
+from buglocalization.dataset import neo4j_queries as query
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
+from buglocalization.metamodel.meta_model import MetaModel, NodeSelfEmbedding
 from buglocalization.textembedding.text_utils import text_to_words
-from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
-from py2neo import Node
-
-
-def create_uml_configuration(
-        word_dictionary: WordToVectorDictionary,
-        num_samples: List[int]) -> Tuple[MetaModel, NodeSelfEmbedding, TypbasedGraphSlicing]:
-
-    # Modeling Language Meta-Model Configuration:
-    meta_model = MetaModelUML()
-
-    # Node Embedding Configuration:
-    # TODO: Specify stopwords? May not be in the dictionary anyway!
-    node_self_embedding = UMLNodeSelfEmbedding(
-        meta_model.get_type_to_properties(),
-        word_dictionary)
-
-    # Graph Slicing Configuration:
-    typebased_slicing = meta_model.get_slicing_criterion(num_samples)
-
-    return meta_model, node_self_embedding, typebased_slicing
+from buglocalization.textembedding.word_to_vector_dictionary import \
+    WordToVectorDictionary
+from py2neo import Graph, Node
 
 
 class MetaModelUML(MetaModel):
 
+    def __init__(self, neo4j_configuration: Neo4jConfiguration = None,
+                 word_dictionary: WordToVectorDictionary = None,
+                 num_samples: List[int] = None,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1) -> None:
+
+        super().__init__()
+        self.neo4j_configuration = neo4j_configuration
+
+        # Node Embedding Configuration:
+        if word_dictionary:
+            self.node_self_embedding = UMLNodeSelfEmbedding(
+                self, word_dictionary, embedding_cache_local, embedding_cache_limit)
+
+        # Graph Slicing Configuration:
+        if num_samples:
+            self.query_slicing = self.create_slicing_criterion(num_samples)
+
+    def get_graph(self) -> Graph:
+        if self.neo4j_configuration:
+            return Graph(host=self.neo4j_configuration.neo4j_host, port=self.neo4j_configuration.neo4j_port,
+                         user=self.neo4j_configuration.neo4j_user, password=self.neo4j_configuration.neo4j_password)
+        return None
+
+    def get_node_self_embedding(self) -> NodeSelfEmbedding:
+        return self.node_self_embedding
+
+    def get_slicing_criterion(self) -> str:
+        return self.query_slicing
+
     # Specifies the slicing of subgraph for embedding of model elements.
-    def get_slicing_criterion(self, num_samples: List[int]) -> TypbasedGraphSlicing:
-        slicing = TypbasedGraphSlicing()
-        
-        # FIXME: We should test if the query random sampling behave correctly - but to be sure...
-        # TODO: -> raise or log if result > np.cumprod(num_samples) + 1
-        hard_limit = ' LIMIT ' + str(np.cumproduct(num_samples)[len(num_samples) - 1] + 10)  # ''
-        
-        # Abstract Syntax Tree parent and child nodes:
-        query_ast_head = 'MATCH (c) WHERE ID(c)=$node_id AND ' + by_version('c')
-        
-        query_ast_parents_path = ' CALL {WITH c MATCH (c)<-[*0..2 {__containment__:true}]-(p) ' + where_version('c') + ' RETURN p} WITH c, p'
-        query_ast_parents_return = ' RETURN ID(p) AS parent'
-        query_ast_parents = query_ast_head + query_ast_parents_path + query_ast_parents_return + hard_limit
-        
-        query_ast_childs = ' CALL { WITH c MATCH (c)-[{__containment__:true}]->(k) ' + where_version('k') + ' RETURN k, rand() AS rk ORDER BY rk LIMIT ' + str(num_samples[0]) + '} WITH c, k'  # noqa: E501
-        query_ast_childs_sub = ' CALL {WITH k MATCH (k)-[{__containment__:true}]->(kk) ' + where_version('kk') + ' RETURN kk, rand() AS rkk ORDER BY rkk LIMIT ' + str(num_samples[1]) + '}'  # noqa: E501
-        query_ast_childs_return = ' RETURN ID(k) AS child, ID(kk) AS subchild'
-        query_ast_childs = query_ast_head + query_ast_childs + query_ast_childs_sub + query_ast_childs_return + hard_limit
-
-        # Realized Interfaces:
-        query_interfaces = 'MATCH (c)-[:interfaceRealization]-(z:InterfaceRealization)-[:supplier]->(i:Interface) WHERE ID(c)=$node_id AND ' + by_version('c') + ' AND ' + by_version('z') + ' AND ' + by_version('i') + ' WITH z, i, rand() AS r ORDER BY r LIMIT ' + str(num_samples[1]) + ' RETURN ID(z) AS realization, ID(i) AS interface'  # noqa: E501
-        query_interfaces = query_interfaces + hard_limit
-
-        # Super-classes
-        query_generalization = 'MATCH (c)-[:generalization]-(g:Generalization)-[:general]->(s:Class) WHERE ID(c)=$node_id AND ' + by_version('c') + ' AND ' + by_version('g') + ' AND ' + by_version('s') + ' WITH g, s, rand() AS r ORDER BY r LIMIT ' + str(num_samples[1]) + ' RETURN ID(g) AS generalization, ID(s) AS superclass'  # noqa: E501
-        query_generalization = query_generalization + hard_limit
-
-        # E.g. sub-classes:
-        query_crosstree = 'MATCH (c) WHERE ID(c)=$node_id AND ' + by_version('c') + ' CALL { WITH c MATCH (c)-[ {__containment__:false, __container__:false}]-(e) ' + where_version('e') + ' RETURN e, rand() AS re ORDER BY re LIMIT ' + str(num_samples[1]) + '} With e CALL {WITH e MATCH (e)<-[{__containment__:true}]-(t) ' + where_version('t') + ' RETURN t LIMIT 1} RETURN ID(e) AS crosstree, ID(t) AS crosstreecontainer'  # noqa: E501
-        query_crosstree = query_crosstree + hard_limit 
-
-        classifier_query_slicing = [query_ast_parents, query_ast_childs, query_interfaces, query_generalization, query_crosstree]
-        
-        slicing.add_type('Class', classifier_query_slicing)
-        slicing.add_type('Interface', classifier_query_slicing)
-
-        datatypes_query_slicing = [query_ast_parents, query_ast_childs, query_crosstree]
-
-        slicing.add_type('Enumeration', datatypes_query_slicing)
-        slicing.add_type('DataType', datatypes_query_slicing)
-
-        # Consistency validation:
-        for bug_location_model_meta_type_label in self.get_bug_location_types():
-            try:
-                slicing.get_slicing(bug_location_model_meta_type_label)
-            except:
-                raise Exception("Missing slicing configuration for model type: " + bug_location_model_meta_type_label)
-
-        return slicing
+    def create_slicing_criterion(self, num_samples: List[int]) -> str:
+        query_slicing_label_blacklist = '["Change", "FileChange", "SystemModel", "View", "TracedVersion"'
+        query_slicing_label_blacklist += ', "InstanceValue", "LiteralBoolean", "LiteralInteger"'
+        query_slicing_label_blacklist += ', "LiteralReal", "LiteralString", "LiteralUnlimitedNatural"]'
+        query_slicing_label_blacklist = 'apoc.coll.toSet(' + query_slicing_label_blacklist + ')'
+        query_slicing = 'WHERE NOT labels(neighbors)[0] IN ' + query_slicing_label_blacklist + ' AND ' + query.by_version('neighbors')
+        return query_slicing
 
     # Specifies all meta types that will be considered as model elements.
     def get_types(self) -> List[str]:
@@ -136,13 +105,13 @@ class MetaModelUML(MetaModel):
 
     def get_bug_location_negative_sample_count(self) -> Dict[str, int]:
         bug_location_negative_samples_per_type = {
-            # "Package",
-            "Class": 5,
-            "Interface": 5,
-            "Enumeration": 2,
-            "DataType": 1,
-            # "Operation",
-            # "Property"
+            # "Package": 10,
+            "Class": 20,
+            "Interface": 20,
+            "Enumeration": 10,
+            # "DataType": 10,  # only in library
+            # "Operation": 10,
+            # "Property": 10
         }
         return bug_location_negative_samples_per_type
 
@@ -153,7 +122,7 @@ class MetaModelUML(MetaModel):
     # Specifies the properties of nodes that will be considered during embedding.
     def get_type_to_properties(self):
         meta_type_to_properties: Dict[str, List[str]] = {
-            
+
             # ----- Model -----
             "Model": ["name"],
             "Package": ["name"],
@@ -192,10 +161,15 @@ class MetaModelUML(MetaModel):
 
 class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
-    def __init__(
-            self, meta_type_to_properties: Dict[str, List[str]],
-            word_dictionary: WordToVectorDictionary, stopwords={}, unescape=True):
-        self.meta_type_to_properties: Dict[str, List[str]] = meta_type_to_properties
+    def __init__(self, meta_model: MetaModel,
+                 word_dictionary: WordToVectorDictionary, 
+                 stopwords={}, unescape=True,
+                 embedding_cache_local: bool = False,
+                 embedding_cache_limit: int = -1):
+
+        self.meta_model: MetaModel = meta_model
+        self.graph: Any = None
+        self.type_to_properties = meta_model.get_type_to_properties()
 
         self.word_dictionary = word_dictionary
         self.dictionary_words_length = word_dictionary.dimension()
@@ -203,45 +177,137 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
         self.unescape = unescape
 
         self.dictionary_words: Optional[Dict[str, np.ndarray]] = None
+        self.embedding_cache_limit = embedding_cache_limit
+        self.embedding_cache_local = embedding_cache_local  # Compute cache per process?
+        self.embedding_cache: Dict[int, np.ndarray] = {}
         
+        # Compute embeddings for all nodes in the database:
+        if not self.embedding_cache_local:
+            self.copmute_node_self_embedding_chache()
+
     def __getstate__(self):
         # Do not expose the dictionary (for multiprocessing) which fails on pickle.
         state = dict(self.__dict__)
-        
+
         if 'dictionary_words' in state:
             state['dictionary_words'] = None
-            
+
+        if 'graph' in state:
+            state['graph'] = None
+
+        # Should we share the embeddings for all processes?
+        if self.embedding_cache_local:
+            if 'embedding_cache' in state:
+                state['embedding_cache'] = {}
+
         return state
 
-    def load(self):
-        if self.dictionary_words is None:
-            # use empty dict {} for testing
-            # self.dictionary_words = KeyedVectors.load_word2vec_format(self.dictionary_path, binary=True)
-            self.dictionary_words, dictionary_words_length = self.word_dictionary.dictionary() 
+    def load(self, load_dictionary: bool = False):
+        if self.graph is None:
+            self.graph = self.meta_model.get_graph()
+
+        if self.dictionary_words is None and (load_dictionary or self.embedding_cache_local):
+            print("Start Loading Dictionary...")
+            self.dictionary_words, dictionary_words_length = self.word_dictionary.dictionary()
             assert dictionary_words_length == self.dictionary_words_length, "Word feature size is inconsistently specified!"
+            print("Finished Loading Dictionary")
 
     def unload(self):
+        self.graph = None
         self.dictionary_words = None
 
-    def get_dimension(self) -> int: 
+    def get_dimension(self) -> int:
         return self.dictionary_words_length
 
-    def node_to_vector(self, node: pd.Series) -> np.ndarray:
-        neo4j_node = node['nodes']
-        text = ""
+    def get_graph(self) -> Graph:
+        return self.graph
 
-        for property_name in self.get_properties(neo4j_node):
-            value = self.get_property(neo4j_node, property_name)
-            text += " " + str(value)
+    def node_to_vector(self, versioned_nodes_per_hop: List[List[List[int]]]) -> np.ndarray:
 
-        return self.text_to_vector(text)
+        # Get empty feature vector of proper size:
+        features = super().node_to_vector(versioned_nodes_per_hop)
+
+        # Check if all required node self embeddings are in the chache:
+        if self.embedding_cache_local:
+            self.update_node_self_embedding_chache(versioned_nodes_per_hop)
+
+        # Add embeddings to feature vector:
+        features_idx = 0
+
+        for node_and_version in versioned_nodes_per_hop:
+            for node, version in node_and_version:
+                if node is not None:  # node embedding will be [0, 0, ...]
+                    features[features_idx] = self.embedding_cache[node]
+                    features_idx += 1
+
+        # Check if cache limit is exceeded:
+        if self.embedding_cache_local:
+            if self.embedding_cache_limit > 0:
+                if len(self.embedding_cache) > self.embedding_cache_limit:
+                    self.embedding_cache = {}
+
+        return features
+
+    def update_node_self_embedding_chache(self, versioned_nodes_per_hop: List[List[List[int]]]):
+        unseen_nodes = set()
+
+        # Check if embeddings in chache:
+        for node_and_version in versioned_nodes_per_hop:
+            for node, version in node_and_version:
+                if node is not None:
+                    if node not in self.embedding_cache:
+                        unseen_nodes.add(node)  # collect for a single query
+
+        # Compute new embeddings:
+        if len(unseen_nodes) > 0:
+            neo4j_nodes = self.graph.run('MATCH (n) WHERE ID(n) IN $node_ids RETURN n',
+                                         {'node_ids': list(unseen_nodes)}).to_table()
+
+            for neo4j_node in neo4j_nodes:
+                neo4j_node = neo4j_node[0]
+                text = ""
+
+                for property_name in self.get_properties(neo4j_node):
+                    value = self.get_property(neo4j_node, property_name)
+                    text += " " + str(value)
+
+                embedding = self.text_to_vector(text)
+                self.embedding_cache[neo4j_node.identity] = embedding
+
+    def copmute_node_self_embedding_chache(self):
+        self.load(load_dictionary=True)
+        features_idx = 0
+
+        for label in self.type_to_properties:
+            neo4j_nodes = self.graph.run('MATCH (n:' + label + ') RETURN n').to_table()
+
+            for neo4j_node in neo4j_nodes:
+                neo4j_node = neo4j_node[0]
+                features_idx += 1
+                text = ""
+
+                if (features_idx % 10000 == 0):
+                    print(features_idx, "of", len(neo4j_nodes), "embedded")
+
+                for property_name in self.get_properties(neo4j_node):
+                    value = self.get_property(neo4j_node, property_name)
+                    text += " " + str(value)
+
+                embedding = self.text_to_vector(text)
+                self.embedding_cache[neo4j_node.identity] = embedding
+
+        self.unload()
 
     def get_property(self, node: Node, property_name: str) -> str:
         return node[property_name]
 
     def get_properties(self, node: Node) -> List[str]:
         meta_type = self.get_meta_type(node)
-        return self.meta_type_to_properties[meta_type]
+        try:
+            return self.type_to_properties[meta_type]
+        except KeyError:
+            print("WARNING: Node type not configured: " + meta_type)
+            return []
 
     def get_meta_type(self, node: Node) -> str:
         return list(node.labels)[0]
@@ -252,7 +318,7 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
         feature_vector = np.zeros(self.dictionary_words_length, dtype=np.float32)
 
         if self.dictionary_words is not None:
-            words = text_to_words(text, self.stopwords, self.unescape)
+            words = text_to_words(text, self.unescape)
 
             for word in words:
                 try:

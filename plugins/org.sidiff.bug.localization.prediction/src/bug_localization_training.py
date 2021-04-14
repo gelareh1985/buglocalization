@@ -6,6 +6,7 @@
 # Configure GPU Device:
 # https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 # ===============================================================================
+from typing import List
 import tensorflow as tf
 
 # Only allocate needed memory needed by the application:
@@ -27,7 +28,7 @@ from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 from buglocalization.dataset.neo4j_data_set_training import \
     DataSetTrainingNeo4j
 from buglocalization.dataset.sample_generator import BugSampleGenerator
-from buglocalization.metamodel.meta_model_uml import create_uml_configuration
+from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from buglocalization.predictionmodel.bug_localization_model_training import (
     BugLocalizationAIModelBuilder, BugLocalizationAIModelTrainer,
     DataSetSplitter, TrainigConfiguration)
@@ -40,6 +41,7 @@ from buglocalization.utils import common_utils as utils
 # NOTE: Paths should not be too long, causes error (on Windows)!
 project_folder: str = utils.get_project_folder()
 model_training_base_directory: str = "D:"
+graphsage_num_samples: List[int] = [20, 10]
 
 doc_description: str = utils.create_timestamp() + " JDT: Training Data: 90%, Validation Evaluation Data: 0%, Test Evaluation Data: 10%"
 
@@ -55,11 +57,13 @@ training_configuration = TrainigConfiguration(
     dataset_generator_workers=4,
     dataset_multiprocessing=True,
     dataset_sample_prefetch_count=8,
-    graphsage_num_samples=[20, 10],
+    graphsage_num_samples=graphsage_num_samples,
     graphsage_layer_sizes=[300, 300],
     graphsage_dropout=0.0,
     graphsage_normalize="l2",
     word_dictionary=None,
+    embedding_cache_local=False,
+    embedding_cache_limit=-1,
     log_level=2
 )
 
@@ -102,13 +106,15 @@ if __name__ == '__main__':
     # ===========================================================================
 
     # Modeling Language Meta-Model Configuration:
-    meta_model, node_self_embedding, typebased_slicing = create_uml_configuration(
-        word_dictionary=training_configuration.word_dictionary, 
-        num_samples=training_configuration.graphsage_num_samples)
+    meta_model = MetaModelUML(neo4j_configuration, 
+                              training_configuration.word_dictionary, 
+                              training_configuration.graphsage_num_samples,
+                              training_configuration.embedding_cache_local,
+                              training_configuration.embedding_cache_limit)
 
     # Test Dataset Containing Bug Samples:
-    dataset_positive = DataSetTrainingNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, is_negative=False)
-    dataset_negative = DataSetTrainingNeo4j(meta_model, node_self_embedding, typebased_slicing, neo4j_configuration, is_negative=True)
+    dataset_positive = DataSetTrainingNeo4j(meta_model, neo4j_configuration, is_negative=False)
+    dataset_negative = DataSetTrainingNeo4j(meta_model, neo4j_configuration, is_negative=True)
     dataset_splitter = DataSetSplitter(dataset_positive, dataset_negative)
 
     # ===========================================================================
@@ -132,6 +138,7 @@ if __name__ == '__main__':
 
     # # Start training # #
     bug_localization_model_trainer.train(
+        meta_model=meta_model,
         epochs=training_configuration.trainig_epochs, 
         sample_generator=bug_localization_generator,
         model_training_save_dir=training_configuration.model_training_save_dir,
