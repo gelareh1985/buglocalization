@@ -46,6 +46,8 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
 
             if not library_elements_by_type.empty:
                 model_nodes_library[model_meta_type_label] = set(library_elements_by_type["nodes"])
+            else:
+                model_nodes_library[model_meta_type_label] = set()
 
         return model_nodes_library
 
