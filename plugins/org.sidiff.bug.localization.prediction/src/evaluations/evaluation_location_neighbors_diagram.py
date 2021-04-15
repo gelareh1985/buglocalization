@@ -10,16 +10,20 @@ from py2neo import Graph
 from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
-from evaluation_ranking_metrics import jdt_project_filter
+from evaluations.evaluation_ranking_metrics import project_filter
+
+"""
+Generates the top-k metrics for a range of different diagram size and neighbor hops.
+"""
 
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
-    plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+    evaluation_results_folder = "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation"
+    plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
-    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter)
+    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, project_filter)
 
     # Output folder:
     evaluation_metrics_path = evaluation_results_path + 'metrics/'
@@ -32,7 +36,7 @@ if __name__ == '__main__':
     buglocation_graph = Graph(host="localhost", port=7687, user="neo4j", password="password")
 
     # # Evaluations # #
-    k_neighbors = [0, 2]
+    k_neighbors = [2]
     top_k_values = [1, 5, 10, 15, 20, 25, 30, 35]
     numbers_of_neighbors = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
     diagram_aggregation = True

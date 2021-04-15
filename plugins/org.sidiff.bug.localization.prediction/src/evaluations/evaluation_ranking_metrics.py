@@ -9,24 +9,22 @@ import pandas as pd
 
 from buglocalization.evaluation import evaluation_util as eval_util
 
-jdt_project_filter = ['.test', 'converterJclMin', 'library/']  # TODO: Remove from training data set
+project_filter: List[str] = []  # e.g. ['.test', 'converterJclMin', 'library/']
 
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folders = ["trained_model_2021-03-13_16-16-02_lr-4_layer300_test",
-                                  "trained_model_2021-03-13_16-16-02_lr-4_layer300_test_k2_undirected_aggregated",
-                                  "trained_model_2021-03-13_16-16-02_lr-4_layer300_test_k2_undirected"]
+    evaluation_results_folders = ["eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation"]
     
     top_k_values_base = [1, 5, 10, 15, 20, 25, 30, 35]
     
     for evaluation_results_folder in evaluation_results_folders:
        
         # Load evaluations:
-        plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+        plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
         evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
-        evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter)
+        evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, project_filter)
         
         # Evaluation settings:
         all_ranking_results, outliers = eval_util.get_ranking_results(evaluation_results)

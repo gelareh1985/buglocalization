@@ -45,7 +45,7 @@ class MetaModel:
         Returns:
             List[str]: Nodes that connect the SystemModel (model view wrapper) with the actual model.
         """
-        return ['Change']
+        return ['Change', 'View']
 
     def get_types(self) -> List[str]:
         """

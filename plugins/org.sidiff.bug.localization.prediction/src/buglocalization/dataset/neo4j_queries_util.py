@@ -51,18 +51,15 @@ def subgraph_k(
     Returns:
         pd.DataFrame: The computed subgraph with distance k from the given node.
     """
-    
+
     # Do not include paths that go into the SystemModel (wrapper), e.g., changes/bug locations:
-    labels_blacklist = meta_model.get_system_model_connection_types()
-    
-    subgraph_query = query.subgraph_k(k=k, node_id=neo4j_id,
-                                      labels_mask=labels_mask,
-                                      labels_blacklist=labels_blacklist,
-                                      undirected=undirected)
-    db_version_parameter = {'db_version': db_version}
+    subgraph_query = query.neighborhood(k=k,
+                                        labels_mask=labels_mask,
+                                        undirected=undirected)
+    db_version_parameter = {'node_id': neo4j_id, 'db_version': db_version}
     subgraph = graph.run(subgraph_query, db_version_parameter).to_data_frame()
-    
+
     if not subgraph.empty:
         subgraph.set_index('index', inplace=True)
-        
+
     return subgraph

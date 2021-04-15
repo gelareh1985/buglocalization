@@ -7,7 +7,7 @@ from buglocalization.dataset import neo4j_queries_util as query_util
 from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
-from evaluation_ranking_metrics import jdt_project_filter
+from evaluations.evaluation_ranking_metrics import project_filter
 
 if __name__ == '__main__':
     
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     # Evaluation result tables:
     evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
-    plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+    plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
     evaluation_results_with_subgraphs_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # Bug location garph in Neo4j:
     buglocation_graph = Graph(host="localhost", port=7687, user="neo4j", password="password")
 
-    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in eval_util.load_evaluation_results(evaluation_results_path, jdt_project_filter):
+    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in eval_util.load_evaluation_results(evaluation_results_path, project_filter):
         db_version = int(tbl_info.ModelVersionNeo4j[0])
         expected_locations = eval_util.get_relevant_locations(tbl_predicted)
         subgraph_model_element_ids = set()

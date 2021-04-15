@@ -11,6 +11,9 @@
             "program": "src/bug_localization_training.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Bug Localization - Prediction",
@@ -19,46 +22,64 @@
             "program": "src/bug_localization_prediction.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Bug Localization - Evaluation Ranking Distribution",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluation_ranking_distribution.py",
+            "program": "src/evaluations/evaluation_ranking_distribution.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Bug Localization - Evaluation Ranking Metrics",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluation_ranking_metrics.py",
+            "program": "src/evaluations/evaluation_ranking_metrics.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Bug Localization - Evaluation Location Neighbors Diagram",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluation_location_neighbors_diagram.py",
+            "program": "src/evaluations/evaluation_location_neighbors_diagram.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Bug Localization - Evaluation Location Neighbors Aggregated",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluation_location_neighbors_aggregated.py",
+            "program": "src/evaluations/evaluation_location_neighbors_aggregated.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Bug Localization - Evaluation Diagram Generation",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluation_diagram_generation.py",
+            "program": "src/evaluations/evaluation_diagram_generation.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Word To Vector - Shared Dictionary",
@@ -67,6 +88,9 @@
             "program": "src/buglocalization/textembedding/word_to_vector_dictionary.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
         {
             "name": "Test File",
@@ -75,7 +99,9 @@
             "program": "src/buglocalization/utils/tests/test_model_subgraph_slicing.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
         },
-        
     ]
 }

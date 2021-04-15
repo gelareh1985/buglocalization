@@ -10,16 +10,16 @@ from buglocalization.diagrams import diagram_util
 from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
-from evaluation_ranking_metrics import jdt_project_filter
+from evaluations.evaluation_ranking_metrics import project_filter
 
 if __name__ == '__main__':
 
     # Evaluation result tables:
     evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
-    plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent
+    plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
-    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, jdt_project_filter)
+    evaluation_results = eval_util.load_all_evaluation_results(evaluation_results_path, project_filter)
 
     # Output folder:
     diagram_save_path = evaluation_results_path + 'diagrams/'

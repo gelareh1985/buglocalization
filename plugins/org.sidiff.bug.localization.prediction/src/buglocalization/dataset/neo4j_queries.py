@@ -5,88 +5,6 @@
 from typing import List
 
 
-def neighborhood_sampling(num_samples: List[int], user_layer_constraints:List[str]=[]) -> str:
-    # $nodeID, $sampleLayer1, ... constraints with path variable pathK
-    
-    # Create layer constraints:
-    layer_constraints: List[str] = []
-    k = len(num_samples)
-    
-    for layer in range(0, k):
-        # NOTE: Filter graph by model version:
-        layer_constraint = by_version('LAST(RELATIONSHIPS(pathK))')
-        
-        # To be sure, test the node version, but not necessary if 
-        # the DB is consistent w.r.t. the relationships.
-        layer_constraint += ' AND ' + by_version('LAST(NODES(pathK))')
-        
-        # NOTE: Filter system model wrapper:
-        layer_constraint += ' AND NOT (TYPE(LAST(RELATIONSHIPS(pathK))) = "location" AND LABELS(LAST(NODES(pathK)))[0] = "Change")'
-        layer_constraint += ' AND NOT (TYPE(LAST(RELATIONSHIPS(pathK))) = "model" AND LABELS(LAST(NODES(pathK)))[0] = "View")'
-        
-        if len(user_layer_constraints) > layer:
-            layer_constraint += ' AND (' + user_layer_constraints[layer] + ')'
-
-        layer_constraints.append(layer_constraint)
-    
-    # Create query:
-    query = 'MATCH (startNode) WHERE ID(startNode) = $node_id'
-    query += ' WITH [startNode] AS layerK, apoc.coll.toSet([startNode]) AS sampledNodes'
-
-    # Create each layer:
-    # NOTE: Consider only one edge between adjacent nodes apoc.coll.toSet([pathK IN ... ])
-    # NOTE: Prevent cycles: WHERE NOT LAST(NODES(pathK)) IN sampledNodes
-    # => Maximize the possible different nodes in the sampling graph within the given num_samples boundary.
-    for layer in range(0, k):
-        query += ' WITH [nodeK IN layerK | (nodeK)--()] AS pathsK, sampledNodes'
-        query += ' WITH apoc.coll.flatten([pathsKPerNode IN pathsK'
-        query += ' | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode '
-        query += ' WHERE NOT LAST(NODES(pathK)) IN sampledNodes AND (' + layer_constraints[layer] + ')'
-        query += ' | LAST(NODES(pathK))]), ' + str(num_samples[layer]) + ' )]) AS layerK, sampledNodes'
-        query += ' WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes'
-    
-    query += ' UNWIND sampledNodes AS sampledNode RETURN ID(sampledNode) AS nodes'
-    
-    """ NOTE: For testing:
-    MATCH (startNode) WHERE ID(startNode) = 10160 
-    WITH [startNode] AS layerK, apoc.coll.toSet([startNode]) AS sampledNodes
-        
-    WITH [nodeK IN layerK | (nodeK)--()] AS pathsK, sampledNodes
-    WITH apoc.coll.flatten([pathsKPerNode IN pathsK | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode 
-        WHERE NOT LAST(NODES(pathK)) IN sampledNodes | LAST(NODES(pathK))]), 2)]) AS layerK, sampledNodes
-    WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes
-        
-    RETURN sampledNodes
- 
-    - Filter multiple paths over the same node: 
-        WITH apoc.coll.toSet(layerK) AS layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes
-    """
-
-    """ TODO: Direct sampling of layers!?
-    MATCH (startNode) WHERE ID(startNode) = 10160 
-    WITH [[startNode]] AS layerK, [] AS layers 
-    WITH layerK, layers + [layerK] AS layers
-        
-    WITH apoc.coll.flatten(layerK) AS prevLayerK, layers
-    WITH [prevNodeK IN prevLayerK | (prevNodeK)--()] AS pathsK, layers
-    WITH [pathsKPerNode IN pathsK | apoc.coll.randomItems(apoc.coll.toSet([pathK IN pathsKPerNode | LAST(NODES(pathK))]), 2)] AS layerK, layers
-    WITH layerK, layers + [layerK] AS layers
-        
-    RETURN layers
-    
-    Test:    
-    RETURN apoc.coll.flatten(
-        [(a)-[e]-(b) WHERE a IN apoc.coll.flatten(layers[0]) AND b IN apoc.coll.flatten(layers[1]) | [a,e,b]]
-        +
-        [(a)-[e]-(b) WHERE a IN apoc.coll.flatten(layers[1]) AND b IN apoc.coll.flatten(layers[2]) | [a,e,b]]
-        +
-        [(a)-[e]-(b) WHERE a IN apoc.coll.flatten(layers[2]) AND b IN apoc.coll.flatten(layers[3]) | [a,e,b]]
-    )
-    """
-    
-    return query
-
-
 def buggy_versions() -> str:
     match = 'MATCH (b:TracedBugReport)-[:modelLocations]->(c:Change)-[:location]->(e)'
     returns = ' RETURN DISTINCT b.__initial__version__ AS versions ORDER BY versions'
@@ -180,67 +98,18 @@ def path_nodes(path_query: str, return_query: str = None):
     query = 'CALL { '
     query += path_query
     query += ' } WITH collect(source) + collect(target) AS source_target UNWIND source_target AS nodes '
-    
+
     if return_query is None:
         query += 'RETURN DISTINCT ID(nodes) AS nodes'
     else:
         query += return_query
-    
-    return query
 
-
-def subgraph_k(k: int, node_id: int, labels_mask: List[str] = None, labels_blacklist: List[str] = None, undirected: bool = False) -> str:
-    """
-    Args:
-        k (int): Hops from the started node (traversed edges).
-        node_id (int): The start node ID
-        labels_mask (str, optional): Finally, filters the subgraph by the given label. Defaults to None.
-        labels_blacklist (str, optional): Node labels that should not be on any path.
-        undirected (bool): True if no relationship direction should be used; False to follow only outgoing relationships.
-
-    Returns:
-        str: The subgraph nodes, without the start node.
-    """
-    dircetion = '' if undirected else '>'
-    query = 'MATCH p0=(k0)-[e0]-' + dircetion + '(k1) WHERE ID(k0) = ' + str(node_id)
-    query += ' AND ' + by_version_path('k0', 'e0', 'k1')
-    if labels_blacklist is not None:
-        query += ' AND NOT ' + label_match(labels_blacklist, 'k1')
-    query += ' WITH k1, p0'
-
-    for distance in range(1, k):
-        current_path = 'p' + str(distance)
-        current_node = 'k' + str(distance)
-        current_edge = 'e' + str(distance) 
-        next_node = 'k' + str(distance + 1)
-        
-        query += ' MATCH ' + current_path + '=(' + current_node + ')-[' + current_edge + ']-' + dircetion + '(' + next_node + ')'
-        query += ' WHERE ' + by_version_path(current_node, current_edge, next_node) 
-        if labels_blacklist is not None:
-            query += ' AND NOT ' + label_match(labels_blacklist, next_node)
-        query += ' WITH ' + next_node
-        
-        for paths in range(0, distance + 1):
-            query += ', p' + str(paths)
-
-    query += ' WITH NODES(p0)'
-
-    for distance in range(1, k):
-        query += ' + NODES(p' + str(distance) + ')'
-
-    query += ' AS nodes UNWIND nodes AS n'
-    
-    # Filter by label:
-    if labels_mask is not None:
-        query += ' WITH n WHERE ' + label_match(labels_mask, 'n') 
-    
-    query += ' RETURN DISTINCT ID(n) AS index, n AS nodes'
     return query
 
 
 def label_match(labels: List[str], variable: str):
     query = ''
-    
+
     if labels:
         query += '('
         for label_idx in range(len(labels)):
@@ -248,7 +117,7 @@ def label_match(labels: List[str], variable: str):
                 query += ' OR'
             query += ' "' + labels[label_idx] + '" IN LABELS(' + variable + ')'
         query += ')'
-        
+
     return query
 
 
@@ -389,10 +258,65 @@ def edges_in_version(
 def edges_from_nodes_in_version(return_query: str = None) -> str:
     # $node_ids: List[int], $db_version: int
     query = 'MATCH (a)-[e]->(b) WHERE ID(a) IN $node_ids AND ID(b) IN $node_ids AND ' + by_version('e')
-    
+
     if return_query is None:
         query += ' RETURN ID(e) as index, ID(a) AS source, ID(b) AS target'
     else:
         query += ' ' + return_query
+
+    return query
+
+
+def neighborhood(k: int, user_layer_constraints:List[str]=[], labels_mask: List[str] = None, undirected: bool = True) -> str:
+    # $node_id, ... constraints with path variable pathK
+    
+    # Create layer constraints:
+    layer_constraints: List[str] = []
+    
+    for layer in range(0, k):
+        # NOTE: Filter graph by model version:
+        layer_constraint = by_version('LAST(RELATIONSHIPS(pathK))')
         
+        # To be sure, test the node version, but not necessary if 
+        # the DB is consistent w.r.t. the relationships.
+        layer_constraint += ' AND ' + by_version('LAST(NODES(pathK))')
+        
+        # NOTE: Filter system model wrapper:
+        layer_constraint += ' AND NOT (TYPE(LAST(RELATIONSHIPS(pathK))) = "location" AND LABELS(LAST(NODES(pathK)))[0] = "Change")'
+        layer_constraint += ' AND NOT (TYPE(LAST(RELATIONSHIPS(pathK))) = "model" AND LABELS(LAST(NODES(pathK)))[0] = "View")'
+        
+        if len(user_layer_constraints) > layer:
+            layer_constraint += ' AND (' + user_layer_constraints[layer] + ')'
+
+        layer_constraints.append(layer_constraint)
+    
+    # Create query:
+    query = 'MATCH (startNode) WHERE ID(startNode) = $node_id'
+    query += ' WITH [startNode] AS layerK, apoc.coll.toSet([startNode]) AS sampledNodes'
+
+    # Create each layer:
+    # NOTE: Prevent cycles: WHERE NOT nodeK IN sampledNodes
+    # NOTE: Filter multiple paths over the same node: WITH apoc.coll.toSet(layerK) AS layerK, ...
+    if undirected:
+        rel_direction = '-'
+    else:
+        rel_direction = '->'
+    
+    for layer in range(0, k):
+        query += ' WITH [nodeK IN layerK | (nodeK)-' + rel_direction + '()] AS pathsK, sampledNodes'
+        query += ' WITH apoc.coll.flatten([pathsKPerNode IN pathsK'
+        query += ' | apoc.coll.toSet([pathK IN pathsKPerNode '
+        query += ' WHERE NOT LAST(NODES(pathK)) IN sampledNodes AND (' + layer_constraints[layer] + ')'
+        query += ' | LAST(NODES(pathK))])]) AS layerK, sampledNodes'
+        query += ' WITH apoc.coll.toSet(layerK) AS layerK, sampledNodes'
+        query += ' WITH layerK, apoc.coll.union(layerK, sampledNodes) AS sampledNodes'
+    
+    query += ' UNWIND sampledNodes AS sampledNode'
+
+    # Filter by label:
+    if labels_mask is not None:
+        query += ' WITH sampledNode WHERE ' + label_match(labels_mask, 'sampledNode')
+
+    query += ' RETURN DISTINCT ID(sampledNode) AS index, sampledNode AS nodes'
+    
     return query
