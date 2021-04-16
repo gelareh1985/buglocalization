@@ -13,7 +13,7 @@ from evaluations.evaluation_ranking_metrics import project_filter
 if __name__ == '__main__':
 
     # Size of the diagram:
-    DIAGRAM_NEIGHBOR_SIZE = 50
+    DIAGRAM_NEIGHBOR_SIZE = 35
     # Avg Diagram Size 35.482114940383134 = Diagram Size 12165256 / Diagram Count 342856
 
     # Hops from the expected locations:
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     MATCH_NEO4J_ID = False  # TODO: USING INDEX n:Nlable
 
     # Evaluation result tables:
-    evaluation_results_folder = "trained_model_2021-03-13_16-16-02_lr-4_layer300_test"
+    evaluation_results_folder = "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
