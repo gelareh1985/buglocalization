@@ -82,6 +82,17 @@
             },
         },
         {
+            "name": "Bug Localization - Model Statistics",
+            "type": "python",
+            "request": "launch",
+            "program": "src/evaluations/evaluation_model_statistics.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+        },
+        {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",
