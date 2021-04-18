@@ -267,6 +267,9 @@ class Neo4jSampledBreadthFirstWalk:
         # RETURN neighbors SKIP toInteger(rand()*10) LIMIT {num_sample}
         # UNION MATCH (cur_node){direction_arrow}(neighbors) {slicing_criterion}
         # WITH neighbors SKIP toInteger(rand()*100) LIMIT {num_sample}
+        #
+        # TODO: Should we filter library nodes?
+        # NOT cur_node.__model__element__id__ STARTS WITH "library/" 
 
         return f"""
             // expand the list of node id in seperate rows of ids.
