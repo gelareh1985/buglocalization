@@ -5,7 +5,6 @@ Created on Mar 5, 2021
 '''
 import os
 import pandas as pd
-import numpy as np
 from IPython.display import display
 import matplotlib.pyplot as plt
 
@@ -144,8 +143,8 @@ def plot_diagram_size(tables):
         table[0].set_axis(['DigramSize','TopkAccuracy@1','TopkAccuracy@5','TopkAccuracy@10','TopkAccuracy@15','TopkAccuracy@20',
                           'TopkAccuracy@25','TopkAccuracy@30','TopkAccuracy@35'],inplace=True, axis=1)
         display(table[0])
-        topk=table[0].loc[:,'TopkAccuracy@1':'TopkAccuracy@35']
-        diagram_size=table[0].loc[:,'DigramSize']
+        topk=table[0].loc[0:10,'TopkAccuracy@1':'TopkAccuracy@35']
+        diagram_size=table[0].loc[0:10,'DigramSize']
            
         xaxis_labels=diagram_size.values.tolist()
         x= xaxis_labels
@@ -173,6 +172,7 @@ def plot_diagram_size(tables):
         flag_str="top-k from Ranked List of Class Diagrams of Project "+table[1]+" (search_depth=2)"
         ax=df.plot(kind='line',color=color,title=flag_str, linestyle='dashed', marker='o', markersize=8,figsize =(12, 10))
         ax.set(ylabel='Accuracy', xlabel = 'Diagram Size')
+        plt.ylim(0.0,1.0)
         plt.show()
 # #########################################################################################
 # # Final results plot Top-k for SMC paper
