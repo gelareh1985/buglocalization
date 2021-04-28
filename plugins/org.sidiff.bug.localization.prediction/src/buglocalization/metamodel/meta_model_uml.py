@@ -30,7 +30,10 @@ class MetaModelUML(MetaModel):
         # Node Embedding Configuration:
         if word_dictionary:
             self.node_self_embedding = UMLNodeSelfEmbedding(
-                self, word_dictionary, embedding_cache_local, embedding_cache_limit)
+                meta_model=self, 
+                word_dictionary=word_dictionary, 
+                embedding_cache_local=embedding_cache_local, 
+                embedding_cache_limit=embedding_cache_limit)
 
         # Graph Slicing Configuration:
         if num_samples:
