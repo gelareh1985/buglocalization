@@ -39,7 +39,7 @@ class MetaModelUML(MetaModel):
         if num_samples:
             self.query_slicing = self.create_slicing_criterion(num_samples)
 
-    def get_graph(self) -> Graph:
+    def get_graJph(self) -> Graph:
         if self.neo4j_configuration:
             return Graph(host=self.neo4j_configuration.neo4j_host, port=self.neo4j_configuration.neo4j_port,
                          user=self.neo4j_configuration.neo4j_user, password=self.neo4j_configuration.neo4j_password)
@@ -221,9 +221,6 @@ class UMLNodeSelfEmbedding(NodeSelfEmbedding):
 
     def get_dimension(self) -> int:
         return self.dictionary_words_length
-
-    def get_graph(self) -> Graph:
-        return self.graph
 
     def node_to_vector(self, versioned_nodes_per_hop: List[List[List[int]]]) -> np.ndarray:
 

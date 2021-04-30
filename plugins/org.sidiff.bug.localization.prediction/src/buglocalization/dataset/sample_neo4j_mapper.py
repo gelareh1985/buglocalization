@@ -77,7 +77,7 @@ class Neo4jGraphSAGELinkGenerator:
             self.node_self_embedding.load()
             self.executor = ThreadPoolExecutor(max_workers=self.num_workers)
             self.sampler = Neo4jSampledBreadthFirstWalk(
-                self.node_self_embedding.get_graph(),
+                self.meta_model.get_graph(),
                 self.meta_model.get_slicing_criterion())
 
     def __getstate__(self):

@@ -106,13 +106,6 @@ class NodeSelfEmbedding:
 
     def get_dimension(self) -> int:
         raise NotImplementedError()
-    
-    def get_graph(self) -> Graph:
-        """
-        Returns:
-            Graph: The database storing the model.
-        """
-        raise NotImplementedError()
 
     def node_to_vector(self, nodes_per_hop: List[List[List[int]]]) -> np.ndarray:
         """
