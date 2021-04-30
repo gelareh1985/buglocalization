@@ -12,6 +12,8 @@ if str(Path(os.path.dirname(os.path.abspath(__file__))).parent) not in sys.path:
 from buglocalization.evaluation import evaluation_util as eval_util
 from evaluations.evaluation_ranking_metrics import project_filter
 
+#%%
+
 # from this module location
 if __name__ == '__main__':
 
@@ -43,3 +45,5 @@ if __name__ == '__main__':
 
     # Draw top k distribution:
     boxplot = all_relevant_locations_df.boxplot(column=['ranking'], showfliers=False)
+
+# %%
