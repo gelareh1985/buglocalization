@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 #plot_data_path=r"D:\buglocalization_gelareh_home\evaluations\charts and evaluation results\xy plots\trained_model_2021-03-04_02-06-04_train90_test10_layer300_k2_undirected_metrics/"
 #plot_data_path=r"D:\buglocalization_gelareh_home\evaluations\charts and evaluation results\xy plots\trained_model_2021-03-04_02-06-04_train90_test10_layer300_metrics/"
 
-plot_data_path_jdt=r"D:\buglocalization_gelareh_home\git\buglocalization\evaluation\SMC21\eclipse.jdt.core\eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation/"
-plot_data_path_pde=r"D:\buglocalization_gelareh_home\git\buglocalization\evaluation\SMC21\eclipse.pde.ui\eclipse.pde.ui_data-2021-04-09_model-2021-04-12_evaluation/"
+plot_data_path_jdt=r"C:\Users\gelareh\git\buglocalization\evaluation\SMC21\eclipse.jdt.core\eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation/"
+plot_data_path_pde=r"C:\Users\gelareh\git\buglocalization\evaluation\SMC21\eclipse.pde.ui\eclipse.pde.ui_data-2021-04-09_model-2021-04-12_evaluation/"
 #plot_data_path=r"D:\buglocalization_gelareh_home\git\buglocalization\evaluation\eclipse.jdt.core\# trained_model_2021-03-13_16-16-02_lr-4_layer300_evaluation_new\evaluation_location_neighbours_diagram/"
 
 def load_evaluation_results(path,flag): 
