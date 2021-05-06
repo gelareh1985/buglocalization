@@ -1,3 +1,6 @@
+'''
+@author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
+'''
 import os
 from pathlib import Path
 
