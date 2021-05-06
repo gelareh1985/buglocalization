@@ -4,6 +4,7 @@ conda create --name tf-gpu
 conda activate tf-gpu
 conda install python=3.8
 conda install -c anaconda cudatoolkit=10.1
+conda install pip
 pip install tensorflow==2.3
 pip install stellargraph
 conda install nltk
