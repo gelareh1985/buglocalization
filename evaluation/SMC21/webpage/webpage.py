@@ -45,7 +45,7 @@ def get_info_json(inputfile):
 
 
 # read Json file
-fpath = "./buglocalization/research/wordembedding_project/src/7729_bug545475_28f53155d592e8d12991fab6d60706a44adb05e0_nodes.json"
+fpath = "./buglocalization/evaluation/SMC21/webpage/7729_bug545475_28f53155d592e8d12991fab6d60706a44adb05e0_nodes.json"
 f = open(fpath, 'r')
 
 # load Json file
@@ -65,8 +65,6 @@ nodepart22=""
 nodepart31=""
 nodepart41=""
 nodepart42=""
-nodepart45=""
-nodepart46=""
 nodepart51=""
 nodepart52=""
 
