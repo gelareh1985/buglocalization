@@ -26,28 +26,70 @@ public class BugFixMessageIDMatcher {
 		this.patterns = new ArrayList<>();
 		this.bugIdGroupNames = new ArrayList<>();
 		
-		addKeyword("bug", true, true, true);
-		addKeyword("fix", true, true, true);
-		addKeyword("\\[", false, true, false);
-		addKeyword("\\]", true, false, false);
+		addKeyword("bug", true, true, true, true);
+		addKeyword("fix", true, true, true, true);
+		addKeywordPattern("\\[", "\\]", false, false);
 		compilePatterns();
 	}
 	
-	public void addKeyword(String keyword, boolean searchIDBefore, boolean searchIDAfter, boolean withWhitespace) {
-		String matchWhitespace = "";
+	public void addKeyword(String keyword, 
+			boolean searchIDBefore, 
+			boolean searchIDAfter, 
+			boolean requireBugIDSurroundedByWhitespace,
+			boolean allowTextBetweenKeywordAndBugID) {
 		
-		if (withWhitespace) {
+		String matchWhitespace = "";
+		String matchTextBetweenKeywordAndBugID = "";
+		
+		if (requireBugIDSurroundedByWhitespace) {
 			matchWhitespace = "\s";
+		}
+		
+		if (allowTextBetweenKeywordAndBugID) {
+			matchTextBetweenKeywordAndBugID = ".*?";
 		}
 		
 		if (searchIDBefore) {
 			String bugIdGroupName = getNewBugIdGroupName();
-			addPattern(".*?" + matchWhitespace + "(?<" + bugIdGroupName + ">\\d+)" + matchWhitespace + ".*?" + keyword + ".*?", bugIdGroupName);
+			addPattern(
+					".*?" + matchWhitespace + 										// any text<whitespace>
+					"(?<" + bugIdGroupName + ">\\d+)" + 							// numeric ID
+					matchWhitespace + matchTextBetweenKeywordAndBugID + keyword + 	// <whitespace><any text>keyword
+					".*?", bugIdGroupName);											// any text
 		}
 		if (searchIDAfter) {
 			String bugIdGroupName = getNewBugIdGroupName();
-			addPattern(".*?" + keyword + ".*?" + matchWhitespace + "(?<" + bugIdGroupName + ">\\d+)" + matchWhitespace + ".*?", bugIdGroupName);
+			addPattern(
+					".*?" + 														// any text
+					keyword + matchTextBetweenKeywordAndBugID + matchWhitespace + 	// keyword<any text><whitespace>
+					"(?<" + bugIdGroupName + ">\\d+)" + 							// numeric ID	
+					matchWhitespace + ".*?", bugIdGroupName);						// <whitespace>any text
 		}
+	}
+	
+	public void addKeywordPattern(
+			String startsWithKeyword, String endsWithKeyword, 
+			boolean requireBugIDSurroundedByWhitespace,
+			boolean allowTextBetweenKeywordAndBugID) {
+		
+		String matchWhitespace = "";
+		String matchTextBetweenKeywordAndBugID = "";
+		
+		if (requireBugIDSurroundedByWhitespace) {
+			matchWhitespace = "\s";
+		}
+		
+		if (allowTextBetweenKeywordAndBugID) {
+			matchTextBetweenKeywordAndBugID = ".*?";
+		}
+		
+		String bugIdGroupName = getNewBugIdGroupName();
+		addPattern(
+				".*?" + 																	// any text
+				startsWithKeyword + matchTextBetweenKeywordAndBugID + matchWhitespace + 	// start keyword<any text><whitespace>
+				"(?<" + bugIdGroupName + ">\\d+)" + 										// numeric ID
+				matchWhitespace + matchTextBetweenKeywordAndBugID + endsWithKeyword + 		// <whitespace><any text>end keyword
+				".*?", bugIdGroupName);														// any text
 	}
 	
 	public boolean containesBugID(String commitMessage) {

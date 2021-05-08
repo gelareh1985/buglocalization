@@ -148,6 +148,11 @@ public class BugFixHistoryRetrieval {
 				Activator.getLogger().log(Level.FINE, "Version Discarded: " + version);
 			}
 		}
+		
+		if (Activator.getLogger().isLoggable(Level.INFO)) {
+			Activator.getLogger().log(Level.INFO, "Filtered Bug Reports: " + 
+					discardedBugReports.getFilteredReports().size());
+		}
 	}
 	
 	public Path getCodeRepositoryPath() {

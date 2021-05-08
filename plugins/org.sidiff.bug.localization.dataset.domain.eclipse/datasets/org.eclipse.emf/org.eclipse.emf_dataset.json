@@ -1,7 +1,7 @@
 {
-  "name": "org.eclipse.emf.git",
+  "name": "org.eclipse.emf",
   "repositoryHost": "https://git.eclipse.org",
-  "repositoryPath": "/c/emf/org.eclipse.emf.git",
+  "repositoryPath": "/r/emf/org.eclipse.emf.git",
   "bugtrackerHost": "https://bugs.eclipse.org",
-  "bugtrackerProducts": ["EMF"]
+  "bugtrackerProducts": ["EMF", "Modeling", "MDT", "MDT.XSD", "PDE"]
 }
