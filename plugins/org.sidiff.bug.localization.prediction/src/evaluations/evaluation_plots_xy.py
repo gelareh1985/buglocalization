@@ -154,7 +154,7 @@ def plot_diagram_size(tables):
         print("x-y plot data frame: ", df)
         color = ['r', 'm', 'y', 'c', 'b', 'tab:brown', 'tab:gray', 'tab:orange']
         flag_str = "top-k from Ranked List of Class Diagrams of Project "+table[1]+" (search_depth=2)"
-        ax = df.plot(kind='line', color=color, title=flag_str, linestyle='dashed', marker='o', markersize=8, figsize=(12, 10))
+        ax = df.plot(kind='line', color=color, title=flag_str, linestyle='dashed', marker='o', markersize=8)
         ax.set(ylabel='Accuracy', xlabel='Diagram Size')
         plt.ylim(0.0, 1.0)
         plt.show()
@@ -196,9 +196,9 @@ data_tables_pde, data_tables_diagram_size_pde = load_evaluation_results(plot_dat
 plot_topk(data_tables_jdt, data_tables_jdt_core, data_tables_pde, indx=0)
 plot_topk(data_tables_jdt, data_tables_jdt_core, data_tables_pde, indx=1)  # without OutLiers
 
-# plot_diagram_size(tables=data_tables_diagram_size_jdt)
-# plot_diagram_size(tables=data_tables_diagram_size_jdt_core)
-# plot_diagram_size(tables=data_tables_diagram_size_pde)
+plot_diagram_size(tables=data_tables_diagram_size_jdt)
+plot_diagram_size(tables=data_tables_diagram_size_jdt_core)
+plot_diagram_size(tables=data_tables_diagram_size_pde)
 
 plot_map_mrr(tables=data_tables_jdt)
 plot_map_mrr(tables=data_tables_jdt_core)
