@@ -11,6 +11,7 @@
             "program": "src/bug_localization_training.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
@@ -22,6 +23,7 @@
             "program": "src/bug_localization_prediction.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
@@ -33,6 +35,7 @@
             "program": "src/evaluations/evaluation_ranking_distribution.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
@@ -44,39 +47,31 @@
             "program": "src/evaluations/evaluation_ranking_metrics.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
         },
         {
-            "name": "Bug Localization - Evaluation Location Neighbors Diagram",
+            "name": "Bug Localization - Evaluation Diagram Size",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluations/evaluation_location_neighbors_diagram.py",
+            "program": "src/evaluations/evaluation_diagram_size.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
         },
         {
-            "name": "Bug Localization - Evaluation Location Neighbors Aggregated",
+            "name": "Bug Localization - Evaluation Diagram Ranking",
             "type": "python",
             "request": "launch",
-            "program": "src/evaluations/evaluation_location_neighbors_aggregated.py",
+            "program": "src/evaluations/evaluation_diagram_ranking.py",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
-            },
-        },
-        {
-            "name": "Bug Localization - Evaluation Diagram Generation",
-            "type": "python",
-            "request": "launch",
-            "program": "src/evaluations/evaluation_diagram_generation.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
@@ -88,6 +83,7 @@
             "program": "src/evaluations/evaluation_model_statistics.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
@@ -99,6 +95,7 @@
             "program": "src/buglocalization/textembedding/word_to_vector_dictionary.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
@@ -110,6 +107,7 @@
             "program": "src/buglocalization/utils/tests/test_model_subgraph_slicing.py",
             "console": "integratedTerminal",
             "justMyCode": false,
+            "autoReload": {"enable": true},
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },

@@ -9,6 +9,10 @@ import pandas as pd
 
 from buglocalization.evaluation import evaluation_util as eval_util
 
+"""
+Computes the metrics Top-k, MAP and MRR for a given set of rankings.
+"""
+
 project_filter: List[str] = []  # e.g. ['.test', 'converterJclMin', 'library/']
 
 if __name__ == '__main__':

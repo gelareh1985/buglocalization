@@ -11,6 +11,7 @@ from buglocalization.evaluation import evaluation_util as eval_util
 from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from evaluations.evaluation_ranking_metrics import project_filter
+from buglocalization.diagrams import diagram_ranking_util
 
 """
 Generates the top-k metrics for a range of different diagram size and neighbor hops.
@@ -58,7 +59,7 @@ if __name__ == '__main__':
             for number_of_neighbors in numbers_of_neighbors:
                 print("Experiment: diagram size:", number_of_neighbors)
 
-                found_in_top_k, not_found_in_top_k = eval_util.top_k_ranking_subgraph_location(
+                found_in_top_k, not_found_in_top_k = diagram_ranking_util.top_k_ranking_subgraph_location(
                     evaluation_results=evaluation_results,
                     meta_model=meta_model,
                     graph=buglocation_graph,

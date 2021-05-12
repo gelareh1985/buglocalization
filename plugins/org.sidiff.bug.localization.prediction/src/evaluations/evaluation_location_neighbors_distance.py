@@ -12,10 +12,15 @@ from buglocalization.metamodel.meta_model import MetaModel
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from evaluations.evaluation_ranking_metrics import project_filter
 
+"""
+Recomputes the ranking and sets all neigbors (in k distance hops) as relevant locations.
+This can be used to evaluate the structural distance of the top-k entries.
+"""
+
 if __name__ == '__main__':
     
     # Hops from the expected locations:
-    K_NEIGHBOURS = 2
+    K_NEIGHBOURS_DISTANCE = 2
     UNDIRECTED = True
     
     # Match model elements by Neo4j ID or by model element ID and version?
@@ -27,7 +32,7 @@ if __name__ == '__main__':
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
     
     evaluation_results_with_subgraphs_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder
-    evaluation_results_with_subgraphs_path += "_k" + str(K_NEIGHBOURS)
+    evaluation_results_with_subgraphs_path += "_k" + str(K_NEIGHBOURS_DISTANCE)
     evaluation_results_with_subgraphs_path += '_undirected' if UNDIRECTED else '_directed'
     evaluation_results_with_subgraphs_path += "/"
     Path(evaluation_results_with_subgraphs_path).mkdir(parents=True, exist_ok=True)
@@ -56,7 +61,7 @@ if __name__ == '__main__':
                 neo4j_id = neo4j_id_stored
 
             labels_mask = list(meta_model.get_bug_location_types())
-            subgraph = query_util.subgraph_k(buglocation_graph, neo4j_id, db_version, K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)
+            subgraph = query_util.subgraph_k(buglocation_graph, neo4j_id, db_version, K_NEIGHBOURS_DISTANCE, UNDIRECTED, meta_model, labels_mask)
 
             for idx, subgraph_node in subgraph.iterrows():
                 neigbour_model_element_id = subgraph_node.nodes['__model__element__id__']
