@@ -1,7 +1,7 @@
 import libarchive
 import io
 from nltk.corpus import stopwords
-from word_dictionary import WordDictionary
+from preprocess_word_dictionary import WordDictionary
 
 stop_words = set(stopwords.words('english'))
 
