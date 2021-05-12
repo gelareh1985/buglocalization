@@ -32,7 +32,7 @@ class WordDictionary:
     
     def add_label(self, label):
         dictionary_words_size = len(self.dictionary_words)
-        self.dictionary_words[label] = dictionary_words_size;
+        self.dictionary_words[label] = dictionary_words_size
         dictionary_words_size += 1
       
     def add_text(self, text):
@@ -41,7 +41,7 @@ class WordDictionary:
         
         for word in words:
             if word not in self.dictionary_words:
-                self.dictionary_words[word] = dictionary_words_size;
+                self.dictionary_words[word] = dictionary_words_size
                 dictionary_words_size += 1
                     
         return words,self.dictionary_words

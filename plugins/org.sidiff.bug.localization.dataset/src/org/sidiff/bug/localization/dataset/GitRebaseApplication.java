@@ -93,11 +93,13 @@ public class GitRebaseApplication implements IApplication {
 			version.setIdentificationTrace(trace);
 		}
 		
-		saveDataSet(dataset, sourceRepository.getWorkingDirectory().resolve("dataset.json"));
+		String traceFileName = sourceRepository.getWorkingDirectory().getFileName() + "_dataset_rebased.json";
+		saveDataSet(dataset, targetRepository.getWorkingDirectory().getParent().resolve(traceFileName));
 		
 		Activator.getLogger().log(Level.INFO, "Rebase Finished");
 		Activator.getLogger().log(Level.INFO, "To optimize disc space run: git gc --auto");
-
+		Activator.getLogger().log(Level.INFO, "Trace saved to: " + traceFileName);
+		
 		return IApplication.EXIT_OK;
 	}
 	
