@@ -182,7 +182,9 @@ for filename in os.listdir(fpath_bugreport):
             list_tracedbugs.append(tracedbugs)
             list_bugcomments.append(bugcomments)
             list_classes.append(classes)
-            list_filenames.append(filename)
+            fname = os.path.basename(filename)
+            fnamestr = os.path.splitext(fname)[0]
+            list_filenames.append(fnamestr)
             #f.close()
 # print("\n\n list traced version node attributes: ",tracedversions)
 # print("\n\n list traced bugs attributes: ",tracedbugs)
@@ -441,22 +443,26 @@ print("*********************************************************************")
 # list_table1_string "./buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/bugreport_pages/"
 
 for table_idx in range(len(list_table1_string)):
-    for row in list_table1_string[table_idx]:
-        table1 = begin_table_tag + row + end_table_tag
-        tables_together = table1
-        # beginning tags ### 
-        begin_tags = html_tag + style_string + body_tag + page_header_string 
-        end_tags = body_end_tag + html_end_tag
-        finalpage_string = begin_tags + tables_together + end_tags
+    #print(list_table1_string[table_idx])
+      
+    table1 = begin_table_tag + list_table1_string[table_idx] + end_table_tag
+    tables_together = table1
+    # beginning tags ### 
+    begin_tags = html_tag + style_string + body_tag + page_header_string 
+    end_tags = body_end_tag + html_end_tag
+    finalpage_string = begin_tags + tables_together + end_tags
 
-        pagename = list_filenames[table_idx] + ".html"
-        
-        print(finalpage_string)
-        #fname = output_pages_path + pagename
-        # with open(fname, "w") as f:
-        #     f.write(list_table1_string[table_idx])
+    pagename = list_filenames[table_idx] + ".html"
+    
+    print(finalpage_string)
+    
+    fname = output_pages_path + pagename
+    #f = open("myfile.txt", "w")
+    with open(fname, "w") as f:
+        f.write(str(finalpage_string))
+    f.close()  
+    # with open(f"./buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/{pagename}", "w") as f: 
+    #     f.write(finalpage_string)   
+    # f.close() 
 
-        # with open(f"./buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/{pagename}", "w") as f: 
-        #     f.write(finalpage_string)   
-        # f.close()     
         
