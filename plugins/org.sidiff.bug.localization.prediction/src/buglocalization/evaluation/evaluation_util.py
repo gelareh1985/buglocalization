@@ -155,16 +155,16 @@ def get_all_relevant_locations(tbls_predicted: List[pd.DataFrame]) -> pd.DataFra
     Returns:
         pd.DataFrame: All relevant locations of all rankings.
     """
-    all_expected_locations = []
+    all_relevant_locations = []
 
     for tbl_predicted in tbls_predicted:
-        expected_locations = get_relevant_locations(tbl_predicted)
-        expected_locations['ranking'] = expected_locations.index
+        relevant_locations = get_relevant_locations(tbl_predicted)
+        relevant_locations['ranking'] = relevant_locations.index
 
-        all_expected_locations.append(expected_locations)
+        all_relevant_locations.append(relevant_locations)
 
-    all_expected_locations_df = pd.concat(all_expected_locations, ignore_index=True)
-    return all_expected_locations_df
+    all_relevant_locations_df = pd.concat(all_relevant_locations, ignore_index=True)
+    return all_relevant_locations_df
 
 
 def get_ranking_outliers(all_relevant_locations_df: pd.DataFrame) -> Tuple[int, int, int, int]:

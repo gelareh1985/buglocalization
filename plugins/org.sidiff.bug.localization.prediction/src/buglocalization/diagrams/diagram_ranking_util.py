@@ -2,7 +2,7 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 import os
-from typing import Generator, List, Optional, Set, Tuple
+from typing import Generator, List, Optional, Set, Tuple, Union
 
 import pandas as pd
 from buglocalization.dataset import neo4j_queries_util as query_util
@@ -47,10 +47,9 @@ def get_subgraph_ranking(tbl_predicted: pd.DataFrame,
                          UNDIRECTED: bool,
                          DIAGRAM_NEIGHBOR_SIZE: int,
                          DIAGRAM_AGGREGATION: bool = True,
-                         SAVE_DIAGRAM: bool = False,
-                         diagram_save_path: str = "",
+                         RETURN_DIAGRAMS: bool = False,
                          TOP_RANKING_K: int = -1,
-                         MATCH_NEO4J_ID: bool = False) -> Tuple[pd.DataFrame, float, float]:
+                         MATCH_NEO4J_ID: bool = False) -> Tuple[pd.DataFrame, List[List[int]], float, float]:
     """
     - Pull up relevant position to first diagram that contains the relevant location of the classifier ranking.
     - Aggregate ranking: Generate diagram for each position in classifier ranking - do not consider a position that were already seen.
@@ -60,6 +59,7 @@ def get_subgraph_ranking(tbl_predicted: pd.DataFrame,
     not_relevant_database_node_ids = set()
     seen_location_ids: Set[int] = set()
 
+    diagram_ranking = []
     diagram_size = 0
     diagram_count = 0
 
@@ -87,9 +87,8 @@ def get_subgraph_ranking(tbl_predicted: pd.DataFrame,
                 meta_model, K_NEIGHBOUR_DISTANCE, UNDIRECTED, DIAGRAM_NEIGHBOR_SIZE)
             seen_location_ids.update(subgraph_location_ids)
 
-            if SAVE_DIAGRAM:
-                diagram_graph = diagram_util.slice_diagram(buglocation_graph, db_version, subgraph_location_ids)
-                diagram_util.save_diagram(diagram_graph, diagram_save_path + "/" + "{:04d}".format(diagram_count) + "_diagram.json")
+            if RETURN_DIAGRAMS:
+                diagram_ranking.append(subgraph_location_ids)
 
             # Pull up relevant position to first diagram that contains the relevant location:
             expected_location_ids_len = len(expected_location_ids)
@@ -117,7 +116,7 @@ def get_subgraph_ranking(tbl_predicted: pd.DataFrame,
         else:
             tbl_predicted_aggregation.at[ranking_idx, 'IsLocation'] = 0
 
-    return tbl_predicted_aggregation, diagram_size, diagram_count
+    return tbl_predicted_aggregation, diagram_ranking, diagram_size, diagram_count
 
 
 def get_first_relevant_subgraph_location(tbl_predicted: pd.DataFrame,
