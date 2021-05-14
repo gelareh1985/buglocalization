@@ -1,0 +1,543 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 564968 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> [15][test] test failures with latest jre - investigate </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2020-07-06T12:07:39Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> RESOLVED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 564922 - Compiler fails to use Java 16 when release option is
+enabled
+
+Changed "hex" release number parsing for ct.sym release directories to
+"special" encoding.
+
+Basically it *looks like* the releases starting with Java 10 encoded
+with capital letters starting with "A". We assumed that this would mean
+hex encoding, but at least Java 16 says that 16 should be spelled like
+"G", and not like "10". Let's hope that there is some logic and 17 will
+be "H" and not "$%&".
+
+Change-Id: I5f1cccbd128898067eecf34a059674ad7aa3cea1
+Signed-off-by: Andrey Loskutov <loskutov@gmx.de>
+ </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2020-07-06T12:49:36Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterBugsTestJLS4; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> GenericsRegressionTest_1_8; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilerToolTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ParserTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> InternalHexFloatTest$DoubleTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> FormatterCommentsBugsTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JDTCompilerAdapter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BuildpathTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewritingExpressionsTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacCompiler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeCorrectionTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RunCompilerTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LambdaExpression$LocalTypeSubstitutor; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LambdaFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeSnippetTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModelTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> TypeAnnotationTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AnnotationTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> PatternMatching14Test; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> InferenceContext18; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Compliance_1_7; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> StandAloneASTParserTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClasspathJmodTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BindingMap; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RegressionTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> TextBlockTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ConditionalExpressionTest; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS4; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_1_8; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS8; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS3; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter10Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/LambdaRegressionTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/NullReferenceTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.compiler.tool.tests/Lorg/eclipse/jdt/compiler/tool/tests/CompilerToolTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/LambdaExpressionsTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/parser/ParserTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter9Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/CastTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/SealedTypes15Tests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/CompilerInvocationTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JavadocTest_1_4; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/parser/ParserTest1_7; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter18Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JEP286Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/InternalHexFloatTest$DoubleTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterCommentsBugsTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/ASTImplTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/JDTCompilerAdapter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/Compliance_1_5; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter15JLS4Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.builder/Lorg/eclipse/jdt/core/tests/builder/BuildpathTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter15JLS8Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JavadocTest_1_3; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-07-06T12:07:39Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> From https://ci.eclipse.org/jdt/job/eclipse.jdt.core-Gerrit-BETA/1278/#showFailuresLink
+
+org.eclipse.jdt.core.tests.compiler.regression.AutoBoxingTest.test124 - 1.7
+org.eclipse.jdt.core.tests.compiler.regression.LambdaExpressionsTest.test056 - 14
+org.eclipse.jdt.core.tests.compiler.regression.LambdaExpressionsTest.test056 - 15
+org.eclipse.jdt.core.tests.compiler.regression.GenericTypeTest.test0593 - 1.7
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 1.7
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 1.7
+org.eclipse.jdt.core.tests.compiler.regression.LambdaExpressionsTest.test056 - 1.8
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 1.8
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 1.8
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 14
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 14
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 15
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 15
+
+Some of them point to change in Class<> in different JREs - investigate </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-07-09T14:47:58Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Analysing the following failures:
+
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 1.7
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 1.7
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 1.8
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 1.8
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 14
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 14
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068d - 15
+org.eclipse.jdt.core.tests.compiler.regression.VarargsTest.test068e - 15
+
+
+the test in question minimized is:
+
+import java.util.List;
+public class X { 
+   @SafeVarargs
+   public static <T> List<T> asList(T ... a) {
+       return null;
+   }   
+   public static <T> List<T> asList2(T ... a) {
+       return null;
+   }   
+        List<? extends Class<?>> classes; 
+   {   
+     classes = X.asList(String.class, Boolean.class);
+          classes = X.asList2(String.class, Boolean.class); // warning message here differs
+   }     
+}  
+
+With a Java 14 JRE, the warning message is:
+Type safety: A generic array of Class<? extends Object & Serializable & Comparable<?>> is created for a varargs parameter
+
+while with Java 15 JRE , it is:
+Type safety: A generic array of Class<? extends Object & Serializable & Comparable<?> & Constable> is created for a varargs parameter
+
+essentially, there is an addition of & Constable.
+This is the issue.
+
+Dev Notes:
+============
+
+Diving deeper, in the lub(lower upper bound) determination in PGMB, the value is populated initially in the following ST:
+
+MethodScope(Scope).leastContainingInvocation(TypeBinding, Object, ArrayList) line: 3967	
+MethodScope(Scope).lowerUpperBound(TypeBinding[], ArrayList) line: 4139	
+MethodScope(Scope).lowerUpperBound(TypeBinding[]) line: 4096	
+InferenceContext18.resolve(InferenceVariable[]) line: 1156	
+InferenceContext18.solve(boolean) line: 1030	
+ParameterizedGenericMethodBinding.computeCompatibleMethod18(MethodBinding, TypeBinding[], Scope, InvocationSite) line: 256	
+ParameterizedGenericMethodBinding.computeCompatibleMethod(MethodBinding, TypeBinding[], Scope, InvocationSite) line: 92	
+MethodScope(Scope).computeCompatibleMethod(MethodBinding, TypeBinding[], InvocationSite, boolean) line: 841	
+MethodScope(Scope).computeCompatibleMethod(MethodBinding, TypeBinding[], InvocationSite) line: 798	
+MethodScope(Scope).findMethod0(ReferenceBinding, char[], TypeBinding[], InvocationSite, boolean) line: 1756	
+MethodScope(Scope).findMethod(ReferenceBinding, char[], TypeBinding[], InvocationSite, boolean) line: 1657	
+MethodScope(Scope).getMethod(TypeBinding, char[], TypeBinding[], InvocationSite) line: 3046	
+MessageSend.findMethodBinding(BlockScope) line: 1017	
+MessageSend.resolveType(BlockScope) line: 838	
+Assignment.resolveType(BlockScope) line: 214	
+Assignment(Expression).resolve(BlockScope) line: 1082	
+Block.resolve(BlockScope) line: 131	
+Initializer.resolve(MethodScope) line: 135	
+TypeDeclaration.resolve() line: 1453	
+TypeDeclaration.resolve(CompilationUnitScope) line: 1642	
+
+At Scope.lCI()
+invocations are:
+[public final class Class<java.lang.String>
+	extends java.lang.Object
+	implements : java.io.Serializable, java.lang.reflect.GenericDeclaration, java.lang.reflect.Type, java.lang.reflect.AnnotatedElement, OfField<Class<?>>, java.lang.constant.ConstableNULL FIELDSNULL METHODS
+
+, public final class Class<java.lang.Boolean>
+	extends java.lang.Object
+	implements : java.io.Serializable, java.lang.reflect.GenericDeclaration, java.lang.reflect.Type, java.lang.reflect.AnnotatedElement, OfField<Class<?>>, java.lang.constant.ConstableNULL FIELDSNULL METHODS
+
+]
+
+and for boolean, bestArgument is returned
+[? extends java.lang.Object & java.io.Serializable & Comparable<?>] 
+for Java 14 while & Constable is added in Java 15.
+
+This stems from the difference between the Boolean classes of 14 & 15.
+<Java 15 : public final class Boolean implements java.io.Serializable,
+                                      Comparable<Boolean>
+Java 15: public final class Boolean implements java.io.Serializable,
+                                      Comparable<Boolean>, Constable
+Hence the difference in the warning messages and the test failures. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-07-09T16:34:34Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/c/jdt/eclipse.jdt.core/+/166061 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-07-09T16:40:32Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #2)
+> New Gerrit change created:
+> https://git.eclipse.org/r/c/jdt/eclipse.jdt.core/+/166061
+
+Root causes of AutoBoxingTest.test124, GenericTypeTest.test0593, VarargsTest.test068d and VarargsTest.test068e are all the same as mentioned in comment 1 - This git addresses failures of the above.
+
+One more test failure, LambdaExpressionsTest.test056, is remaining - under investigation. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-07-10T00:05:13Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Manoj Palat from comment #3)
+> 
+> One more test failure, LambdaExpressionsTest.test056, is remaining - under
+> investigation.
+
+LambdaExpressionsTest.test056 is due to another change of helpful npe - git now contains the modifications for this as well.
+
+In short, these errors were the result of the following changes:
+https://bugs.openjdk.java.net/browse/JDK-8241667
+https://bugs.openjdk.java.net/browse/JDK-8233014 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-07-10T00:44:01Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/c/jdt/eclipse.jdt.core/+/166061 was merged to [BETA_JAVA15].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=3382967b63a8a24a5d0854640cbbdbb726ec1552 </td> </tr>
+        </table>
+</body>
+</html>

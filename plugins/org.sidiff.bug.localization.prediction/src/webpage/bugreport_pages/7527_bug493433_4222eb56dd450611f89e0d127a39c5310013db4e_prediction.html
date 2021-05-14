@@ -1,0 +1,514 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 493433 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Call Hierarchy not showing callers when called via method reference and the method is defined in an interface </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2016-05-11T14:10:44Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> VERIFIED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 545491 - Improved performance of ReferenceCollection
+
+The implementation of reference collection suffered from a couple
+of quadratic lookup operations in its logic to determine, whether
+the collection includes certain names.
+
+Instead of doing a simple nested loop scanning of the given arrays,
+we apply an algorithm based on the reduced runtime complexity of
+binary searches.
+
+The reference collections are long living objects that are far more
+often queried than modified. Now we use a simple comparator to sort the
+arrays by length and content. When the collection is asked whether it
+contains another list of names, these names have to be interned. In
+addition to the interning, we also sort the argument arrays. Now we
+do have a total of three pairs of arrays, each of the paired arrays is
+sorted by the same criteria. That allows to walk both arrays pairways
+so even if the worst case, we do no longer need O(n*m) with
+n=first.length and m = second.length, but only O(2*(n+m)) comparisons.
+For longer arrays, we even use binary search logic to skip more than
+one array index when we advance the iteration.
+
+In our scenario, this reduced the accumulated time for invocations of
+include from 90s to less than one second.
+
+Change-Id: I815a43e41ecb5ecaf874fc731d63bffbe7081ea9
+Signed-off-by: Sebastian Zarnekow <sebastian.zarnekow@gmail.com>
+Signed-off-by: Andrey Loskutov <loskutov@gmx.de> </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-04-04T14:31:30Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> DatabaseRef; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> MethodInfo; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SuperMethodReference; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> MethodLocator; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> InterfaceMethodsTest_9; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BinaryMethod; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeStream; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> MethodVerifier; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaModelAccess; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LoopingFlowContext; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeSnippetAllocationExpression; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> MethodReferenceMatch; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeSnippetTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> PDOMMethodId; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractAnnotationProcessorManager; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractCommentParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IDOMMethod; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ReferenceExpressionSyntaxTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractMethodTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IndexBinaryMethod; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompletionOnReferenceExpressionName; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleReferenceImpl; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeFormatterApplication; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionOnModuleReference; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ExplicitConstructorCall; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompletionUnitStructureRequestor; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AptConfig; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> MethodInfo; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AssistSourceMethod; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilerToolTests; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/DatabaseRef; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/classfmt/MethodInfo; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/SuperMethodReference; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/search/matching/MethodLocator; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/InterfaceMethodsTest_9; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/BinaryMethod; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/codegen/CodeStream; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/MethodRef; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/MethodRefParameter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/MethodVerifier; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/MethodVerifier15; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/provisional/JavaModelAccess; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/flow/LoopingFlowContext; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/eval/CodeSnippetAllocationExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/search/MethodReferenceMatch; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/eval/CodeSnippetParser; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/eval/CodeSnippetTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/classfmt/MethodInfoWithParameterAnnotations; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/AbstractMethodDeclaration; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/pdom/java/PDOMMethodId; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/classfmt/AnnotationMethodInfoWithAnnotations; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/search/matching/MatchLocator; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/search/matching/ModuleLocator; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/eval/CodeSnippetMessageSend; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/MethodScope; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/search/matching/MatchLocatorParser; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/AbstractAnnotationProcessorManager; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/parser/AbstractCommentParser; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/CompilationUnitStructureRequestor; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/classfmt/MethodInfoWithAnnotations; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-05-11T14:10:44Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> import java.util.stream.IntStream;
+public class CallerHierarchyExample {
+    interface Interface {
+        void method(int i);
+    }
+    class Implementation implements Interface {
+        public void method(int i) {}
+    }
+    void caller() {
+        Interface pred = new Implementation();
+        IntStream.range(0, 3).forEach(pred::method);
+    }
+}
+
+
+Call Hierarchy on Implementation#method shows no callers.
+Call Hierarchy on Interface#method shows caller() as single caller.
+Refactorings work fine.
+
+
+For me personally, this is a major issue because I will usually invoke the Call Hierarchy on the implementation and not on the interface. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-05T08:32:03Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Isn't this a duplicate of bug #484367? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-05T15:42:58Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> It does sound like the same issue, but that bug was fixed for Neon.
+
+I just re-tested with the example I posted on a fresh eclipse 4.7.2 and could still reproduce the behavior.
+
+Version: Oxygen.2 (4.7.2)
+Build id: M20171130-0510 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-03T13:12:40Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Re-tested in 4.11. Still not working.
+
+Version: 2019-03 (4.11)
+Build id: I20190307-0500 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-03T13:19:43Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Florian Lasinger from comment #3)
+> Re-tested in 4.11. Still not working.
+> 
+> Version: 2019-03 (4.11)
+> Build id: I20190307-0500
+
+You have to use 4.12 nightly builds from https://download.eclipse.org/eclipse/downloads/ </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-03T13:52:08Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Well, it does not work in I20190402-1800 either. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-04T09:39:29Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I see that we don't handle the case that lhs is a variable name. The fix looks straight forward. I will post a patch soon. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-04T12:54:26Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/140041 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-05T07:57:19Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/140041 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=e2903f651c95c9633ac40208e5f6c4f81c7712ff </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-05T09:20:55Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Florian Lasinger from comment #0)
+> Call Hierarchy on Interface#method shows caller() as single caller.
+
+Just to clarify, there's nothing wrong with this behavior, right? Or if you were expecting a different behavior, let me know why.
+
+Fix should be part of the next build. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-08T09:46:28Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Works as expected on nightly now! Thanks! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-08T11:26:16Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> As per comment #10, marking as verified. </td> </tr>
+        </table>
+</body>
+</html>

@@ -1,0 +1,1529 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 543604 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> [9] Error when hovering a HashMap </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-01-19T12:43:35Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> VERIFIED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 543604 - [9] Error when hovering a HashMap
+
+The bug was observed under the following conditions:
+
+1. Debug a snippet with a map variable on Java 9 or above JRE.
+2. Enable "Show Logical Structure" in the variables view.
+3. Expand a local variable or a parameter of type java.util.Map or
+inheriting, either in the debug hover in the Java source editor or in
+the Variables view.
+4. Observe an error text instead of content.
+
+The error is caused by JDT debug attempting to compile a snippet as
+follows:
+
+package java.util;
+abstract class Map___ implements java.util.Map {
+void ___run() throws Throwable {
+return entrySet().toArray();
+}
+}
+
+This snippet is constructed in order to validate whether the expression
+"return entrySet().toArray();" compiles in the context of the current
+breakpoint.
+
+On Java 9 and above, this snippet is not legal. java.util is already
+contained in the JRE libraries; its not possible to define a package
+like this and compile it without extra compile arguments (in particular
+--patch-module).
+
+To fix this problem, we add a special compile mode to JDT core, used by
+JDT debug. When in this mode, the JDT compiler will ignore split package
+problems. The compiled expression "return entrySet().toArray();" is then
+used for evaluation against the underlying java.util.Map, which does
+work with JRE 9+.
+
+Change-Id: Iaaf3edde97e5006aecc8792df9da789b8eddbfce
+Signed-off-by: Simeon Andreev <simeon.danailov.andreev@gmail.com>
+Signed-off-by: Andrey Loskutov <loskutov@gmx.de> </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-05-15T16:07:20Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterJavadocTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaProject; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleBuilderTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RawGrowableArray; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RawGrowableArray; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> FormatterMassiveRegressionTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClasspathUtil; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> GenericsRegressionTest_9; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> PackageInfoTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AptConfig$ProcessorOptionsParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JDTCompilerAdapter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BindingToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LocalTypeBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ProblemReporter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModelTester8Proc; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeFormatterApplication; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> FileSystem; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewritingExpressionsTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RunAllJava8Tests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Util; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleInfoBuilder; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SwitchStatement; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JdtApt; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> HandleFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacCompiler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> APIDocumentationTests$JavaCoreJavadocAnalyzer; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterJavadocTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaProject; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/ASTConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/ModuleBuilderTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/pdom/RawGrowableArray; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/RawGrowableArray; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterMassiveRegressionTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/internal/generatedfile/ClasspathUtil; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter9Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_9; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter18Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.builder/Lorg/eclipse/jdt/core/tests/builder/PackageInfoTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/util/AptConfig$ProcessorOptionsParser; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/NullAnnotationModelTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_1_8; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/JDTCompilerAdapter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/ModuleCompilationTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter15JLS8Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/formatter/DefaultCodeFormatterOptions; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterRegressionTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JavadocTest_1_5; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/pdom/indexer/BindingToIndexConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JEP286Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS3; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter15JLS4Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/NameLookupTests2; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/LocalTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/CompilerInvocationTests; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T12:43:35Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 277199
+screenshot of pop-up
+
+Running Eclipse for JAVA, macOS 10.14.2, JAVA 11.0.1,
+while stopped on a breakpoint when debugging,
+hovering a partly loaded HashMap shows the contents of the collection.
+
+However, while correct in Eclipse 4.10 (attachment 1)
+shows an error in Eclipse 4.11M1 (attachment 2).
+Obviously a missing function?
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T12:44:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 277200
+screenshot of pop-up #2
+
+See the former post.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T12:51:50Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Please provide a simple reproducible test class and add a comment at which line you expect a breakpoint to be set and which field/variable are you inspecting. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T13:15:03Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 277201
+screenshot of debugging session
+
+As requested, a minimal piece of code with breakpoint;
+
+as the breakpoint was hit, one of the references to 'test' was hovered.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T14:10:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I can't reproduce (Build id: I20190118-1800).
+I'm on Windows 10, running Eclipse SDK with Java 11.0.1.
+I can run and inspect "test" variable in the snippet below with both Java 11 / 8 without issues.
+Please try the snippet below in a simple Java project (please not your specific application code/launch config). If this works, your specific launch config may be inconsistent / point to some missing libraries etc?
+
+import java.util.HashMap;
+
+public class Snippet {
+	public static void main(String[] args) {
+		HashMap<String, Boolean> test = new HashMap<>();
+		test.put("One", Boolean.valueOf(true));
+		test.put("Six", Boolean.valueOf(false));
+	    System.out.println(test); // breakpoint here
+	}
+} </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T15:42:53Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Same result, not the first time that macOS seems to be the culprit.
+Let's wait for 4.11M2
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T17:17:41Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I just wonder why Eclipse should be different for this functionality between
+4.10 and 4.11?
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-19T17:20:19Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Joop Lanting from comment #6)
+> I just wonder why Eclipse should be different for this functionality between
+> 4.10 and 4.11?
+
+No idea, I honestly assume that this is specific to your install or workspace or JDK. Can you please try the snippet in a new workspace, with plain fresh 4.11 nightly SDK build (not the package you have)? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-01-20T08:53:53Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I failed to create a new workspace. May be I forgot how to start from scratch.
+After an hour of struggling with the menus and dialogs I gave up.
+Besides, it's not a show stopper and there's other ways to view a collection.
+I know that bugs like these may disappear some releases later.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-02-28T14:49:55Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Eclipse 4.11M3 shows the same error on 3 different Mac's.
+Can somebody please test it on a Mac?
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-02-28T14:55:16Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Joop Lanting from comment #9)
+> Eclipse 4.11M3 shows the same error on 3 different Mac's.
+> Can somebody please test it on a Mac?
+> ;JOOP!
+
+If you spend some Macs for somebody :-)
+
+Seriously: is there an error in the log? The one you've attached before is unrelated. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-02-28T16:16:00Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I re-installed from scratch, ran an application onto creation of a HashMap and:
+
+!SESSION 2019-02-28 17:12:32.367 -----------------------------------------------
+eclipse.buildId=4.11.0.I20190220-1800
+java.version=11.0.2
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_GB
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -data /D/joop/Java/RiengTu/XuongLam
+
+!ENTRY org.eclipse.core.net 1 0 2019-02-28 17:12:45.479
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.jdt.debug 4 4 2019-02-28 17:13:19.060
+!MESSAGE The method entrySet() is undefined for the type Map___
+
+
+!ENTRY org.eclipse.ui 4 0 2019-02-28 17:13:38.426
+!MESSAGE Unhandled event loop exception
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3764)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1173)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:338)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1062)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:155)
+	at org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:644)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:338)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:566)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:150)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:155)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:203)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:137)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:107)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:400)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:255)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:661)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:597)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1476)
+
+So, congrats: a null-pointer.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-02-28T16:18:36Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> The method involved was:
+
+   /**
+    * Loads the info base at start in both the data list and the hashmap.
+    */
+   private static void loadInfoBase()
+   {
+      ArrayList<String> data;
+      BattleshipsInfo bi;
+      int count = 0;
+
+      if(propertyBase.leafExists(PRP_I_BASE))
+      {
+         data = propertyBase.getTxClusters(PRP_I_BASE);
+      }
+      else
+      {
+         data = new ArrayList<String>();
+      }
+
+      identifier2info = new HashMap<String, BattleshipsInfo>(PUZZLE_ALLOTMENT, 0.5f);
+
+      for(String s : data)
+      {
+         bi = new BattleshipsInfo(new TxCluster(s));
+         identifier2info.put(bi.identity, bi);
+         ++count;
+      }
+      Lg.log("+++ Infobase = [" + count + "]");
+   }
+
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-02-28T22:12:09Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> NPE stack seem to be incomplete. Do you always see an error on such hover, and don't you see additional errors as well?
+
+The main problem seem to be the error witout the stack before:
+
+!ENTRY org.eclipse.jdt.debug 4 4 2019-02-28 17:13:19.060
+!MESSAGE The method entrySet() is undefined for the type Map___
+
+Do you have "show logical structure" preference on? I guess we have problem on Java 11 with Map structure, not a problem with Mac. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-01T06:08:55Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 277720
+Screenshot from the requested pane.
+
+Yes, I see nothing more than in the attached snapshot;
+then again, I didn't notice before that ArrayLists give the same error,
+also since 4.11
+
+Find attached the pane 'show logical structures': I never changed it.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-01T18:52:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> This simple test shows error when hovering the HashMap or the ArrayList,
+but NOT when hovering the array; and the output created is correct.
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
+/**
+ * Test class that does not rely on any non-standard packages.
+ */
+
+public class TestCase
+{
+   /**
+    * Program entry point.
+    *
+    * @param commandLine program command line vector.
+    */
+   public static void main(String[] commandLine)
+   {
+      HashMap<String, String> hm = new HashMap<String, String>();
+      ArrayList<String> al;
+      String[] a;
+
+      hm.put("One", "1");
+      hm.put("Two", "2");
+      hm.put("Six", "6");
+      
+      a = hm.keySet().toArray(new String[0]);
+      
+      al = new ArrayList<String>(Arrays.asList(a));
+      
+      System.out.println(al.toString());
+   }
+}
+
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-02T12:18:30Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #10)
+> If you spend some Macs for somebody :-)
+> 
+The new candidate release 4.11RC1 has 221 test failures ?!?!?
+Can you call that a macOS distribution?
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-08T12:58:25Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Installed 4.11RC2 :: same results ....
+
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-13T08:09:50Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 277846
+Popup and Variables View on Windows7 with Collection
+
+I have the same problem on Windows 7
+
+Version: 2019-03 RC1 (4.11 RC1)
+Build id: 20190307-2044
+
+But additionally it also happens with java.util.Collection for me. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-20T19:43:55Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Installed 4.11 :: still the same results ....
+Hoping for 4.12 .....
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-21T04:49:44Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Please attach a pane like shown in this help for show logical structures 
+https://help.eclipse.org/photon/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fviews%2Fshared%2Fref-showlogical.htm
+
+And try to toggle it and see if it help in the hover.
+
+As we are not able to reproduce, you cannot see it working without a fix.
+
+Collection problem is different and the method is not available.
+You can create a new bug with exact steps and sample code. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-21T14:36:01Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> It worked: clicking the given button (to obviously OFF state) enables viewing
+the inside of HashMap and ArrayList both in the Variables pane AND when
+hovering a collection name.
+I don't see any logic in doing so
+(I apparently switched some viewing OFF, to see it clearly),
+but it solved my problems so far.
+Thanks.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-21T14:45:30Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Same for me, seems the toggle button behavior has been inverted. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-25T12:23:42Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 545739 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-25T14:33:19Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #2)
+> Please provide a simple reproducible test class and add a comment at which
+> line you expect a breakpoint to be set and which field/variable are you
+> inspecting.
+
+I was able to reproduce the example from comment 15 TWICE if the Eclipse started with Java 11 as runtime and it was the only known JRE for JDT.
+
+The fun is: after trying this multiple times with different cobinations of workspaces / runtimes I was NOT able to reproduce the problem again!!!
+
+At the time I was able to reproduce it, I was able to fix it by toggling (disabling) the "logical structures" in the debug view. This fixed the problem reproducibly.
+
+I'm really surprised. I wiped out everything and started from scratch both installation and workspaces, but I was not able to reproduce it again in same environment. Should this be a timing issue? If yes, where? And why it is related to the "logical structures"? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-26T07:07:26Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 545773 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T10:08:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> This is a problem since Java 9 and very much similar to Bug 530296.
+
+Here as well the error is coming from JDT Core -
+[The method entrySet() is undefined for the type Map___] </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T10:47:41Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> 
+We are back to square with same problem - 
+Whole Logical structure for collections have gone for a toss as we try to compile code snippet with source as Map or other collection. 
+which gives similar problem -
+The package java.util conflicts with a package accessible from another module: java.base, Pb(1455) The package java.util is accessible from more than one module: java.base, test9, Pb(100) The method entrySet() is undefined for the type Map___]
+
+snippet getting compiled is  -
+return entrySet().toArray()
+
+And the compilation source is -
+package java.util;
+abstract class Map___ implements java.util.Map {
+void ___run() throws Throwable {
+return entrySet().toArray();
+}
+}
+
+@Stephan!
+Do you think there is any possibility to support it in core ? 
+Without this Logical Structure support doesn't seem to be possible. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T11:31:17Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Sarika Sinha from comment #27)
+> We are back to square with same problem - 
+> Whole Logical structure for collections have gone for a toss as we try to
+> compile code snippet with source as Map or other collection. 
+> which gives similar problem -
+> The package java.util conflicts with a package accessible from another
+> module: java.base, Pb(1455) The package java.util is accessible from more
+> than one module: java.base, test9, Pb(100) The method entrySet() is
+> undefined for the type Map___]
+
+Sarika, two questions: 
+1) can you reproduce now? If yes, how?
+2) I guess the error is shown during snippet compilation - can/should we report this error in the log, this would greatly simplify the root cause analyse? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T12:38:31Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #28)
+> 
+> Sarika, two questions: 
+> 1) can you reproduce now? If yes, how?
+Yes, no extra steps. Hovering a HashMap in a Java 9+ Project.
+But I am not able to reproduce it on 4.10. I can reproduce it in 4.11 GA and latest I build. Not sure what is the difference, tried many combinations but behavior is consistent.
+> 2) I guess the error is shown during snippet compilation - can/should we
+> report this error in the log, this would greatly simplify the root cause
+> analyse?
+
+What do you want to log? Problems are reported by Core during Compilation Unit creation in org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(String, IJavaReferenceType) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T12:48:01Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Sarika Sinha from comment #29)
+> (In reply to Andrey Loskutov from comment #28)
+> > 
+> > Sarika, two questions: 
+> > 1) can you reproduce now? If yes, how?
+> Yes, no extra steps. Hovering a HashMap in a Java 9+ Project.
+> But I am not able to reproduce it on 4.10. I can reproduce it in 4.11 GA and
+> latest I build. Not sure what is the difference, tried many combinations but
+> behavior is consistent.
+
+Which JVM do you use to start Eclipse, and which is set on the classpath of the project?
+
+> What do you want to log? Problems are reported by Core during Compilation
+> Unit creation in
+> org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.
+> getCompiledExpression(String, IJavaReferenceType)
+
+Exact, plus the current stack trace to know where we are. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T14:18:51Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #30)
+> 
+> Which JVM do you use to start Eclipse, and which is set on the classpath of
+> the project?
+I launch with Oracle 1.8.0_102 JRE
+But I tried spawning child Eclipse with OpenJDK 11 and I could reproduce.
+> 
+> > What do you want to log? Problems are reported by Core during Compilation
+> > Unit creation in
+> > org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.
+> > getCompiledExpression(String, IJavaReferenceType)
+> 
+> Exact, plus the current stack trace to know where we are.
+I will add that. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-28T22:42:53Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Sarika Sinha from comment #27)
+> We are back to square with same problem - 
+> Whole Logical structure for collections have gone for a toss as we try to
+> compile code snippet with source as Map or other collection. 
+> which gives similar problem -
+> The package java.util conflicts with a package accessible from another
+> module: java.base, Pb(1455) The package java.util is accessible from more
+> than one module: java.base, test9, Pb(100) The method entrySet() is
+> undefined for the type Map___]
+> 
+> snippet getting compiled is  -
+> return entrySet().toArray()
+> 
+> And the compilation source is -
+> package java.util;
+> abstract class Map___ implements java.util.Map {
+> void ___run() throws Throwable {
+> return entrySet().toArray();
+> }
+> }
+> 
+> @Stephan!
+> Do you think there is any possibility to support it in core ? 
+> Without this Logical Structure support doesn't seem to be possible.
+
+As discussed in bug 530296 --patch-module would be the natural approach, but we may not have a module-less project that could host this patch.
+
+If there's no legal way to compile the snippet in the context of the current project, special API from Core could indeed be an appropriate solution, in the lines of: granting debug permission to compile code disregarding the split-package prohibition. Since we are not actually compiling to byte code to be executed by the JVM, but to Instructions to be interpreted by JDT/Debug, violating some rules shouldn't hurt, actually.
+
+Is that the last resort? I must admit I still didn't understand why snippets are placed into java.* packages to begin with. @Sarika, do you know which problem exactly is avoided by this? The bugs referenced from bug 530296 only show the symptom
+   Detail formatter error:
+		Evaluations must contain either an expression or a block of 
+well-formed statements
+
+not any root cause.
+
+
+Anyway, *if* Core were to provide special API to Debug, it may be cool to devise a compilation mode that exactly reflects how access permissions are handled in JDI. If I see correctly this implies that *no* access control should actually be performed, right? Then it should be possible to place snippets into user packages actually, right? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-29T03:05:07Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 545910 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-29T10:48:08Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #32)
+> 
+> As discussed in bug 530296 --patch-module would be the natural approach, but
+> we may not have a module-less project that could host this patch.
+> 
+> If there's no legal way to compile the snippet in the context of the current
+> project, special API from Core could indeed be an appropriate solution, in
+> the lines of: granting debug permission to compile code disregarding the
+> split-package prohibition. Since we are not actually compiling to byte code
+> to be executed by the JVM, but to Instructions to be interpreted by
+> JDT/Debug, violating some rules shouldn't hurt, actually.
+> 
+> Is that the last resort? I must admit I still didn't understand why snippets
+> are placed into java.* packages to begin with. @Sarika, do you know which
+> problem exactly is avoided by this? The bugs referenced from bug 530296 only
+> show the symptom
+>    Detail formatter error:
+> 		Evaluations must contain either an expression or a block of 
+> well-formed statements
+> 
+> not any root cause.
+> 
+> 
+> Anyway, *if* Core were to provide special API to Debug, it may be cool to
+> devise a compilation mode that exactly reflects how access permissions are
+> handled in JDI. If I see correctly this implies that *no* access control
+> should actually be performed, right? Then it should be possible to place
+> snippets into user packages actually, right?
+
+I will try to see if the snippet can be compiled into user packages. I don't have the background knowledge as to why snippets are placed into java.* packages.
+
+If this doesn't work then yes as you say we will need a special API which ignores split package prohibition and returns back the instructions. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-03T06:24:51Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Will take up in M3. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-12T09:24:44Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> The logical structure works in JDK 8, but doesn't work in JDK 11.0.1 above, it can be reproduced stably.
+
+Invoke evaluationEngine.getCompiledExpression() on snippet "return entrySet().toArray();" will throw exception "[The method entrySet() is undefined for the type LinkedHashMap<K,V>]". </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-25T10:20:41Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 546708 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-01T12:21:59Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> We would like to move our product to Java 11 + Eclipse 4.12, so in case Sarika finds no time I'll take a look here as well.
+
+(In reply to Stephan Herrmann from comment #32)
+> If there's no legal way to compile the snippet in the context of the current
+> project, special API from Core could indeed be an appropriate solution, in
+> the lines of: granting debug permission to compile code disregarding the
+> split-package prohibition. Since we are not actually compiling to byte code
+> to be executed by the JVM, but to Instructions to be interpreted by
+> JDT/Debug, violating some rules shouldn't hurt, actually.
+
+Could you give me pointers to bypassing the split-package rules? If I understand you correctly, --patch-module is not reliable in cases of actual Java 9+ projects that define a module info (in particular you state so here: https://bugs.eclipse.org/bugs/show_bug.cgi?id=530296#c6)?
+
+> Is that the last resort? I must admit I still didn't understand why snippets
+> are placed into java.* packages to begin with. @Sarika, do you know which
+> problem exactly is avoided by this?
+
+As far as I can tell, the logical representation sees a hash map. The hash map type is then represented by java.lang.Map as far as the logical structure is concerned (defined in some JDT extension point). java.lang.Map is then the type passed down to the following stack trace:
+
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:170)
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:88)
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:348)
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:369)
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:540)
+        at org.eclipse.jdt.internal.debug.core.logicalstructures.JavaLogicalStructure$EvaluationBlock.evaluate(JavaLogicalStructure.java:134)
+        at org.eclipse.jdt.internal.debug.core.logicalstructures.JavaLogicalStructure.getLogicalStructure(JavaLogicalStructure.java:315)
+        at org.eclipse.debug.internal.ui.views.variables.LogicalStructureCache$LogicalStructureTypeCache.getLogicalStructure(LogicalStructureCache.java:137)
+        at org.eclipse.debug.internal.ui.views.variables.LogicalStructureCache.getLogicalStructure(LogicalStructureCache.java:54)
+        - locked <0x000000041d3eb4a8> (a java.util.HashMap)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getLogicalValue(VariableContentProvider.java:216)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getLogicalValue(VariableContentProvider.java:115)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getValueChildren(VariableContentProvider.java:133)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getAllChildren(VariableContentProvider.java:78)
+        at org.eclipse.jdt.internal.debug.ui.variables.JavaVariableContentProvider.getAllChildren(JavaVariableContentProvider.java:144)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getChildCount(VariableContentProvider.java:49)
+        at org.eclipse.jdt.internal.debug.ui.variables.JavaVariableContentProvider.getChildCount(JavaVariableContentProvider.java:73)
+        at org.eclipse.debug.internal.ui.model.elements.ElementContentProvider.retrieveChildCount(ElementContentProvider.java:128)
+        at org.eclipse.debug.internal.ui.model.elements.ElementContentProvider$2.run(ElementContentProvider.java:78)
+        at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+The ASTEvaluationEngine is called with IJavaReferenceType java.lang.Map as explained above. This is an interface, so BinaryBasedSourceGenerator is called. This one will use the same package as the type passed to it, again java.lang.Map, so package is java.lang. I.e. java.* is not used as a package "deliberately"? I am *guessing* the same package is used in order to access package private methods when evaluating. At least for user defined code that seems like a must have. E.g. if I am at a breakpoint in "mypackage" then I expect to be able to evaluate everything that is visible from that package?
+
+Looking at JavaLogicalStructure.getLogicalStructure(IValue) I'm not sure trying to change the package in the generated snippet can work. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-06T04:10:35Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> @Simeon,
+Feel free to assign it to yourself. I don't plan to work on this item this week. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-07T11:57:45Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> @Stephan ping, could you check comment 38? I'm not very familiar with the JDT compiler, some tips/elaboration would be highly appreciated. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-09T09:56:49Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> From Andrey: As a last resort, we can disable logical structure if the JRE is Java 9+.
+
+@Stephan: You made also this proposal:
+
+> Anyway, if Core were to provide special API to Debug,
+> it may be cool to devise a compilation mode that
+> exactly reflects how access permissions are handled in JDI.
+> If I see correctly this implies that no access control
+> should actually be performed, right? Then it should be possible to place 
+> snippets into user packages actually, right?
+
+I am looking into this right now. I see that the compile problem when debugging is created here:
+
+at org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference.getTypeBinding(QualifiedTypeReference.java:128)
+        at org.eclipse.jdt.internal.compiler.ast.TypeReference.internalResolveType(TypeReference.java:514)
+        at org.eclipse.jdt.internal.compiler.ast.TypeReference.resolveType(TypeReference.java:624)
+        at org.eclipse.jdt.internal.compiler.ast.TypeReference.resolveType(TypeReference.java:620)
+        at org.eclipse.jdt.internal.compiler.ast.TypeReference.resolveSuperType(TypeReference.java:592)
+        at org.eclipse.jdt.internal.compiler.lookup.ClassScope.findSupertype(ClassScope.java:1337)
+        at org.eclipse.jdt.internal.compiler.lookup.ClassScope.connectSuperInterfaces(ClassScope.java:1062)
+        at org.eclipse.jdt.internal.compiler.lookup.ClassScope.connectTypeHierarchy(ClassScope.java:1124)
+        at org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.connectTypeHierarchy(CompilationUnitScope.java:355)
+        at org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.completeTypeBindings(LookupEnvironment.java:515)
+        at org.eclipse.jdt.internal.compiler.Compiler.internalBeginToCompile(Compiler.java:868)
+        at org.eclipse.jdt.internal.compiler.Compiler.beginToCompile(Compiler.java:394)
+        at org.eclipse.jdt.core.dom.CompilationUnitResolver.resolve(CompilationUnitResolver.java:1179)
+        at org.eclipse.jdt.core.dom.CompilationUnitResolver.resolve(CompilationUnitResolver.java:714)
+        at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1216)
+        at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:831)
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.parseCompilationUnit(ASTEvaluationEngine.java:403)
+        at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:539)
+        at org.eclipse.jdt.internal.debug.core.logicalstructures.JavaLogicalStructure$EvaluationBlock.evaluate(JavaLogicalStructure.java:134)
+        at org.eclipse.jdt.internal.debug.core.logicalstructures.JavaLogicalStructure.getLogicalStructure(JavaLogicalStructure.java:315)
+        at org.eclipse.debug.internal.ui.views.variables.LogicalStructureCache$LogicalStructureTypeCache.getLogicalStructure(LogicalStructureCache.java:137)
+        at org.eclipse.debug.internal.ui.views.variables.LogicalStructureCache.getLogicalStructure(LogicalStructureCache.java:54)
+        - locked <0x0000000417b4c858> (a java.util.HashMap)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getLogicalValue(VariableContentProvider.java:216)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getLogicalValue(VariableContentProvider.java:115)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getValueChildren(VariableContentProvider.java:133)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getAllChildren(VariableContentProvider.java:78)
+        at org.eclipse.jdt.internal.debug.ui.variables.JavaVariableContentProvider.getAllChildren(JavaVariableContentProvider.java:144)
+        at org.eclipse.debug.internal.ui.model.elements.VariableContentProvider.getChildCount(VariableContentProvider.java:49)
+        at org.eclipse.jdt.internal.debug.ui.variables.JavaVariableContentProvider.getChildCount(JavaVariableContentProvider.java:73)
+        at org.eclipse.debug.internal.ui.model.elements.ElementContentProvider.retrieveChildCount(ElementContentProvider.java:128)
+        at org.eclipse.debug.internal.ui.model.elements.ElementContentProvider$2.run(ElementContentProvider.java:78)
+        at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+If I blatantly disable this split package case, "all is well":
+
+	    if (packageBinding != null) {
+	    	PackageBinding uniquePackage = packageBinding.getVisibleFor(scope.module(), false);
+	    	if (uniquePackage instanceof SplitPackageBinding) { // <---- if I add && false to the if, map children are seen
+	    		SplitPackageBinding splitPackage = (SplitPackageBinding) uniquePackage;
+    			scope.problemReporter().conflictingPackagesFromModules(splitPackage, scope.module(), this.sourceStart, (int)this.sourcePositions[typeStart-1]);
+    			this.resolvedType = new ProblemReferenceBinding(this.tokens, null, ProblemReasons.Ambiguous);
+    			return null;
+	    	}
+	    }
+
+Two questions.
+
+1. Am I on the right track, or did you mean something else / something more general? If the latter is the case, does anything speak against gradually changing how the compile is affected by a "JDT debug special compile mode"?
+
+2. I see that compiler options are propagated up until CompilationUnitScope, where an option is consumed. Would the compile options be an OK carrier for the compilation mode flag you suggested? I'm looking into propagating a flag beneath this stack, but the compile options seem like the path of least resistance. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-09T12:18:19Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/141877 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-09T12:19:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/141878 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-09T12:42:53Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I've added a magical flag to the JDT core compiler, when the flag is set the split package check is not done. The option is then used by JDT debug to avoid the problem during logical structure evaluation.
+
+I'm guessing this is not the only place where such an option should be used, but please first take a look at the approach. If this is generally not what we want, it makes no sense to look for other places to change. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-09T13:15:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Simeon Andreev from comment #44)
+> I've added a magical flag to the JDT core compiler, when the flag is set the
+> split package check is not done. The option is then used by JDT debug to
+> avoid the problem during logical structure evaluation.
+
+This is exactly one of the directions I had in mind. Glad to see it appears to be working :)
+ 
+> I'm guessing this is not the only place where such an option should be used,
+> but please first take a look at the approach. If this is generally not what
+> we want, it makes no sense to look for other places to change.
+
+The extent of what is necessary greatly depends on what exactly JDT/Debug wants to get compiled disregarding module encapsulation. If it's just for a handful of well-known structures we should be done, soon. If this approach should also cover user-defined snippets, then a more complete solution is of course needed.
+
+I assume we could approach this by first searching for all callers of conflictingPackagesFromModules() right?
+
+As to CompilerOptions vs. other kind of flag: I don't think we want to make this option public API atm. So, a "hidden contract" could indeed be made by *not* exposing the option via JavaCore (as we do for public options), but to just "secretly" tell JDT/Debug the option string behind the constant. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T16:03:29Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Sarika Sinha from comment #27)
+> And the compilation source is -
+> package java.util;
+> abstract class Map___ implements java.util.Map {
+> void ___run() throws Throwable {
+> return entrySet().toArray();
+> }
+> }
+
+I've just noticed (while writing test for JDT) that we have a *void* method returning an array!?! WHAT? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T16:47:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Indeed: WHAT ...
+when I try to write such code ECLIPSE holds me back.
+What are you using for IDE?
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T17:27:46Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #46)
+> (In reply to Sarika Sinha from comment #27)
+> > And the compilation source is -
+> > package java.util;
+> > abstract class Map___ implements java.util.Map {
+> > void ___run() throws Throwable {
+> > return entrySet().toArray();
+> > }
+> > }
+> 
+> I've just noticed (while writing test for JDT) that we have a *void* method
+> returning an array!?! WHAT?
+
+I seem to recall that this code is never compiled to byte code, just the contained statements are used in order to send commands to the target JVM, right? So Errors against the method would be irrelevant.
+Not that I would defend this style, though ... </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T21:34:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/141877 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=6e74704b020c324802ce193dc05f264ca8b04302 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T22:07:46Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/142215 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T22:24:43Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #50)
+> New Gerrit change created: https://git.eclipse.org/r/142215
+
+Follow-up from https://git.eclipse.org/r/141877
+
+In addition to improving test isolation I played with ways of using the new (secret) compiler option. I noticed two things worth documenting:
+
+* The new option has no effect when used in IJavaProject.setOption(String,boolean)
+
+* When used in JavaCore.setOptions() the new option works only partially, it will be temporarily used, but it is not persisted, as clients of the method may normally expect.
+
+On closer look both effects are caused by the asymmetry of handling the option in CompilerOptions.setMap() but not in getMap(). This way, during either variant of setOption() we internally classify the option as UNKNOWN_OPTION and refuse to persist it.
+
+I'm not sure if this was done by intention, but the result is actually good: Indeed we don't want this option not to be stored - ever.
+
+Regarding use in JDT/Debug: You are not x-friends of package org.eclipse.jdt.internal.compiler.impl, so I suggest to avoid using class CompilerOption but use the underlying string as a "shared secret" :)
+(The option value is publicly available as JavaCore.ENABLED) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-15T23:17:30Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/142215 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=74f920117bbf1dae1650ebfa4577620e740d08e4 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-16T06:23:35Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #46)
+> I've just noticed (while writing test for JDT) that we have a *void* method
+> returning an array!?! WHAT?
+
+This is quite common in evaluation snippets.
+
+> On closer look both effects are caused by the asymmetry of handling the option
+> in CompilerOptions.setMap() but not in getMap(). This way, during either variant 
+> of setOption() we internally classify the option as UNKNOWN_OPTION and refuse to 
+> persist it.
+
+> I'm not sure if this was done by intention, but the result is actually good: 
+> Indeed we don't want this option not to be stored - ever
+
+Oops, not intentional. Glad to hear the result is OK regardless.
+
+> Regarding use in JDT/Debug: You are not x-friends of package
+> org.eclipse.jdt.internal.compiler.impl, so I suggest to avoid using class
+> CompilerOption but use the underlying string as a "shared secret" :)
+
+I'll adjust in the JDT debug change.
+
+Thanks for the pointers! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-16T06:28:42Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #51)
+> Regarding use in JDT/Debug: You are not x-friends of package
+> org.eclipse.jdt.internal.compiler.impl, 
+
+We can change this.
+
+> so I suggest to avoid using class
+> CompilerOption but use the underlying string as a "shared secret" :)
+
+I do not like the idea to use a String here, because next time someone does refactoring in JDT core we will have a "hidden" problem.
+
+So should we make jdt.debug an x-friend of jdt.internal.compiler.impl? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-16T07:01:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/141878 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.debug.git/commit/?id=9102ba8a08ec853cd91765082ce10478c2c3c1ba </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-16T08:59:39Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Hi, thanks a lot for all your efforts and fixing this regression!
+
+Due to the impact of this bug on the usability, I wanted to ask if backporting the fixes to the Java 12 P-build series for 2019-03 is planned? We were switching to to this version recently to the fixed call hierarchy / reference bug and the fixed jar handling (open files) under windows.
+From our side this would help a lot since we could then keep our platform at this version for the next months without risking to pull in some other regression. This is the only bug as of now impacting our git-based workflow. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-16T12:12:41Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Andrey Loskutov from comment #54)
+> (In reply to Stephan Herrmann from comment #51)
+> > Regarding use in JDT/Debug: You are not x-friends of package
+> > org.eclipse.jdt.internal.compiler.impl, 
+> 
+> We can change this.
+
+I'd say it's not a big deal either way:
+
+Debug has proven friendly in this bug. Just, when we add x-friends it will be Debug's responsibility not to inadvertently use this to access other internals, where Core is not aware of that dependency. No tool will help you there.
+
+I clearly don't plan to discuss every change within that package with JDT/Debug before committing :)
+
+> > so I suggest to avoid using class
+> > CompilerOption but use the underlying string as a "shared secret" :)
+> 
+> I do not like the idea to use a String here, because next time someone does
+> refactoring in JDT core we will have a "hidden" problem.
+
+I don't see any reason why anyone would "refactor" this constant which is clearly documented (thanks) as needed by JDT/Debug (in fact, proper refactoring would break access to CompilerOptions, not use of the string).
+
+Also, don't you have a test which would immediately reveal the failure?
+ 
+> So should we make jdt.debug an x-friend of jdt.internal.compiler.impl?
+
+I still think sharing the string is the more precise contract, but I'll leave it to you, since it's Debug that needs to manage the (small) risk of being broken by internal Core changes - either option. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-16T12:17:07Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Alexander Diewald from comment #56)
+> Hi, thanks a lot for all your efforts and fixing this regression!
+
+Short of jumping into a planning discussion, a picky word on terminology: in my book regression is a failure that is caused by our own (bad) code change. In this bug the behavioral change is caused by newer Java versions, which declare previously valid code as illegal. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T04:12:00Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> There are 3 test failures with Java 11 and Java 12.
+https://download.eclipse.org/eclipse/downloads/drops4/I20190516-1405/testresults/html/org.eclipse.jdt.debug.tests_ep412I-unit-cen64-gtk3-java11_linux.gtk.x86_64_11.html </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T06:03:18Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Sarika Sinha from comment #59)
+> There are 3 test failures with Java 11 and Java 12.
+> https://download.eclipse.org/eclipse/downloads/drops4/I20190516-1405/
+> testresults/html/org.eclipse.jdt.debug.tests_ep412I-unit-cen64-gtk3-
+> java11_linux.gtk.x86_64_11.html
+
+Those are all from the "new" test I think. I.e. run TestLogicalStructures with Java 9. Odd, those were running fine in gerrit; I'll check. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T06:15:37Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Simeon Andreev from comment #60)
+> (In reply to Sarika Sinha from comment #59)
+> > There are 3 test failures with Java 11 and Java 12.
+> > https://download.eclipse.org/eclipse/downloads/drops4/I20190516-1405/
+> > testresults/html/org.eclipse.jdt.debug.tests_ep412I-unit-cen64-gtk3-
+> > java11_linux.gtk.x86_64_11.html
+> 
+> Those are all from the "new" test I think. I.e. run TestLogicalStructures
+> with Java 9. Odd, those were running fine in gerrit; I'll check.
+
+Gerrit run with Java 8 I guess. Test failures are on 11 and 12 (>8). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T06:32:44Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/142300 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T06:32:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> From the looks of it, the new folder with Java 9 test snippets (only 1 so far) is not found during the test:
+
+junit.framework.AssertionFailedError: Failed to create the 'Nine' test project.
+'jp' is 'null'
+Stack tace:
+java.lang.NullPointerException
+at org.eclipse.jdt.debug.testplugin.JavaProjectHelper.addJavaFiles(JavaProjectHelper.java:596)
+at org.eclipse.jdt.debug.testplugin.JavaProjectHelper.importFilesFromDirectory(JavaProjectHelper.java:554)
+at org.eclipse.jdt.debug.tests.AbstractDebugTest.createProject(AbstractDebugTest.java:877)
+at org.eclipse.jdt.debug.tests.AbstractDebugTest.assert9Project(AbstractDebugTest.java:510)
+at org.eclipse.jdt.debug.tests.AbstractDebugTest.get9Project(AbstractDebugTest.java:806)
+at org.eclipse.jdt.debug.tests.variables.TestLogicalStructuresJava9.getProjectContext(TestLogicalStructuresJava9.java:26)
+at org.eclipse.jdt.debug.tests.AbstractDebugTest.getType(AbstractDebugTest.java:2000)
+at org.eclipse.jdt.debug.tests.AbstractDebugTest.createLineBreakpoint(AbstractDebugTest.java:1607)
+at org.eclipse.jdt.debug.tests.variables.TestLogicalStructures.testMapLogicalStructure(TestLogicalStructures.java:87)
+at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+at junit.framework.TestCase.runTest(TestCase.java:176)
+at junit.framework.TestCase.runBare(TestCase.java:141)
+at org.eclipse.jdt.debug.tests.AbstractDebugTest.runBare(AbstractDebugTest.java:2612)
+at junit.framework.TestResult$1.protect(TestResult.java:122)
+at junit.framework.TestResult.runProtected(TestResult.java:142)
+at junit.framework.TestResult.run(TestResult.java:125)
+at junit.framework.TestCase.run(TestCase.java:129)
+at junit.framework.TestSuite.runTest(TestSuite.java:252)
+at junit.framework.TestSuite.run(TestSuite.java:247)
+at junit.framework.TestSuite.runTest(TestSuite.java:252)
+at org.eclipse.jdt.debug.tests.DebugSuite$1.run(DebugSuite.java:61)
+at java.base/java.lang.Thread.run(Thread.java:834) 
+
+I *think* this causes all 3 fails. The one above, plus 2 that fail to find the new test snippet. Though I'm not exactly sure why not all 3 tests try to create, then fail, the Java 9 project. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T06:35:34Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Off topic, but, can somebody tell me why the MAC releases are still based
+on JAVA 8, while ECLIPSE flawlessly handles JAVA 11 sources?
+Maybe my misunderstanding of the architecture.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T07:02:28Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/142300 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.debug.git/commit/?id=3061c32d7ef3a55f619e17052d70cd7b569ca534 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T07:08:02Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Joop Lanting from comment #64)
+> Off topic, but, can somebody tell me why the MAC releases are still based
+> on JAVA 8, while ECLIPSE flawlessly handles JAVA 11 sources?
+> Maybe my misunderstanding of the architecture.
+
+The *build* is still using Java 8 for all platforms, but only tests are running on different VM's on Linux, and resulting SDK should handle Java 11 equally good/bad on all platforms.
+
+(In reply to Eclipse Genie from comment #65)
+> Gerrit change https://git.eclipse.org/r/142300 was merged to [master].
+> Commit:
+> http://git.eclipse.org/c/jdt/eclipse.jdt.debug.git/commit/
+> ?id=3061c32d7ef3a55f619e17052d70cd7b569ca534
+
+This should fix the tests, we should wait for the next SDK build to see confirmation before closing this bug. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-17T07:10:48Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Thanks Andrey.
+;JOOP! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-18T04:40:49Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 547444 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-18T06:10:49Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Tests are fine now, resolving. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-21T06:28:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Verified using Build id: I20190520-1805. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-21T13:45:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 547517 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-06T14:14:04Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 547965 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-17T06:10:08Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 548274 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-24T18:36:34Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 559505 has been marked as a duplicate of this bug. *** </td> </tr>
+        </table>
+</body>
+</html>

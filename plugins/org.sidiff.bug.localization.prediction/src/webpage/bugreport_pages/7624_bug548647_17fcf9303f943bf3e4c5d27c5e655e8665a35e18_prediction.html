@@ -1,0 +1,810 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 548647 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Suppress "Unnecessary cast" warning when removal would cause a compile error </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-06-25T19:34:43Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> VERIFIED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 549457 - Autobuild does nothing on org.eclipse.jdt.core.prefs change
+
+If the file .settings/org.eclipse.jdt.core.prefs changes, JDT does not
+automatically rebuild the project. E.g. pulling different settings from
+git will not result in a re-build; only changing the settings from the
+Java compiler preference page will ask the user if they wish to rebuild
+the workspace.
+
+This change adjusts JavaBuilder to inspect deltas for changes in
+.settings/org.eclipse.jdt.core.prefs. In case of such, a full build is
+done. It also adds a test to ensure build participants are triggered on
+changes in .settings/org.eclipse.jdt.core.prefs changes.
+
+In addition to this change, its necessary to adapt the dialog in the
+Java compiler preference page (in JDT UI), to not give the option "no
+build on preferences apply". This is the case, since applying the
+compiler preferences will cause the auto-build to do a full build,
+regardless of whether the user chose the "no" option.
+
+In case this new behavior causes problems, e.g. in tooling which
+re-generates project files without actually changing them, it is
+possible to return to the previous behavior with the VM property:
+
+-Dorg.eclipse.jdt.core.disableAutoBuildOnSettingsChange=true
+
+Change-Id: I10fb9bb828eec43fcdd81d36c78f3e30aa1cc9dc
+Signed-off-by: Simeon Andreev <simeon.danailov.andreev@gmail.com> </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-07-24T15:06:07Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IProblem; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CombinedBinaryExpression; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ProblemReporter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Checks; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LambdaFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SourceTypeBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilerOptions; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterJavadocTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> NullReferenceImplTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BindingMap; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Util; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacTestOptions$Excuse; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> FieldInitsFakingFlowContext; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewrite; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SourceElementNotifier$LocalDeclarationVisitor; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> DatabaseRef; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleBuilderTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionOnReferenceExpression; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTBasedDeclarationImpl; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ElementValuePair$UnresolvedEnumConstant; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaCore; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ConstructorPattern; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ExceptionHandler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> PDOMBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> GeneratedFileManager; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewritingExpressionsTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> TypeBinding$LocalTypeBinding; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/compiler/IProblem; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/CombinedBinaryExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/internal/util/Factory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/problem/ProblemReporter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/ASTConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/CastExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.annotation/Lorg/eclipse/jdt/annotation/Checks; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/Expression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/LambdaFactory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.annotation/Lorg/eclipse/jdt/annotation/NonNullByDefault; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/BreakStatement; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/SourceTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/OR_OR_Expression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/impl/CompilerOptions; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/PrefixExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterJavadocTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/parser/Parser; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/JavadocArgumentExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/NullReferenceImplTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/ConstraintExpressionFormula; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/InstanceOfExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/LambdaExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/PostfixExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/SwitchExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/MethodDeclaration; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/MethodVerifier15; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/hierarchy/BindingMap; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/BinaryTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/Expression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/NestedTypeBinding; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-25T19:34:43Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> The following code sequence:
+
+interface MUIElement {} 
+interface MUIElementContainer<T extends MUIElement> extends MUIElement{} 
+interface MWindowElement extends MUIElement {} 
+interface MWindow extends MUIElementContainer<MWindowElement> {} 
+public class X { 
+	void test(MUIElementContainer<MUIElement> me) { 
+		if(((Object) me) instanceof MWindow) return; 
+		MWindow mw = (MWindow)((MUIElement)me); 
+	} 
+}
+
+causes a warning in JDT about the unnecessary cast to Object, however, removing the cast as suggested by the quick fix causes an error.
+
+Running this same code through javac with -Xlint:cast -Werror does not display an error.
+
+A solution that disables unnecessary type cast checking solves this problem and prevents the JDT from providing a quick fix for a warning that creates an error.  A similar problem was reported before in https://bugs.eclipse.org/bugs/show_bug.cgi?id=441731 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-25T20:00:46Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> AFAICS the casts are needed in order to hide a type error, right?
+
+An MUIElementContainer<MUIElement> can never be compatible to MWindow (subclass of MUIElementContainer<MWindowElement>).
+
+Why would one want to right such incorrect code?
+
+To avoid the unwanted warning, one would need to see that the cast is embedded in an instanceof expression, and suppress the warning if the uncasted type is provably distinct from the instanceof type (thus recognizing the case where instanceof would be illegal without the kludge).
+
+A similar check was indeed added in bug 441731, but unfortunately we have no easy way of referencing the containing expression.
+
+Makes me think: I'd actually report this very situation (instanceof / cast only legal with this kludge) via a separate configurable warning, which in my projects I would configure as an error. :) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-25T20:21:45Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #1)
+> AFAICS the casts are needed in order to hide a type error, right?
+> 
+> An MUIElementContainer<MUIElement> can never be compatible to MWindow
+> (subclass of MUIElementContainer<MWindowElement>).
+> 
+> Why would one want to right such incorrect code?
+>
+
+Actually, the real code is in CleanUpAddon from org.eclipse.e4.ui.workbench.addons.swt
+
+There is a method called getParent() which returns MUIElement<MUIElement> which is also an MUIElement.  This can be an instanceof a number of things such as MWindow, etc...  The code uses Object to cast some of the instanceof statements otherwise JDT marks the instanceof as an error.  JDT gives the unnecessary cast warnings and removing the casts as specified results in errors.
+
+I then checked what javac does and it does not warn about the cast but fails without it.
+
+That said, there may be other scenarios out there that are just as valid that we flag as warnings and cause an error when quick fix is followed.
+ 
+> To avoid the unwanted warning, one would need to see that the cast is
+> embedded in an instanceof expression, and suppress the warning if the
+> uncasted type is provably distinct from the instanceof type (thus
+> recognizing the case where instanceof would be illegal without the kludge).
+> 
+
+I have a patch for InstanceofExpression
+
+	if (this.expression instanceof CastExpression) {
+		this.expression.bits |= ASTNode.DisableUnnecessaryCastCheck;  
+	}
+
+Should I post it for review (including a test case)? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-25T20:24:52Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jeff Johnston from comment #2)
+> (In reply to Stephan Herrmann from comment #1)
+> > AFAICS the casts are needed in order to hide a type error, right?
+> > 
+> > An MUIElementContainer<MUIElement> can never be compatible to MWindow
+> > (subclass of MUIElementContainer<MWindowElement>).
+> > 
+> > Why would one want to right such incorrect code?
+> >
+> 
+> Actually, the real code is in CleanUpAddon from
+> org.eclipse.e4.ui.workbench.addons.swt
+> 
+> There is a method called getParent() which returns MUIElement<MUIElement>
+> which is also an MUIElement.  This can be an instanceof a number of things
+> such as MWindow, etc...  The code uses Object to cast some of the instanceof
+> statements otherwise JDT marks the instanceof as an error.  JDT gives the
+> unnecessary cast warnings and removing the casts as specified results in
+> errors.
+> 
+> I then checked what javac does and it does not warn about the cast but fails
+> without it.
+> 
+> That said, there may be other scenarios out there that are just as valid
+> that we flag as warnings and cause an error when quick fix is followed.
+>  
+> > To avoid the unwanted warning, one would need to see that the cast is
+> > embedded in an instanceof expression, and suppress the warning if the
+> > uncasted type is provably distinct from the instanceof type (thus
+> > recognizing the case where instanceof would be illegal without the kludge).
+> > 
+> 
+> I have a patch for InstanceofExpression
+> 
+> 	if (this.expression instanceof CastExpression) {
+> 		this.expression.bits |= ASTNode.DisableUnnecessaryCastCheck;  
+> 	}
+> 
+> Should I post it for review (including a test case)?
+
+Sorry that should have been MElementContainer<MUIElement> for the getParent() method of MUIElement and the MElementContainer also extends MUIElement. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-25T21:24:55Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jeff Johnston from comment #2)
+> (In reply to Stephan Herrmann from comment #1)
+> > AFAICS the casts are needed in order to hide a type error, right?
+> > 
+> > An MUIElementContainer<MUIElement> can never be compatible to MWindow
+> > (subclass of MUIElementContainer<MWindowElement>).
+> > 
+> > Why would one want to right such incorrect code?
+> >
+> 
+> Actually, the real code is in CleanUpAddon from
+> org.eclipse.e4.ui.workbench.addons.swt
+> 
+> There is a method called getParent() which returns MUIElement<MUIElement>
+typo, should be MUIElementContainer<MUIElement>
+
+> which is also an MUIElement.  This can be an instanceof a number of things
+> such as MWindow, etc... 
+
+No, from a type system p.o.v. an MUIElementContainer<MUIElement> can not legally be an MWindow, sorry (see comment 1).
+
+It seems that code is a blunt abuse of generics.
+
+> The code uses Object to cast some of the instanceof
+> statements otherwise JDT marks the instanceof as an error.
+
+correctly so.
+
+Apparently s.o. forgot to add a wildcard to yield:
+    MElementContainer<? extends MUIElement> getParent()
+With that, you indeed wouldn't need the cast to Object or to MUIElement in the line below and JDT would happily accept the corrected instanceof expression.
+
+> I have a patch for InstanceofExpression
+> 
+> 	if (this.expression instanceof CastExpression) {
+> 		this.expression.bits |= ASTNode.DisableUnnecessaryCastCheck;  
+> 	}
+> 
+> Should I post it for review (including a test case)?
+
+I can give my -1 directly here :)
+
+It seems that change would kill the correct warning e.g. here:
+//---
+void m (Number n) {
+    if (((Number) n) instanceof Long)
+        System.out.println("LONG");
+}
+//---
+
+The only case where I would accept suppressing the warning, is if the instanceof would become illegal by removing the cast. Again see comment 1 and also method isProvablyDistinct(). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-26T14:40:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> > > 
+> > Should I post it for review (including a test case)?
+> 
+> I can give my -1 directly here :)
+
+Who needs gerrit? :)
+
+> 
+> It seems that change would kill the correct warning e.g. here:
+> //---
+> void m (Number n) {
+>     if (((Number) n) instanceof Long)
+>         System.out.println("LONG");
+> }
+> //---
+> 
+
+I will add this scenario as part of any tests.
+
+> The only case where I would accept suppressing the warning, is if the
+> instanceof would become illegal by removing the cast. Again see comment 1
+> and also method isProvablyDistinct().
+
+Ok, I'll go back and change it.  I'll also change the bug title. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-26T14:46:43Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> thanks,
+
+(In reply to Jeff Johnston from comment #5)
+> Who needs gerrit? :)
+
+most people meanwhile know that I'm old-school :)
+(but even I comment in gerrit sometimes ...) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-27T22:58:44Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/145069 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-27T23:15:11Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #6)
+> thanks,
+> 
+> (In reply to Jeff Johnston from comment #5)
+> > Who needs gerrit? :)
+> 
+> most people meanwhile know that I'm old-school :)
+> (but even I comment in gerrit sometimes ...)
+
+Ok, I have another patch.  I had to delay resolving the expression type or else the unnecessary error would occur.  I also found that isProvablyDistinct was not enough to determine if the error would occur and caused some false negatives so I used the checkCastTypesCombatibility function that would generate the error.  Resolving a NameReference caused the variable to be marked as error when the cast expression got resolved later so I had to special case it.  Finally, I found that resolving the checkedType ahead of the expression caused an error in the CompletionTests so I made sure that worked properly.  I added new tests that test the original problem and also the Number scenarios you mentioned that should correctly trigger the warning and all tests run successfully.  I also ran it on CleanupAddon.java and it solved the initial problem that started all of this. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-27T23:44:33Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #6)
+> thanks,
+> 
+> (In reply to Jeff Johnston from comment #5)
+> > Who needs gerrit? :)
+> 
+> most people meanwhile know that I'm old-school :)
+> (but even I comment in gerrit sometimes ...)
+
+@Jeff: Given the complex interplay of different parts of code in JDT Core, we follow the practice of keeping the major comments in bugzilla rather than gerrit so that we have a one-place-stop for all the comments rather than going around checking each gerrit patch for comments - [there might be some exceptions where some minor comments are discussed in gerrit - but that is an exception rather than the rule]. And consequently the review flag is used (click on flag and use the "review" box to request for review) in the bug for an explicit request for review. 
+Would request you to follow the above. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-28T00:17:45Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Manoj Palat from comment #9)
+> (In reply to Stephan Herrmann from comment #6)
+> > thanks,
+> > 
+> > (In reply to Jeff Johnston from comment #5)
+> > > Who needs gerrit? :)
+> > 
+> > most people meanwhile know that I'm old-school :)
+> > (but even I comment in gerrit sometimes ...)
+> 
+> @Jeff: Given the complex interplay of different parts of code in JDT Core,
+> we follow the practice of keeping the major comments in bugzilla rather than
+> gerrit so that we have a one-place-stop for all the comments rather than
+> going around checking each gerrit patch for comments - [there might be some
+> exceptions where some minor comments are discussed in gerrit - but that is
+> an exception rather than the rule]. And consequently the review flag is used
+> (click on flag and use the "review" box to request for review) in the bug
+> for an explicit request for review. 
+> Would request you to follow the above.
+
+Done. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-29T12:09:50Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jeff Johnston from comment #8)
+> (In reply to Stephan Herrmann from comment #6)
+> > thanks,
+> > 
+> > (In reply to Jeff Johnston from comment #5)
+> > > Who needs gerrit? :)
+> > 
+> > most people meanwhile know that I'm old-school :)
+> > (but even I comment in gerrit sometimes ...)
+> 
+> Ok, I have another patch.  I had to delay resolving the expression type or
+> else the unnecessary error would occur.  I also found that
+> isProvablyDistinct was not enough to determine if the error would occur and
+> caused some false negatives so I used the checkCastTypesCombatibility
+> function that would generate the error.  Resolving a NameReference caused
+> the variable to be marked as error when the cast expression got resolved
+> later so I had to special case it.  Finally, I found that resolving the
+> checkedType ahead of the expression caused an error in the CompletionTests
+> so I made sure that worked properly.  I added new tests that test the
+> original problem and also the Number scenarios you mentioned that should
+> correctly trigger the warning and all tests run successfully.  I also ran it
+> on CleanupAddon.java and it solved the initial problem that started all of
+> this.
+
+Thanks, looks better now.
+
+Unfortunately, due to gerrit instability I can't pull the change to play with it.
+
+First observation: I don't believe the restriction to NameReference is good. Please add a test case where the expression is, e.g., a method invocation. Or do you have reasons to exclude some kinds of expressions?
+
+Resolving the elements of the nested CastExpression would indeed lead to troubles, since every ASTNode should be resolved only once. To generalize your solution to arbitrary expressions, I suggest you try to push this logic into CastExpression. For that you might create a new field in CastExpression:
+  TypeBinding instanceOfType;
+Then CastExpression could use this field (if set) to determine if removing the cast would create a type error.
+Or, a more generic design, if you like:
+  Predicate<TypeBinding> wouldNakedTypeBeLegal;
+In that case InstanceOfExpression could specify the condition to be checked during CastExpression.resolveType().
+WDYT?
+
+This leads me to the question, whether more combinations should be handled, in particular nested/chained cast? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-07-03T00:57:04Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #11)
+> (In reply to Jeff Johnston from comment #8)
+> > (In reply to Stephan Herrmann from comment #6)
+> > > thanks,
+> > > 
+> > > (In reply to Jeff Johnston from comment #5)
+> > > > Who needs gerrit? :)
+> > > 
+> > > most people meanwhile know that I'm old-school :)
+> > > (but even I comment in gerrit sometimes ...)
+> > 
+> > Ok, I have another patch.  I had to delay resolving the expression type or
+> > else the unnecessary error would occur.  I also found that
+> > isProvablyDistinct was not enough to determine if the error would occur and
+> > caused some false negatives so I used the checkCastTypesCombatibility
+> > function that would generate the error.  Resolving a NameReference caused
+> > the variable to be marked as error when the cast expression got resolved
+> > later so I had to special case it.  Finally, I found that resolving the
+> > checkedType ahead of the expression caused an error in the CompletionTests
+> > so I made sure that worked properly.  I added new tests that test the
+> > original problem and also the Number scenarios you mentioned that should
+> > correctly trigger the warning and all tests run successfully.  I also ran it
+> > on CleanupAddon.java and it solved the initial problem that started all of
+> > this.
+> 
+> Thanks, looks better now.
+> 
+> Unfortunately, due to gerrit instability I can't pull the change to play
+> with it.
+> 
+> First observation: I don't believe the restriction to NameReference is good.
+> Please add a test case where the expression is, e.g., a method invocation.
+> Or do you have reasons to exclude some kinds of expressions?
+> 
+
+I made the restriction based on my testing (local vars were ending up flagged as unknown due to resolving the type).  Adding a cast of a method call to the existing tests works for the no warnings test but it doesn't give a warning for casting a method that returns Number to a Number in the second test so my logic is certainly flawed.
+
+> Resolving the elements of the nested CastExpression would indeed lead to
+> troubles, since every ASTNode should be resolved only once. To generalize
+> your solution to arbitrary expressions, I suggest you try to push this logic
+> into CastExpression. For that you might create a new field in CastExpression:
+>   TypeBinding instanceOfType;
+> Then CastExpression could use this field (if set) to determine if removing
+> the cast would create a type error.
+> Or, a more generic design, if you like:
+>   Predicate<TypeBinding> wouldNakedTypeBeLegal;
+> In that case InstanceOfExpression could specify the condition to be checked
+> during CastExpression.resolveType().
+> WDYT?
+>
+
+I like your idea of passing the instanceof type to the Cast expression to use during the resolveType().  That should alleviate the need to special case.  I will modify the patch appropriately and post when I am done.
+ 
+> This leads me to the question, whether more combinations should be handled,
+> in particular nested/chained cast? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-07-25T22:05:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/145069 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=4bf4f4298ef45b4ec1177afd1b55f09a8766ca77 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-07-25T22:07:04Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #13)
+> Gerrit change https://git.eclipse.org/r/145069 was merged to [master].
+> Commit:
+> http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/
+> ?id=4bf4f4298ef45b4ec1177afd1b55f09a8766ca77
+
+Released for 4.13 M3, thanks. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-21T13:45:37Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Verified for 4.13 M3 using build I20190820-1800 </td> </tr>
+        </table>
+</body>
+</html>

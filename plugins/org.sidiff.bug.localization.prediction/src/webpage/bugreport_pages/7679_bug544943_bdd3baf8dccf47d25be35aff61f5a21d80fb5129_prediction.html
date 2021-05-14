@@ -1,0 +1,966 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 544943 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> [13][codegen] Exception while codegen for multi-nested switch expression with try </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-03-01T10:46:31Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> RESOLVED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Revert "Bug 544943 - [13][codegen] Exception while codegen for multi-nested switch expression with try "
+
+This reverts commit d629b1096b8cb254d581d898bc8e532a43fadd9d.
+
+Change-Id: I58fe6902f5a7c02909ef276dbacc5a3a4e55a6b0
+ </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-09-20T07:05:28Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewrite; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterBugsTestJLS4; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SwitchExpressionTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JDTCompilerAdapter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> DatabaseRef; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> DefaultCodeFormatterOptions; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SwitchExpression; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeFormatterApplication; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IDOMFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IField; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RegressionTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewritingSwitchExpressionsTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> FormatterJavadocDontIndentTagsTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilerOptions; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilerToolTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ConditionalExpression; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleBuilderTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractCommentParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacTestOptions$Excuse; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BatchCompiler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> NdMethod; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModificationLog$Tag; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> HierarchicalASTVisitor; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IdeProcessingEnvImpl; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LoopingFlowContext; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionJavadocParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacCompiler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> LambdaExpression; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/rewrite/ASTRewrite; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS4; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/SwitchExpressionTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/JDTCompilerAdapter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterJavadocTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/DatabaseRef; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter18Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/formatter/DefaultCodeFormatterOptions; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/SwitchExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter9Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/formatter/CodeFormatterApplication; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter11Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_9; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/ASTConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/NamingConventions; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/SwitchExpressionsYieldTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS8; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterJSR335Tests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/LambdaRegressionTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter17Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/jdom/IDOMFactory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterTestAST4_2; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/field/IField; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.tests/Lorg/eclipse/jdt/apt/tests/RegressionTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JavadocTest_1_5; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/rewrite/describing/ASTRewritingSwitchExpressionsTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterJavadocDontIndentTagsTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/impl/CompilerOptions; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/JEP286Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterRegressionTests; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-01T10:46:31Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 277728
+test case
+
+Run the attached testcase to get :
+Exception in thread "main" java.lang.Error: Unresolved compilation problem: 
+	at X.foo(X.java:3)
+	at X.main(X.java:20) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-01T10:49:45Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> ST for debugging : break here:
+MethodDeclaration(AbstractMethodDeclaration).generateCode(ClassFile) line: 357	
+MethodDeclaration(AbstractMethodDeclaration).generateCode(ClassScope, ClassFile) line: 281	
+TypeDeclaration.generateCode(ClassFile) line: 578	
+TypeDeclaration.generateCode(CompilationUnitScope) line: 648	
+CompilationUnitDeclaration.generateCode() line: 410	
+CompilationUnitProblemFinder(Compiler).resolve(CompilationUnitDeclaration, ICompilationUnit, boolean, boolean, boolean) line: 1061	
+CompilationUnitProblemFinder(Compiler).resolve(ICompilationUnit, boolean, boolean, boolean) line: 1100	
+CompilationUnitProblemFinder.process(CompilationUnit, SourceElementParser, WorkingCopyOwner, HashMap, boolean, int, IProgressMonitor) line: 280	
+CompilationUnitProblemFinder.process(CompilationUnit, WorkingCopyOwner, HashMap, boolean, int, IProgressMonitor) line: 346	
+ReconcileWorkingCopyOperation.makeConsistent(CompilationUnit) line: 193	
+ReconcileWorkingCopyOperation.executeOperation() line: 94	
+ReconcileWorkingCopyOperation(JavaModelOperation).run(IProgressMonitor) line: 736	
+ReconcileWorkingCopyOperation(JavaModelOperation).runOperation(IProgressMonitor) line: 802	
+CompilationUnit.reconcile(int, int, WorkingCopyOwner, IProgressMonitor) line: 1322	
+JavaReconcilingStrategy.reconcile(ICompilationUnit, boolean) line: 131	
+
+NegativeArraySizeException is thrown. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-01T13:02:09Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Reproduced. Working on it. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-03-20T06:24:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I don't know if this is same, but the following code throws an AIOBE when compiling. And making small changes to the code throws a verify error.
+
+public class X {
+    @SuppressWarnings("preview")
+	public static void main(String[] args) {
+    (new X()).bar(switch (0) {
+           default -> {
+               try {
+                   break 1;
+               }
+               catch (Exception ex) {
+                   break 2;
+               }
+           }
+        }); 
+        foo(Day.SUNDAY); // Commenting out this code make the compiler work but throws a VerifyError on running
+    }
+    public void bar(int i) {} // if bar() is static, we can both compiler and run the code
+    public static void foo(Day d) {} 
+} 
+enum Day {  
+	SUNDAY, MONDAY;
+} </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-04T04:56:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Retargeting to Java13 with the latest spec changes. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-14T04:52:57Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Manoj Palat from comment #0)
+> Created attachment 277728 [details]
+> test case
+
+Test case further simplified without the custom exception:
+
+public class X {
+  @SuppressWarnings("preview")
+  public static void foo(int i) throws Exception {
+    int v = switch (i) {
+        case 0 -> switch (i) {
+              case 0 -> 0;
+              default -> throw new Exception();
+            };
+        default -> 0;
+    };
+  }
+
+  public static void main(String argv[]) throws Exception {
+    X.foo(0);
+  }
+} </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-22T03:26:04Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 279655
+Debugging Notes
+
+A short description of the analysis so far given below - For the complete detailed information, please refer to the attachment:
+
+For the following code snippet,
+
+  public static int foo(int i) throws Exception {
+    int v = switch (i) {
+        case 0 -> switch (i) {
+              case 0 -> 0;
+              default -> throw new Exception();
+            };
+        default -> 0;
+    };
+    return v;
+  }
+
+The code generated is shown below:
+// Method descriptor #15 (I)I
+  // Stack: 3, Locals: 1
+  public static int foo(int arg0) throws java.lang.Exception;
+     0  new java.lang.Error [23]
+     3  dup
+     4  ldc <String "Unresolved compilation problem: \n"> [25]
+     6  invokespecial java.lang.Error(java.lang.String) [27]
+     9  athrow
+      Line numbers:
+        [pc: 0, line: 3]
+
+The message at runtime is of course given by the line 4  ldc <String "Unresolved compilation problem: \n"> which is inserted into the code stream by the following st (debug breakpoint):
+ClassFile.addProblemMethod(AbstractMethodDeclaration, MethodBinding, CategorizedProblem[]) line: 914	
+ClassFile.addProblemMethod(AbstractMethodDeclaration, MethodBinding, CategorizedProblem[], int) line: 952	
+MethodDeclaration(AbstractMethodDeclaration).generateCode(ClassScope, ClassFile) line: 317	
+TypeDeclaration.generateCode(ClassFile) line: 583	
+TypeDeclaration.generateCode(CompilationUnitScope) line: 653	
+CompilationUnitDeclaration.generateCode() line: 410	
+CompilationUnitResolver.resolve(CompilationUnitDeclaration, ICompilationUnit, NodeSearcher, boolean, boolean, boolean) line: 1249	
+CompilationUnitResolver.resolve(ICompilationUnit, IJavaProject, List, NodeSearcher, Map, WorkingCopyOwner, int, IProgressMonitor) line: 714	
+ASTParser.internalCreateAST(IProgressMonitor) line: 1221	
+ASTParser.createAST(IProgressMonitor) line: 836	
+CoreASTProvider$1.run() line: 271	
+
+at the st:
+StackMapFrame.duplicate() line: 129	
+ClassFile.traverse(MethodBinding, int, byte[], int, int, Map, boolean) line: 5955	
+ClassFile.generateStackMapTableAttribute(MethodBinding, int, int, int, boolean) line: 4804	
+ClassFile.completeCodeAttribute(int) line: 1513	
+MethodDeclaration(AbstractMethodDeclaration).generateCode(ClassFile) line: 357	
+MethodDeclaration(AbstractMethodDeclaration).generateCode(ClassScope, ClassFile) line: 281	
+TypeDeclaration.generateCode(ClassFile) line: 583	
+TypeDeclaration.generateCode(CompilationUnitScope) line: 653	
+CompilationUnitDeclaration.generateCode() line: 410	
+
+	length = this.numberOfStackItems;
+	if (length != 0) {
+the length is -1 is here
+
+and an allocation of an array of negative size, causes NegativeArraySizeException which causes the abort pushing all the way up to provide the ldc string of compilation error. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-22T09:25:13Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> @Olivier: Adding further debugging notes:
+the length mentioned in the above comment 6 is the stack items ie frame. numberOfStackItems
+Starting from the expected code to be generated [the following generated by commenting out //					frame.numberOfStackItems--; under tableSwitch case in traverse [for debug purpose only]:
+  // Method descriptor #15 (I)I
+  // Stack: 2, Locals: 2
+  public static int foo(int i) throws java.lang.Exception;
+     0  iload_0 [i]
+     1  tableswitch default: 52
+          case 0: 20
+    20  iload_0 [i]
+    21  tableswitch default: 44
+          case 0: 40
+    40  iconst_0
+    41  goto 53
+    44  new java.lang.Exception [17]
+    47  dup
+    48  invokespecial java.lang.Exception() [19]
+    51  athrow
+    52  iconst_0
+    53  istore_1 [v]
+    54  iload_1 [v]
+    55  ireturn
+      Line numbers:
+        [pc: 0, line: 4]
+        [pc: 20, line: 5]
+        [pc: 40, line: 6]
+        [pc: 44, line: 7]
+        [pc: 52, line: 9]
+        [pc: 53, line: 4]
+        [pc: 54, line: 11]
+      Local variable table:
+        [pc: 0, pc: 56] local: i index: 0 type: int
+        [pc: 54, pc: 56] local: v index: 1 type: int
+
+The stack frame snapshots are each of the opcodes are listed below:
+
+0	iload_0 [i]
+  [pc : -1 locals: 0 stack items: 1
+locals: [I,top]
+stack: [I]]
+
+
+     1  tableswitch default: 52
+          case 0: 20
+[pc : -1 locals: 1 stack items: 0
+locals: [I,top]
+stack: []
+]
+    20  iload_0 [i]
+[pc : -1 locals: 1 stack items: 1
+locals: [I,top]
+stack: [I]
+]
+    21  tableswitch default: 44
+          case 0: 40
+[pc : -1 locals: 1 stack items: 0
+locals: [I,top]
+stack: []
+]
+    40  iconst_0
+[pc : -1 locals: 1 stack items: 1
+locals: [I,top]
+stack: [I]
+]
+    41  goto 53
+[pc : -1 locals: 1 stack items: 1
+locals: [I,top]
+stack: [I]
+]
+    44  new java.lang.Exception [17]
+[pc : -1 locals: 1 stack items: 1
+locals: [I,top]
+stack: [uninitialized(java/lang/Exception)]
+]
+    47  dup
+[pc : -1 locals: 1 stack items: 2
+locals: [I,top]
+stack: [uninitialized(java/lang/Exception),uninitialized(java/lang/Exception)]
+]
+    48  invokespecial java.lang.Exception() [19]
+[pc : -1 locals: 1 stack items: 1
+locals: [I,top]
+stack: [java/lang/Exception]
+]
+    51  athrow
+[pc : -1 locals: 1 stack items: 0
+locals: [I,top]
+stack: []
+]
+
+And a frame.duplicate() throws NegativeArrayException here 
+when it tries to decrement stack items which is already 0.
+    52  iconst_0
+    53  istore_1 [v]
+    54  iload_1 [v]
+    55  ireturn
+
+]
+This points to the decrement of athrow, and for debugging purposes, commenting out the //					frame.numberOfStackItems--;
+Under	case Opcodes.OPC_athrow:
+Of ClassFile.traverse; compilation goes through and the code generated is as follows:
+// Method descriptor #15 (I)I
+  // Stack: 2, Locals: 2
+  public static int foo(int i) throws java.lang.Exception;
+     0  iload_0 [i]
+     1  tableswitch default: 52
+          case 0: 20
+    20  iload_0 [i]
+    21  tableswitch default: 44
+          case 0: 40
+    40  iconst_0
+    41  goto 53
+    44  new java.lang.Exception [17]
+    47  dup
+    48  invokespecial java.lang.Exception() [19]
+    51  athrow
+    52  iconst_0
+    53  istore_1 [v]
+    54  iload_1 [v]
+    55  ireturn
+      Line numbers:
+        [pc: 0, line: 4]
+        [pc: 20, line: 5]
+        [pc: 40, line: 6]
+        [pc: 44, line: 7]
+        [pc: 52, line: 9]
+        [pc: 53, line: 4]
+        [pc: 54, line: 11]
+      Local variable table:
+        [pc: 0, pc: 56] local: i index: 0 type: int
+        [pc: 54, pc: 56] local: v index: 1 type: int
+      Stack map table: number of frames 5
+        [pc: 20, same]
+        [pc: 40, same]
+        [pc: 44, same]
+        [pc: 52, same]
+        [pc: 53, same_locals_1_stack_item, stack: {int}]
+Looking at the Stack map table (jdt disassembler output � pc explicitly displayed),
+ this is in complete agreement with the javac generated code as well, the appropriate part extracted below (javap output that of the above identical now)
+      StackMapTable: number_of_entries = 5
+        frame_type = 20 /* same */
+        frame_type = 19 /* same */
+        frame_type = 3 /* same */
+        frame_type = 7 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+The program runs and prints zero correctly as well.
+Random notes/thinking aloud: Though a blanket commenting of decrement is of course wrong, is this pointing to any omission in terms of are we missing any conditional check before decrementing the stack items at athrow in a switch labeled expression rhs? Or any special processing at the flow-analysis/code-gen stage of ThrowStatement within a switch labelled expression enclosed within a switch expression? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-23T14:08:02Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Further Notes:
+public class X {
+  @SuppressWarnings({ "preview" })
+  public static int foo(int i) throws Exception {
+    int v = switch (i) {
+        case 0 -> switch (i) {
+        	case 0 -> 0;
+            default-> throw new Exception();
+        	case 3 -> 3;
+        	case 2 -> throw new Exception();
+        };
+        default -> 0;
+    };
+    return v;
+  }
+  public static void main(String argv[]) throws Exception {
+    System.out.println(X.foo(1));
+  }
+The problem happens only if throw new Exception() is the last case in the switch expression � it can be either a case or the default, just the order , ie just the last one matters � Is the YieldStatement.adjustStackSize() a suspect? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-29T19:45:41Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Investigating the issue again. Could not get a fix yet. Continuing to debug the case. I think this is a consequence of optimized goto. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-19T13:46:39Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/149843 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-19T13:50:22Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #10)
+> New Gerrit change created: https://git.eclipse.org/r/149843
+
+Merge of Olivier's new_stack_map to master via : https://git.eclipse.org/r/#/c/149842 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T05:37:23Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/149843 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=d629b1096b8cb254d581d898bc8e532a43fadd9d </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T05:39:14Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Manoj Palat from comment #11)
+
+> Merge of Olivier's new_stack_map to master via :
+> https://git.eclipse.org/r/#/c/149842
+
+Done via commit: https://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=9407f9ff6ccc3c7dccbee9bda158370adbe122c7
+
+Thanks Olivier! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T07:01:17Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/149876 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T07:05:42Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/149878 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T07:06:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/149878 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=42e8e7c7d3c0a2353712025cd77254613c5d31d7 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T07:09:18Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/149881 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T10:10:48Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/149896 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-20T13:35:35Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> A combined stashed change of Olivier's patch alongwith test case changes and dom ast ConverterJCL additions/corrections at https://git.eclipse.org/r/#/c/149902/.
+
+Tests are green.
+
+This was pushed via commit:https://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=ae3d720efce20459d1d746646153478f03bf3002
+
+Thanks Olivier.
+
+Resolving </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-23T13:27:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Manoj Palat from comment #19)
+> A combined stashed change of Olivier's patch alongwith test case changes and
+> dom ast ConverterJCL additions/corrections at
+> https://git.eclipse.org/r/#/c/149902/.
+> 
+> Tests are green.
+> 
+> This was pushed via
+> commit:https://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/
+> ?id=ae3d720efce20459d1d746646153478f03bf3002
+> 
+> Thanks Olivier.
+> 
+> Resolving
+
+This one most likely caused a major regression, see bug 551368. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-23T14:02:15Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/150001 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-23T14:28:39Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #21)
+> New Gerrit change created: https://git.eclipse.org/r/150001
+
+This is a revert for commit ae3d720efce20459d1d746646153478f03bf3002. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-23T16:52:07Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/150001 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=d698c9585b5705d5d5c4944bb938bdba566fefdc </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-23T19:56:10Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/150017 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-24T03:58:28Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #24)
+> New Gerrit change created: https://git.eclipse.org/r/150017
+
+
+New Gerrit change created: https://git.eclipse.org/r/150033
+
+
+Created a combined gerrit that includes the revert of revert of bug 544943 and then applied the patch of bug 551368 - essentially https://git.eclipse.org/r/#/c/150018/.
+Request people willing to test this out by spawning Eclipse and doing some sanity test. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-24T08:31:57Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/150017 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=4cce8d539640bf79f986bb9a432b2351d6a08608 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-24T08:35:07Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Fixed via bug 551368. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-25T18:04:14Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> The fix for this issue is a complete rewrite of the stack map frame computation. Instead of trying to keep stack map markers during the code generation, the generated bytecodes are traversed to compute the needed stack map frames. I added the notion of merging existing stack map frames with the current frame at branching locations. This required to have a scope in order to be able to compute type bindings based on the type names stored in the class files. This is required to be able to find the common type between two subtypes. Once the stack map frames are computed, the corresponding entries are added into the .class files by comparing the frames with their previous frame. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-10T05:52:41Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Verified for 4.14 M1 using build I20191009-1800 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-16T18:33:50Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> This bug contains changes in org.eclipse.jdt.core/.settings/org.eclipse.pde.api.tools.prefs which effectively *turn off* API tools in the IDE.
+
+Why??
+
+While this bug has gone through many reverts and revert-reverts, the initial change to these prefs was done via http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=134cb1fd6dd0e0b14cfeaa0ff3d1bb323bc79a00
+
+Wasn't Olivier one of the original authors of API tools? You should know the value of these checks :) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-17T08:58:48Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #30)
+> This bug contains changes in
+> org.eclipse.jdt.core/.settings/org.eclipse.pde.api.tools.prefs which
+> effectively *turn off* API tools in the IDE.
+> 
+> Why??
+
+I can only think of this to be overlooked.
+
+Once Olivier confirm that there were no intended changes for this file, I will revert this particular file.
+
+Stephan, out of curiosity, how did you catch this? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-17T13:36:50Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jay Arthanareeswaran from comment #31)
+> Stephan, out of curiosity, how did you catch this?
+
+Saw it flying by while merging JDT/Core changes into the Object Teams fork. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-11-05T06:34:13Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/151998 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-11-11T16:53:50Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Can you please track and fix this in a new bug. Thanks. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-11-21T15:24:20Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Dani Megert from comment #34)
+> Can you please track and fix this in a new bug. Thanks.
+
+Over to bug 553315 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-03T17:07:31Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jay Arthanareeswaran from comment #31)
+> Once Olivier confirm that there were no intended changes for this file, I
+> will revert this particular file.
+Sorry, overlook this </td> </tr>
+        </table>
+</body>
+</html>

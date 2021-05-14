@@ -1,0 +1,929 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 466299 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> [model] confusion about different per-project external annotations of shared library classes. </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2015-05-04T12:35:30Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> VERIFIED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 548456 - Ensure core model tests fail if test case misses suite()
+
+org.eclipse.jdt.core.tests.model.AllJavaModelTests will visit each of
+the included test cases and call its suite() method over reflection to
+instantiate the test case. If the suite() method is not found, an
+exception stack trace is printed instead of throwing an exception. So
+forgetting the suite() method in a new test case does not result in a
+failure. This can easily hide the fact that the new test case is not
+running at all.
+
+This change re-throws the exception instead of only printing its stack
+trace, so that missing suite() method in an included test case results
+in a failure.
+
+Change-Id: I2e8cc25cca943961caf815cd9bc04eaf781facd4
+Signed-off-by: Simeon Andreev <simeon.danailov.andreev@gmail.com> </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-09-13T08:16:35Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleInfoBuilder; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClasspathUtil; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaProject; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> InfrastructureTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IDOMFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleBuilderTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> NullReferenceImplTests~Generator; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Main; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaModelManager$PerProjectInfo; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BindingMap; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ParameterizedSingleTypeReference; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompletionEngine; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IField; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SourceTypeBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaModelAccess; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleUtil; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> TestingEnvironment; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Parser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Factory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AnnotationProcessorFactoryLoader; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterBugsTest; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AptBuilder; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeFormatterApplication; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AptConfig$ProcessorOptionsParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilationUnit; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacCompiler; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/builder/ModuleInfoBuilder; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/internal/generatedfile/ClasspathUtil; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/internal/util/Factory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaProject; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.pluggable.tests/Lorg/eclipse/jdt/apt/pluggable/tests/InfrastructureTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/jdom/IDOMFactory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/ModuleBuilderTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/NullReferenceImplTests~Generator; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/JavaProjectTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JModPackageFragmentRoot; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/batch/Main; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/pdom/indexer/ClassFileToIndexConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/ModuleUpdater; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaModelManager$PerProjectInfo; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/hierarchy/BindingMap; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/ParameterizedSingleTypeReference; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/codeassist/CompletionEngine; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/ExternalAnnotations18Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/field/IField; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/SourceTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/provisional/JavaModelAccess; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/util/ModuleUtil; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaProject$JImageModuleFragmentBridge; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/AnnotatableTypeSystem; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.builder/Lorg/eclipse/jdt/core/tests/builder/TestingEnvironment; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/MethodVerifier15; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/ParameterizedTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/LookupEnvironment; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaProjectElementInfo; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/parser/Parser; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-04T12:35:30Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Eclipse 4.5 M7 - I20150430-1445
+
+- Create two Java 8 projects P1 and P2.
+- Enable annotation-based null analysis for both.
+- Set the location for external annotation attachment in both as their respective project locations i.e. /P1 and /P2.
+- Add jdt.annotation_2 bundle to both the projects.
+- Create classes C1 and C2 in P1 and P2 respectively with the following content:
+	Map<String, String> map; // field
+	{
+		map.get(null);
+	}
+- Press Ctrl+Shift+T to open the 'Open Type' dialog and type 'Map'.
+- Open java.util.Map from JDK 8 and go to #get method.
+- Annotate the parameter type 'Object' as '@NonNull Object'.
+- We can see the java.util.Map.eea is created in project P1, and not in P2.
+- Go to C1, we see the error, which is good.
+- Go to C2, we see the error, though P2 does not have the java.util.Map.eea created. 
+=> java.util.Map.eea should have been created in P2 also when Map#get was annotated as the same JRE is applicable to both P1 and P2, having different locations for external annotations.
+
+If I am just looking at the .eea files at the specified location for external annotations of my project (say, P2), I don't see the annotations that are applied like in the above example. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-04T16:36:01Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> This definitely needs to be improved, I agree.
+
+Just to double check:
+
+Those errors on P2 were probably reported only by the reconciler, right? I.e., a full build should respect the external annotations only as defined in the current project.
+
+It should also be possible to achieve full annotation sharing by specifying the external annotation location on the individual jars of a JRE, right?  (Prefered way here is: specify external annotation path via the JRE preference page).
+
+I will see what I can propose for RC1. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-04T17:30:23Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #1)
+> This definitely needs to be improved, I agree.
+> 
+> Just to double check:
+> 
+> Those errors on P2 were probably reported only by the reconciler, right?
+> I.e., a full build should respect the external annotations only as defined
+> in the current project.
+The error in P2 was reported by reconciler. However, if I do: Project > Clean... > Clean all projects, I still see the error in P2.
+
+> It should also be possible to achieve full annotation sharing by specifying
+> the external annotation location on the individual jars of a JRE, right? 
+> (Prefered way here is: specify external annotation path via the JRE
+> preference page).
+External annotation locations of an individual jar are in sync i.e. updating the external annotation location for rt.jar in JRE of P1 or JRE of P2 or via preference page, updates/overwrites the location at all the places. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-05T01:15:13Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Noopur Gupta from comment #2)
+> (In reply to Stephan Herrmann from comment #1)
+> > This definitely needs to be improved, I agree.
+> > 
+> > Just to double check:
+> > 
+> > Those errors on P2 were probably reported only by the reconciler, right?
+> > I.e., a full build should respect the external annotations only as defined
+> > in the current project.
+> The error in P2 was reported by reconciler. However, if I do: Project >
+> Clean... > Clean all projects, I still see the error in P2.
+
+Here's what I see after clean build:
+- in the Problems view only one error is shown
+- both editors show the error
+
+
+OK, it's the per project settings that confuse the reconciler (and hence the editor). For the JRE we _could_ even disable this option (to force the workspace-wide setting). Unfortunately, this doesn't help for other containers like requiredPlugins, mavenDependencies etc..
+
+And: there may be good reason to have each project manage its own external annotations. In my testing I typically used F3 navigation and in that case *usually* the class file editor "knows" to which project it belongs. By invoking Open-Type you have bypassed this route and we need to consult the breadcrumbs to even know, via which path the type was reached.
+
+The two side of the issue are:
+
+- When looking at a library class, the "Annotate" command and hovers with annotations need to know the Java project in charge (since I don't want to multiplex into all projects). This is the hard part.
+
+- When reconciling the content of a source editor, JDT/Core needs to view the class file via the current project's classpath - this is only hampered by caching / sharing the same ClassFile. This can be fixed behind the scenes in JDT/Core.
+
+
+I'll perform some more experiments to chart the options we have. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-05T01:42:42Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Looking for a precedent in the vicinity, I stumbled upon bug 466363. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-09T01:32:21Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> OK, all the confusion can indeed be traced back to how caching works in the Java model, versus the desire to view a class file relative to the context of a "current project", in order to decorate the class file with annotation information as found in that project's classpath.
+
+Caching considers "the type j.u.Map as seen from P1" as equals to "the type j.u.Map as seen from P2", which means that the answer from
+   classFile.getAncestor(IJavaElement.JAVA_PROJECT)
+produces unreliable information. It does not indicate via which project a class file was found, but rather: along which path we *first* found this class file (roughly speaking).
+
+The Java model applies the above logic under the assumption, that class files having the same path are the same. Looking at the classfile itself this is sound. And: normally, the containing IJavaProject isn't relevant (for library class files).
+
+The only way for a user to see the difference is via bread crumbs, but even that information is not reliable (I saw a BinaryType, which was rooted in project P1, reported as a child of a ClassFile rooted in project P2), IOW:
+   type.getAncestor(IJavaElement.JAVA_PROJECT)
+      != type.getParent().getAncestor(IJavaElement.JAVA_PROJECT)
+Looks weird, but as mentioned: normally this isn't relevant.
+
+This situation changes with per-project external annotations: now the class file carries information (location of external annotations) which applies only within the context of a specific project.
+I have a draft change in my workspace, which simply extends equality of ClassFile to also consider an external annotation location if defined. 
+Note to self: the key location where this equality makes a difference is inside ClassFile.existsUsingJarTypeCache(), see in particular manager.getInfo(type).
+
+This simple fix seems to resolve the confusion that causes all the various symptoms in this bug.
+
+The effect is: now the same library class may be represented by different ClassFiles, if annotation locations differ. This may increase memory consumption / decrease cache quality. Furthermore, we may see different class file editors for the same target file (depending on the navigation path).
+
+
+I will continue my experiments and discuss pros/cons soon. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-09T14:06:59Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Sorry, Noopur, if it seems that I'm turning the direction of your report. 
+
+I understand that you expected the following:
+When invoking "Annotate" an a library class that is referenced in several projects, all of which are configured for external annotations, the command should affect all of those projects.
+This perspective regards a library class as an independent entity, with no clear ownership by any workspace project.
+
+If we fully elaborate that perspective I see the following problems:
+If per-project configuration is used, it may happen that different projects define different annotations for the same method (.eea files can be manually edited / moved / copied, projects can be imported from different sources etc. pp.).
+In this situation, when we consider the library class as context-free, asking for the existing annotations can produce contradictory answers (contributed by different projects).
+As an effect, we would not be able to show annotations in Javadoc hovers (since we cannot decide which variant to show).
+Also the Annotate command needs to know the existing annotations, in order to select 2 out of 3 possible proposals (add @NonNull, add @Nullable, remove existing). This, too, cannot work if we want to operate on multiple projects' .eea files simultaneously. Merging a new annotation into different existing signatures adds more complexity, which is hard/impossible to explain to the user.
+
+
+From this I conclude that first of all, shared library classes should preferably have a single annotation location for the entire workspace.
+For the JRE we will recommend in the documentation to attach annotations via the JRE preferences, not via the project build path.
+For other classpath containers this is not possible, but we can still recommend that annotation attachment in different projects point to a common location in one project, which the other projects depend on.
+IOW: the primary strategy should be to avoid the situation of split annotation locations for the same library as much as possible.
+I will consider this when writing the help page for this feature.
+
+
+Still, the situation of split locations will occur. In fact even configuring only a subset of your workspace projects for external annotations will already create a variant of this split. Hence we definitely need to find a consistent story also for these scenarii.
+
+My entry towards this consistent story is the perspective that everything we do in JDT happens in the context of a Java project. In some situations this should be obvious, in others we may need to help the user to understand this perspective:
+- When working with Java source in an editor, calls into a library must be checked against the external annotations defined in this project's configuration.
+- When navigating (F3) from a Java source editor of project P1 into a library class (w/ source attachment), we need to see the annotations in the context of project P1, and Annotate should only affect this project.
+- Open type is the hardest part, since here the UI hides that fact, that all classes available for selection are indeed found via some project's classpath.
+- Editor bread crumbs may come to our rescue as the preferred means for showing the current project context (Package Explorer's "link to editor" can provide the same information).
+
+
+I see that technically JDT's Java model reflects this exact perspective: every IJavaElement (incl. IClassFile) has an ancestor of type IJavaProject. Hence I'm focussing on identifying where and why this perspective is "broken". From a UI perspective "Open Type" is the hotspot. Internally, class file caching is the trouble maker. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-09T15:01:36Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/47566 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-09T15:20:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Noopur Gupta from bug 466278 comment #13)
+> Another issue related to bug 466299 is that if I have 2 projects in
+> workspace and I enable annotation-based null analysis on only one project
+> and provide location for external annotations, I don't get the Annotate
+> command in any way at Map#get.
+
+I assume this happened when the IClassFile for Map was first accessed via the project without annotation-based null analysis. In that case the Java model cache will always answer this same IClassFile and its IJavaProject ancestor will always be the un-configured project.
+
+This phenomenon should be resolved by the proposed change. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-10T18:40:12Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/47586 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-10T23:13:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> The proposed change is taking shape, but I hit what may be a road block.
+
+Technically, the main entry is to change the definition of equality for JarPackageFragmentRoot;s, as to include the external annotation path. This is done so we can distinguish different views of a library class: viewed via classpath entries with different annotation configurations. 
+I realize that such change needs discussion, and I will provide a summary of why and how, when needed.
+
+On top there's one question, for which I currently don't have a good answer:
+In order to include an external annotation path in the equals/hashCode methods of JarPackageFragmentRoot this path needs to be initialized eagerly (to ensure stability of equals/hashCode). This initialization needs the classpath of the enclosing java project to be resolved.
+For the majority of call paths, the classpath is already resolved at the point when a JarPackageFragmentRoot is created, but there are also call paths from public API into these constructors. I'm afraid that for the sake of this API it may not be acceptable to require classpath resolution during handle creation.
+
+Unless s.o. has a good idea how to feed the classpath attribute into this handle creation, we may have to postpone the entire story to after 4.5.0. Would targeting 4.6M1 + 4.5.1 be a viable option? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2015-05-12T15:55:46Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Capturing my current thinking while it's still warm:
+
+Maybe we have to bite the bullet and use mutable identity, i.e., fetch the annotation path only when handles are being opened, which would require careful update of all relevant caches ... yikes ..
+
+Then we'd need a specific value for an uninitialized annotation path to distinguish this from a real null.
+
+To be continued early during 4.6. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-03-15T22:06:48Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Moving to M7, but should actually be 4.7 (not yet available in bugzilla). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-08-18T17:15:09Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> To be revisited after bug 497513 changed the caching story. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2017-05-16T16:05:17Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Ran out of time for 4.7. Bulk move to 4.8. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-10T23:18:40Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 532254 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-10T23:22:55Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> After work on [newindex] stalled (and thus bug 497513 doesn't provide a viable option anytime soon), we are left only with the vague idea of mutable identity (equals/hashCode), which definitely is not a good thing to introduce nearing the end of the release cycle. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-11T08:35:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #15)
+> *** Bug 532254 has been marked as a duplicate of this bug. ***
+
+Yes this is pretty similar, but it refers to other complications.
+
+As well as chopping and changing between P1 and P2 that are workspace projects, it should be possible for one or both to be installed plugins.
+
+This highlights PDE issues not considered by JDT. As far as the IDE user is concerned projects and installed plugins should be identical source-wise. Consequently the MANIFEST.MF/plugin.xml/build.properties should be the primary definition of the annotation path from which the current .classpath entries could be derived (automatically) by the standard PDE "update classpath settings". IMHO it is unacceptable that null annotations are an IDE-specific functionality that breaks once distributed to users as installed plugins. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-11T09:15:04Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #6)
+> As an effect, we would not be able to show annotations in Javadoc hovers
+> (since we cannot decide which variant to show).
+
+It's certainly challenging, but the Javadoc applies to a particular code context at which a hierarchy of declarations are visible potentially each with different external annotations. If these conflict, an INFO is called for and multiple declarations should be shown. If they do not, then the applicable declaration can be shown.
+
+> From this I conclude that first of all, shared library classes should
+> preferably have a single annotation location for the entire workspace.
+
+It is certainly preferable but unfortunately unrealistic. Eclipse is a multi-project IDE.
+
+IMHO anything that relies on a workspace setting to make project functionality correct guarantees that two users collaborating via a GIT repo for their project get confused. It must be possible to have explicit project settings that make the correct operation of one project independent of other projects. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-11T13:09:48Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Ed, all recommendations towards using workspace settings were given only as a workaround, until we have a clear picture how a real solution can be created (which currently we don't have :( ).
+
+(In reply to Ed Willink from comment #17)
+> As well as chopping and changing between P1 and P2 that are workspace
+> projects, it should be possible for one or both to be installed plugins.
+
+I think you already filed a bug for the enhancement, right? A change in this direction must be driven from PDE, possibly backed by new API from JDT as needed. Do you care to join forces to make this happen in PDE?
+
+
+This current bug in JDT focuses on intermittent problems were the same library is referenced from several projects, such that shared caching interferes with per-project decoration with .eea. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-03-12T10:04:04Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #19)
+> Do you care to join forces to make this happen in PDE?
+
+I'm afraid that my knowledge of the JDT and PDE code bases is tiny, and the problem is non-trivial; hardly suitable for a newbie. I'm afraid I can only offer my intuition from similar fields. Also I'm way behind schedule on my own projects...
+
+> using workspace settings were given only as a workaround
+
+External annotations are themselves just a workaround so we have a problem that a well-intentioned workaround has horrible unforeseen complexities. So the choice is to follow through on the complexities or revisit the workaround.
+
+----
+
+Instinctively I feel that maintaining distinct java.util.Map types for each usage is horrible, and I'm not sure it can be sound. Consider
+
+myMap = myFunctionReturningYourMap()
+
+How are the conflicting Map annotations accommodated?
+
+----
+
+Given any piece of Java code, it should often be possible for experienced Java programmers (automated analysis) to agree whether the code assumes an @NonNull input or checks for an @Nullable input and whether the return is @NonNull or @Nullable. This agreement can extend to the available overrides.
+
+There may be some Javadoc that confirms or conflicts with the code analysis.
+
+Third party overrides may make unjustified assumptions about the nullity of overridden parameters/returns.
+
+However there is in principle a single correct annotation of each declaration and so external annotations are attempting to provide that one correct annotation.
+
+Therefore adding correct external annotations from another project should not do any harm; just highlight additional unsafe/redundant null usages. All correct external annotations from all projects can therefore be merged and used by all projects that enable null annotation analysis. (Projects that do not enable null annotation analysis use the annotated declarations and show them in hover text; however no diagnostics result.)
+
+Informal limitation: external annotations may not be used to impose design-policy constraints that are not in accord with the code. e.g. it is not permitted to annotate the return of Object.toString() as non-null.
+
+Two problems remain.
+
+a) conflicts between external annotations must be diagnosed by INFOs and a best resolution chosen by heuristic
+
+b) my project must be able to override your bad external declarations pending a consensus has been reached on the correct annotations
+
+Therefore add an ability to have per-project override-annotations to remove known bad annotations from the workspace.
+
+Diagnose conflicting override-annotations as WARNINGs and resolve the conflict as no-annotations.
+
+----
+
+Perhaps rather than override-annotations, the existing annotations might be qualified by a confidence
+
+1 - derived from stylized Javadoc
+2 - derived by manual analysis
+3 - derived by local code analysis
+4 - derived by global code analysis
+5 - defined by design policy
+9 - overriding a conflict
+
+----
+
+If in my Java file I get a nullity violation on some declaration, the source of the external annotations on that declaration can be used to identify whether I want to know about the diagnostic and what severity to give it.
+
+Therefore there is only one declaration in the workspace, but there can be project preferences that enable me to suppress inappropriate diagnostics. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-08-26T17:01:33Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> removing target since it depends on an unscheduled bug. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-09-09T07:46:49Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> @Stephan: Picking up from our off-list discussion.
+
+I'm not a big fan of utopian indexes so I'm not disappointed that your 'newindex' is falling through. Instinctively this seems wrong anyway. At the Java core level there is a core definition of each class and its features; in many cases this involves erasure for compatibility reasons.
+
+External annotations define a locally-applicable adjusted type that is actually a lie. Pushing conflicting local lies into a utopian index seems doomed to failure.
+
+Rather it seems that the JDT core should use the single true declaration throughout, but that certain algorithms should use the locally relevant adjusted type. Thus hovertext/outline/completion-assist/type-conformance/... should use the AdjustedClass applicable to the locally applicable annotation path.
+
+NB When I use F3 to examine e.g. java.util.Map, which does not share the same local annotation-path, I should get a read-only viewer for the adjusted java.util.Map. cf the read-only viewer for class files. Within the viewer, there might be a navigation to other adjustments.
+
+Once it is recognised that some algorithms use an AdjustedClass, the downstream viewing/usage problem is 'solved'. The upstream problem of determining and unifying the AdjustedClass is tractable. Where a reference to Y occurs within some class X, we compute the AdjustedClass for Y by unifying all annotations for Y from 'all' elements of the annotation-path of X's bundle (which might be an installed plugin).
+
+Conflicts between multiple annotation path entries are troublesome. I won't revisit my earlier comment.
+
+Many conflicts between interface and implementation can perhaps be ignored. The implementation has its own adjusted type that may or may not be better than the interface's adjusted type. However outright stupidities such as the interface imposing @Nullable and the implementation imposing @NonNull should be warnings at each point of usage. (A separate UI might offer an opportunity to view annotation path inconsistencies.) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-09-09T11:46:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Removing the "utopian" dependency.
+
+Implementationwise we need to go back to the drawing board.
+
+Scratch the idea, that superimposing external annotations can/should happen at the level of Java Model's ClassFile? This guy is sharable among different views and hence must show the global naked truth.
+
+For compiler use cases we may be able to push that superimposition into the various INameEnvironments, which are indeed meant to represent one project's view of the world. Name environments have successfully been adjusted to provide per-project views wrt JPMS. Integrating external annotations at that level seems feasible.
+
+A name environment based approach will, however, not solve the issue of showing a decorated class file in an editor. And if we don't have per-project views of class files in an editor, we cannot implement the Ctrl+1 Annotation command. Bummer.
+
+In this situation, yes, considering a Java Model-level AdjustedClass extends ClassFile should be considered. The difficulty in this approach lies in identifying all call sites requesting a ClassFile that need to be extended to apply decorating with AdjustedClass. The number of call sites may be huge.
+
+Since all my reasoning here is focused on ClassFile, we should also link to the topic of decorating source code with external annotations. Do you have a bug # at hand, where this is being discussed?
+
+
+Still, the previous ideas from comment 5 up-to comment 11 may have some value, too.
+
+=> Putting this bug on my agenda for 4.10 for another round of experimentation. Please wish me luck ... </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-09-10T15:15:05Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Ed Willink from comment #22)
+> NB When I use F3 to examine e.g. java.util.Map, which does not share the
+> same local annotation-path, I should get a read-only viewer for the adjusted
+> java.util.Map. ...
+
+See Bug 538875 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-11-17T11:18:49Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> This topic gains new relevance because classpath attributes like "add-exports" share the same problem: it must be possible to distinguish shared libraries with different classpath attributes.
+
+I'll continue here what I started in bug 539749 comment 4 (probably limited to JrtPackageFragmentRoot in this installment). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-11-17T23:03:22Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/132628 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-11-17T23:20:16Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #26)
+> New Gerrit change created: https://git.eclipse.org/r/132628
+
+Here's my new take, combining two concepts:
+
+(1) Include all IClasspathAttribute;s in hashCode()/equals() of a JarPackageFragmentRoot (incl. subclasses), in order to avoid undue sharing.
+
+(2) Include those attributes also in handle mementos, so that creating a handle from memento (at which point the project's resolved classpath may not be available for lookup of extra attributes) has all the necessary information at hand.
+
+Now, when creating a JarPackageFragmentRoot
+- some callers readily provide the attributes (from memento or from cp-entry)
+- some callers provide the initialize JavaProject with resolved classpath from where the attributes can be retrieved at very low cost
+* if none of the above helps (shouldn't happen), the JPFR will have null extraAttributes, which only means that it is not equals() to any JPFR *with* extraAttributes.
+
+When introducint a new JEM delimiter for classpath attributes, I studied bug 430136, chose a char ('§') which should be of minimal risk and also applied the escaping strategy introduced in bug 430136. For any existing mementos without the new field, handle creation should work with no problem, because this new field is purely optional.
+
+Most importantly: the new contribution to equals()/hashCode() is *immutable*.
+
+MementoTests show the new mementos at work in full roundtrip, both on a regular JarPackageFragmentRoot and also on a JrtPackageFragmentRoot plus children.
+
+New tests in ExternalAnnotations17Test show the payload: two projects can now see differently annotated classfiles of the same shared lib.
+
+I'm confident that this is better than any previous attempt.
+
+If no immediate objections, I'd like to push this on Sunday, so that we have a chance to test this in the field before 4.10 release. Still after pushing I'll be happy to react to comments / reviews, worst case: revert. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-11-17T23:32:08Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Note to self: JrtPackageFragmentRoot overrides equals/hashCode, need to be amended, too. Need to write tests with external annotations in Java 9+. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-11-18T23:52:53Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Some corrections as of patch set #4
+
+Using non-ascii char '§' was probably not a good idea. While locally it worked, both new memento tests failed on Jenkins. Replaced by repeated use of escaped JEM_PACKAGEFRAGMENTROOT -> only internally mapped to its own MementoTokenizer.CLASSPATH_ATTRIBUTE.
+
+Resolving the classpath from within JarPackageFragmentRoot.<init> caused failures in ClasspathInitializerTests. Avoided by better checking availability using perProjectInfo.unresolvedEntryStatus.
+
+Regressions in JavaElementDelta related tests have been fixed by better integrating the new strategy with DeltaProcessor.RootInfo: we have an IClasspathEntry at hand, so use its extraAttributes.
+
+Integrated with JrtPackageFragmentRoot, but still not tests with external annotations in Java 9+. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2018-11-19T23:47:43Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Close but no cigar -> postponing. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-13T23:10:10Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/132628 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=f3a7aa49834eef8027d0f4162b6d5450cda0baa2 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-14T11:11:06Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Build failures demystified: I had placed a state-changing "memento.nextToken()" in an assert statement. Stupid mistake :)  which taught me that the gerrit job does not use -ea. S.t. that I will follow-up soon.
+
+Nevertheless, after correcting the stupid mistake tests pass.
+
+(In reply to Eclipse Genie from comment #31)
+> Gerrit change https://git.eclipse.org/r/132628 was merged to [master].
+> Commit:
+> http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/
+> ?id=f3a7aa49834eef8027d0f4162b6d5450cda0baa2
+
+Released for 4.14 M1 to give sufficient time for testing in the field. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-09T14:42:35Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Verified for Eclipse Version: 2019-12 (4.14) M1 with  Build id: I20191008-1800 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-12-03T19:08:43Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 500350 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-08-31T11:06:58Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> An attached example would have been really helpful here. How do I set the external library annotation path? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-08-31T13:13:26Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Simeon Andreev from comment #35)
+> An attached example would have been really helpful here. How do I set the
+> external library annotation path?
+
+Did you see the test cases introduced here? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-08-31T13:18:19Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Sorry, I missed those. In that case I guess the proposal from bug 565462 comment 8 should not be breaking this ticket. </td> </tr>
+        </table>
+</body>
+</html>

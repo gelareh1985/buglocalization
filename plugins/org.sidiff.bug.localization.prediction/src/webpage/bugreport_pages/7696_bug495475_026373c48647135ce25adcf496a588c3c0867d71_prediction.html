@@ -1,0 +1,753 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 495475 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> [quick fix][dom] Create local variable quickfix fails with an NPE </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2016-06-05T02:11:54Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> VERIFIED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 551648 - Versions increase needed since Java 13 branch merged
+
+Increase version as they have even decreased since branch was merged.
+
+Change-Id: I3e78996066bbd5d9143b77131378bfe9f74d4398
+Signed-off-by: Alexander Kurtakov <akurtako@redhat.com> </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-10-01T05:15:14Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BindingMap; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> TypeBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SourceTypeBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IDOMFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaProjectTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JdtApt; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IPolyExpression; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterBugsTestJLS4; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModificationLog$Tag; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> HandleFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> NullReferenceImplTests~TestLocalVariableBinding$TestTypeBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> GenericsRegressionTest_9; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaModelManager; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ICodeFormatter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTBasedDeclarationImpl; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompletionEngine; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompletionJavadocParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BuildNotifier; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BTreeExpensiveTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacTestOptions$Excuse; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> NdTypeId; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> BasicBuildTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacCompiler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> Util; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IProblem; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RecoveredType; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> APIDocumentationTests$JavaCoreJavadocAnalyzer; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> EclipseCompiler; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/hierarchy/BindingMap; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/TypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/SourceTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/jdom/IDOMFactory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/JavaProjectTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/build/JdtApt; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ast/IPolyExpression; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/NameLookupTests2; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/PolyTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS4; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/JavaModelManagerTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS3; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter18Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/JavaLikeExtensionsTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/DefaultBindingResolver; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/Binding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterTest2; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/db/ModificationLog$Tag; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter9Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter15JLS8Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterAST3Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/util/HandleFactory; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/build/AptBuilder; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/NullReferenceImplTests~TestLocalVariableBinding$TestTypeBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/ProblemReferenceBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_9; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/ReconcilerTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaModelManager; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaProject; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-05T02:11:54Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I'm sorry... I do not have the energy to try and reduce this to a 'minimal' example. But I thought I would at least report the bug now that I have a chance to 'snapshot' my project at a point where it occurs. 
+
+What's the issue: Sometimes 'create local variable' simply doesn't work, it ostensibly does nothing while silently logging an exception in the error log (see end of this report for the full stacktrace).
+
+To reproduce try applying the quickfix by pressing CTRL-1 at this line of code:
+https://github.com/kdvolder/two-three-tree/blob/ede2174f2dc0631dc3ceea85b60c9c39580a1fae/src/test/java/com/github/kdvolder/tttree/test/TTTSetTest.java#L15
+
+If copy pasting some snippets of code isn't enough, you can simply clone the repo and checkout the commit with hash:  ede2174f2dc0631dc3ceea85b60c9c39580a1fae then import the project into eclipse to get exactly the same context I had when encountering the bug.
+
+---- stacktrace ----
+java.lang.NullPointerException
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLabelProvider.getTypeLabel(BindingLabelProvider.java:351)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLabelProvider.getTypeLabel(BindingLabelProvider.java:352)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLabelProvider.getTypeArgumentsLabel(BindingLabelProvider.java:430)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLabelProvider.getTypeLabel(BindingLabelProvider.java:398)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLabelProvider.getBindingLabel(BindingLabelProvider.java:459)
+	at org.eclipse.jdt.internal.corext.fix.LinkedProposalPositionGroup$JavaLinkedModeProposal.<init>(LinkedProposalPositionGroup.java:206)
+	at org.eclipse.jdt.internal.corext.fix.LinkedProposalPositionGroup.addProposal(LinkedProposalPositionGroup.java:261)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.LinkedCorrectionProposal.addLinkedPositionProposal(LinkedCorrectionProposal.java:142)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.NewVariableCorrectionProposal.evaluateVariableType(NewVariableCorrectionProposal.java:502)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.NewVariableCorrectionProposal.doAddLocal(NewVariableCorrectionProposal.java:248)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.NewVariableCorrectionProposal.getRewrite(NewVariableCorrectionProposal.java:115)
+	at org.eclipse.jdt.ui.text.java.correction.ASTRewriteCorrectionProposal.addEdits(ASTRewriteCorrectionProposal.java:110)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.createTextChange(CUCorrectionProposal.java:231)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.createChange(CUCorrectionProposal.java:238)
+	at org.eclipse.jdt.ui.text.java.correction.ChangeCorrectionProposal.getChange(ChangeCorrectionProposal.java:366)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.getTextChange(CUCorrectionProposal.java:248)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.getAdditionalProposalInfo(CUCorrectionProposal.java:141)
+	at org.eclipse.jface.text.contentassist.AdditionalInfoController$Timer$2$1.run(AdditionalInfoController.java:113)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-06T06:57:49Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 475323 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-06T07:12:22Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I can reproduce it with Neon RC4 build (I20160603-1000).
+
+Example to reproduce the bug:
+
+package p;
+
+import java.util.List;
+
+public class Test {
+
+	protected <E extends Comparable<E>> List<E> createEmptySet() {
+		return null;
+	}
+
+	public void emptySet() {
+		s = createEmptySet();
+	}
+
+}
+
+Apply quick fix "Create local variable 's'".
+
+This worked in 4.4 but not in 4.5. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-06T08:22:52Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> ITypeBinding.getWildcard() now returns null at BindingLabelProvider.java:352, resulting in NPE. 
+
+Moving to JDT/Core. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-07T06:01:27Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Noopur Gupta from comment #3)
+> ITypeBinding.getWildcard() now returns null at
+> BindingLabelProvider.java:352, resulting in NPE. 
+> 
+> Moving to JDT/Core.
+
+There's no wildcard in the capture: <Z#0-E#0 extends Comparable<Z#0-E#0>>
+
+I am copying Stephan for expert opinion. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-07T12:45:18Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jay Arthanareeswaran from comment #4)
+> (In reply to Noopur Gupta from comment #3)
+> > ITypeBinding.getWildcard() now returns null at
+> > BindingLabelProvider.java:352, resulting in NPE. 
+> > 
+> > Moving to JDT/Core.
+> 
+> There's no wildcard in the capture: <Z#0-E#0 extends Comparable<Z#0-E#0>>
+
+This is how we render CaptureBinding18.
+Those indeed do not have a wildcard.
+
+The underlying difficulty is that CaptureBinding18 is a type that does not fit into any of the classifications we have in JDT.
+
+From a compiler p.o.v., greatest similarity exists with CaptureBinding. That's why I made CaptureBinding18 a subclass of CaptureBinding.
+
+Looking at the javadoc of ITypeBinding.isCapture() a CaptureBinding18 should actually answer false here.
+
+This only leaves us with the problem that this kind of type would then answer false to all isX() queries, leaving all clients clueless.
+
+Actually, for labels in the UI CaptureBinding18 does not have *any* nice representation.
+
+
+
+See also bug 470794 comment 15 and bug 470794 comment 19 (speaking of "typesIntroducedBy18_5_bullet6")
+
+Also related: bug 429264 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-09T02:53:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #5)
+> Looking at the javadoc of ITypeBinding.isCapture() a CaptureBinding18 should
+> actually answer false here.
+
+Overriding isCapture in CaptureBinding18 sounds straight forward.
+
+> This only leaves us with the problem that this kind of type would then
+> answer false to all isX() queries, leaving all clients clueless.
+> 
+> Actually, for labels in the UI CaptureBinding18 does not have *any* nice
+> representation.
+
+Are you suggesting we provide specific implementation for labels in the UI than fixing isCapture? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-06-11T13:04:20Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Jay Arthanareeswaran from comment #6)
+> (In reply to Stephan Herrmann from comment #5)
+> > Looking at the javadoc of ITypeBinding.isCapture() a CaptureBinding18 should
+> > actually answer false here.
+> 
+> Overriding isCapture in CaptureBinding18 sounds straight forward.
+
+To be clear: we shouldn't change this in the compiler, only dom bindings should add the extra logic so that an ITypeBinding based on a CaptureBinding18 answers: "not a capture".
+
+ 
+> > This only leaves us with the problem that this kind of type would then
+> > answer false to all isX() queries, leaving all clients clueless.
+> > 
+> > Actually, for labels in the UI CaptureBinding18 does not have *any* nice
+> > representation.
+> 
+> Are you suggesting we provide specific implementation for labels in the UI
+> than fixing isCapture?
+
+Maybe worth a try to see what labels we will get with the above change in isCapture(). If that looks awful, then, yes, I'd propose a specific implementation. But since isCapture() currently violates it's javadoc that change should be made in any case. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2016-07-13T05:28:30Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Assigning to Manoj. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-16T20:33:44Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> I just ran into this with the following slightly contrived steps:
+
+	void test() {		
+		Map.Entry.comparingByValue();
+	}
+
+Place cursor before "Map" and Ctrl+1 "Assign statement to new local variable".
+
+Stacktrace is:
+
+java.lang.NullPointerException
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeLabel(BindingLabelProviderCore.java:204)
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeLabel(BindingLabelProviderCore.java:205)
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeArgumentsLabel(BindingLabelProviderCore.java:283)
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeLabel(BindingLabelProviderCore.java:251)
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeArgumentsLabel(BindingLabelProviderCore.java:283)
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeLabel(BindingLabelProviderCore.java:251)
+	at org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getBindingLabel(BindingLabelProviderCore.java:312)
+	at org.eclipse.jdt.internal.corext.fix.LinkedProposalPositionGroup$JavaLinkedModeProposal.<init>(LinkedProposalPositionGroup.java:71)
+	at org.eclipse.jdt.internal.corext.fix.LinkedProposalPositionGroup.addProposal(LinkedProposalPositionGroup.java:112)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.LinkedCorrectionProposal.addLinkedPositionProposal(LinkedCorrectionProposal.java:146)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.AssignToVariableAssistProposal.evaluateType(AssignToVariableAssistProposal.java:382)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.AssignToVariableAssistProposal.doAddLocal(AssignToVariableAssistProposal.java:185)
+	at org.eclipse.jdt.internal.ui.text.correction.proposals.AssignToVariableAssistProposal.getRewrite(AssignToVariableAssistProposal.java:163)
+	at org.eclipse.jdt.ui.text.java.correction.ASTRewriteCorrectionProposal.addEdits(ASTRewriteCorrectionProposal.java:113)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.createTextChange(CUCorrectionProposal.java:196)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.createChange(CUCorrectionProposal.java:203)
+	at org.eclipse.jdt.ui.text.java.correction.ChangeCorrectionProposal.getChange(ChangeCorrectionProposal.java:328)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.getTextChange(CUCorrectionProposal.java:214)
+	at org.eclipse.jdt.core.manipulation.CUCorrectionProposalCore.getAdditionalProposalInfo(CUCorrectionProposalCore.java:132)
+	at org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal.getAdditionalProposalInfo(CUCorrectionProposal.java:138)
+	at org.eclipse.jface.text.contentassist.AdditionalInfoController$Timer$2$1.run(AdditionalInfoController.java:116)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-08-16T20:35:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> And this happens when you hover over comparingByValue()
+
+java.lang.NullPointerException
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendTypeBindingLabel(BindingLinkedLabelComposer.java:398)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendTypeBindingLabel(BindingLinkedLabelComposer.java:484)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendTypeArgumentsBindingLabel(BindingLinkedLabelComposer.java:513)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendTypeBindingLabel(BindingLinkedLabelComposer.java:432)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendTypeArgumentsBindingLabel(BindingLinkedLabelComposer.java:513)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendTypeBindingLabel(BindingLinkedLabelComposer.java:432)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendMethodBindingLabel(BindingLinkedLabelComposer.java:152)
+	at org.eclipse.jdt.internal.ui.viewsupport.BindingLinkedLabelComposer.appendBindingLabel(BindingLinkedLabelComposer.java:95)
+	at org.eclipse.jdt.internal.ui.viewsupport.JavaElementLinks.getBindingLabel(JavaElementLinks.java:736)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.getInfoText(JavadocHover.java:816)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.getHoverInfo(JavadocHover.java:755)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.internalGetHoverInfo(JavadocHover.java:678)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.getHoverInfo2(JavadocHover.java:670)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:167)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:133)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$4.run(TextViewerHoverManager.java:169) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-12T20:33:30Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> @Vikas, are you planning to work on this during 4.14?
+
+If not, I might go ahead and grab it :) </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-13T06:27:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #11)
+> @Vikas, are you planning to work on this during 4.14?
+> 
+> If not, I might go ahead and grab it :)
+
+Feel free to take it :). Thanks Stephan ! </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-09-19T19:49:51Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> in bug 495475 we have another code location that could be failing due to CaptureBinding18 appearing as a capture, but then lack of a wildcard is unexpected. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-01T21:49:31Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/150458 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-01T21:56:19Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #14)
+> New Gerrit change created: https://git.eclipse.org/r/150458
+
+Here's a test in JDT/UI to begin with. This should throw NPE.
+
+While playing with this, I'm leaning towards letting CaptureBinding18 appear at DOM level as a Wildcard, because it is an 'unknown' mostly unrepresentable type. If a quick fix tries to create a variable of that type, a wildcard is probably the best we can say anyway.
+
+I may try to tweak the bounds into the faked wildcard, if possible.
+
+I also doubt that users would be keen on seeing our Z#4-E#6 encoding of those thingies in hovers etc. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-03T18:29:10Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/150556 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-03T19:15:42Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #16)
+> New Gerrit change created: https://git.eclipse.org/r/150556
+
+These changes in JDT/Core make the example from comment 2 happy:
+* let CaptureBinding18 answer like this:
+  isWildcardType() => true
+  isCapture() => false
+  isUpperBound() => true iff a relevant firstBound is set (not j.l.Object)
+  
+
+Playing with the snippet from comment 9 shows there is more to it:
+Quick assist creates this type for the new local variable:
+    Comparator<Entry<Object, ?>>
+which doesn't compile, while the following does:
+    Comparator<Entry<Object, Comparable<? super Comparable<?>>>>
+
+- ITypeBinding.getBound() returns null, where it perhaps shouldn't
+- If I fix that, then we get infinite recursion in methods like
+  ImportRewrite.containsNestedCapture(ITypeBinding, boolean)
+  Here we are touching the issue discussed in bug 103044.
+- Another method entering infinite recursion with modified ITypeBinding.getBound():
+  org.eclipse.jdt.internal.core.manipulation.BindingLabelProviderCore.getTypeLabel(ITypeBinding, long, StringBuffer)
+
+
+I'm leaning towards releasing the partial solution in gerrit, rather than firefighting the millions of locations that run risk of infinite recursion, when getBound() is modified.
+
+Since CaptureBinding18 are non-denotable types we may have to live with less-than-perfect rendering in labels and less-than-perfect content assist. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-03T19:25:05Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/150556 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=5ca2ca232f8cb29b05a8a4d67dda881f1f0670a1 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-03T19:27:00Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #18)
+> Gerrit change https://git.eclipse.org/r/150556 was merged to [master].
+> Commit:
+> http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/
+> ?id=5ca2ca232f8cb29b05a8a4d67dda881f1f0670a1
+
+Partial fix in JDT/Core released for 4.14 M1.
+
+Pending: see the test in JDT/UI pass after this fix. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-03T21:25:32Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> *** Bug 476736 has been marked as a duplicate of this bug. *** </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-06T13:55:22Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/150458 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.ui.git/commit/?id=150e374750a627e08b1166a88e34999b653c126a </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-06T14:07:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #21)
+> Gerrit change https://git.eclipse.org/r/150458 was merged to [master].
+> Commit:
+> http://git.eclipse.org/c/jdt/eclipse.jdt.ui.git/commit/
+> ?id=150e374750a627e08b1166a88e34999b653c126a
+
+Test added to JDT/UI.
+
+Released for 4.14 M1 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-10-10T05:06:13Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Verified for Eclipse Version: 2019-12 (4.14) M1 with  Build id: I20191008-1800 </td> </tr>
+        </table>
+</body>
+</html>

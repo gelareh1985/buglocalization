@@ -1,0 +1,640 @@
+<html>
+
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: lightskyblue;
+font-size: 16px;
+border: none;
+text-align:left;
+}
+
+td{
+background-color: #d5e3c8;
+font-size: 14px;
+}
+
+.container {
+  position: relative;
+  text-align:center;
+  padding-top: 70%;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #73AD21;
+}
+
+</style>
+<body>
+
+<h2>Bug report Information</h2>
+<table>
+
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 546315 </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> [11] "The package [...] is accessible from more than one module: <unnamed>, [�]" error shown in Java editor by mistake </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-04-10T22:58:15Z </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> VERIFIED </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> Bug 545491 - revert ReferenceCollection fix
+
+The fix caused build state to be persisted or restored in a wrong way,
+so that ReferenceCollection was not properly read form a previous state,
+so that types referenced by that collection were not found by Java
+search anymore till next build of the project.
+
+This change also decrements State.VERSION counter to trigger a rebuild
+and a new state creation.
+
+Tests aren't reverted, only those depending on the sorted state are
+commented out.
+
+Change-Id: I945dd6ef42eacfe34f06361b41697c7b8e7b6725
+Signed-off-by: Andrey Loskutov <loskutov@gmx.de>
+ </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> 2019-04-10T13:53:41Z </td>
+    </tr>
+    </table>
+<table>
+
+<th colspan="2"> Ranked List of Class Diagrams </th>
+
+<tr>
+<td  style="width: 20%; font-size: 10px; background-color:#d5e3c8">
+
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClasspathUtil; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverterBugsTestJLS3; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleBuilderTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleInfoBuilder; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> DatabaseRef; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JDTCompilerAdapter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleFinder; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleUpdater; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AnnotationProcessorFactoryLoader; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaProject$JImageModuleFragmentBridge; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> FormatterBugsTests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> GenericsRegressionTest_1_8; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFile; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CodeFormatterApplication; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ClassFileToIndexConverter; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li style="font-weight: bold;"> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SourceModuleBinding; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CompilerToolJava9Tests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ASTRewrite; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> HandleFactory; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> ModuleUtil$ModuleAccumulatorEnvironment; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> AbstractRegressionTest$JavacCompiler; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> RunAllJava8Tests; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> IModuleAwareNameEnvironment; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavaModelAccess; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> CategorizedProblem; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> JavadocParser; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> APIDocumentationTests$JavaCoreJavadocAnalyzer; </a> </li>
+            </ul>   
+            
+            <ul>
+                <li> <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" target="myIframe"> SelectionParser; </a> </li>
+            </ul>   
+            
+</td>
+<td  rowspan="30" style="width: 80%;  background-color:#d5e3c8"> 
+    <div class="container">
+    <iframe class="responsive-iframe" src="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html" name="myIframe">
+        <a href="C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/image_html_pages/diagram_default.html">SELFHTML</a>
+    </iframe>
+    </div>
+</td>
+</tr>
+</table>
+<table>
+
+<th colspan="2"> Ranked List of Classifiers </th>
+
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/internal/generatedfile/ClasspathUtil; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS3; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/ModuleBuilderTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/JavaProjectTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/builder/ModuleInfoBuilder; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/indexer/ClassFileToIndexConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/nd/DatabaseRef; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS8; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/JDTCompilerAdapter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/dom/ASTConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/batch/ModuleFinder; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/ModuleUpdater; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/batch/FileSystem; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.apt.core/Lorg/eclipse/jdt/apt/core/internal/AnnotationProcessorFactoryLoader; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/JavaProject$JImageModuleFragmentBridge; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/formatter/FormatterBugsTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_1_8; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/ClassFile; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/core/formatter/CodeFormatterApplication; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/SwitchExpressionTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/batch/Main; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTest; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/GenericsRegressionTest_9; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/core/pdom/indexer/ClassFileToIndexConverter; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/model/JavaElementDeltaTests; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter10Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core/Lorg/eclipse/jdt/internal/compiler/lookup/SourceModuleBinding; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverter9Test; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.model/Lorg/eclipse/jdt/core/tests/dom/ASTConverterBugsTestJLS4; </td>
+                </tr>
+
+                
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> org.eclipse.jdt.core.tests.compiler/Lorg/eclipse/jdt/core/tests/compiler/regression/ModuleCompilationTests; </td>
+                </tr>
+
+                </table>
+<table>
+
+<th colspan="2"> Discussion </th>
+
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-10T22:58:15Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 278217
+Sample Java project to reproduce this issue (requires Java 11)
+
+Steps to reproduce this issue:
+1. Import the attached Java project
+2. Open the file "src_test/test/Test.java" in the Java editor
+
+=> Result: In the Java editor the error "The package foo is accessible from more than one module: <unnamed>, foo.bar" is shown by mistake in line 8. The error is shown in the Java editor only, not in the Problems view. The error does not prevent the code from being compiled and also the class (which has a main method) can be executed.
+
+Expected: No error should be displayed, since the package is only contained/accessible in/from one module (either "foo" or "<unnamed>").
+
+Reproducible also in the integration build:
+Eclipse SDK 2019-06 (4.12), Build id: I20190410-0600
+
+This error occurs under the following conditions, which unfortunately are common in Maven projects:
+- a source folder and a test source folder
+- the non-test source folder contains a "module-info.java" file
+- two JARs, one on the modulepath and the other on the classpath
+- one of the two JARs contains a class in a package which is a subpackage of a class in the other JAR, e.g. one JAR with "foo.Foo" and the other JAR with foo.bar.FooBar"
+- one of the two JARs is on the modulepath and included in "module-info.java" via "requires ..."
+- in the test source folder there is an import statement for the class in the subpackage </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-11T08:55:10Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Thanks for the clear report.
+
+I can reproduce and first observation is: starting from SplitPackageBinding foo (from foo.bar, <unnamed>) when we find type Foo, we associate it to the automatic module foo.bar rather than the unnamed module.
+
+This happens in three steps:
+ - NameLookup.getModuleDescription() finds no IModuleDescription to which Foo is associated, which is OK.
+
+ - SearchableEnvironment.find() sees answer.module == null and assigns a null module name.
+
+ - Then LE.askForTypeFromModules() upon seeing a null module name assumes that the type was found in otherModules[i], which is wrong in this case
+
+Need to check were and under what condition the module name should be set to signal UnNamedModuleBinding rather than no module. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-11T13:55:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> New Gerrit change created: https://git.eclipse.org/r/140427 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-11T14:05:14Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #2)
+> New Gerrit change created: https://git.eclipse.org/r/140427
+
+It turns out, LookupEnvironment.getModule() already handles a null module name to refer to the unnamed module, iff we let it.
+
+To compensate we just need to be sure that null is only passed where appropriate:
+
+- don't overwrite an existing NameEnvironmentAnswer.moduleBinding
+
+- don't drop an existing moduleName in ClasspathJep247*.findClass()
+
+Additional condition for reproduction: .classpath must list the automatic module before the non-modular test jars (which implies the workaround: change build path order). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-12T23:15:23Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Gerrit change https://git.eclipse.org/r/140427 was merged to [master].
+Commit: http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/?id=fd5bb609f244a4b470f78f7693693f1904202502 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-04-12T23:21:47Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Eclipse Genie from comment #4)
+> Gerrit change https://git.eclipse.org/r/140427 was merged to [master].
+> Commit:
+> http://git.eclipse.org/c/jdt/eclipse.jdt.core.git/commit/
+> ?id=fd5bb609f244a4b470f78f7693693f1904202502
+
+Released for 4.12 M3 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-05-21T10:07:12Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Verified for Eclipse Version: 2019-06 (4.12) Build id: I20190520-0600 </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-12T18:09:56Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> FWIW, I seem to have encountered this bug in 
+Version: 2019-06 (4.12)
+Build id: I20190605-1800
+
+The setup is very similar. I'm writing a JUnit test (under src/test/java) and Eclipse is complaining that a class is accessible from more than one module, incluing unnamed. But the test actually runs fine. I can also run the test fine in Eclipse via Junit.
+
+Here's what I think happened:
+
+1. I added a jar to the test classpath. This jar has a dependency on the class in question. As soon as I added the jar to the test classpath Eclipse began to complain about the class being available from both unnamed, and a named module.
+
+2. I realized that I forgot to add a module-info.jar to the jar that I had just added. It kind of makes sense. For a minute Eclipse saw this jar (and all its dependencies) available both via the classpath and the module path. I think that's the fundamental issue here. 
+
+(Though my test project itself is not a module. It contains no code in src/main/java. It just contains a bunch of code under src/test/java. It's a pure test project.)
+
+3. I added the module-info.java to the previous project. But the error didn't go away. No matter what I do (clean project, Update Maven, refresh) the error will not go away. Out of desperation I restarted Eclipse... the error is still there.
+
+I can't imagine why Eclipse thinks this project is available via both <unnamed> and a named module. Is there any way to see the module path vs the classpath for a test project? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-12T18:12:14Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> 
+Just to clarify: the error is still there (I can see it in the Java Editor) but I don't think the error is "real." When I run the JUnit test Eclipse doesn't warn me about any errors in the project. And I just noticed that after the restart all the error markers in the Project Explorer again. So it seems like this error was once legitimate, was fixed, but the Java Editor refuses to forget it no matter what I do. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-06-12T20:42:29Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Missing name from comment #7)
+> FWIW, I seem to have encountered this bug in 
+> Version: 2019-06 (4.12)
+> Build id: I20190605-1800
+> 
+> The setup is very similar.
+
+The one scenario which we could reproduce got fixed and verified.
+
+We are aware that package lookup in Java 9+ is still unreliable in some cases and a solution is being prepared in bug 547181. If you can provide a reproducing example, please attach it to the other bug. Otherwise you may want to just subscribe to notifications from that bug so you can test once the fix has been merged. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-07-01T06:04:22Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Created attachment 279132
+Similar problem
+
+Steps
+1) Take org.eclipse.pde.ds.annotations from pde.ui repo
+2) Replace jdk 8 with jdk 11 on the project and set BREE to java 11
+3) Configure->Create module-info
+4) In file ProjectClasspathPreferenceChangeListener, look at the import statement import org.eclipse.core.runtime.CoreException;
+( line 21 to line 25). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2019-07-01T12:56:38Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Vikas Chandra from comment #10)
+> Created attachment 279132 [details]
+> Similar problem
+> 
+> Steps
+> 1) Take org.eclipse.pde.ds.annotations from pde.ui repo
+> 2) Replace jdk 8 with jdk 11 on the project and set BREE to java 11
+> 3) Configure->Create module-info
+> 4) In file ProjectClasspathPreferenceChangeListener, look at the import
+> statement import org.eclipse.core.runtime.CoreException;
+> ( line 21 to line 25).
+
+This doesn't look like a bug to me. Eclipse as lots of split packages, which become illegal as soon as you try to treat each plug-in as a module (auto-module mostly in your case). </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-14T20:30:21Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> This bug happened to me in 2019.12 if � and only if � I reference a modular jar in Maven and the referenced project is open in the workspace. 
+
+When looking at Build Path > Libraries > Classpath > Maven Dependencies I can see that the referenced project has a folder icon instead of a jar icon, meaning m2e does a project reference, not a jar reference.
+
+If I change the version (so no longer can refer to the existing project) the error message disappears. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-14T20:42:28Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Mordechai Meisels from comment #12)
+> This bug happened to me in 2019.12 if � and only if � I reference a modular
+> jar in Maven and the referenced project is open in the workspace. 
+> 
+> When looking at Build Path > Libraries > Classpath > Maven Dependencies I
+> can see that the referenced project has a folder icon instead of a jar icon,
+> meaning m2e does a project reference, not a jar reference.
+> 
+> If I change the version (so no longer can refer to the existing project) the
+> error message disappears.
+
+The one scenario which we could reproduce got fixed and verified.
+
+If you can provide an example project where it still fails, please file a new bug.
+
+I assume you have seen https://stackoverflow.com/questions/51094274/eclipse-cant-find-xml-related-classes-after-switching-build-path-to-jdk-10/53824670#53824670 or similar, to understand when this error message is actually correct (despite javac never reporting it).
+
+BTW, when you say modular jar: does it contain module-info or do you reference it as an automatic module? </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-14T20:47:22Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Stephan Herrmann from comment #13)
+> (In reply to Mordechai Meisels from comment #12)
+> > This bug happened to me in 2019.12 if � and only if � I reference a modular
+> > jar in Maven and the referenced project is open in the workspace. 
+> > 
+> > When looking at Build Path > Libraries > Classpath > Maven Dependencies I
+> > can see that the referenced project has a folder icon instead of a jar icon,
+> > meaning m2e does a project reference, not a jar reference.
+> > 
+> > If I change the version (so no longer can refer to the existing project) the
+> > error message disappears.
+> 
+> The one scenario which we could reproduce got fixed and verified.
+> 
+> If you can provide an example project where it still fails, please file a
+> new bug.
+> 
+> I assume you have seen
+> https://stackoverflow.com/questions/51094274/eclipse-cant-find-xml-related-
+> classes-after-switching-build-path-to-jdk-10/53824670#53824670 or similar,
+> to understand when this error message is actually correct (despite javac
+> never reporting it).
+> 
+> BTW, when you say modular jar: does it contain module-info or do you
+> reference it as an automatic module?
+
+The referrer is on the classpath and the referenced project is an explicit module also on the classpath in m2e </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-16T23:08:28Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> Let me know if I should open a new bug report or comment on this; I can reproduce the bug. </td> </tr>
+        
+        <tr>
+            <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+            <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> 2020-01-16T23:57:24Z </td>
+        </tr>
+        <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> (In reply to Mordechai Meisels from comment #15)
+> Let me know if I should open a new bug report or comment on this; I can
+> reproduce the bug.
+
+Please report it as a new bug with a minimal example (project(s)/code) and instructions on how to reproduce it. If possible, use as example plain Java project(s). Otherwise, if it can only be reproduced with Maven, report it to m2e, not to JDT. Thanks for taking the time to report it.
+
+In my understanding, modules are on the modulepath, not on the classpath, or they wouldn't be modules. The system library of Java 9 or higher is implicit on the modulepath (whereas the system library of Java 8 or lower is implicit on the classpath), which cannot be changed. </td> </tr>
+        </table>
+</body>
+</html>

@@ -2,6 +2,7 @@ import os
 import json
 import pandas as pd
 from pathlib import Path
+import numpy as np
 
 print("Hello World!")
 ########################################################################################
@@ -51,13 +52,14 @@ def get_attributes(node):
 #bug545475_409689eaea4fbd78315894caf8741a7fad9a693a_prediction.csv
 
 
-def get_prediction_info_csv(inputfile):
-    list_df = []
-    for filename in os.listdir(inputfile):
-        if filename.endswith("_prediction.csv"):
-            df = pd.read_csv(inputfile + filename, delimiter=";")
-            list_df.append(df)
-    return list_df
+def get_prediction_info_csv(inputfilepath):
+    # list_df = []
+    # for file_name in os.listdir(inputfilepath):
+    # if file_name.endswith("_prediction.csv"):
+    df = pd.read_csv(inputfilepath, delimiter=";")
+    # list_df.append(df)
+            
+    return df
 
 
 def get_image_page_path(inputpath,indx):
@@ -77,6 +79,16 @@ def checkurl(path):
     else:
         return False    
 
+
+def get_file_names(fpath):
+    # list_filenames = []
+    # fname = os.path.basename(filename)
+    # fnamestr = os.path.splitext(fname)[0]
+    # list_filenames.append(fnamestr)
+    myfile = Path(fpath)
+    fname = myfile.stem 
+     
+    return fname
 ########################################################################################
 # *********************************** page info ****************************************
 ########################################################################################
@@ -101,7 +113,39 @@ begin_table_tag = """<table>
 """
 end_table_tag = """</table>
 """
+table0_header = """ 
+<th colspan="2" style="text-align:center; font-size: 20px;"> List of Bug Reports </th>
+<tr> <th style="background-color: #ff9999;"> Bug Report Number </th> <th style="background-color: #ff9999;"> Summary </th> </tr>
 
+"""
+
+main_page_style_string = """
+<style>
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size: 17px;
+    display: table;
+}
+table,th,td {
+  border: 1px solid black;
+  width: 1200;
+  text-align:justify;
+  word-break:break-all;
+}
+
+th{
+background-color: #d19fe8;
+font-size: 16px;
+text-align:left;
+}
+
+td{
+background-color: #FFD580;
+font-size: 14px;
+}
+
+</style>
+"""
 # define inside of tags ###
 style_string = """
 <style>
@@ -171,10 +215,10 @@ list_tracedbugs = []
 list_bugcomments = []
 list_classes = []
 list_filenames = []
-for filename in os.listdir(fpath_bugreport):
-    if filename.endswith("_nodes.json"):
+for file_name in os.listdir(fpath_bugreport):
+    if file_name.endswith("_nodes.json"):
         #print(fpath_bugreport + filename)
-        with open(fpath_bugreport + filename,"r") as f:
+        with open(fpath_bugreport + file_name,"r") as f:
             # load Json file
             loaded_file = json.load(f)
             tracedversions, tracedbugs, bugcomments, classes = get_bug_reports_info_json(loaded_file)
@@ -182,61 +226,92 @@ for filename in os.listdir(fpath_bugreport):
             list_tracedbugs.append(tracedbugs)
             list_bugcomments.append(bugcomments)
             list_classes.append(classes)
-            fname = os.path.basename(filename)
-            fnamestr = os.path.splitext(fname)[0]
-            list_filenames.append(fnamestr)
-            #f.close()
+            myfilename = get_file_names(fpath=file_name)
+            list_filenames.append(myfilename)
+        #f.close()
 # print("\n\n list traced version node attributes: ",tracedversions)
 # print("\n\n list traced bugs attributes: ",tracedbugs)
 # print("\n\n list bug comments attributes: ",bugcomments)
 # print("\n\n list bug classes attributes: ",classes)
+list_classdiagrams_names = []
+for file_name in os.listdir(fpath_predictions_classdiagrams):
+    if file_name.endswith("_prediction.csv"):
+        classdiagram_name = get_file_names(fpath=file_name)
+        list_classdiagrams_names.append(classdiagram_name)
 
-df_predictions_classdiagrams = get_prediction_info_csv(fpath_predictions_classdiagrams)
-#print("\n\n\n predictions dataframe: ", df_predictions_classdiagrams)
+list_classifiers_names = []
+for file_name in os.listdir(fpath_predictions_classifiers):
+    if file_name.endswith("_prediction.csv"):
+        classifier_name = get_file_names(fpath=file_name)  
+        list_classifiers_names.append(classifier_name)
+       
+fname_predictions_exisiting_bugreports = []    
+for cname in list_classifiers_names:
+    if cname in list_classdiagrams_names:
+        fname_predictions_exisiting_bugreports.append(cname)
+    else:
+        fname_predictions_exisiting_bugreports.append("not_found")   
+
+df_predictions_classdiagrams = []
+df_predictions_classifiers = []
+empty_df = pd.DataFrame() 
+for fname in fname_predictions_exisiting_bugreports:
+    if fname != "not_found":
+        fpath_classdiagrams = fpath_predictions_classdiagrams + fname + ".csv"
+        fpath_classifiers = fpath_predictions_classifiers + fname + ".csv"
+        predictions_classdiagrams = get_prediction_info_csv(fpath_classdiagrams)
+        predictions_classifiers = get_prediction_info_csv(fpath_classifiers)
+        df_predictions_classdiagrams.append(predictions_classdiagrams)
+        df_predictions_classifiers.append(predictions_classifiers)
+    elif fname == "not_found":    
+        df_predictions_classdiagrams.append(empty_df)
+        df_predictions_classifiers.append(empty_df)
 
 toppredictions_classdiagrams_locs = []
 toppredictions_classdiagrams_index = []
 toppredictions_classdiagrams_modelelement = []
 for df in df_predictions_classdiagrams:
-    #buglocs=df_predictions.loc[df_predictions.IsLocation==1]
-    list_diags_locs = df.loc[0:29,"IsLocation"].values.tolist()
-    list_diags_index = df.loc[0:29,"index"].values.tolist()
-    list_diags_modelelement = df.loc[0:29,"ModelElementID"].values.tolist()
-    toppredictions_classdiagrams_locs.append(list_diags_locs)
-    toppredictions_classdiagrams_index.append(list_diags_index)
-    toppredictions_classdiagrams_modelelement.append(list_diags_modelelement)
+    if df.empty:
+        list_diags_locs = "not_found"
+        list_diags_index = "not_found"
+        list_diags_modelelement = "not_found"
+        toppredictions_classdiagrams_locs.append(list_diags_locs)
+        toppredictions_classdiagrams_index.append(list_diags_index)
+        toppredictions_classdiagrams_modelelement.append(list_diags_modelelement)
+    elif not df.empty:    
+        #buglocs=df_predictions.loc[df_predictions.IsLocation==1]
+        list_diags_locs = df.loc[0:29,"IsLocation"].values.tolist()
+        list_diags_index = df.loc[0:29,"index"].values.tolist()
+        list_diags_modelelement = df.loc[0:29,"ModelElementID"].values.tolist()
+        toppredictions_classdiagrams_locs.append(list_diags_locs)
+        toppredictions_classdiagrams_index.append(list_diags_index)
+        toppredictions_classdiagrams_modelelement.append(list_diags_modelelement)
 
     print(df)
 #print(toppredictions_classdiagrams_locs,"\n",toppredictions_classdiagrams_index,"\n","length: ",
 #     len(toppredictions_classdiagrams_modelelement),toppredictions_classdiagrams_modelelement)
 
-df_predictions_classifiers = get_prediction_info_csv(fpath_predictions_classifiers)
-
-
 toppredictions_classifiers_locs = []
 #toppredictions_classifiers_index = []
 toppredictions_classifiers_modelelement = []
 for df in df_predictions_classifiers:
-    list_classes_locs = df.loc[0:29,"IsLocation"].values.tolist()
-    #list_classes_index = df.loc[0:29,"index"].values.tolist()
-    list_classes_modelelement = df.loc[0:29,"ModelElementID"].values.tolist()
-    toppredictions_classifiers_locs.append(list_classes_locs)
-    #toppredictions_classifiers_index.append(list_classes_index)
-    toppredictions_classifiers_modelelement.append(list_classes_modelelement)
 
-nodepart11 = ""
-nodepart12 = ""
-nodepart13 = ""
-nodepart14 = ""
-nodepart21 = ""
-nodepart22 = ""
-nodepart31 = ""
-nodepart41 = ""
-nodepart42 = ""
-nodepart51 = ""
-nodepart52 = ""
-
-
+    if df.empty:
+        list_classes_locs = "not_found"
+        #list_diags_index = "not_found"
+        list_classes_modelelement = "not_found"
+        toppredictions_classifiers_locs.append(list_classes_locs)
+        #toppredictions_classdiagrams_index.append(list_diags_index)
+        toppredictions_classifiers_modelelement.append(list_classes_modelelement)
+    elif not df.empty: 
+        list_classes_locs = df.loc[0:29,"IsLocation"].values.tolist()
+        #list_classes_index = df.loc[0:29,"index"].values.tolist()
+        list_classes_modelelement = df.loc[0:29,"ModelElementID"].values.tolist()
+        toppredictions_classifiers_locs.append(list_classes_locs)
+        #toppredictions_classifiers_index.append(list_classes_index)
+        toppredictions_classifiers_modelelement.append(list_classes_modelelement)
+        
+      
 list_nodespart11 = []
 list_nodespart12 = []
 list_nodespart13 = []
@@ -262,18 +337,37 @@ for json_file_data in list_tracedbugs:
     list_nodespart12.append(nodespart12)
     list_nodespart13.append(nodespart13)
     list_nodespart14.append(nodespart14)
-    
+
+
+list_html_file_names = []    
+for fname in list_filenames:
+    f1 = fname.split('_')[0]
+    f2 = fname.split('_')[1] 
+    f3 = fname.split('_')[2]
+    final_name = f1 + "_" + f2 + "_" + f3 + "_" + "prediction" + ".html"
+
+    list_html_file_names.append(final_name)
+
 list_table1_string = []
-for json_file_data in list_tracedversions:
+list_main_page_string = []
+for json_file_data_idx in range(len(list_tracedversions)):
     list_nodepart21 = []
     list_nodepart22 = []
     
-    for nodes in json_file_data:
+    nodepart11 = list_nodespart11[json_file_data_idx][0]
+    nodepart12 = list_nodespart12[json_file_data_idx][0]
+    nodepart13 = list_nodespart13[json_file_data_idx][0]
+    nodepart14 = list_nodespart14[json_file_data_idx][0]
+
+    nodepart00 = list_html_file_names[json_file_data_idx]
+
+    for nodes in list_tracedversions[json_file_data_idx]:
+       
         nodepart21 = str(dict(nodes).get('commitMessage'))
         nodepart22 = str(dict(nodes).get('date'))
         list_nodepart21.append(nodepart21)
         list_nodepart22.append(nodepart22)
-
+        
     table1_string = """
     <th colspan="2"> Bug Report </th>
     <tr>
@@ -312,7 +406,23 @@ for json_file_data in list_tracedversions:
         part22=nodepart22,
     )
     list_table1_string.append(table1_string)
+    
+    link_tag_str = """ 
+    """
+    mainpg_string = """
+    <tr>
+        <td  style="width: 50%; ">  <a href="./bugreport_pages/{htmlname}" target=""> {part01} </a>  </td>
+        <td  style="width: 50%; "> {part02} </td>
+    </tr>
 
+    """.format(
+        htmlname=nodepart00,
+        part01=nodepart11,
+        part02=nodepart12,
+    )
+    list_main_page_string.append(mainpg_string)
+    
+        
 table2_string_ranked_classdiagrams_header = """
 <th colspan="2"> Ranked List of Class Diagrams </th>
 """
@@ -375,9 +485,9 @@ table2_strbottom = """
 
 list_classdiagrams = []
 for node_idx in range(len(toppredictions_classdiagrams_modelelement)):
-
-    nodepart31 = toppredictions_classdiagrams_modelelement[node_idx]
-    buglocs_classdiagrams = toppredictions_classdiagrams_locs[node_idx]
+    if toppredictions_classdiagrams_modelelement[node_idx] != "not_found":
+        nodepart31 = toppredictions_classdiagrams_modelelement[node_idx]
+        buglocs_classdiagrams = toppredictions_classdiagrams_locs[node_idx]
 
     img_path = get_image_page_path(image_page_path,node_idx)
     classdiagrams_patches = []
@@ -393,7 +503,7 @@ for node_idx in range(len(toppredictions_classdiagrams_modelelement)):
                 part31=img_path,
                 part32=nd31_lastpart,
             )
-            
+            classdiagrams_patches.append(listitems)
         elif buglocs_classdiagrams[idx] == 0:
             listitems = """
             <ul>
@@ -403,7 +513,7 @@ for node_idx in range(len(toppredictions_classdiagrams_modelelement)):
                 part31=img_path,
                 part32=nd31_lastpart,
             )
-        classdiagrams_patches.append(listitems)
+            classdiagrams_patches.append(listitems)
     list_classdiagrams.append(classdiagrams_patches)       
         
 list_classifiers = []
@@ -412,29 +522,30 @@ for node_idx in range(len(toppredictions_classifiers_modelelement)):
     nodepart41 = toppredictions_classifiers_modelelement[node_idx]
     buglocs_classifiers = toppredictions_classifiers_locs[node_idx]
     classifiers_patches = []
-    for idx in range(len(nodepart31)):
+    for idx in range(len(nodepart41)):
         nd41 = nodepart41[idx]
-    if buglocs_classifiers[idx] == 1:
-        table3_string_ranked_classifiers = """
-            <tr>
-                <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> {part41} </td>
-            </tr>
+        if buglocs_classifiers[idx] == 1:
+            table3_string_ranked_classifiers = """
+                <tr>
+                    <td  style="font-size: 12px; font-weight: bold; background-color:#d5e3c8"> {part41} </td>
+                </tr>
 
-            """.format(
-            part41=nd41,
-            
-        )
-    elif buglocs_classifiers[idx] == 0:
-        table3_string_ranked_classifiers = """
-            <tr>
-                <td  style="font-size: 12px; background-color:#d5e3c8"> {part41} </td>
-            </tr>
+                """.format(
+                part41=nd41,
+                
+            )
+            classifiers_patches.append(table3_string_ranked_classifiers)
+        elif buglocs_classifiers[idx] == 0:
+            table3_string_ranked_classifiers = """
+                <tr>
+                    <td  style="font-size: 12px; background-color:#d5e3c8"> {part41} </td>
+                </tr>
 
-            """.format(
-            part41=nd41,
-            
-        )  
-    classifiers_patches.append(table3_string_ranked_classifiers)
+                """.format(
+                part41=nd41,
+                
+            )  
+            classifiers_patches.append(table3_string_ranked_classifiers)
     list_classifiers.append(classifiers_patches)
 print("*********************************************************************")
 ########################################################################################
@@ -442,27 +553,96 @@ print("*********************************************************************")
 ########################################################################################
 # list_table1_string "./buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/bugreport_pages/"
 
+table2_not_exist = """
+<table>
+    <th colspan="2"> Ranked List of Class Diagrams </th>
+    <tr>
+        <td  style="width: 20%; font-size: 22px; background-color:#d5e3c8;"> No Data Available </td>
+    </tr>
+</table>
+"""
+
+# table2
+list_table2_classdiagram_str = []
+for classdiagram_patch in list_classdiagrams:
+    classdiagrams_str = ""
+    for classdiagram in classdiagram_patch:
+        classdiagrams_str += classdiagram
+    list_table2_classdiagram_str.append(classdiagrams_str)
+
+
+# table3
+list_table3_classifier_str = []
+for classifier_patch in list_classifiers:
+    classifiers_str = ""
+    for classifier in classifier_patch:
+        classifiers_str += classifier
+    list_table3_classifier_str.append(classifiers_str)
+
+# table4
+table_discussions_str = []
+for discussion_patch in list_discussions:
+    discussions_str = ""
+    for discussion in discussion_patch:
+        discussions_str += discussion
+    table_discussions_str.append(discussions_str)
+# classifiers_names, classdiagrams_names
+list_table0 = []
 for table_idx in range(len(list_table1_string)):
-    #print(list_table1_string[table_idx])
-      
+    # main page table
+    table0 = begin_table_tag + list_main_page_string[table_idx] + end_table_tag
+    list_table0.append(table0)
+    
+    # table1  
     table1 = begin_table_tag + list_table1_string[table_idx] + end_table_tag
-    tables_together = table1
+    
+    ranked_classdiagrams_str = begin_table_tag + table2_not_exist + end_table_tag
+        
+    if list_table2_classdiagram_str[table_idx] != "not_found":
+        table2_ranked_classdiagrams_str = table2_strtop + list_table2_classdiagram_str[table_idx] + table2_strbottom 
+        table2 = begin_table_tag + table2_string_ranked_classdiagrams_header + table2_ranked_classdiagrams_str + end_table_tag
+
+    else:
+        table2 = table2_not_exist
+
+    table3 = begin_table_tag + table3_string_ranked_classifiers_header + list_table3_classifier_str[table_idx] + end_table_tag
+    table4 = begin_table_tag + table4_string_discussion_header + table_discussions_str[table_idx] + end_table_tag
+    tables_together = table1 + table2 + table3 + table4
+
     # beginning tags ### 
     begin_tags = html_tag + style_string + body_tag + page_header_string 
     end_tags = body_end_tag + html_end_tag
     finalpage_string = begin_tags + tables_together + end_tags
-
-    pagename = list_filenames[table_idx] + ".html"
     
+    # list_html_file_names
+    #pagename = list_filenames[table_idx] + ".html"
+    pagename = list_html_file_names[table_idx] 
+
     print(finalpage_string)
     
     fname = output_pages_path + pagename
     #f = open("myfile.txt", "w")
-    with open(fname, "w") as f:
+    with open(fname, "w", encoding="utf-8") as f:
         f.write(str(finalpage_string))
     f.close()  
-    # with open(f"./buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/{pagename}", "w") as f: 
-    #     f.write(finalpage_string)   
-    # f.close() 
 
-        
+table0_str = ""
+for table in list_table0:
+    
+    table0_str += table
+    #begin_table_tag + table + end_table_tag
+
+mainpage_table = begin_table_tag + table0_header + table0_str + end_table_tag
+
+begin_tags = html_tag + main_page_style_string + body_tag + page_header_string 
+end_tags = body_end_tag + html_end_tag
+
+final_mainpage_string = begin_tags + mainpage_table + end_tags
+
+mainpage_path = "C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/"
+
+fname = mainpage_path + "mainpage.html"
+#f = open("myfile.txt", "w")
+with open(fname, "w", encoding="utf-8") as f:
+    f.write(str(final_mainpage_string))
+f.close() 
