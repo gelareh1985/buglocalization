@@ -89,6 +89,18 @@
             },
         },
         {
+            "name": "Webpage - Copy Diagram",
+            "type": "python",
+            "request": "launch",
+            "program": "src/webpage/copy_diagrams.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "autoReload": {"enable": true},
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+        },
+        {
             "name": "Word To Vector - Shared Dictionary",
             "type": "python",
             "request": "launch",

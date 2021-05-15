@@ -91,20 +91,20 @@ class DiagramRanking:
 if __name__ == '__main__':
 
     # Size of the diagram:
-    DIAGRAM_NEIGHBOR_SIZE = 20  # Default 35
+    DIAGRAM_NEIGHBOR_SIZE = 35  # Default 35
     # Avg Diagram Size 35.482114940383134 = Diagram Size 12165256 / Diagram Count 342856
 
-    # Save only n top-k rankings:
-    TOP_K_RANKINGS = 50  # Default -1
+    # Save only n "best" ranking samples:
+    BEST_RANKING_SAMPLES = -1  # Default -1
 
     # Slice and save diagram nodes as JSON file:
-    SAVE_DIAGRAM = True  # Default False
+    SAVE_DIAGRAM = False  # Default False
 
     #  Generate diagram for each position in classifier ranking - do not consider a position that were already seen.
     DIAGRAM_AGGREGATION = True  # Default True
 
     # Compute only first k entries of the diagram ranking:
-    TOP_RANKING_K = 15  # Default -1
+    TOP_RANKING_K = -1  # Default -1
 
     # Hops from the expected locations:
     K_NEIGHBOUR_DISTANCE = 2
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     MATCH_NEO4J_ID = False  # TODO: USING INDEX n:Nlable
 
     # Evaluation result tables:
-    evaluation_results_folder = "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation"
+    evaluation_results_folder = "eclipse.pde.ui_data-2021-04-09_model-2021-04-12_evaluation"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
@@ -159,17 +159,17 @@ if __name__ == '__main__':
         # Store ranking:
         ranking = DiagramRanking(db_version, tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted_aggregation, diagram_ranking)
 
-        if TOP_K_RANKINGS == -1:
+        if BEST_RANKING_SAMPLES == -1:
             ranking.save(evaluation_results_with_subgraphs_path, buglocation_graph)
         else:
             # Only best k rankings:
             diagram_rankings.append(ranking)
             diagram_rankings.sort(key=diagram_ranking_comparator)
 
-            if len(diagram_rankings) > TOP_K_RANKINGS:
-                del diagram_rankings[TOP_K_RANKINGS]
+            if len(diagram_rankings) > BEST_RANKING_SAMPLES:
+                del diagram_rankings[BEST_RANKING_SAMPLES]
 
-    if TOP_K_RANKINGS != -1:
+    if BEST_RANKING_SAMPLES != -1:
         for diagram_ranking in diagram_rankings:
             print("Save:", diagram_ranking.tbl_predicted_file)
             diagram_ranking.save(evaluation_results_with_subgraphs_path, buglocation_graph)
