@@ -203,6 +203,7 @@ jdtstr = "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation_k2_undire
 fpath_bugreport = r"D:/buglocalization_gelareh_home/evaluations/latest_version/original_predictions/"
 fpath_predictions_classifiers = r"D:/buglocalization_gelareh_home/evaluations/latest_version/original_predictions/"
 fpath_predictions_classdiagrams = r"D:/buglocalization_gelareh_home/evaluations/latest_version/aggregated/" + jdtstr
+fpath_bugreport_pages = r"D:/buglocalization_gelareh_home/evaluations/latest_version/bugreport_pages/"
 
 #fname = "7508_bug545475_409689eaea4fbd78315894caf8741a7fad9a693a_nodes.json"
 #f = open(fpath_bugreport + fname, 'r')
