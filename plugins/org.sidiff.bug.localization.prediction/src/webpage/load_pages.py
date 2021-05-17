@@ -5,10 +5,12 @@ from typing import List
 
 import pandas as pd
 
+# classdiagram_ranking_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/"\
+#     "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_diagram_ranking/"
 classdiagram_ranking_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/"\
-    "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_diagram_ranking/"
-classifier_ranking_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/original_predictions/"
-webpage_path = "C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/jdt/"
+    "eclipse.pde.ui_data-2021-04-09_model-2021-04-12_diagram_ranking/"
+classifier_ranking_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/original_predictions_pde/"
+webpage_path = "C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/pde/"
 
 
 class Ranking:
@@ -136,12 +138,12 @@ font-size: 14px;
 """
 
     def create_bug_list(self):
-        bug_list = """ 
-<table> 
+        bug_list = """
+<table>
     <th colspan="2" style="text-align:center; font-size: 20px;"> List of Bug Reports </th>
-    <tr> 
-        <th style="background-color: #ff9999;"> Bug Report Number </th> 
-        <th style="background-color: #ff9999;"> Summary </th> 
+    <tr>
+        <th style="background-color: #ff9999;"> Bug Report Number </th>
+        <th style="background-color: #ff9999;"> Summary </th>
     </tr>
 """
         for ranking in self.rankings:
@@ -178,7 +180,8 @@ class BugReportPage:
             f.close()
 
     def create(self):
-        return self.create_header() + self.create_classdiagram_ranking() + self.create_classifier_ranking() + self.create_footer()
+        return self.create_header() + self.create_bugreport_and_bugfix() + self.create_classdiagram_ranking()\
+            + self.create_classifier_ranking() + self.create_discussion() + self.create_footer()
 
     def create_header(self):
         return """
@@ -228,8 +231,51 @@ font-size: 14px;
 </style>
 <body>
 
-<h2>Bug report Information</h2> 
+<h2>Bug report Information</h2>
 """
+
+    def create_bugreport_and_bugfix(self):
+        bugreport_bugfix = """
+<table>        
+    <th colspan="2"> Bug Report </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bug Report Number </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> {bugreport_number} </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Summary </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> {bugreport_summary} </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Creation Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> {creation_time} </td>
+    </tr>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Status </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> {status} </td>
+    </tr>
+
+    <th colspan="2"> Bug Fix </th>
+    <tr>
+        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> {bugfix_commit} </td>
+    </tr>
+    <tr>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  style="width: 80%; background-color:#f7fff0;"> {bugfix_time} </td>
+    </tr>
+</table>
+    """.format(
+
+            bugreport_number=self.ranking.get_bug_report_number(),
+            bugreport_summary=self.ranking.get_bug_report_summary(),
+            creation_time=self.ranking.get_bug_report_creation_time(),
+            status=self.ranking.get_bug_report_status(),
+            bugfix_commit=self.ranking.get_bug_fix_commit_message(),
+            bugfix_time=self.ranking.get_bug_fix_commit_time(),
+        )
+
+        return bugreport_bugfix
 
     def create_classdiagram_ranking(self):
         classdiagram_ranking = """
@@ -275,10 +321,10 @@ font-size: 14px;
     def create_classifier_ranking(self):
         classifier_ranking = """
 <table>
-<th colspan="2"> Ranked List of Classifiers </th>
-<tr>
-    <td  style="width: 20%; font-size: 10px; background-color:#d5e3c8"> 
-    <ul>
+    <th colspan="2"> Ranked List of Classifiers </th>
+    <tr>
+        <td  style="width: 20%; font-size: 10px; background-color:#d5e3c8"> 
+        <ul>
 """
         for ranking_index, ranking_position in self.ranking.classifier_ranking.iterrows():
             model_element_id = ranking_position["ModelElementID"]
@@ -296,13 +342,36 @@ font-size: 14px;
             )
 
         classifier_ranking += """
-    </ul> 
-    </td>
-</tr>
+        </ul> 
+        </td>
+    </tr>
 </table>
 """
-
         return classifier_ranking
+
+    def create_discussion(self):
+        bugreport_comment = self.ranking.get_bug_report_comment()
+
+        discussion = """
+<table>
+        <th colspan="2"> Discussion </th>
+        """
+        for comment in bugreport_comment:
+            discussion += """
+            <tr>
+                <td style="width: 20%; font-size: 12px; background-color:#d5e3c8"> Creation Time </td>
+                <td style="width: 80%; font-size: 12px; background-color:#d5e3c8"> {discussion_creation_time} </td>
+            </tr>
+            <tr> <td colspan="2" style="font-size: 12px; background-color:#f7fff0"> {discussion_text} </td> </tr>
+            """.format(
+                discussion_creation_time=self.ranking.get_bug_report_comment_time(comment),
+                discussion_text=self.ranking.get_bug_report_comment_description(comment),
+            )
+        discussion += """
+</table>            
+            """
+
+        return discussion
 
     def create_footer(self):
         return """
@@ -319,7 +388,7 @@ if __name__ == '__main__':
             ranking = Ranking(classdiagram_ranking_path + classdiagram_ranking_file, classifier_ranking_path)
             rankings.append(ranking)
 
-            bug_report_page = BugReportPage(ranking,webpage_path)
+            bug_report_page = BugReportPage(ranking, webpage_path)
             bug_report_page.write()
 
     bug_listing_page = BugListingPage(webpage_path, rankings)
