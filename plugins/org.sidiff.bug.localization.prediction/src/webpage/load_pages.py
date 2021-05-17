@@ -10,7 +10,7 @@ import pandas as pd
 classdiagram_ranking_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/"\
     "eclipse.pde.ui_data-2021-04-09_model-2021-04-12_diagram_ranking/"
 classifier_ranking_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/original_predictions_pde/"
-webpage_path = "C:/Users/gelareh/git/buglocalization/plugins/org.sidiff.bug.localization.prediction/src/webpage/pde/"
+webpage_path = "D:/buglocalization_gelareh_home/evaluations/latest_version/bugreport_pages/pde/"
 
 
 class Ranking:
@@ -118,7 +118,7 @@ html{
 }
 table,th,td {
 border: 1px solid black;
-width: 1200;
+width: 1200px;
 text-align:justify;
 word-break:break-all;
 }
@@ -194,7 +194,7 @@ html{
 }
 table,th,td {
   border: 1px solid black;
-  width: 1200;
+  width: 1200px;
   text-align:justify;
   word-break:break-all;
 }
@@ -228,6 +228,28 @@ font-size: 14px;
   border: 2px solid #73AD21;
 }
 
+.collapsible {
+  background-color:  #82baae;
+  color: black;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #85ba82;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #d5e3c8;
+}
 </style>
 <body>
 
@@ -324,6 +346,11 @@ font-size: 14px;
     <th colspan="2"> Ranked List of Classifiers </th>
     <tr>
         <td  style="width: 20%; font-size: 10px; background-color:#d5e3c8"> 
+        <button type="button"class="collapsible""> 
+            <img src="./list_classifier_icon.svg" height="35" style="position: relative; transform: translate(20%, 20%);"/>
+            <strong> View Classifiers </strong> 
+        </button>
+        <div class="content">
         <ul>
 """
         for ranking_index, ranking_position in self.ranking.classifier_ranking.iterrows():
@@ -343,9 +370,26 @@ font-size: 14px;
 
         classifier_ranking += """
         </ul> 
+        </div>
         </td>
     </tr>
 </table>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
 """
         return classifier_ranking
 
