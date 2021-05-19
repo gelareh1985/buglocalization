@@ -250,6 +250,11 @@ font-size: 14px;
   overflow: hidden;
   background-color: #d5e3c8;
 }
+.info {
+  width: 80%;
+  background-color: #ffff99;
+  border-left: 6px solid #ff9900;
+}
 </style>
 <body>
 
@@ -277,13 +282,8 @@ font-size: 14px;
         <td  style="width: 80%; background-color:#f7fff0;"> {status} </td>
     </tr>
 
-    <th colspan="2"> Bug Fix </th>
     <tr>
-        <td  style="width: 20%; background-color:#d5e3c8;"> Bugfix Commit </td>
-        <td  style="width: 80%; background-color:#f7fff0;"> {bugfix_commit} </td>
-    </tr>
-    <tr>
-        <td  tyle="width: 20%; background-color:#d5e3c8;"> Bugfix Time </td>
+        <td  tyle="width: 20%; background-color:#d5e3c8;"> Buggy Version </td>
         <td  style="width: 80%; background-color:#f7fff0;"> {bugfix_time} </td>
     </tr>
 </table>
@@ -293,7 +293,6 @@ font-size: 14px;
             bugreport_summary=self.ranking.get_bug_report_summary(),
             creation_time=self.ranking.get_bug_report_creation_time(),
             status=self.ranking.get_bug_report_status(),
-            bugfix_commit=self.ranking.get_bug_fix_commit_message(),
             bugfix_time=self.ranking.get_bug_fix_commit_time(),
         )
 
@@ -302,7 +301,15 @@ font-size: 14px;
     def create_classdiagram_ranking(self):
         classdiagram_ranking = """
 <table>
-<th colspan="2"> Ranked List of Class Diagrams </th>
+<tr> <th  colspan="2"> Ranked List of Class Diagrams </th></tr>  
+<tr> <td colspan="2" class="info">
+      <p style="font-size: 16px; "> 
+         <img src="./note_icon.svg" height="35" style="position: relative; transform: translate(10%, 20%); padding: 10px;"/>
+         <strong> Note </strong>
+      </p> 
+         <ul> <li> <strong> Bold fonted items: </strong> Fixed bugreport locations  </li> </ul>
+     </td>  
+</tr>
 <tr>
     <td  style="width: 20%; font-size: 10px; background-color:#d5e3c8"> 
     <ul>
@@ -343,7 +350,16 @@ font-size: 14px;
     def create_classifier_ranking(self):
         classifier_ranking = """
 <table>
-    <th colspan="2"> Ranked List of Classifiers </th>
+    <tr> <th colspan="2"> Ranked List of Classifiers </th> <tr>
+    <tr> 
+     <td colspan="2" class="info">
+      <p style="font-size: 16px; "> 
+         <img src="./note_icon.svg" height="35" style="position: relative; transform: translate(10%, 20%); padding: 10px;"/>
+         <strong> Note </strong>
+      </p> 
+         <ul> <li> <strong> Bold fonted items: </strong> Fixed bugreport locations  </li> </ul>
+     </td>  
+    </tr>
     <tr>
         <td  style="width: 20%; font-size: 10px; background-color:#d5e3c8"> 
         <button type="button"class="collapsible""> 
