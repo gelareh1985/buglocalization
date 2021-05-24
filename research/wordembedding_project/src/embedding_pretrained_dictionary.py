@@ -6,8 +6,8 @@ Created on Jan 12, 2021
 from gensim.models import KeyedVectors
 import numpy as np
 
-path1 = r"D:/files_MDEAI_original\Data_sets/GoogleNews-vectors-negative300.bin"
-path2 = r"D:/files_MDEAI_original\Data_sets/glove.6B.50d.txt"
+path1 = r"D:/buglocalization_gelareh_home/GoogleNews-vectors-negative300.bin"
+# path2 = r"D:/files_MDEAI_original\Data_sets/glove.6B.50d.txt"
 
 # Load vectors directly from the file
 model = KeyedVectors.load_word2vec_format(path1, binary=True)
@@ -34,5 +34,4 @@ for corpus in file_corpus:
 # print(model.similarity('straightforward','easy'))
 # print(model.similarity('simple','impossible'))
 # print(model.most_similar('simple'))
-model.wv.most_similar_cosmul
 print('length of the sum vector embedding: ',len(corpus_vects),'\t',len(corpus_vects[0]))
