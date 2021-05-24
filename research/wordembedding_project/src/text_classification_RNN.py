@@ -91,7 +91,6 @@ def found_pretrained_embeddings(found_embeddings):
 if __name__ == '__main__':
     # Load vectors directly from the file
     model = KeyedVectors.load_word2vec_format(pretrained_dict_path, binary=True)
-
     # ***********************************************************************************
     # Access vectors for specific words with a keyed lookup:
     file_corpus = [['main compile close log file main'], ['fixed'], ['compile'], ['system exit finished'],
@@ -195,98 +194,3 @@ if __name__ == '__main__':
     mymodel.add(Dense(1, activation='sigmoid')) 
     mymodel.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     print(mymodel.summary())
-    # # ***********************************************************************************
-
-    # # ***********************************************************************************
-    # tensorboard_callback = TensorBoard(log_dir="logs")
-    # # fit the model
-    # mymodel.fit(padded_docs_train, labels, epochs=2, verbose=2, callbacks=[tensorboard_callback])
-    
-    # +++++++++++++
-    # +++++++++++++
-    # # evaluate the model
-    # loss, accuracy = mymodel.evaluate(np.asarray(embeddings_test), verbose=2)
-    # print('Accuracy: %f' % (accuracy * 100))
-
-    # output = keras_model.predict(padded_docs)
-    # print(output)
-
-    # #predictions = model.predict(np.array([sample_text]))
-    # predictions = mymodel.predict(np.asarray(embeddings_test))
-    # print(predictions)
-
-    # loss, accuracy = mymodel.evaluate(np.asarray(embeddings_test), verbose=2)
-    # print('Accuracy: %f' % (accuracy * 100))
-    # # ***********************************************************************************
-    # # making keras model of pad sequences (sequential) second way
-    # # ***********************************************************************************
-
-    # # ***********************************************************************************
-    # # making keras model of pad sequences (sequential) third way
-    # # ***********************************************************************************
-    # # docs_sample = ['main compile close log file main',
-    # #             'fixed',
-    # #             'compile',
-    # #             'system exit finished',
-    # #             'ReturnStatement',
-    # #             'getResult',
-    # #             'compile key compile',
-    # #             'printModifiers']
-    # # #dictionary = Dictionary([docs_sample])
-
-    # # #print("length of dictionary: ",len(dictionary))
-
-    # # # for key, value in dictionary.items():
-    # # #     print(key, "    ", value)
-    # # print("dictionary (words and indexes): ", dictionary.token2id)
-    # # # category1:1, category2:2, category3:3, category4:4
-    # # #labels = np.array([1, 1, 1, 4, 2, 3, 3,4])
-    # labels = np.array([1, 1, 1, 0, 1, 0, 0, 1])
-    # # # ************************************************************************************
-    # # # integer encode the documents: method1
-    # vocab_size = len(dictionary)
-    # # #encoded_docs = [one_hot(d, vocab_size) for d in docs_sample]
-
-    # # #print("encoded docs: ",encoded_docs)
-    # # # ************************************************************************************
-    # # # integer encode the documents: method2
-    # # t = Tokenizer()
-    # # t.fit_on_texts(docs)
-    # # encoded_docs = t.texts_to_sequences(docs)
-    # # vocab_size = len(t.word_index) + 1
-    # # print("encoded docs: ",encoded_docs)
-    # # ************************************************************************************
-    # # pad documents to a max length of 4 words
-    # max_length = 5
-    # encoded_docs = []
-    # for idx in range(len(corpus)):
-    #     row_doc = []
-    #     for row_idx in range(len(corpus[idx])):
-    #         print("row ",idx, ":",corpus[idx][row_idx][0])
-    #         row_doc.append(corpus[idx][row_idx][0])
-    #     encoded_docs.append(row_doc)
-
-    # print("encoded docs: ",encoded_docs)
-    # padded_docs = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
-    # print("padded docs: ",padded_docs)
-    # # ************************************************************************************
-    # keras_model = Sequential()
-    # keras_model.add(Embedding(vocab_size, 8, input_length=max_length))
-    # keras_model.add(Dense(1))
-    # keras_model.add(Flatten())
-    # keras_model.add(Dense(1, activation='sigmoid'))
-
-    # keras_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    # #keras_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    # print(keras_model.summary())
-
-    # tensorboard_callback = TensorBoard(log_dir="logs")
-    # # fit the model
-    # keras_model.fit(padded_docs, labels, epochs=50, verbose=2, callbacks=[tensorboard_callback])
-
-    # # evaluate the model
-    # loss, accuracy = keras_model.evaluate(padded_docs, labels, verbose=2)
-    # print('Accuracy: %f' % (accuracy * 100))
-
-    # output = keras_model.predict(padded_docs)
-    # print(output)
