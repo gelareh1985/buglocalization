@@ -34,9 +34,9 @@ class WordToVectorDictionary:
             Tuple[Dict[str, np.ndarray], int]: The dictionary shared in the same memory for all processes, and the word vector size.
         """
         model = KeyedVectors.load(str(Path(pretrained_dictionary_path + pretrained_dictionary_normalized_name)), mmap='r')
-        model.syn0norm = model.syn0  # prevent recalc of normed vectors
+        #model.syn0norm = model.syn0  # prevent recalc of normed vectors
         model.vectors_norm = model.vectors
-        word_vector_size = model.wv.vectors.shape[1]
+        word_vector_size = model.vectors.shape[1]
         return model, word_vector_size
     
     def dump(self) -> dict:

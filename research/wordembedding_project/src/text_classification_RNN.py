@@ -194,3 +194,4 @@ if __name__ == '__main__':
     mymodel.add(Dense(1, activation='sigmoid')) 
     mymodel.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     print(mymodel.summary())
+    

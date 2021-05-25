@@ -17,13 +17,24 @@
             },
         },
         {
-            "name": "Bug Localization - Prediction",
+            "name": "Bug Localization - Training",
             "type": "python",
             "request": "launch",
-            "program": "src/bug_localization_prediction.py",
+            "program": "src/bug_localization_training.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "autoReload": {"enable": true},
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+        },
+        {
+            "name": "node_self_embedding",
+            "type": "python",
+            "request": "launch",
+            "program": "src/node_self_embedding.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
