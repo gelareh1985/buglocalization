@@ -26,6 +26,8 @@ To set up the database needed to work with IdentiBug, you need to first configur
 
 **(5) to download APOC Jar from the following url and copy it to plugins folder**
 
+[Download Link](https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/)
+
 **(6) to copy the Settings in conf/neo4j.conf**
 
     dbms.security.procedures.unrestricted=apoc.*
