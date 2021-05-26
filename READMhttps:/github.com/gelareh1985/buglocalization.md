@@ -11,11 +11,13 @@ To set up the database needed to work with IdentiBug, you need to first configur
 ./bin/neo4j-admin dump --database=neo4j --to=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump
 
 **(2) to load the downloaded files:**
+
 *load command:*
 
      ./bin/neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump --database=neo4j --force
     
 **(3) to start server:**
+
 *start command:*
 
       ./bin/neo4j.bat console
