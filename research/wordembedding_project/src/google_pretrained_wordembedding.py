@@ -1,7 +1,4 @@
-from numpy import array
-from numpy import asarray
-from numpy import argmax
-from numpy import zeros
+from numpy import array, asarray, argmax, zeros
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential

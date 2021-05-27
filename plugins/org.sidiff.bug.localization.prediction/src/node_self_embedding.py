@@ -21,23 +21,51 @@ tokenizer = RegexpTokenizer('[A-Za-z]+')
 #nltk.download('wordnet')
 
 
-def text_to_words(docs):
-    #tokenizer = RegexpTokenizer('[A-Za-z]+')
-    # words = tokenizer.tokenize(text)
-    # return words.strip().lower()
-    # Split the documents into tokens.
-    tokenizer = RegexpTokenizer(r'\w+')
-    for idx in range(len(docs)):
-        docs[idx] = docs[idx].lower()  # Convert to lowercase.
-        docs[idx] = tokenizer.tokenize(docs[idx])  # Split into words.
+def get_sum_of_word_embeddings(file_corpus, model):
+    # pretrained embeddings keydvectors
+    corpus_vects = []
+    file_corpus = list(file_corpus)
+    for corpus in file_corpus:
+        line_vect = []
+        for phrase in corpus:
+            print('corpus', corpus, '    ', phrase.strip().split())
+            for word in phrase.strip().split():
+                try:
+                    vect = model[word]
+                    line_vect.append(vect)
 
-    # Remove numbers, but not words that contain numbers.
-    docs = [[token for token in doc if not token.isnumeric()] for doc in docs]
+                except KeyError:
+                    pass  # ignore...how to handle unseen words...?
+        line_vect_Sum = np.sum(line_vect, axis=0)
+        corpus_vects.append(line_vect_Sum)
+    #print("all embedding vectors: ", corpus_vects)
+    return corpus_vects
 
-    # Remove words that are only one character.
-    docs = [[token for token in doc if len(token) > 1] for doc in docs]
-    return docs
 
+def get_embedding_vectors(dictionary, model, embedding_matrix):
+    embeddings = []
+
+    found_embeddings_from_pretrained_model = {}
+    for word, i in dictionary.items():
+        if word in model.index_to_key:
+            if model[word] is not None:
+                embeddings.append(model[word])
+                key = model.key_to_index[word]
+                embedding_matrix[i] = model[word]
+                found_embeddings_from_pretrained_model[key] = word
+
+
+def get_padded_sequences(t,max_length,docs):
+    t.fit_on_texts(docs)
+    vocab_size = len(t.word_index) + 1
+    # word2index dictionary on tokenized input text:
+    word_index = t.word_index
+    index_word = t.index_word
+    # integer encode the documents
+    encoded_docs = t.texts_to_sequences(docs)
+    # pad documents to a max length of 10 words
+    padded_docs = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
+    return vocab_size, word_index, index_word, encoded_docs, padded_docs
 
 # def extract_documents(url='https://cs.nyu.edu/~roweis/data/nips12raw_str602.tgz'):
 #     with smart_open.open(url, "rb") as file:
@@ -60,25 +88,11 @@ if __name__ == '__main__':
     word_dictionary, dimension = word_to_vector_dictionary.dictionary()
     #print(len(word_dictionary), "    ", word_dictionary["compile"])
 
-    # texts = []
-    # with open(text_sample_path) as f:
-    #     text = f.read()
-    #     texts.append(text)
-    # f.close()
 # ***********************************************************************************
     # Access vectors for specific words with a keyed lookup:
     file_corpus = [['main compile close log file main'], ['fixed'], ['compile'], ['system exit finished'],
                 ['ReturnStatement'], ['getResult'], ['compile key compile'], ['printModifiers']]
     
-    texts = []
-    str_texts = ""
-    for row in file_corpus:
-        for text in row:
-            texts.append(text)
-            text += "\n"
-            str_texts += text
-
-    docs = text_to_words(texts)
     #print("texts: ",str_texts)
     print("docs ",docs)
 
