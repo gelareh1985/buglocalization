@@ -1,6 +1,7 @@
 from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
 import numpy as np
 import nltk
+import re
 # from gensim.models import KeyedVectors
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
@@ -16,6 +17,11 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import one_hot
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import backend as K
+from tensorflow.keras import optimizers
+
+from py2neo import Graph
+from buglocalization.metamodel.meta_model_uml import MetaModelUML
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 
 
 tokenizer = RegexpTokenizer('[A-Za-z]+')
@@ -24,6 +30,27 @@ tokenizer = RegexpTokenizer('[A-Za-z]+')
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('brown')
 # nltk.download('universal_tagset')
+
+
+def process_text(text):
+    words_array = []
+    tokenizer = RegexpTokenizer('[A-Za-z]+')
+    
+    for row in text:
+        words = tokenizer.tokenize(row)
+        row_words = []
+        for word in words:
+            splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', word)).split()
+            for split_word in splitted:
+                # split_word = lemmatizer.lemmatize(split_word.strip().lower())
+                split_word = split_word.strip().lower()
+                
+                # if len(split_word) > 1 and split_word not in stopwords:
+                if len(split_word) > 1:
+                    row_words.append(split_word)
+                    print(row_words)
+        words_array.append(row_words)            
+    return words_array
 
 
 def put_embeddings_together(embeddings):
@@ -134,6 +161,29 @@ def count_vectors(corpus_vectors):
 
 if __name__ == '__main__':
 
+    # Database connection:
+    neo4j_configuration = Neo4jConfiguration(
+        neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
+        neo4j_port=7687,  # port of Neo4j bold port: 7687, 11003
+        neo4j_user="neo4j",
+        neo4j_password="password",
+    )
+
+    metamodel = MetaModelUML(neo4j_configuration=neo4j_configuration)
+    file_corpus = []
+    for metatype, properties in metamodel.get_type_to_properties().items():
+        #print(type, properties)
+        cypher_str_command = """MATCH (n:{metatype}) RETURN n""".format(
+            metatype=metatype
+        )
+        metamodel_nodes = metamodel.get_graph().run(cypher=cypher_str_command).to_table()
+        for node in metamodel_nodes:
+            # node comments (long text)
+            # node (short text)
+            for property in properties:
+                print(node[0][property]) 
+                file_corpus.append(node[0][property])  # split to words - each word to vector - sowe
+
     word_to_vector_dictionary = WordToVectorDictionary()
     word_dictionary, dimension = word_to_vector_dictionary.dictionary()
     # print(len(word_dictionary), "    ", word_dictionary["compile"])
@@ -163,9 +213,11 @@ if __name__ == '__main__':
     print(tag_fd.most_common())
 
 # ***********************************************************************************
-    docs_train = file_corpus_train
+    #docs_train = file_corpus_train
+    docs_train = file_corpus
     docs_test = file_corpus_test
-
+    
+    docs_train = process_text(docs_train)
     """ prepare train and test data labels """
     labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
     labels_test = np.array([1, 0])
@@ -250,6 +302,13 @@ if __name__ == '__main__':
     print('\n Accuracy: %f' % (accuracy * 100))
     print("\n\n")
 
+    print("\n\n compile 3: ")
+    opt = optimizers.RMSprop()
+    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64) 
+    loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
+    print('\n Accuracy: %f' % (accuracy * 100))
+    
     predicted_text = model.predict(X_test)
     encoded_argmax = np.argmax(X_test, axis=1)
     predicted_classes = np.argmax(X_test, axis=-1)

@@ -1,5 +1,5 @@
 #from numpy import array, asarray, argmax, zeros
-from re import I
+import re
 import numpy as np
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -18,6 +18,26 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import brown
 
 pretrained_dict_path = "D:/buglocalization_gelareh_home/datasets/GoogleNews-vectors-negative300.bin"
+
+
+def process_text(text):
+    words_array = []
+    tokenizer = RegexpTokenizer('[A-Za-z]+')
+    
+    for row in text:
+        words = tokenizer.tokenize(row)
+        row_words = []
+        for word in words:
+            splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', word)).split()
+            for split_word in splitted:
+                # split_word = lemmatizer.lemmatize(split_word.strip().lower())
+                split_word = split_word.strip().lower()
+                
+                # if len(split_word) > 1 and split_word not in stopwords:
+                if len(split_word) > 1:
+                    row_words.append(split_word)
+        words_array.append(row_words)            
+    return words_array
 
 
 def put_embeddings_together(embeddings):
@@ -164,8 +184,8 @@ if __name__ == '__main__':
     file_corpus_train = ['main compile close log file main',
                          'fixed',
                          'compile',
-                         'system exit finished',
-                         'statement',
+                         'SystemExit finished',
+                         'StatementIdentifier',
                          'get result',
                          'compile key compile',
                          'print modifiers',
@@ -174,6 +194,8 @@ if __name__ == '__main__':
     file_corpus_test = ['main bug report comment log sample close', 'meta information']
     docs_train = file_corpus_train
     docs_test = file_corpus_test
+
+    docs_train = process_text(docs_train)
 
     """ prepare train and test data labels """
     labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
