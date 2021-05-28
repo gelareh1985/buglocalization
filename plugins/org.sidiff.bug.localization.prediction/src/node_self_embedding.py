@@ -2,13 +2,11 @@ from buglocalization.textembedding.word_to_vector_dictionary import WordToVector
 import numpy as np
 import nltk
 # from gensim.models import KeyedVectors
-from nltk.tokenize import api, word_tokenize
+from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import brown
 # from nltk.stem.wordnet import WordNetLemmatizer
 # from gensim.models import Phrases
-from gensim.corpora import Dictionary
-from gensim.models import FastText
 
 # import smart_open
 from tensorflow.keras import Model, Sequential
@@ -17,6 +15,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import one_hot
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras import backend as K
 
 
 tokenizer = RegexpTokenizer('[A-Za-z]+')
@@ -27,38 +26,87 @@ tokenizer = RegexpTokenizer('[A-Za-z]+')
 # nltk.download('universal_tagset')
 
 
-def get_sum_of_word_embeddings(file_corpus, model):
-    # pretrained embeddings keydvectors
-    corpus_vects = []
-    file_corpus = list(file_corpus)
-    for corpus in file_corpus:
-        line_vect = []
-        for phrase in corpus:
-            print('corpus', corpus, '    ', phrase.strip().split())
-            for word in phrase.strip().split():
-                try:
-                    vect = model[word]
-                    line_vect.append(vect)
+def put_embeddings_together(embeddings):
+    all_embeddings = []
+    for embedding_list in embeddings:
+        for embedding in embedding_list:
+            all_embeddings.append(embedding)
+    return all_embeddings
 
-                except KeyError:
-                    pass  # ignore...how to handle unseen words...?
-        line_vect_Sum = np.sum(line_vect, axis=0)
-        corpus_vects.append(line_vect_Sum)
-    # print("all embedding vectors: ", corpus_vects)
-    return corpus_vects
+
+def get_sum_of_word_embeddings(sum_vectors):
+    vectors = []
+    for vect in sum_vectors:
+        if vect.size > 1:
+            vectors.append(vect)
+        else:
+            pass
+    return vectors
 
 
 def get_embedding_vectors(dictionary, model, embedding_matrix):
-    embeddings = []
 
     found_embeddings_from_pretrained_model = {}
     for word, i in dictionary.items():
         if word in model.index_to_key:
             if model[word] is not None:
-                embeddings.append(model[word])
+                # embeddings.append(model[word])
                 key = model.key_to_index[word]
-                embedding_matrix[i] = model[word]
+                similar_words = model.most_similar(word)
+
+                words = []
+                for s in similar_words:
+                    words.append(s[0])
+
+                pos = get_part_of_speech(words)
+                nouns = []
+                verbs = []
+                adjectives = []
+                adverbs = []
+                conjunctions = []
+                whdeterminer = []
+                pos_words = []
+                for p in pos:
+                    if p[1] in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']:
+                        verbs.append(p[0])
+                        pos_words.append(p[0])
+                    elif p[1] in ['NN', 'NNP', 'NNS']:
+                        nouns.append(p[0])
+                        pos_words.append(p[0])
+                    elif p[1] in ['JJ', 'JJR', 'JJS']:
+                        adjectives.append(p[0])
+                        pos_words.append(p[0])
+                    elif p[1] in ['RB', 'RBR', 'RBS']:
+                        adverbs.append(p[0])
+                        pos_words.append(p[0])
+                    elif p[1] in ['CC', 'CD']:
+                        conjunctions.append(p[0])
+                        pos_words.append(p[0])
+                    elif p[1] in ['WDT', 'WP', 'WRB']:  
+                        whdeterminer.append(p[0])    
+                        pos_words.append(p[0])
+
+                #embedding_matrix[i] = model[word]
+                line_vect_Sum = sum_word_vectors(pos_words)
+                embedding_matrix[i] = line_vect_Sum
                 found_embeddings_from_pretrained_model[key] = word
+
+    return embedding_matrix, found_embeddings_from_pretrained_model
+
+
+def sum_word_vectors(words):
+    line_vect = []
+    for word in words:
+        vect = model[word]
+        line_vect.append(vect)
+    line_vect_sum = np.sum(line_vect, axis=0)
+    if line_vect_sum.size > 1:
+        return line_vect_sum
+
+
+def get_part_of_speech(similars):
+    tagged_pos = nltk.pos_tag(similars)
+    return tagged_pos
 
 
 def get_padded_sequences(t, max_length, docs):
@@ -74,6 +122,16 @@ def get_padded_sequences(t, max_length, docs):
     return vocab_size, word_index, index_word, encoded_docs, padded_docs
 
 
+def count_vectors(corpus_vectors):
+    counter = 0
+    for vect in corpus_vectors:
+        if vect.size > 1:
+            counter += 1
+        else:
+            pass
+    return counter
+
+
 if __name__ == '__main__':
 
     word_to_vector_dictionary = WordToVectorDictionary()
@@ -82,123 +140,164 @@ if __name__ == '__main__':
 
 # ***********************************************************************************
     # Access vectors for specific words with a keyed lookup:
-    file_corpus = [['main compile close log file main'], ['fixed'], ['compile'], ['system exit finished'],
-                ['return statement'], ['get result'], ['compile key compile'], ['print modifiers']]
+    # file_corpus = [['main compile close log file main'], ['fixed'], ['compile'], ['system exit finished'],
+    #                ['return statement'], ['get result'], ['compile key compile'], ['print modifiers']]
 
-    # file_corpus_train = ['main compile close log file main',
-    #             'fixed',
-    #             'compile',
-    #             'system exit finished',
-    #             'statement',
-    #             'get result',
-    #             'compile key compile',
-    #             'print modifiers',
-    #             'computer interface']
+    file_corpus_train = ['main compile close log file main',
+                'fixed',
+                'compile',
+                'system exit finished',
+                'statement',
+                'get result',
+                'compile key compile',
+                'print modifiers',
+                'computer interface']
+
+    file_corpus_test = ['main bug report comment log sample close', 'meta information']
 # ***********************************************************************************
     print("\n\n")
     model = word_dictionary
-    corpus_vects = []
-    tagged_part_of_speech = []
-    for corpus in file_corpus:
-
-        line_vect = []
-        for phrase in corpus:
-
-            print('corpus', corpus, '    ', phrase.strip().split())
-            text = word_tokenize(phrase)
-            print('par-of-speech tagged text: ', nltk.pos_tag(text))
-            tagged_pos = nltk.pos_tag(text)
-            tagged_part_of_speech.append(tagged_pos)
-
-            for word in phrase.strip().split():
-                try:
-                    vect = model[word]
-                    line_vect.append(vect)
-
-                except KeyError:
-                    pass  # ignore...how to handle unseen words...?
-        line_vect_Sum = np.sum(line_vect, axis=0)
-        corpus_vects.append(line_vect_Sum)
-    # print("all embedding vectors: ", corpus_vects)
-    # print("text words dictionary: ", word_dict)
-
-    print("\n similarity to word1:", model.similarity('main', 'key'))
-    print("\n similarity to word2:", model.similarity('Statement', 'fixed'))
-    print("\n most similar words to the word:", model.most_similar('Statement'))
-
-    print('\n length of the sum vector embedding: ', len(corpus_vects), '\t', len(corpus_vects[0]))
 
     brown_news_tagged = brown.tagged_words(categories='news', tagset='universal')
     tag_fd = nltk.FreqDist(tag for (word, tag) in brown_news_tagged)
     print(tag_fd.most_common())
 
-    corpus_vects_verb = []
-    corpus_vects_noun = []
-    corpus_vects_number = []
-    corpus_vects_adjective = []
-    corpus_vects_adverb = []
-    corpus_vects_conjunction = []
-    for tagged_pos in tagged_part_of_speech:
-        line_vect_verb = []
-        line_vect_noun = []
-        line_vect_number = []
-        line_vect_adjective = []
-        line_vect_adverb = []
-        line_vect_conjunction = []
-        for pos_tuple in tagged_pos:
-            try:
-                if pos_tuple[1] == 'VERB':
-                    word = pos_tuple[0]
-                    vect = model[word]
-                    line_vect_verb.append(vect)
-                elif pos_tuple[1] == 'NOUN':
-                    word = pos_tuple[0]
-                    vect = model[word]
-                    line_vect_noun.append(vect)
-                elif pos_tuple[1] == 'NUM':
-                    word = pos_tuple[0]
-                    vect = model[word]
-                    line_vect_number.append(vect)
-                elif pos_tuple[1] == 'ADJ':
-                    word = pos_tuple[0]
-                    vect = model[word]
-                    line_vect_adjective.append(vect)
-                elif pos_tuple[1] == 'ADV':
-                    word = pos_tuple[0]
-                    vect = model[word]
-                    line_vect_adverb.append(vect)            
-                elif pos_tuple[1] == 'CONJ':
-                    word = pos_tuple[0]
-                    vect = model[word]
-                    line_vect_conjunction.append(vect)
-            except KeyError:
-                pass  # ignore...how to handle unseen words...?
-        line_vect_sum_verb = np.sum(line_vect_verb, axis=0)
-        corpus_vects_verb.append(line_vect_sum_verb)
+# ***********************************************************************************
+    docs_train = file_corpus_train
+    docs_test = file_corpus_test
 
-        line_vect_sum_noun = np.sum(line_vect_noun, axis=0)
-        corpus_vects_noun.append(line_vect_sum_noun)
+    """ prepare train and test data labels """
+    labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
+    labels_test = np.array([1, 0])
 
-        line_vect_sum_number = np.sum(line_vect_number, axis=0)
-        corpus_vects_number.append(line_vect_sum_number)
+    max_length = 10
 
-        line_vect_sum_adjective = np.sum(line_vect_adjective, axis=0)
-        corpus_vects_adjective.append(line_vect_sum_adjective)
+    """ prepare tokenizer """
+    t = Tokenizer()
+    vocab_size_train, word_index_train, index_word_train, encoded_docs_train, padded_docs_train = get_padded_sequences(t, max_length, docs_train)
+    t = Tokenizer()
+    vocab_size_test, word_index_test, index_word_test, encoded_docs_test, padded_docs_test = get_padded_sequences(t, max_length, docs_test)
 
-        line_vect_sum_adverb = np.sum(line_vect_adverb, axis=0)
-        corpus_vects_adverb.append(line_vect_sum_adverb)
+    print("\n word2index dictionary (train data): ", word_index_train)
+    print("\n index2word dictionary (train data): ", index_word_train)
+    print("\n encoded docs (train data): ", encoded_docs_train)
+    print("\n padded docs (train data): ", padded_docs_train)
+    print("\n word2index dictionary (test data): ", word_index_test)
+    print("\n index2word dictionary (test data): ", index_word_test)
+    print("\n encoded docs (test data): ", encoded_docs_test)
+    print("\n padded docs (test data): ", padded_docs_test)
+    """ load the whole embedding into memory """
 
-        line_vect_sum_conjunction = np.sum(line_vect_conjunction, axis=0)
-        corpus_vects_conjunction.append(line_vect_sum_conjunction)
-# ***********************************************************************************    
-    # print("model vector 0: ",model.vectors[0])
+    embedding_matrix = np.zeros((vocab_size_train, 300))
+    embeddings_train, found_embeddings_dict_train = get_embedding_vectors(dictionary=word_index_train, model=model, embedding_matrix=embedding_matrix)
+    print("\n\n found input words: ", len(found_embeddings_dict_train), "   ,   ", found_embeddings_dict_train)
+    print("\n found input embeddings: ", len(embeddings_train))
 
-    # keras_model = Sequential()
-    # keras_model.add(layer)
-    # keras_model.add(Embedding(vocab_size, 8, input_length=MAX_SEQUENCE_LENGTH)
-    # keras_model.add(SpatialDropout1D(0.2))
-    # keras_model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
-    # keras_model.add(Dense(10, activation='softmax'))
-    # keras_model.add(LSTM(64))
-    # keras_model.add(Dense(64, activation='relu'))
-   
+    """ prepare train and test data """
+    X_train = padded_docs_train
+    y_train = labels_train
+    X_test = padded_docs_test
+    y_test = labels_test
+
+    """  preparing keras first embedding layer of the model (word2vec: local/pretrained) """
+    """ if using all vectors from pretrained dictionary """
+    # weights = model.vectors
+    # print("weights shape: ", weights.shape)
+
+    index_to_key_dict = model.index_to_key
+    key_to_index_dict = model.key_to_index
+
+    """ if using just limited vectors found by keys and values from pretrained dictionary """
+    embeddings_arr = np.asarray(embeddings_train)
+    weights = embeddings_arr
+
+    embedding_matrix = weights
+    # embeddings_arr = np.asarray(all_embeddings)
+    # weights = embeddings_arr
+
+    #embedding_matrix = weights
+    model = Sequential()
+    e = Embedding(vocab_size_train, 300, weights=[embedding_matrix], input_length=10, trainable=False)
+    model.add(e)
+    #model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
+    #model.add(MaxPooling1D(pool_size=2))
+    #model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
+    #model.add(Flatten())
+    model.add(LSTM(100))
+    """ activation: 'sigmoid', 'relu', 'softmax',... """
+    model.add(Dense(1, activation='sigmoid'))
+    # compile the model
+    #model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    #opt = optimizers.Adam(learning_rate=0.001)
+    #model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+    
+    #optimizer = optimizers.SGD(lr=0.01)
+    print("\n\n compile 1: ")
+    model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
+    # summarize the model
+    print("\n", model.summary())
+    # fit the model
+    tensorboard_callback = TensorBoard(log_dir="logs")
+    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64)
+    # evaluate the model
+    loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
+    print('\n Accuracy: %f' % (accuracy * 100))
+
+    print("\n\n compile 2: ")
+    model.compile(optimizer='sgd', loss='mean_squared_error', metrics=['accuracy'])
+    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64) 
+    loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
+    print('\n Accuracy: %f' % (accuracy * 100))
+    print("\n\n")
+
+    predicted_text = model.predict(X_test)
+    encoded_argmax = np.argmax(X_test, axis=1)
+    predicted_classes = np.argmax(X_test, axis=-1)
+    encoded_argmax = encoded_argmax.tolist()
+    predicted_classes = predicted_classes.tolist()
+    print(predicted_classes)
+    print(encoded_argmax)
+
+    """ Inferring words and indexes from predicted test texts """
+    # (1) get each layer needed separately --> it's already done
+    embeddings_layer1 = model.layers[0].get_weights()[0]
+    print("\n\n get embedding layer1 from model: ", embeddings_layer1)
+
+    words_embeddings_w2index = {w: embeddings_layer1[idx] for w, idx in word_index_train.items()}
+
+    given_word = 'system'
+    print("\n\n word embedding of the given word: ", words_embeddings_w2index[given_word])
+    print("\n\n related index of the word embedding of the given word: ", word_index_train[given_word])
+
+    #words_embeddings_index2word = {idx:embeddings[w] for w, idx in index_word.items()}
+    given_index = 10
+    words_embeddings_index2word = {}
+    for idx, w in index_word_train.items():
+        words_embeddings_index2word.update({idx: words_embeddings_w2index[w]})
+    
+    print("\n\n word embedding of the given index: ", words_embeddings_index2word[given_index])
+    print("\n\n related word of the word embedding of the given index: ", index_word_train[given_index])
+
+    # (2) looping through layers of model and save to list --> it's already done
+    outputs = []
+    for layer in model.layers:
+        keras_function = K.function([model.input], [layer.output])
+        outputs.append(keras_function([padded_docs_train, labels_train]))
+    # print(outputs)
+    # predict model with test data:
+
+    predicted_text = model.predict(padded_docs_test, verbose=0)
+    predicted_label = labels_test[np.argmax(predicted_text)]
+    predicted_text_retrieved = docs_test[predicted_label]
+    print(outputs[2])
+    print(predicted_text_retrieved)
+
+    #y_classes = predicted_text.argmax(axis=-1)
+    #encoded_docs_test = array(encoded_docs_test)
+    #yhat = model.predict_classes(padded_docs_test)
+    for sentence in docs_test:
+        for word in sentence.strip().split():
+            if word in word_index_train.keys():
+                print("related index of the word embedding of the given word: ", word_index_train[word])
+            else:
+                print('the word ', word, 'not exist')

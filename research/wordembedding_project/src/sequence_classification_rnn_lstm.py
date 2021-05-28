@@ -8,7 +8,6 @@ from tensorflow.keras.layers import Dense, Embedding, LSTM, SimpleRNN
 from tensorflow.keras.preprocessing import sequence
 from gensim.models import KeyedVectors
 from tensorflow.keras.callbacks import TensorBoard
-from tensorflow.python.keras.backend import print_tensor
 
 pretrained_dict_path = "D:/buglocalization_gelareh_home/datasets/GoogleNews-vectors-negative300.bin"
 
