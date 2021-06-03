@@ -1,5 +1,6 @@
 from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
 import numpy as np
+import pickle
 import nltk
 import re
 # from gensim.models import KeyedVectors
@@ -24,7 +25,7 @@ from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 
 
-tokenizer = RegexpTokenizer('[A-Za-z]+')
+# tokenizer = RegexpTokenizer('[A-Za-z]+')
 # nltk.download('wordnet')
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
@@ -34,23 +35,38 @@ tokenizer = RegexpTokenizer('[A-Za-z]+')
 
 def process_text(text):
     words_array = []
-    tokenizer = RegexpTokenizer('[A-Za-z]+')
-    
+    tokenizer = RegexpTokenizer('[A-Za-z]+[A-Za-z]')
+
     for row in text:
-        words = tokenizer.tokenize(row)
+        if not row.isdecimal():
+            words = tokenizer.tokenize(row)
         row_words = []
         for word in words:
             splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', word)).split()
             for split_word in splitted:
                 # split_word = lemmatizer.lemmatize(split_word.strip().lower())
                 split_word = split_word.strip().lower()
-                
+
                 # if len(split_word) > 1 and split_word not in stopwords:
                 if len(split_word) > 1:
-                    row_words.append(split_word)
+                    if split_word not in row_words:
+                        row_words.append(split_word)
                     print(row_words)
-        words_array.append(row_words)            
+        words_array.append(row_words)
     return words_array
+
+
+def save_text(file_name,sample_list):
+    open_file = open(file_name, "wb")
+    pickle.dump(sample_list, open_file)
+    open_file.close()
+
+
+def load_text(file_name):
+    open_file = open(file_name, "rb")
+    loaded_list = pickle.load(open_file)
+    open_file.close()
+    return loaded_list
 
 
 def put_embeddings_together(embeddings):
@@ -109,11 +125,11 @@ def get_embedding_vectors(dictionary, model, embedding_matrix):
                     elif p[1] in ['CC', 'CD']:
                         conjunctions.append(p[0])
                         pos_words.append(p[0])
-                    elif p[1] in ['WDT', 'WP', 'WRB']:  
-                        whdeterminer.append(p[0])    
+                    elif p[1] in ['WDT', 'WP', 'WRB']:
+                        whdeterminer.append(p[0])
                         pos_words.append(p[0])
 
-                #embedding_matrix[i] = model[word]
+                # embedding_matrix[i] = model[word]
                 line_vect_Sum = sum_word_vectors(pos_words)
                 embedding_matrix[i] = line_vect_Sum
                 found_embeddings_from_pretrained_model[key] = word
@@ -161,28 +177,34 @@ def count_vectors(corpus_vectors):
 
 if __name__ == '__main__':
 
-    # Database connection:
-    neo4j_configuration = Neo4jConfiguration(
-        neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
-        neo4j_port=7687,  # port of Neo4j bold port: 7687, 11003
-        neo4j_user="neo4j",
-        neo4j_password="password",
-    )
+    # # Database connection:
+    # neo4j_configuration = Neo4jConfiguration(
+    #     neo4j_host="localhost",  # or within docker compose the name of docker container "neo4j"
+    #     neo4j_port=7687,  # port of Neo4j bold port: 7687, 11003
+    #     neo4j_user="neo4j",
+    #     neo4j_password="password",
+    # )
 
-    metamodel = MetaModelUML(neo4j_configuration=neo4j_configuration)
-    file_corpus = []
-    for metatype, properties in metamodel.get_type_to_properties().items():
-        #print(type, properties)
-        cypher_str_command = """MATCH (n:{metatype}) RETURN n""".format(
-            metatype=metatype
-        )
-        metamodel_nodes = metamodel.get_graph().run(cypher=cypher_str_command).to_table()
-        for node in metamodel_nodes:
-            # node comments (long text)
-            # node (short text)
-            for property in properties:
-                print(node[0][property]) 
-                file_corpus.append(node[0][property])  # split to words - each word to vector - sowe
+    # metamodel = MetaModelUML(neo4j_configuration=neo4j_configuration)
+    # file_corpus = []
+    # for metatype, properties in metamodel.get_type_to_properties().items():
+    #     # print(type, properties)
+    #     cypher_str_command = """MATCH (n:{metatype}) RETURN n""".format(
+    #         metatype=metatype
+    #     )
+    #     metamodel_nodes = metamodel.get_graph().run(cypher=cypher_str_command).to_table()
+    #     for node in metamodel_nodes:
+    #         # node comments (long text)
+    #         # node (short text)
+    #         for property in properties:
+    #             nodex = node[0][property]
+    #             if nodex is not None\
+    #                     and type(nodex) != bool\
+    #                     and type(nodex) != int\
+    #                     and type(nodex) != float:
+    #                 print(nodex)
+    #                 if nodex not in file_corpus:
+    #                     file_corpus.append(nodex)  # split to words - each word to vector - sowe
 
     word_to_vector_dictionary = WordToVectorDictionary()
     word_dictionary, dimension = word_to_vector_dictionary.dictionary()
@@ -194,14 +216,14 @@ if __name__ == '__main__':
     #                ['return statement'], ['get result'], ['compile key compile'], ['print modifiers']]
 
     file_corpus_train = ['main compile close log file main',
-                'fixed',
-                'compile',
-                'system exit finished',
-                'statement',
-                'get result',
-                'compile key compile',
-                'print modifiers',
-                'computer interface']
+                         'fixed',
+                         'compile',
+                         'system exit finished',
+                         'statement',
+                         'get result',
+                         'compile key compile',
+                         'print modifiers',
+                         'computer interface']
 
     file_corpus_test = ['main bug report comment log sample close', 'meta information']
 # ***********************************************************************************
@@ -213,13 +235,18 @@ if __name__ == '__main__':
     print(tag_fd.most_common())
 
 # ***********************************************************************************
-    #docs_train = file_corpus_train
-    docs_train = file_corpus
+    # docs_train = file_corpus_train
+    #docs_train = file_corpus
     docs_test = file_corpus_test
-    
-    docs_train = process_text(docs_train)
+
+    # docs_train = process_text(docs_train)
+    filename = 'file_corpus.pkl'
+    # save_text(filename,docs_train)
+    docs_train = load_text(filename)
+    print(docs_train)
     """ prepare train and test data labels """
-    labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
+    #labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
+    labels_train = np.random.randint(2, size=len(docs_train))
     labels_test = np.array([1, 0])
 
     max_length = 10
@@ -267,23 +294,23 @@ if __name__ == '__main__':
     # embeddings_arr = np.asarray(all_embeddings)
     # weights = embeddings_arr
 
-    #embedding_matrix = weights
+    # embedding_matrix = weights
     model = Sequential()
     e = Embedding(vocab_size_train, 300, weights=[embedding_matrix], input_length=10, trainable=False)
     model.add(e)
-    #model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
-    #model.add(MaxPooling1D(pool_size=2))
-    #model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
-    #model.add(Flatten())
+    # model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
+    # model.add(MaxPooling1D(pool_size=2))
+    # model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
+    # model.add(Flatten())
     model.add(LSTM(100))
     """ activation: 'sigmoid', 'relu', 'softmax',... """
     model.add(Dense(1, activation='sigmoid'))
     # compile the model
-    #model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    #opt = optimizers.Adam(learning_rate=0.001)
-    #model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-    
-    #optimizer = optimizers.SGD(lr=0.01)
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    # opt = optimizers.Adam(learning_rate=0.001)
+    # model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+
+    # optimizer = optimizers.SGD(lr=0.01)
     print("\n\n compile 1: ")
     model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
     # summarize the model
@@ -297,7 +324,7 @@ if __name__ == '__main__':
 
     print("\n\n compile 2: ")
     model.compile(optimizer='sgd', loss='mean_squared_error', metrics=['accuracy'])
-    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64) 
+    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64)
     loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
     print('\n Accuracy: %f' % (accuracy * 100))
     print("\n\n")
@@ -305,10 +332,10 @@ if __name__ == '__main__':
     print("\n\n compile 3: ")
     opt = optimizers.RMSprop()
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64) 
+    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64)
     loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
     print('\n Accuracy: %f' % (accuracy * 100))
-    
+
     predicted_text = model.predict(X_test)
     encoded_argmax = np.argmax(X_test, axis=1)
     predicted_classes = np.argmax(X_test, axis=-1)
@@ -328,12 +355,12 @@ if __name__ == '__main__':
     print("\n\n word embedding of the given word: ", words_embeddings_w2index[given_word])
     print("\n\n related index of the word embedding of the given word: ", word_index_train[given_word])
 
-    #words_embeddings_index2word = {idx:embeddings[w] for w, idx in index_word.items()}
+    # words_embeddings_index2word = {idx:embeddings[w] for w, idx in index_word.items()}
     given_index = 10
     words_embeddings_index2word = {}
     for idx, w in index_word_train.items():
         words_embeddings_index2word.update({idx: words_embeddings_w2index[w]})
-    
+
     print("\n\n word embedding of the given index: ", words_embeddings_index2word[given_index])
     print("\n\n related word of the word embedding of the given index: ", index_word_train[given_index])
 
@@ -351,9 +378,9 @@ if __name__ == '__main__':
     print(outputs[2])
     print(predicted_text_retrieved)
 
-    #y_classes = predicted_text.argmax(axis=-1)
-    #encoded_docs_test = array(encoded_docs_test)
-    #yhat = model.predict_classes(padded_docs_test)
+    # y_classes = predicted_text.argmax(axis=-1)
+    # encoded_docs_test = array(encoded_docs_test)
+    # yhat = model.predict_classes(padded_docs_test)
     for sentence in docs_test:
         for word in sentence.strip().split():
             if word in word_index_train.keys():

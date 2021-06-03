@@ -1,6 +1,7 @@
 #from numpy import array, asarray, argmax, zeros
 import re
 import numpy as np
+import pickle
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
@@ -13,7 +14,7 @@ from tensorflow.keras import losses
 #from tensorflow import GradientTape
 
 import nltk
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, regexp_tokenize
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import brown
 
@@ -21,22 +22,29 @@ pretrained_dict_path = "D:/buglocalization_gelareh_home/datasets/GoogleNews-vect
 
 
 def process_text(text):
-    words_array = []
-    tokenizer = RegexpTokenizer('[A-Za-z]+')
-    
+    words_array = []  # ([a-zA-Z]+)([0-9]+) #[A-Za-z]+[A-Za-z]+
+
+    tokenizer = RegexpTokenizer('[A-Za-z]+[A-Za-z]')
+    #digit_tokenizer = RegexpTokenizer('[0-9]') 
+    #words = regexp_tokenize(text, pattern=r'\w+([.,]\w+)*|\S+')
     for row in text:
-        words = tokenizer.tokenize(row)
+       
+        if not row.isdecimal() and row != '':
+            #words = tokenizer.tokenize(row)
+            #numbers = digit_tokenizer.tokenize(row)
+            words = word_tokenize(row)
         row_words = []
         for word in words:
+            
             splitted = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', word)).split()
             for split_word in splitted:
                 # split_word = lemmatizer.lemmatize(split_word.strip().lower())
                 split_word = split_word.strip().lower()
-                
+
                 # if len(split_word) > 1 and split_word not in stopwords:
                 if len(split_word) > 1:
                     row_words.append(split_word)
-        words_array.append(row_words)            
+        words_array.append(row_words)
     return words_array
 
 
@@ -143,6 +151,18 @@ def count_vectors(corpus_vectors):
             pass
     return counter
 
+def save_text(file_name,sample_list):
+    open_file = open(file_name, "wb")
+    pickle.dump(sample_list, open_file)
+    open_file.close()
+
+
+def load_text(file_name): 
+    open_file = open(file_name, "rb")
+    loaded_list = pickle.load(open_file)
+    open_file.close()
+    return loaded_list
+
 
 if __name__ == '__main__':
     # for multi-class classification, to encode labels like: (class1: 1), (class2:2), (class3: 3), ...
@@ -192,13 +212,17 @@ if __name__ == '__main__':
                          'computer interface']
 
     file_corpus_test = ['main bug report comment log sample close', 'meta information']
-    docs_train = file_corpus_train
+    #docs_train = file_corpus_train
     docs_test = file_corpus_test
 
-    docs_train = process_text(docs_train)
+    #docs_train = process_text(docs_train)
+    filename = 'buglocalization/research/wordembedding_project/file_corpus.pkl' 
+    #save_text(filename,docs_train)
+    docs_train = load_text(filename)
 
     """ prepare train and test data labels """
-    labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
+    #labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
+    labels_train = np.random.randint(2, size=len(docs_train))
     labels_test = np.array([1, 0])
 
     max_length = 10
@@ -252,16 +276,16 @@ if __name__ == '__main__':
     e = Embedding(vocab_size_train, 300, weights=[embedding_matrix], input_length=10, trainable=False)
     model.add(e)
     #model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
-    #model.add(MaxPooling1D(pool_size=2))
+    # model.add(MaxPooling1D(pool_size=2))
     #model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
-    #model.add(Flatten())
+    # model.add(Flatten())
     model.add(LSTM(100))
     model.add(Dense(1, activation='sigmoid'))
     # compile the model
     #model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     #opt = optimizers.Adam(learning_rate=0.001)
     #model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-    
+
     #optimizer = optimizers.SGD(lr=0.01)
     model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
     # summarize the model
@@ -276,7 +300,7 @@ if __name__ == '__main__':
     print("\n\n")
 
     model.compile(optimizer='sgd', loss='mean_squared_error', metrics=['accuracy'])
-    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64) 
+    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64)
     loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
     print('\n Accuracy: %f' % (accuracy * 100))
     print("\n\n")
