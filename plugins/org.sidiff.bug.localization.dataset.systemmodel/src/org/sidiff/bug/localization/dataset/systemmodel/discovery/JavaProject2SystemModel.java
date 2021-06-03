@@ -282,7 +282,7 @@ public class JavaProject2SystemModel {
 				
 		if (modelVersion == null) {
 			BugReport bugReport = fixedVersion != null ? fixedVersion.getBugReport() : null;
-			modelVersion = dataSet2SystemModel.convertVersion(buggyVersion, bugReport);
+			modelVersion = dataSet2SystemModel.convertVersion(buggyVersion, bugReport, fixedVersion);
 			systemModel.setVersion(modelVersion);
 		}
 		
