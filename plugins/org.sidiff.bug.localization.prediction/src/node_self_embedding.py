@@ -1,3 +1,7 @@
+import sys
+import logging
+import logging.config
+
 from buglocalization.textembedding.word_to_vector_dictionary import WordToVectorDictionary
 import numpy as np
 import pickle
@@ -31,6 +35,16 @@ from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('brown')
 # nltk.download('universal_tagset')
+fpath = "D:/buglocalization_gelareh_home/saved files/"
+
+
+def tokenize_corpus(text):
+    words_array = []
+    tokenizer = RegexpTokenizer('[A-Za-z]+[A-Za-z]')
+    for row in text:
+        words = tokenizer.tokenize(row)
+        words_array.append(words)
+    return words_array
 
 
 def process_text(text):
@@ -56,13 +70,13 @@ def process_text(text):
     return words_array
 
 
-def save_text(file_name,sample_list):
+def save_file(file_name, sample_list):
     open_file = open(file_name, "wb")
     pickle.dump(sample_list, open_file)
     open_file.close()
 
 
-def load_text(file_name):
+def load_file(file_name):
     open_file = open(file_name, "rb")
     loaded_list = pickle.load(open_file)
     open_file.close()
@@ -86,63 +100,101 @@ def get_sum_of_word_embeddings(sum_vectors):
             pass
     return vectors
 
+#def get_pos_tagged_corpus(dictionary):
 
-def get_embedding_vectors(dictionary, model, embedding_matrix):
 
-    found_embeddings_from_pretrained_model = {}
-    for word, i in dictionary.items():
-        if word in model.index_to_key:
-            if model[word] is not None:
-                # embeddings.append(model[word])
-                key = model.key_to_index[word]
-                similar_words = model.most_similar(word)
+def find_similar_words(text_corpus, model):
+    all_similar_word_vectors = {}
+    i = 0
 
-                words = []
-                for s in similar_words:
-                    words.append(s[0])
+    for row in text_corpus:
 
-                pos = get_part_of_speech(words)
-                nouns = []
-                verbs = []
-                adjectives = []
-                adverbs = []
-                conjunctions = []
-                whdeterminer = []
-                pos_words = []
-                for p in pos:
-                    if p[1] in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']:
-                        verbs.append(p[0])
-                        pos_words.append(p[0])
-                    elif p[1] in ['NN', 'NNP', 'NNS']:
-                        nouns.append(p[0])
-                        pos_words.append(p[0])
-                    elif p[1] in ['JJ', 'JJR', 'JJS']:
-                        adjectives.append(p[0])
-                        pos_words.append(p[0])
-                    elif p[1] in ['RB', 'RBR', 'RBS']:
-                        adverbs.append(p[0])
-                        pos_words.append(p[0])
-                    elif p[1] in ['CC', 'CD']:
-                        conjunctions.append(p[0])
-                        pos_words.append(p[0])
-                    elif p[1] in ['WDT', 'WP', 'WRB']:
-                        whdeterminer.append(p[0])
-                        pos_words.append(p[0])
+        similar_words = {}
+        similar_word_vectors = []
+        j = 0
+        count = 0
+        for word in row:
+            # for word in row.strip().split():
+            if word in model.index_to_key:
+                if model[word] is not None:
+                    # embeddings.append(model[word])
+                    #key = model.key_to_index[word]
+                    similar_words = model.most_similar(word)
+                    similar_words_list = []
+                    for pair in similar_words:
+                        word_tagged_pos = nltk.pos_tag([pair[0]])
+                        similar_words_list.append([pair[0], word_tagged_pos, pair[1]])
+                    word_pos = nltk.pos_tag([word])
+                    similar_words[j] = (word_pos, similar_words_list)
+                    print('similar words in row ', i + 1, ' to word ', count + 1, ' (', word, ') found')
+                    similar_word_vectors.append(similar_words[j])
+            else:
+                word_pos = nltk.pos_tag([word])
+                similar_words[j] = (word_pos,'not_found')
+                similar_word_vectors.append(similar_words[j])
+                print('in row ', i + 1, ' word ', count + 1, ' (', word, ') not found')
+            count = count + 1
+        # calling **Logger** function
+        # file_name = 'my_run_logs'
+        # log_obj = Logger(file_name)
+        # log_obj.critical("CRIC".format())
+        # log_obj.error("ERR".format())
+        # log_obj.warning("WARN".format())
+        # log_obj.debug("debug".format())
+        # log_obj.info("info".format())
+               
+        # closing file
+        #log_obj.handlers.clear()
+        all_similar_word_vectors[i] = similar_word_vectors
+        i = i + 1
+        j = j + 1
+    return all_similar_word_vectors
 
-                # embedding_matrix[i] = model[word]
-                line_vect_Sum = sum_word_vectors(pos_words)
+
+def Logger(file_name):
+    formatter = logging.Formatter(fmt='%(asctime)s %(module)s,line: %(lineno)d %(levelname)8s | %(message)s',
+                                  datefmt='%Y/%m/%d %H:%M:%S')  # %I:%M:%S %p AM|PM format
+    logging.basicConfig(filename='%s.log' % (file_name), format='%(asctime)s %(module)s,line: %(lineno)d %(levelname)8s | %(message)s',
+                        datefmt='%Y/%m/%d %H:%M:%S', filemode='w', level=logging.INFO)
+    log_obj = logging.getLogger()
+    log_obj.setLevel(logging.DEBUG)
+    # log_obj = logging.getLogger().addHandler(logging.StreamHandler())
+
+    # console printer
+    screen_handler = logging.StreamHandler(stream=sys.stdout)  # stream=sys.stdout is similar to normal print
+    screen_handler.setFormatter(formatter)
+    logging.getLogger().addHandler(screen_handler)
+
+    log_obj.info("Logger object created successfully..")
+    return log_obj
+
+
+def get_embedding_vectors(input_matrix, model, embedding_matrix):
+
+    i = 0
+    for corpus_row in input_matrix.values():
+        
+        for row in corpus_row:
+            if row[1] != 'not_found':
+                similarwordsvector = []
+                for similar_word_tuples in row[1]:
+                    word = similar_word_tuples[0]
+                    similarwordsvector.append(model[word])
+                line_vect_Sum = sum_word_vectors(similarwordsvector)
                 embedding_matrix[i] = line_vect_Sum
-                found_embeddings_from_pretrained_model[key] = word
+            else:
+                print(row[0],row[1])    
+        i = i + 1
+    return embedding_matrix
 
-    return embedding_matrix, found_embeddings_from_pretrained_model
 
-
-def sum_word_vectors(words):
-    line_vect = []
-    for word in words:
-        vect = model[word]
-        line_vect.append(vect)
-    line_vect_sum = np.sum(line_vect, axis=0)
+def sum_word_vectors(vectors):
+    # line_vect = []
+    # for word in words:
+    #     vect = model[word]
+    #     line_vect.append(vect)
+    # line_vect_sum = np.sum(line_vect, axis=0)
+    line_vect_sum = np.sum(vectors, axis=0)
     if line_vect_sum.size > 1:
         return line_vect_sum
 
@@ -217,6 +269,7 @@ if __name__ == '__main__':
 
     file_corpus_train = ['main compile close log file main',
                          'fixed',
+                         '',
                          'compile',
                          'system exit finished',
                          'statement',
@@ -230,30 +283,49 @@ if __name__ == '__main__':
     print("\n\n")
     model = word_dictionary
 
-    brown_news_tagged = brown.tagged_words(categories='news', tagset='universal')
-    tag_fd = nltk.FreqDist(tag for (word, tag) in brown_news_tagged)
-    print(tag_fd.most_common())
+    # brown_news_tagged = brown.tagged_words(categories='news', tagset='universal')
+    # tag_fd = nltk.FreqDist(tag for (word, tag) in brown_news_tagged)
+    # print(tag_fd.most_common())
 
 # ***********************************************************************************
-    # docs_train = file_corpus_train
+    #docs_train = file_corpus_train
     #docs_train = file_corpus
     docs_test = file_corpus_test
 
     # docs_train = process_text(docs_train)
-    filename = 'file_corpus.pkl'
-    # save_text(filename,docs_train)
-    docs_train = load_text(filename)
+    filename = fpath + '/file_corpus_train.pkl'
+    # save_file(filename,docs_train)
+    docs_train = load_file(filename)
     print(docs_train)
+    
     """ prepare train and test data labels """
     #labels_train = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0])
     labels_train = np.random.randint(2, size=len(docs_train))
     labels_test = np.array([1, 0])
 
-    max_length = 10
-
     """ prepare tokenizer """
+    max_length = 200
     t = Tokenizer()
     vocab_size_train, word_index_train, index_word_train, encoded_docs_train, padded_docs_train = get_padded_sequences(t, max_length, docs_train)
+    #t.fit_on_texts(docs_train)
+    #vocab_size_train = len(t.word_index) + 1
+    
+    filename = fpath + 'encoded_docs_train.pkl'
+    #save_file(filename,encoded_docs_train)
+    encoded_docs_train = load_file(filename)
+
+    filename = fpath + 'padded_docs_train.pkl'
+    #save_file(filename,padded_docs_train)
+    padded_docs_train = load_file(filename)
+
+    filename = fpath + 'word_index_train.pkl'
+    #save_file(filename,word_index_train)
+    word_index_train = load_file(filename)
+
+    filename = fpath + 'index_word_train.pkl'
+    #save_file(filename,index_word_train)
+    index_word_train = load_file(filename)
+
     t = Tokenizer()
     vocab_size_test, word_index_test, index_word_test, encoded_docs_test, padded_docs_test = get_padded_sequences(t, max_length, docs_test)
 
@@ -266,10 +338,23 @@ if __name__ == '__main__':
     print("\n encoded docs (test data): ", encoded_docs_test)
     print("\n padded docs (test data): ", padded_docs_test)
     """ load the whole embedding into memory """
+    
+    print("document row 83509: ",docs_train[83509])
+    print("document row 83510: ",docs_train[83510])
+    print("document row 83511: ",docs_train[83511])
 
+    #fcorpus = tokenize_corpus(text=file_corpus_train)
+    #similar_words_matrix = find_similar_words(text_corpus=fcorpus, model=model)
+    #similar_words_matrix = find_similar_words(text_corpus=docs_train, model=model)
+    filename = fpath + 'similar_words_matrix.pkl'
+    #save_file(filename, similar_words_matrix)
+    
+    similar_words_matrix = load_file(filename)
+    #print(similar_words_matrix)
+    vocab_size_train = len(similar_words_matrix) + 1
     embedding_matrix = np.zeros((vocab_size_train, 300))
-    embeddings_train, found_embeddings_dict_train = get_embedding_vectors(dictionary=word_index_train, model=model, embedding_matrix=embedding_matrix)
-    print("\n\n found input words: ", len(found_embeddings_dict_train), "   ,   ", found_embeddings_dict_train)
+    embeddings_train = get_embedding_vectors(input_matrix=similar_words_matrix, model=model, embedding_matrix=embedding_matrix)
+    #print("\n\n found input words: ", len(found_embeddings_dict_train), "   ,   ", found_embeddings_dict_train)
     print("\n found input embeddings: ", len(embeddings_train))
 
     """ prepare train and test data """
@@ -296,7 +381,7 @@ if __name__ == '__main__':
 
     # embedding_matrix = weights
     model = Sequential()
-    e = Embedding(vocab_size_train, 300, weights=[embedding_matrix], input_length=10, trainable=False)
+    e = Embedding(vocab_size_train, 300, weights=[embedding_matrix], input_length=max_length, trainable=False)
     model.add(e)
     # model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
     # model.add(MaxPooling1D(pool_size=2))
@@ -317,7 +402,7 @@ if __name__ == '__main__':
     print("\n", model.summary())
     # fit the model
     tensorboard_callback = TensorBoard(log_dir="logs")
-    model.fit(X_train, y_train, epochs=60, verbose=2, batch_size=64)
+    model.fit(X_train, y_train, epochs=10, verbose=2, batch_size=64)
     # evaluate the model
     loss, accuracy = model.evaluate(X_test, y_test, verbose=2)
     print('\n Accuracy: %f' % (accuracy * 100))
