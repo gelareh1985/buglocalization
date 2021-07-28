@@ -81,11 +81,6 @@ def get_relevant_location_ids(tbl_predicted_data: pd.DataFrame) -> Set[int]:
     return set(get_relevant_locations(tbl_predicted_data).DatabaseNodeID.to_list())
 
 
-def get_ranking_of_subgraph(subgraph_k: pd.DataFrame, tbl_predicted_data: pd.DataFrame) -> pd.DataFrame:
-    # subgraph_k -> index -> node IDs
-    return tbl_predicted_data[tbl_predicted_data.DatabaseNodeID.isin(subgraph_k.index)]
-
-
 def top_k_ranking_accuracy(found_in_top_k, not_found_in_top_k) -> float:
     return float(found_in_top_k) / float(found_in_top_k + not_found_in_top_k)
 
@@ -129,116 +124,15 @@ def top_k_ranking(ranking_results: List[pd.DataFrame], TOP_RANKING_K: int) -> Tu
     return found_in_top_k, not_found_in_top_k
 
 
-def get_subgraph_location_ids(tbl_predicted: pd.DataFrame,
-                              ranking_location: pd.Series,
-                              graph: Graph,
-                              db_version: int,
-                              meta_model: MetaModel,
-                              K_NEIGHBOURS: int,
-                              UNDIRECTED: bool,
-                              DIAGRAM_NEIGHBOR_SIZE: int) -> List[int]:
+def get_all_top_relevant_locations(tbls_predicted: List[pd.DataFrame]) -> pd.DataFrame:
+    """[summary]
 
-    labels_mask = list(meta_model.get_bug_location_types())
-    subgraph_k = query_util.subgraph_k(graph, ranking_location.DatabaseNodeID, db_version,
-                                       K_NEIGHBOURS, UNDIRECTED, meta_model, labels_mask)
-    subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
-    ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
-    top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(DIAGRAM_NEIGHBOR_SIZE)
-
-    subgraph_location_ids = top_k_ranking_of_subgraph_k.DatabaseNodeID.to_list()
-    subgraph_location_ids.append(ranking_location.DatabaseNodeID)
-
-    return subgraph_location_ids
-
-
-def get_first_relevant_subgraph_location(tbl_predicted: pd.DataFrame,
-                                         TOP_RANKING_K: int,
-                                         graph: Graph,
-                                         db_version: int,
-                                         meta_model: MetaModel,
-                                         K_NEIGHBOUR_DISTANCE: int,
-                                         UNDIRECTED: bool,
-                                         NUMBER_OF_NEIGHBORS: int,
-                                         DIAGRAM_AGGREGATION: bool = True) -> Optional[Tuple[pd.Series, pd.DataFrame, pd.DataFrame]]:
-
-    locations_added_to_subgraphs: Set[int] = set()
-    current_ranking_idx = 0  # Need to be recalculated when using diagram aggregation.
-
-    for ranking_idx, ranking_location in tbl_predicted.iterrows():
-        if current_ranking_idx >= TOP_RANKING_K:
-            break
-        
-        node_id = ranking_location.DatabaseNodeID
-
-        if node_id not in locations_added_to_subgraphs:
-            current_ranking_idx += 1
-            
-            labels_mask = list(meta_model.get_bug_location_types())
-            subgraph_k = query_util.subgraph_k(graph, ranking_location.DatabaseNodeID, db_version,
-                                               K_NEIGHBOUR_DISTANCE, UNDIRECTED, meta_model, labels_mask)
-            subgraph_k = subgraph_k[subgraph_k.index != ranking_location.DatabaseNodeID]  # without start node
-            ranking_of_subgraph_k = get_ranking_of_subgraph(subgraph_k, tbl_predicted)
-            top_k_ranking_of_subgraph_k = ranking_of_subgraph_k.head(NUMBER_OF_NEIGHBORS)
-
-            if DIAGRAM_AGGREGATION:
-                locations_added_to_subgraphs.update(subgraph_k.index.to_list())
-
-            if 1 in top_k_ranking_of_subgraph_k.IsLocation.to_list() or ranking_location.IsLocation == 1:
-                return ranking_location, top_k_ranking_of_subgraph_k, subgraph_k
-
-    return None
-
-
-def top_k_ranking_subgraph_location(evaluation_results: List[Tuple[str, pd.DataFrame, str, pd.DataFrame]],
-                                    meta_model: MetaModel,
-                                    graph: Graph,
-                                    TOP_RANKING_K: int,
-                                    NUMBER_OF_NEIGHBORS: int,
-                                    K_NEIGHBOUR_DISTANCE: int = 0,
-                                    UNDIRECTED: bool = True,
-                                    DIAGRAM_AGGREGATION: bool = True) -> Tuple[int, int]:
-    """
     Args:
-        TOP_RANKING_K (int, optional): Compute for top k ranking positions
-        DIAGRAM_SIZE (int, optional): Size of the diagram:. Defaults to 60.
-        SAVE_DIAGRAM (bool, optional): Write diagram nodes and edges as Json-File. Defaults to False.
-        K_NEIGHBOURS (int, optional): Hops from the expected locations. Defaults to 2.
-        UNDIRECTED (bool, optional): Follow undirected edges on diagram slicing. Defaults to True.
-        DIAGRAM_AGGREGATION (bool, optional): If a node of the input ranking is already contained in a 
-          higher ranked diagram it will the ranking position will not be considered again.Defaults to True.
+        tbls_predicted (List[pd.DataFrame]): A list of rankings.
 
     Returns:
-        (int, int): [0] Number of ranking that contain at least on expexted location in top k.
-                    [1] Number of ranking that contain no expexted location in top k.
+        pd.DataFrame: The first/top relevant location of each ranking.
     """
-
-    found_in_top_k = 0
-    not_found_in_top_k = 0
-
-    for tbl_info_file, tbl_info, tbl_predicted_file, tbl_predicted in evaluation_results:
-        db_version = int(tbl_info.ModelVersionNeo4j[0])
-        top_k_ranking_subgraph_location = tbl_predicted.head(TOP_RANKING_K)
-
-        # Is node directly contained in top k results (TOP_RANKING_K)?
-        if 1 in top_k_ranking_subgraph_location.IsLocation.to_list():
-            found_in_top_k += 1
-        # Is node indirectly contained by subgraph (K_NEIGHBOURS,DIAGRAM_SIZE)
-        else:
-            first_expected_location = get_first_relevant_subgraph_location(
-                tbl_predicted, TOP_RANKING_K, graph, db_version, meta_model,
-                K_NEIGHBOUR_DISTANCE, UNDIRECTED, NUMBER_OF_NEIGHBORS, DIAGRAM_AGGREGATION)
-
-            if first_expected_location is not None:
-                found_in_top_k += 1
-            else:
-                not_found_in_top_k += 1
-
-        print(tbl_info_file, "Found:", found_in_top_k, "Not found:", not_found_in_top_k)
-
-    return found_in_top_k, not_found_in_top_k
-
-
-def get_all_top_relevant_locations(tbls_predicted: List[pd.DataFrame]) -> pd.DataFrame:
     all_expected_locations = []
 
     for tbl_predicted in tbls_predicted:
@@ -253,16 +147,24 @@ def get_all_top_relevant_locations(tbls_predicted: List[pd.DataFrame]) -> pd.Dat
 
 
 def get_all_relevant_locations(tbls_predicted: List[pd.DataFrame]) -> pd.DataFrame:
-    all_expected_locations = []
+    """
+
+    Args:
+        tbls_predicted (List[pd.DataFrame]): A list of rankings.
+
+    Returns:
+        pd.DataFrame: All relevant locations of all rankings.
+    """
+    all_relevant_locations = []
 
     for tbl_predicted in tbls_predicted:
-        expected_locations = get_relevant_locations(tbl_predicted)
-        expected_locations['ranking'] = expected_locations.index
+        relevant_locations = get_relevant_locations(tbl_predicted)
+        relevant_locations['ranking'] = relevant_locations.index
 
-        all_expected_locations.append(expected_locations)
+        all_relevant_locations.append(relevant_locations)
 
-    all_expected_locations_df = pd.concat(all_expected_locations, ignore_index=True)
-    return all_expected_locations_df
+    all_relevant_locations_df = pd.concat(all_relevant_locations, ignore_index=True)
+    return all_relevant_locations_df
 
 
 def get_ranking_outliers(all_relevant_locations_df: pd.DataFrame) -> Tuple[int, int, int, int]:

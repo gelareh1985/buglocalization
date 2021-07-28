@@ -5,6 +5,10 @@ from py2neo import Graph
 from buglocalization.dataset import neo4j_queries as query
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
 
+"""
+Collects and prints several statistical values about the model in the graph database.
+"""
+
 model_element_filter = None  # '.test'
 meta_model = MetaModelUML()
 

@@ -5,6 +5,10 @@ import os
 import sys
 from pathlib import Path
 
+"""
+Prints box plots to visualize the distribution of the relevant ranking positions.
+"""
+
 # WORKAROUND: Initialize PYTHONPATH with src folder for Jupyter extension:
 if str(Path(os.path.dirname(os.path.abspath(__file__))).parent) not in sys.path:
     sys.path.append(str(Path(os.path.dirname(os.path.abspath(__file__))).parent))

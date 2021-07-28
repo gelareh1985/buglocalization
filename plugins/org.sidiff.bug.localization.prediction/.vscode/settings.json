@@ -1,6 +1,5 @@
 {
     "git.ignoreLimitWarning": true,
-    "python.pythonPath": "C:\\IDE\\Anaconda3\\envs\\tf-gpu\\python.exe",
     "rewrap.wrappingColumn": 120,
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
