@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +30,8 @@ import org.sidiff.bug.localization.dataset.systemmodel.SystemModel;
  * Helper application to post-process a Git repository.
  */
 public class GitRebaseApplication implements IApplication {
+	
+	public static final String ARGUMENT_DATASET = "-dataset";
 
 	public static final String ARGUMENT_SOURCE_REPOSITORY = "-sourcerepository";
 
@@ -42,9 +45,13 @@ public class GitRebaseApplication implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
+		
+		Path dataSetPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_DATASET);
+		DataSet dataset = DataSetStorage.load(dataSetPath);
+		String codeRepositoryURL = dataset.getRepositoryHost() + dataset.getRepositoryPath();
 
-		Path sourceRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SOURCE_REPOSITORY);
-		this.sourceRepository = new GitRepository(sourceRepositoryPath.toFile()); 
+		Path sourceRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_SOURCE_REPOSITORY, false);
+		this.sourceRepository = new GitRepository(codeRepositoryURL, sourceRepositoryPath.toFile()); 
 
 		Path targetRepositoryPath = ApplicationUtil.getPathFromProgramArguments(context, ARGUMENT_TARGET_REPOSITORY, false);
 		this.targetRepository = new GitRepository(targetRepositoryPath.toFile());
@@ -55,8 +62,6 @@ public class GitRebaseApplication implements IApplication {
 		// Read history:
 		this.history = sourceRepository.getHistory(VersionFilter.FILTER_NOTHING);
 		HistoryIterator historyIterator = new HistoryIterator(history);
-		
-		DataSet dataset = new DataSet();
 		dataset.setHistory(history);
 
 		while (historyIterator.hasNext()) {
@@ -93,12 +98,13 @@ public class GitRebaseApplication implements IApplication {
 			version.setIdentificationTrace(trace);
 		}
 		
-		String traceFileName = sourceRepository.getWorkingDirectory().getFileName() + "_dataset_rebased.json";
-		saveDataSet(dataset, targetRepository.getWorkingDirectory().getParent().resolve(traceFileName));
+		String traceFileName = dataset.getName() + "_dataset_rebased_" + LocalDate.now() + ".json";
+		Path traceFile = dataSetPath.getParent().resolve(traceFileName);
+		saveDataSet(dataset, traceFile);
 		
 		Activator.getLogger().log(Level.INFO, "Rebase Finished");
 		Activator.getLogger().log(Level.INFO, "To optimize disc space run: git gc --auto");
-		Activator.getLogger().log(Level.INFO, "Trace saved to: " + traceFileName);
+		Activator.getLogger().log(Level.INFO, "Trace saved to: " + traceFile.toString());
 		
 		return IApplication.EXIT_OK;
 	}

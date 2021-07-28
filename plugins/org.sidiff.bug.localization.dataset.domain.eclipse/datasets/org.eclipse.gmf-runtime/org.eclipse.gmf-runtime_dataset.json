@@ -1,0 +1,7 @@
+{
+  "name": "org.eclipse.gmf-runtime",
+  "repositoryHost": "https://git.eclipse.org",
+  "repositoryPath": "/r/gmf-runtime/org.eclipse.gmf-runtime.git",
+  "bugtrackerHost": "https://bugs.eclipse.org",
+  "bugtrackerProducts": ["EMF", "Modeling", "MDT", "MDT.XSD", "PDE", "GMF-Runtime", "GMF-Tooling"]
+}
