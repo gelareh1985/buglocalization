@@ -76,12 +76,12 @@ class MetaModelUML(MetaModel):
             "Generalization",
             "InterfaceRealization",
             "Comment",
-            "InstanceValue",
-            "LiteralBoolean",
-            "LiteralInteger",
-            "LiteralReal",
-            "LiteralString",
-            "LiteralUnlimitedNatural",
+            #"InstanceValue",
+            #"LiteralBoolean",
+            #"LiteralInteger",
+            #"LiteralReal",
+            #"LiteralString",
+            #"LiteralUnlimitedNatural",
         ]
         return model_meta_type_labels
 
@@ -139,12 +139,12 @@ class MetaModelUML(MetaModel):
             "EnumerationLiteral": ["name"],
             "Generalization": [],
             "InterfaceRealization": [],
-            "InstanceValue": ["value"],
-            "LiteralBoolean": ["value"],
-            "LiteralInteger": ["value"],
-            "LiteralReal": ["value"],
-            "LiteralString": ["value"],
-            "LiteralUnlimitedNatural": ["value"],
+            #"InstanceValue": ["value"],
+            #"LiteralBoolean": ["value"],
+            #"LiteralInteger": ["value"],
+            #"LiteralReal": ["value"],
+            #"LiteralString": ["value"],
+            #"LiteralUnlimitedNatural": ["value"],
             "Comment": ["body"],
 
             # ----- Bug Report -----
