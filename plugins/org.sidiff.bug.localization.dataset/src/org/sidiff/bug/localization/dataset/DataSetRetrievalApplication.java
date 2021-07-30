@@ -3,6 +3,7 @@ package org.sidiff.bug.localization.dataset;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -99,6 +100,9 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		// Bug fixes:
 		if (retrieveBugFixHistory) {
+			String datasetFileName = dataset.getName() + "_dataset_bughistory_" + LocalDate.now() + ".json";
+			datasetPath = datasetPath.getParent().resolve(datasetFileName);
+			
 			BugFixHistoryRetrievalProvider bugFixHistoryConfig = new BugFixHistoryRetrievalProvider(
 					codeRepositoryURL, codeRepositoryPath, () -> new EclipseBugzillaBugtracker(), dataset.getBugtrackerProducts());
 			BugFixHistoryRetrieval bugFixHistory = new BugFixHistoryRetrieval(bugFixHistoryConfig, dataset, datasetPath);
@@ -115,6 +119,9 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		// Workspace:
 		if (retrieveWorkspaceHistory) {
+			String datasetFileName = dataset.getName() + "_dataset_workspacehistory_" + LocalDate.now() + ".json";
+			datasetPath = datasetPath.getParent().resolve(datasetFileName);
+			
 			WorkspaceHistoryRetrievalProvider workspaceHistoryRetrievalProvider = new WorkspaceHistoryRetrievalProvider(codeRepositoryPath);
 			WorkspaceHistoryRetrieval workspaceHistoryRetrieval = new WorkspaceHistoryRetrieval(workspaceHistoryRetrievalProvider, dataset, datasetPath);
 			
@@ -132,6 +139,9 @@ public class DataSetRetrievalApplication implements IApplication {
 		
 		// Direct System model (Java Model -> System Model):
 		if (retrieveSystemModelHistory) {
+			String datasetFileName = dataset.getName() + "_dataset_systemmodel_" + LocalDate.now() + ".json";
+			datasetPath = datasetPath.getParent().resolve(datasetFileName);
+			
 			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(
 					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter());
 			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, datasetPath, dataset, dataSetTrace);
