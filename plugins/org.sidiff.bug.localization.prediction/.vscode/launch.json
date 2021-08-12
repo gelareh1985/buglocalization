@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Bug Localization - Training",
             "type": "python",
@@ -29,10 +30,21 @@
             },
         },
         {
-            "name": "node_self_embedding",
+            "name": "node_self_embedding_training",
             "type": "python",
             "request": "launch",
-            "program": "src/node_self_embedding.py",
+            "program": "src/node_self_embedding_training.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+        },
+        {
+            "name": "node_self_embedding_dictionary",
+            "type": "python",
+            "request": "launch",
+            "program": "src/node_self_embedding_dictionary.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {
