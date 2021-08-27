@@ -28,7 +28,7 @@ class DataSetPredictionNeo4j(DataSetNeo4j):
                  is_negative: bool = False,
                  log_level: int = 0):
 
-        super().__init__(meta_model,  neo4j_config, is_negative=is_negative)
+        super().__init__(meta_model, neo4j_config, is_negative=is_negative)
         self.log_level = log_level
 
         # Library element, e.g., Java String, Integer,  contained in the database by type over all versions:

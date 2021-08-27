@@ -2,13 +2,34 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
+import json
+from typing import List, cast
+
+import tensorflow as tf
+from tensorflow.keras.utils import plot_model
+
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
+from buglocalization.dataset.neo4j_data_set_training import \
+    DataSetTrainingNeo4j
+from buglocalization.dataset.sample_generator import BugSampleGenerator
+from buglocalization.metamodel.meta_model import MetaModel
+from buglocalization.metamodel.meta_model_uml import MetaModelUML
+from buglocalization.predictionmodel.bug_localization_model_training import (
+    BugLocalizationAIModelBuilder, BugLocalizationAIModelTrainer,
+    DataSetSplitter, TrainigConfiguration)
+from buglocalization.selfembedding.node_self_embedding import NodeSelfEmbedding
+from buglocalization.selfembedding.node_self_embedding_sowe import \
+    NodeSelfEmbeddingSOWE
+from buglocalization.selfembedding.node_self_embedding_dictionary import \
+    NodeSelfEmbeddingDictionary
+from buglocalization.textembedding.word_to_vector_dictionary import \
+    WordToVectorDictionary
+from buglocalization.utils import common_utils as utils
+
 # ===============================================================================
 # Configure GPU Device:
 # https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
 # ===============================================================================
-from typing import List
-import tensorflow as tf
-
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
 
@@ -20,19 +41,6 @@ if gpus:
         print(e)
 # ===============================================================================
 
-import json
-
-from tensorflow.keras.utils import plot_model
-
-from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
-from buglocalization.dataset.neo4j_data_set_training import \
-    DataSetTrainingNeo4j
-from buglocalization.dataset.sample_generator import BugSampleGenerator
-from buglocalization.metamodel.meta_model_uml import MetaModelUML
-from buglocalization.predictionmodel.bug_localization_model_training import (
-    BugLocalizationAIModelBuilder, BugLocalizationAIModelTrainer,
-    DataSetSplitter, TrainigConfiguration)
-from buglocalization.utils import common_utils as utils
 
 # ===============================================================================
 # Environmental Information
@@ -41,7 +49,6 @@ from buglocalization.utils import common_utils as utils
 # NOTE: Paths should not be too long, causes error (on Windows)!
 project_folder: str = utils.get_project_folder()
 model_training_base_directory: str = "D:"
-graphsage_num_samples: List[int] = [20, 10]
 
 doc_description: str = utils.create_timestamp() + " JDT: Training Data: 90%, Validation Evaluation Data: 0%, Test Evaluation Data: 10%"
 
@@ -54,16 +61,13 @@ training_configuration = TrainigConfiguration(
     trainig_batch_size=20,
     dataset_split_fraction=-1,  # 2 -> 50/50 training test data
     dataset_shuffle=True,
-    dataset_generator_workers=4,
-    dataset_multiprocessing=True,
+    dataset_generator_workers=1, # tested with: 4
+    dataset_multiprocessing=False, # tested with: True
     dataset_sample_prefetch_count=8,
-    graphsage_num_samples=graphsage_num_samples,
+    graphsage_num_samples=[20, 10],
     graphsage_layer_sizes=[300, 300],
     graphsage_dropout=0.0,
     graphsage_normalize="l2",
-    word_dictionary=None,
-    embedding_cache_local=False,
-    embedding_cache_limit=-1,
     log_level=2
 )
 
@@ -75,6 +79,29 @@ neo4j_configuration = Neo4jConfiguration(
     neo4j_password="password",
 )
 
+# Meta-Model:
+meta_model: MetaModel = MetaModelUML(
+    neo4j_configuration=neo4j_configuration,
+    num_samples=training_configuration.graphsage_num_samples)
+training_configuration.meta_model = meta_model
+
+# Node Self Embedding:
+# # SOWE:
+# node_self_embedding: NodeSelfEmbedding = NodeSelfEmbeddingSOWE(
+#     meta_model=training_configuration.meta_model,
+#     word_dictionary=WordToVectorDictionary(),
+#     embedding_cache_local=False,
+#     embedding_cache_limit=-1)
+# meta_model.node_self_embedding = node_self_embedding
+# # Dictionary:
+node_self_embedding: NodeSelfEmbedding = NodeSelfEmbeddingDictionary(
+    meta_model=training_configuration.meta_model,
+    self_embedding_dictionary_path=r'C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\data\data_matrix.pkl',
+    dictionary_words_length=300
+)
+meta_model.node_self_embedding = node_self_embedding
+
+
 if __name__ == '__main__':
 
     # ===========================================================================
@@ -83,17 +110,17 @@ if __name__ == '__main__':
 
     print('Save Training:', training_configuration.model_training_save_dir)
     utils.create_folder(training_configuration.model_training_save_dir)
-    
+
     with open(training_configuration.model_training_save_dir + 'training_configuration.json', 'w') as outfile:
         json.dump(training_configuration.dump(), outfile, sort_keys=False, indent=4)
-    
+
     bug_localization_model_builder = BugLocalizationAIModelBuilder()
     model = bug_localization_model_builder.create_model(
         num_samples=training_configuration.graphsage_num_samples,
-        layer_sizes=training_configuration.graphsage_layer_sizes, 
-        feature_size=training_configuration.word_dictionary.dimension(), 
-        checkpoint_dir=training_configuration.model_training_checkpoint_dir, 
-        dropout=training_configuration.graphsage_dropout, 
+        layer_sizes=training_configuration.graphsage_layer_sizes,
+        feature_size=training_configuration.meta_model.get_node_self_embedding().get_dimension(),
+        checkpoint_dir=training_configuration.model_training_checkpoint_dir,
+        dropout=training_configuration.graphsage_dropout,
         normalize=training_configuration.graphsage_normalize,
         optimizer_learning_rate=training_configuration.optimizer_learning_rate)
 
@@ -105,13 +132,6 @@ if __name__ == '__main__':
     # Create Training and Test Data:
     # ===========================================================================
 
-    # Modeling Language Meta-Model Configuration:
-    meta_model = MetaModelUML(neo4j_configuration, 
-                              training_configuration.word_dictionary, 
-                              training_configuration.graphsage_num_samples,
-                              training_configuration.embedding_cache_local,
-                              training_configuration.embedding_cache_limit)
-
     # Test Dataset Containing Bug Samples:
     dataset_positive = DataSetTrainingNeo4j(meta_model, neo4j_configuration, is_negative=False)
     dataset_negative = DataSetTrainingNeo4j(meta_model, neo4j_configuration, is_negative=True)
@@ -120,7 +140,7 @@ if __name__ == '__main__':
     # ===========================================================================
     # Train and Evaluate AI Model:
     # ===========================================================================
-    
+
     bug_localization_generator = BugSampleGenerator(
         batch_size=training_configuration.trainig_batch_size,
         shuffle=training_configuration.dataset_shuffle,
@@ -138,9 +158,9 @@ if __name__ == '__main__':
 
     # # Start training # #
     bug_localization_model_trainer.train(
-        meta_model=meta_model,
-        epochs=training_configuration.trainig_epochs, 
+        meta_model=training_configuration.meta_model,
+        epochs=training_configuration.trainig_epochs,
         sample_generator=bug_localization_generator,
         model_training_save_dir=training_configuration.model_training_save_dir,
-        dataset_split_fraction=training_configuration.dataset_split_fraction, 
+        dataset_split_fraction=training_configuration.dataset_split_fraction,
         log_level=training_configuration.log_level)

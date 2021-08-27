@@ -18,6 +18,7 @@ from tensorflow import keras
 class BugLocalizationPredictionConfiguration:
 
     def __init__(self,
+                 meta_model: MetaModel,
                  evaluation_results_base_path: str,
                  bug_localization_model_path: str,
                  num_samples: List[int],  # TODO: Get this from trained model!
@@ -26,13 +27,12 @@ class BugLocalizationPredictionConfiguration:
                  sample_generator_workers: int = 1,
                  sample_generator_workers_multiprocessing: bool = False,
                  sample_max_queue_size: int = 10,
-                 embedding_cache_local: bool = False,
-                 embedding_cache_limit: int = -1,
                  log_level: int = 2):
         """
         The configuration parameters for running the prediction.
 
         Args:
+            meta_model (MetaModel): Meta-model modeling language configuration.
             evaluation_results_path (str): Path for saving the evaluation results.
             bug_localization_model_path (str): Path to the trained Keras bug localization prediction model.
             num_samples (List[int]): Number of nodes to be sampled at each neigbor level starting from the bug report node
@@ -45,7 +45,11 @@ class BugLocalizationPredictionConfiguration:
             sample_max_queue_size (int): Size of batch queue during prediction. Defaults to 10
             log_level (int): Logging for infos and debugging: 0-100
         """
+        
+        # Meta-model modeling language configuration:
+        self.meta_model = meta_model
 
+        # Store evaluation results in folder:
         self.evaluation_results_path: str = evaluation_results_base_path + "_" + utils.create_timestamp() + "/"
 
         # Trained bug localization model:
@@ -61,9 +65,6 @@ class BugLocalizationPredictionConfiguration:
         self.sample_generator_workers_multiprocessing: bool = sample_generator_workers_multiprocessing
         self.sample_max_queue_size: int = sample_max_queue_size
         
-        self.embedding_cache_local = embedding_cache_local
-        self.embedding_cache_limit = embedding_cache_limit
-        
         # For debugging:
         self.log_level: int = log_level  # 0-100
 
@@ -71,7 +72,6 @@ class BugLocalizationPredictionConfiguration:
 class BugLocalizationPrediction:
 
     def predict(self,
-                meta_model: MetaModel,
                 sample_data: Union[IDataSet, IBugSample],
                 config: BugLocalizationPredictionConfiguration,
                 sample_data_slice: slice = None,
@@ -117,7 +117,7 @@ class BugLocalizationPrediction:
             start_time_prediction = time()
 
             callbacks: List[keras.callbacks.Callback] = []
-            flow = prediction_generator.create_location_sample_generator("prediction", meta_model, bug_sample, callbacks)
+            flow = prediction_generator.create_location_sample_generator("prediction", config.meta_model, bug_sample, callbacks)
 
             prediction = model.predict(flow,
                                        callbacks=callbacks,

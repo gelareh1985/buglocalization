@@ -246,7 +246,7 @@ class BugLocalizationPredictionTest:
 
         # Initialize Bug Localization Prediction:
         prediction = BugLocalizationPrediction()
-        prediction_generator = prediction.predict(meta_model, sample_data, prediction_configuration, samples_slice, log_level)
+        prediction_generator = prediction.predict(sample_data, prediction_configuration, samples_slice, log_level)
 
         start_time_prediction = time()
         bug_sample_counter = 0
