@@ -8,6 +8,8 @@ To set up the database needed to work with IdentiBug, you need to first configur
 
 ***Note:*** Please first download the latest Neo4j Server Version (Community version) and then create a folder preferably named your dataset name. Then copy all the files from the downloaded neo4j to your dataset folder. Then, create a folder named 'backups' where you place your dataset dump file. Then, download APOC.jar and copy it in the dataset folder. Then, you need to update the configuration details. To do so, you should go to 'conf' folder and add configuration details (step3 in the following) to the beggining of the neo4j.conf like the following image. Then, just you need to start the server (only for the first time you want to create the dataset). So, for the next times you want to use the database, you just need to load it.
 
+![alternative text](conf_settings.PNG "Image Title")
+
 **(1) to download the Dump files for training or testing:**
 
 ./bin/neo4j-admin dump --database=neo4j --to=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump
@@ -25,7 +27,7 @@ To set up the database needed to work with IdentiBug, you need to first configur
     dbms.allow_upgrade=true
 
 **(4) to start server:**
-**Open Terminal Window in the database folder**
+***Open Terminal Window in the database folder***
 *Start command:*
 
       ./bin/neo4j.bat console
@@ -34,7 +36,7 @@ To set up the database needed to work with IdentiBug, you need to first configur
 
 ## Loading the Database (For next times)
 **(1) to load the downloaded files:**
-**Open Terminal Window in the database folder**
+***Open Terminal Window in the database folder***
 *Load command:*
 
      ./bin/neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump --database=neo4j --force
