@@ -27,7 +27,7 @@ To set up the database needed to work with IdentiBug, you need to first configur
     dbms.allow_upgrade=true
 
 **(4) to start server:**
-***Note:*** open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the start command should be changed to './neo4j.bat console')
+open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the start command should be changed to './neo4j.bat console')
 
 *Start command:*
 
@@ -37,7 +37,7 @@ To set up the database needed to work with IdentiBug, you need to first configur
 
 ## Loading the Database (For next times)
 **(1) to load the downloaded files:**
-***Note:*** open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the load command should be changed to './neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump --database=neo4j --force')
+open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the load command should be changed to './neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump --database=neo4j --force')
 
 *Load command:*
 
