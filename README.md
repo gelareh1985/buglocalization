@@ -12,7 +12,7 @@ To set up the database needed to work with IdentiBug, you need to first configur
 
 **(1) to download the Dump files for training or testing:**
 
-./bin/neo4j-admin dump --database=neo4j --to=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump
+      ./bin/neo4j-admin dump --database=neo4j --to=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump
     
 **(2) to download APOC Jar from the following url and copy it to plugins folder**  [Download Link](https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/)
 
