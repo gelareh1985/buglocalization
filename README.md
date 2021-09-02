@@ -25,18 +25,8 @@ To set up the database needed to work with IdentiBug, you need to first configur
     dbms.memory.heap.max_size=4G
     
     dbms.allow_upgrade=true
-
-**(4) to start server:**
-open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the start command should be changed to './neo4j.bat console')
-
-*Start command:*
-
-      ./bin/neo4j.bat console
-    
-**(5) open database in server and set password:**
-
-## Loading the Database (For next times)
-**(1) to load the downloaded files:**
+   
+**(5) to load the downloaded files:**
 open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the load command should be changed to './neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump --database=neo4j --force')
 
 *Load command:*
@@ -44,6 +34,25 @@ open Terminal Window in the database folder (make sure about the path you open t
      ./bin/neo4j-admin load --from=./backups/neo4j-eclipse.jdt.core_samples_2021-03-25.dump --database=neo4j --force
      
 ***Note:*** Please note that if the database server does not work in a browser like Microsoft edge, try changing the brower and use another browser like: Google Chrome
+ 
+**(4) to start server:**
+open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the start command should be changed to './neo4j.bat console')
+
+*Start command:*
+
+      ./bin/neo4j.bat console
+      
+**(6) open database in server and set password:**
+
+## Loading the Database (For next times)
+ 
+**(4) to start server:**
+open Terminal Window in the database folder (make sure about the path you open the terminal window: for example if you choose bin folder the start command should be changed to './neo4j.bat console')
+
+*Start command:*
+
+      ./bin/neo4j.bat console
+      
 
 ## Requirements for running scripts:
 To better run the python scripts, It is needed to create a virtual environment with the following settings.
