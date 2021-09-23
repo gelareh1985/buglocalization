@@ -177,7 +177,7 @@ def get_padded_sequences(t, max_length, docs):
     return vocab_size, word_index, index_word, encoded_docs, padded_docs
 
 
-if __name__ == '__main__':
+def compute_node_self_embedding():
 
     # Database connection:
     neo4j_configuration = Neo4jConfiguration(

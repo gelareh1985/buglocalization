@@ -2,18 +2,28 @@
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
 
-# ===============================================================================
-# Configure GPU Device:
-# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
-# ===============================================================================
+from multiprocessing import Process
 from typing import List
 
 import tensorflow as tf
 
+from bug_localization_training import training_configuration
+from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
+from buglocalization.dataset.neo4j_data_set_prediction import \
+    DataSetPredictionNeo4j
 from buglocalization.evaluation.evaluation_prediction_results import \
     BugLocalizationPredictionTest
 from buglocalization.metamodel.meta_model_uml import MetaModelUML
+from buglocalization.predictionmodel.bug_localization_model_prediction import \
+    BugLocalizationPredictionConfiguration
+from buglocalization.textembedding.word_to_vector_dictionary import \
+    WordToVectorDictionary
+from buglocalization.utils import common_utils
 
+# ===============================================================================
+# Configure GPU Device:
+# https://towardsdatascience.com/setting-up-tensorflow-gpu-with-cuda-and-anaconda-onwindows-2ee9c39b5c44
+# ===============================================================================
 # Only allocate needed memory needed by the application:
 gpus = tf.config.experimental.list_physical_devices('GPU')
 
@@ -25,26 +35,18 @@ if gpus:
         print(e)
 # ===============================================================================
 
-from multiprocessing import Process
-
-from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
-from buglocalization.dataset.neo4j_data_set_prediction import \
-    DataSetPredictionNeo4j
-from buglocalization.predictionmodel.bug_localization_model_prediction import \
-    BugLocalizationPredictionConfiguration
-from buglocalization.textembedding.word_to_vector_dictionary import \
-    WordToVectorDictionary
-from buglocalization.utils import common_utils
-from bug_localization_training import graphsage_num_samples
 
 # Evaluation Result Records:
 # NOTE: Paths should not be too long, causes error (on Windows)!
 project_folder: str = common_utils.get_project_folder()
 evaluation_results_base_path: str = project_folder + "/evaluation/eclipse.jdt.core"
-bug_localization_model_path: str = project_folder + "/training/trained_model_2021-02-24_20-37-42_train45_val45_test10" + "/"
+bug_localization_model_path: str = project_folder + "/training/eclipse.pde.ui_data-2021-04-09_model-2021-04-12" + "/"
 
 # Configuration for bug localization prediction computation:
 prediction_configuration = BugLocalizationPredictionConfiguration(
+    
+    # Meta-model modeling language configuration:
+    meta_model=training_configuration.meta_model,
     
     # Evaluation Result Records:
     evaluation_results_base_path=evaluation_results_base_path,
@@ -54,7 +56,7 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
 
     # DL Model Prediction Configuration:
     # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
-    num_samples=graphsage_num_samples,  # must be consistent with the trained model!
+    num_samples=training_configuration.graphsage_num_samples,  # must be consistent with the trained model!
     batch_size=100,
 
     prediction_worker=2,
@@ -62,10 +64,6 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     sample_generator_workers=4,
     sample_generator_workers_multiprocessing=False,
     sample_max_queue_size=8,
-    
-    # Word embedding chaching:
-    embedding_cache_local=False,
-    embedding_cache_limit=-1,
     
     # For debugging:
     log_level=2  # 0-100
@@ -96,14 +94,8 @@ if __name__ == '__main__':
         return dataset_slice
 
     log_level = prediction_configuration.log_level
-
-    # Modeling Language Meta-Model Configuration:
-    meta_model = MetaModelUML(neo4j_configuration, 
-                              WordToVectorDictionary(), 
-                              prediction_configuration.num_samples,
-                              prediction_configuration.embedding_cache_local,
-                              prediction_configuration.embedding_cache_limit)
-
+    meta_model = prediction_configuration.meta_model
+    
     # Test Dataset Containing Bug Samples:
     dataset = DataSetPredictionNeo4j(meta_model, neo4j_configuration, log_level=log_level)
     bug_sample_count = len(dataset.bug_samples)

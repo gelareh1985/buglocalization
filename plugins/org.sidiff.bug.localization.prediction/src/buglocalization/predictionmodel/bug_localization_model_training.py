@@ -9,6 +9,7 @@ import stellargraph as sg
 from buglocalization.dataset.data_set import IBugSample, IDataSet
 from buglocalization.dataset.sample_generator import IBugSampleGenerator
 from buglocalization.metamodel.meta_model import MetaModel
+from buglocalization.selfembedding.node_self_embedding import NodeSelfEmbedding
 from buglocalization.textembedding.word_to_vector_dictionary import \
     WordToVectorDictionary
 from buglocalization.utils import common_utils as utils
@@ -24,7 +25,7 @@ from tensorflow.keras.utils import Sequence
 
 class TrainigConfiguration:
 
-    def __init__(self, 
+    def __init__(self,
                  doc_description: str,
                  model_training_base_directory: str,
                  optimizer_learning_rate: float = 1e-4,
@@ -39,14 +40,11 @@ class TrainigConfiguration:
                  graphsage_layer_sizes: List[int] = [300, 300],
                  graphsage_dropout: float = 0.0,
                  graphsage_normalize: str = "l2",
-                 word_dictionary: WordToVectorDictionary = None,
-                 embedding_cache_local: bool = False,
-                 embedding_cache_limit: int = -1,
                  log_level: int = 2) -> None:
-        
+
         # Doc description:
         self.doc_description = doc_description
-
+        
         # Save folders:
         self.model_training_save_dir = model_training_base_directory + '/training/trained_model_' + utils.create_timestamp() + '/'
         self.model_training_checkpoint_dir = self.model_training_save_dir + "checkpoints/"
@@ -64,15 +62,6 @@ class TrainigConfiguration:
 
         self.log_level: int = log_level  # Some console output for debugging...
 
-        # Word embedding:
-        if word_dictionary is not None:
-            self.word_dictionary: WordToVectorDictionary = word_dictionary
-        else:
-            self.word_dictionary = WordToVectorDictionary()
-        
-        self.embedding_cache_local = embedding_cache_local
-        self.embedding_cache_limit = embedding_cache_limit
-
         # GraphSAGE Settings:
         self.graphsage_num_samples = graphsage_num_samples  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
         self.graphsage_layer_sizes = graphsage_layer_sizes  # Size of GraphSAGE hidden layers
@@ -88,12 +77,12 @@ class TrainigConfiguration:
 
         # GraphSAGE input normalization: l2 or None
         self.graphsage_normalize: str = graphsage_normalize
-        
+
     def dump(self) -> dict:
         dump_state = dict(self.__dict__)
-            
-        if 'word_dictionary' in dump_state:
-            dump_state['word_dictionary'] = self.word_dictionary.dump()
+
+        if 'meta_model' in dump_state:
+            dump_state['meta_model'] = self.meta_model.dump()
 
         return dump_state
 
@@ -221,7 +210,7 @@ class BugLocalizationAIModelTrainer:
         self.callbacks.append(CSVLogger(checkpoint_dir + "model_history_log.csv", append=True))
         self.callbacks.append(self.BatchLogger())
 
-    def train(self, meta_model: MetaModel, epochs: int, sample_generator: IBugSampleGenerator, 
+    def train(self, meta_model: MetaModel, epochs: int, sample_generator: IBugSampleGenerator,
               model_training_save_dir: str, dataset_split_fraction: int = 2, log_level=0):
 
         # Initialize training data:

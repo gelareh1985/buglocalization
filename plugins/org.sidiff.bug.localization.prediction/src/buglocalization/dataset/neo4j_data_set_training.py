@@ -63,7 +63,7 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
                             print("INFO: Negative sample that overlaps with positive filtered: ", node_id)
 
             return bug_locations
-        
+
     def __getstate__(self):
         state = super().__getstate__()
 
@@ -74,9 +74,9 @@ class BugSampleTrainingNeo4j(BugSampleNeo4j):
             state['bug_locations'] = set()
         if 'location_samples' in state:
             state['location_samples'] = []
-            
+
         return state
-    
+
     def _uninitialize(self):
         self.bug_report = -2
         self.bug_locations = set()
