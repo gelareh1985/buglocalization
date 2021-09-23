@@ -19,6 +19,8 @@ tokenizer = RegexpTokenizer('[A-Za-z]+')
 
 
 def text_to_words(text: str, unescape: bool = True) -> List[str]:
+    if text is None:
+        return []
     if unescape:
         text = text.encode().decode("unicode-escape", "ignore")
     words_array = []

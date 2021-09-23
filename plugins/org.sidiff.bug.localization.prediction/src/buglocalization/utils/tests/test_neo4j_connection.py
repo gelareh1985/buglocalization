@@ -6,5 +6,5 @@ from py2neo import Graph
 # Host to docker container:
 graph = Graph(host="localhost", port=7687, user="neo4j", password="password")
 
-result = graph.run("Match (n) RETURN ID(n)").to_data_frame()
-print(len(result.index))
+result = graph.run("Match (n) RETURN ID(n) LIMIT 100").to_table()
+print(len(result))

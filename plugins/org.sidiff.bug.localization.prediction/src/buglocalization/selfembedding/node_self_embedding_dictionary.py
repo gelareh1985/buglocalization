@@ -47,30 +47,30 @@ class NodeSelfEmbeddingDictionary(NodeSelfEmbedding):
         if self.graph is None:
             self.graph = self.meta_model.get_graph()
             
-        smallestID = -1
-        largestID = -1
+        # smallestID = -1
+        # largestID = -1
 
         if self.self_embedding_dictionary is None:
             print("Start Loading Self Embedding Dictionary...")
+            self.self_embedding_dictionary = self.load_file()
 
-            # TODO: Save as dictionary!
-            word_index_train = self.load_file()
-            self.self_embedding_dictionary = {}
+            # TODO: Save as dictionary for similar word embeddings approach!
+            # word_index_train = self.load_file()
+            # self.self_embedding_dictionary = {}
 
-            for key, value in word_index_train.items():
-                node_id = value[0]
-                self.self_embedding_dictionary[node_id] = value[1]
+            # for key, value in word_index_train.items():
+            #     node_id = value[0]
+            #     self.self_embedding_dictionary[node_id] = value[1]
                 
-                if smallestID == -1 or node_id < smallestID:
-                    smallestID = node_id
-                if largestID == -1 or node_id > largestID:
-                    largestID = node_id
+            #     if smallestID == -1 or node_id < smallestID:
+            #         smallestID = node_id
+            #     if largestID == -1 or node_id > largestID:
+            #         largestID = node_id
 
-            print("Finished Loading Self Embedding Dictionary:", len(self.self_embedding_dictionary), "Words")
-            print("Smallest ID:", smallestID)
-            print("Largest ID", largestID)
+            # print("Finished Loading Self Embedding Dictionary:", len(self.self_embedding_dictionary), "Words")
+            # print("Smallest ID:", smallestID)
+            # print("Largest ID", largestID)
 
-    # TODO: Save as dictionary!
     def load_file(self):
         open_file = open(self.self_embedding_dictionary_path, "rb")
         loaded_list = pickle.load(open_file)

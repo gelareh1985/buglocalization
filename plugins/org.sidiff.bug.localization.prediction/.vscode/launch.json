@@ -29,21 +29,10 @@
             },
         },
         {
-            "name": "node_self_embedding_training",
+            "name": "Bug Localization - Compute Node Self Embedding Dictionary",
             "type": "python",
             "request": "launch",
-            "program": "src/node_self_embedding_training.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
-            },
-        },
-        {
-            "name": "node_self_embedding_dictionary",
-            "type": "python",
-            "request": "launch",
-            "program": "src/node_self_embedding_dictionary.py",
+            "program": "src/node_self_embedding.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {

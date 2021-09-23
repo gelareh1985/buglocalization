@@ -21,8 +21,8 @@ from py2neo import Graph, Node
 
 class MetaModelUML(MetaModel):
 
-    def __init__(self, neo4j_configuration: Neo4jConfiguration,
-                 num_samples: List[int]) -> None:
+    def __init__(self, neo4j_configuration: Neo4jConfiguration = None,
+                 num_samples: List[int] = None) -> None:
         super().__init__()
         self.neo4j_configuration: Neo4jConfiguration = neo4j_configuration
 
