@@ -1,6 +1,9 @@
 '''
 @author: gelareh.meidanipour@uni-siegen.de, manuel.ohrndorf@uni-siegen.de
 '''
+
+#%%
+
 import os
 import sys
 from pathlib import Path
@@ -16,13 +19,11 @@ if str(Path(os.path.dirname(os.path.abspath(__file__))).parent) not in sys.path:
 from buglocalization.evaluation import evaluation_util as eval_util
 from evaluations.evaluation_ranking_metrics import project_filter
 
-#%%
-
 # from this module location
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folder = "eclipse.jdt.core_2021-04-30_16-28-15"
+    evaluation_results_folder = "eclipse.pde.ui_data-2021-04-09_model-2021-04-12_evaluation" #"word_ranking_eclipse.pde.ui_2021-09-24_03-28-49"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 

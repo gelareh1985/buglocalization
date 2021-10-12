@@ -18,9 +18,16 @@ project_filter: List[str] = []  # e.g. ['.test', 'converterJclMin', 'library/']
 if __name__ == '__main__':
 
     # Evaluation result tables:
-    evaluation_results_folders = ["eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation_k2_undirected_aggregated",
-                                  "eclipse.pde.ui_data-2021-04-09_model-2021-04-12_evaluation_k2_undirected_aggregated",
-                                  "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation_k2_undirected_aggregated_core"]
+    evaluation_results_folders = ["eclipse.pde.ui_2021-09-24_03-28-49__20",
+                                  "eclipse.pde.ui_2021-09-24_03-28-49__20_k2_undirected_aggregated",
+                                  "eclipse.pde.ui_2021-09-24_21-04-07__100",
+                                  "eclipse.pde.ui_2021-09-24_21-04-07__100_k2_undirected_aggregated",
+                                  "eclipse.pde.ui_2021-09-25_19-02-30__200",
+                                  "eclipse.pde.ui_2021-09-25_19-02-30__200_k2_undirected_aggregated",
+                                  "eclipse.pde.ui_2021-09-26_18-19-01__300",
+                                  "eclipse.pde.ui_2021-09-26_18-19-01__300_k2_undirected_aggregated",
+                                  "eclipse.pde.ui_2021-09-27_12-49-35__400",
+                                  "eclipse.pde.ui_2021-09-27_12-49-35__400_k2_undirected_aggregated"]
     
     top_k_values_base = [1, 5, 10, 15, 20, 25, 30, 35]
     

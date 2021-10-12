@@ -98,7 +98,7 @@ if __name__ == '__main__':
     BEST_RANKING_SAMPLES = -1  # -1, 30
 
     # Slice and save diagram nodes as JSON file:
-    SAVE_DIAGRAM = True  # False, True
+    SAVE_DIAGRAM = False  # False, True
 
     #  Generate diagram for each position in classifier ranking - do not consider a position that were already seen.
     DIAGRAM_AGGREGATION = True  # True, True
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     MATCH_NEO4J_ID = False  # TODO: USING INDEX n:Nlable
 
     # Evaluation result tables:
-    evaluation_results_folder = "eclipse.jdt.core_data-2021-03-25_model-2021-04-06_evaluation"
+    evaluation_results_folder = "eclipse.pde.ui_2021-09-27_12-49-35__400"
     plugin_directory = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
     evaluation_results_path: str = str(plugin_directory) + "/evaluation/" + evaluation_results_folder + "/"
 
