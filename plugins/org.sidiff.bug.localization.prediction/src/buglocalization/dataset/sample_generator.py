@@ -139,10 +139,10 @@ class BaseSequence(Sequence):
         # Generates one batch at a time -> as adapter to StellarGraph API:
         self.graph_sage_generator = Neo4jGraphSAGELinkGenerator(meta_model, num_samples)
 
-    def create_batch(self, start_sample: int) -> Tuple[np.ndarray, np.array]:
+    def create_batch(self, start_sample: int) -> Tuple[np.ndarray, np.ndarray]:
         raise NotImplementedError
 
-    def create_location_sequence(self, samples: List[Tuple[IBugSample, Optional[slice]]]) -> Tuple[np.ndarray, np.array]:
+    def create_location_sequence(self, samples: List[Tuple[IBugSample, Optional[slice]]]) -> Tuple[np.ndarray, np.ndarray]:
         bug_location_pairs = []
         bug_location_labels = []
         
@@ -187,11 +187,11 @@ class BaseSequence(Sequence):
             flow = self.graph_sage_generator.flow(bug_location_pairs, bug_location_labels)
 
         assert len(flow) == 1, "Expected a single batch!"
-        return flow.__getitem__(0)
+        return flow.__getitem__(0)  # type: ignore
 
     def __len__(self):
         """Denotes the number of batches per epoch"""
-        return int(np.ceil(len(self.samples) / float(self.batch_size)))
+        return int(np.ceil(len(self.samples) / float(self.batch_size)))  # type: ignore
 
     def __getitem__(self, batch_idx):
         """Generate one batch of data"""
@@ -254,7 +254,7 @@ class BugSampleGenerator(IBugSampleGenerator, SampleBaseGenerator):
             callbacks.append(self.SequenceCallback(self))
             self.bug_samples: List[IBugSample] = bug_samples
 
-        def create_batch(self, start_bug_sample: int) -> Tuple[np.ndarray, np.array]:
+        def create_batch(self, start_bug_sample: int) -> Tuple[np.ndarray, np.ndarray]:
 
             # Collect batch of location samples:
             if self.log_level >= 100:
@@ -350,7 +350,7 @@ class LocationSampleGenerator(ILocationSampleGenerator, SampleBaseGenerator):
                 print(self.flow.bug_sample.lock.count)
                 self.flow.bug_sample.uninitialize()
 
-        def create_batch(self, start_location_sample: int) -> Tuple[np.ndarray, np.array]:
+        def create_batch(self, start_location_sample: int) -> Tuple[np.ndarray, np.ndarray]:
 
             # Collect batch of location samples:
             if self.log_level >= 100:

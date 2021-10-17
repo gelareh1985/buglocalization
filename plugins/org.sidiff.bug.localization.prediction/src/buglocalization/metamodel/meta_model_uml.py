@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Union
 
 import numpy as np
 from buglocalization.dataset import neo4j_queries as query
@@ -24,7 +24,7 @@ class MetaModelUML(MetaModel):
     def __init__(self, neo4j_configuration: Neo4jConfiguration = None,
                  num_samples: List[int] = None) -> None:
         super().__init__()
-        self.neo4j_configuration: Neo4jConfiguration = neo4j_configuration
+        self.neo4j_configuration: Union[None, Neo4jConfiguration] = neo4j_configuration
 
         # Graph Slicing Configuration:
         if num_samples:
@@ -43,7 +43,7 @@ class MetaModelUML(MetaModel):
 
         return self.node_self_embedding
 
-    def get_graph(self) -> Graph:
+    def get_graph(self) -> Union[None, Graph]:
         if self.neo4j_configuration:
             return Graph(host=self.neo4j_configuration.neo4j_host, port=self.neo4j_configuration.neo4j_port,
                          user=self.neo4j_configuration.neo4j_user, password=self.neo4j_configuration.neo4j_password)
@@ -85,6 +85,68 @@ class MetaModelUML(MetaModel):
             # "LiteralUnlimitedNatural",
         ]
         return model_meta_type_labels
+    
+    def get_signature(self, node) -> List[str]:
+        signature: List[str] = []
+        type: str = list(node.labels)[0]
+        signature.append(type)
+        
+        # Class, Interface, Operation, Property
+        if type in ["Class", "Interface", "Operation", "Property"]:
+            signature.append(node['visibility'])
+        
+        # Class, Interface, Operation
+        if type in ["Class", "Interface", "Operation"]:
+            if node['isAbstract']:
+                signature.append("abstract")
+            
+            if node['isFinalSpecialization']:
+                signature.append("final")
+                signature.append("specialization")
+        
+        # Operation, Property 
+        if type in ["Operation", "Property"]:
+            if node['isStatic']:
+                signature.append("static")
+            
+        # Parameter:
+        if type == "Parameter":
+            if node['isException']:
+                signature.append("exception")
+        
+            signature.append(node['direction'])
+            
+        # Parameter, Property
+        if type in ["Parameter", "Property"]:
+            
+            # TODO: Make the queries more efficient.
+            
+            # Kind:
+            cypher_str_command = 'MATCH (n:Parameter)-[:upperValue]->(m) WHERE ID(n)=' + str(node.identity) + ' RETURN m.value'
+            upper_value_node = self.get_graph().run(cypher=cypher_str_command).to_table()  # type: ignore
+            
+            if upper_value_node:
+                if upper_value_node[0][0] == -1:
+                    if node['isOrdered'] and node['isUnique']:
+                        signature.append("ordered")
+                        signature.append("set")
+                    elif not node['isOrdered'] and node['isUnique']:
+                        signature.append("set")
+                    elif not node['isOrdered'] and not node['isUnique']:
+                        signature.append("bag")
+                    elif node['isOrdered'] and not node['isUnique']:
+                        signature.append("sequence")
+                        signature.append("list")
+                        signature.append("array")
+                        
+            # Type:
+            cypher_str_command = 'MATCH (n:Parameter)-[:type]->(m) WHERE ID(n)=' + str(node.identity) + ' RETURN m.name'
+            type_node = self.get_graph().run(cypher=cypher_str_command).to_table()  # type: ignore
+            
+            if type_node:
+                signature.append(type_node[0][0])
+            
+        return signature
 
     # Specifies all meta types that will be considered as bug locations.
     def get_bug_location_types(self) -> Set[str]:

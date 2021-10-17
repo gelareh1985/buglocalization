@@ -4,26 +4,28 @@
 
 from __future__ import annotations
 
-import os.path
 import pickle
 from os import path
-from typing import Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple, Union
 
 import numpy as np
+import pandas as pd
 from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
-from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from buglocalization.metamodel.meta_model import MetaModel
+from buglocalization.metamodel.meta_model_uml import MetaModelUML
 from buglocalization.textembedding.text_utils import text_to_words
 from buglocalization.textembedding.word_to_vector_dictionary import \
     WordToVectorDictionary
 from nltk.corpus import stopwords as nltk_stopwords
-from py2neo import Graph
 
 
 def compute_node_self_embedding():
-    number_of_words = 400  # Limit of words per embedding
-    node_self_embedding_dictionary_path = 'D:/evaluation/eclipse.pde.ui/node_self_embedding.pkl'
-    missing_words_translation_dictionary_path = 'D:/evaluation/eclipse.pde.ui/node_self_embedding_resolved_missing_words.pkl'
+    number_of_words: int = -1  # Limit of words per embedding, or -1 to turn off
+    average_word_embedding: bool = False  # True: Average Sum Of Word Embedding, False: Sum Of Word Embedding
+    node_signature: bool = True  # Compute node signature based on type
+    
+    node_self_embedding_dictionary_path: str = 'D:/evaluation/eclipse.pde.ui/node_self_embedding.pkl'
+    missing_words_translation_dictionary_path: str = 'D:/evaluation/eclipse.pde.ui/node_self_embedding_resolved_missing_words.pkl'
 
     # Database connection:
     neo4j_configuration = Neo4jConfiguration(
@@ -36,22 +38,27 @@ def compute_node_self_embedding():
     # Model configuration:
     metamodel = MetaModelUML(neo4j_configuration=neo4j_configuration)
 
-    NodeSelfEmbeddingWordRanking(number_of_words, metamodel,
+    NodeSelfEmbeddingWordRanking(number_of_words, average_word_embedding, 
+                                 node_signature, metamodel,
                                  node_self_embedding_dictionary_path,
                                  missing_words_translation_dictionary_path)
 
 
 class NodeSelfEmbeddingWordRanking:
 
-    def __init__(self, number_of_words: int, metamodel: MetaModel,
+    def __init__(self, number_of_words: int, average_word_embedding: bool, 
+                 node_signature: bool, metamodel: MetaModel,
                  node_self_embedding_dictionary_path: str,
                  missing_words_translation_dictionary_path: str):
 
-        self.unescape = True
+        self.unescape: bool = True
+        self.average_word_embedding: bool = average_word_embedding
+        self.node_signature: bool = node_signature
 
-        self.named_element_dictionary: Dict[str, int] = None
-        self.common_words_dictionary: Dict[str, int] = None
-        self.number_of_words = number_of_words  # Limit of words per embedding
+        self.named_element_dictionary: Dict[str, int] = {}
+        self.common_words_dictionary: Dict[str, int] = {}
+        self.number_of_words: int = number_of_words  # Limit of words per embedding
+        self.truncated_words: List[int] = []
 
         # Metamodel configuration:
         self.metamodel = metamodel
@@ -62,7 +69,7 @@ class NodeSelfEmbeddingWordRanking:
         self.stopwords = set(nltk_stopwords.words('english'))
 
         # Handle words missing in embedding dictionary:
-        self.missing_words = set()
+        self.missing_words: Set[str] = set()
         self.missing_words_translation_dictionary = {}
         self.missing_words_translation_dictionary_path = missing_words_translation_dictionary_path
 
@@ -84,14 +91,23 @@ class NodeSelfEmbeddingWordRanking:
             self.save_file(self.missing_words_translation_dictionary_path, self.missing_words_translation_dictionary)
             print("Missing Resolved Words:", self.missing_words_translation_dictionary)
 
+        # Compute word ranking:
+        if self.number_of_words != -1:
+            self.named_element_dictionary, self.common_words_dictionary = self.compute_dictionaries()
+        
         # Compute and save node self embedding:
-        self.named_element_dictionary, self.common_words_dictionary = self.compute_dictionaries()
         self.node_self_embedding_dictionary: Dict[int, np.ndarray] = self.compute_node_self_embedding_dictionary()
 
         self.save_file(self.node_self_embedding_dictionary_path, self.node_self_embedding_dictionary)
 
         print("Missing Words:", len(self.missing_words))
         print(self.missing_words)
+
+        truncated_words_df = pd.DataFrame(self.truncated_words, columns=['truncated_words'])
+        print("Truncated Words:", truncated_words_df.describe())
+
+        if self.truncated_words:
+            truncated_words_df.boxplot(column=['truncated_words'], showfliers=False)
 
         print("Node Embedding Finished!")
 
@@ -106,9 +122,15 @@ class NodeSelfEmbeddingWordRanking:
             metamodel_nodes = self.metamodel.get_graph().run(cypher=cypher_str_command).to_table()
 
             print("Compute Node Self Embedding:", len(metamodel_nodes), "nodes of type", metatype)
+            counter = 0
 
             for node in metamodel_nodes:
-                nodeID = node[0].identity
+                counter += 1
+                
+                if counter % 100 == 0:
+                    print("> Progress:", counter, end='\r')
+                
+                nodeID: int = node[0].identity
                 words = []
 
                 for property in properties:
@@ -117,15 +139,22 @@ class NodeSelfEmbeddingWordRanking:
 
                 # NOTE: For Summe Of Word Embeddings the ordering of words does not matter!
                 # Truncate list of words if the number of words is larger then the specified threshold.
-                # if len(words) > number_of_words:
+                if self.number_of_words != -1 and len(words) > self.number_of_words:
                     ranked_words = self.get_top_ranked_words(words)
                     # print("Selected", len(ranked_words), "of", len(words), "words.")
-                # else:
-                    #ranked_words = words
+                else:
+                    ranked_words = words
+                
+                if self.node_signature:
+                    signature_words = self.metamodel.get_signature(node[0])
+                    
+                    for signature_word in signature_words:
+                        ranked_words = ranked_words + text_to_words(signature_word)
 
                 node_self_embedding_vector = self.sum_of_word_embeddings(ranked_words)
                 node_self_embedding_dictionary[nodeID] = node_self_embedding_vector
 
+        print("\n")
         return node_self_embedding_dictionary
 
     def get_top_ranked_words(self, words: List[str]):
@@ -156,23 +185,24 @@ class NodeSelfEmbeddingWordRanking:
         # Compute truncated, ranked list of words:
         ranked_words = ranked_named_elements + ranked_common_words
 
-        # if len(ranked_words) > number_of_words:
-        #     print("Truncated words:", len(ranked_words) - number_of_words)
+        if len(ranked_words) > self.number_of_words:
+            # print("Truncated words:", len(ranked_words) - number_of_words)
+            self.truncated_words.append(len(ranked_words) - self.number_of_words)
 
         ranked_words = ranked_words[:self.number_of_words]  # truncating
         ranked_words = [ranked_word[1] for ranked_word in ranked_words]  # mapping to words
 
         return ranked_words
 
-    def sum_of_word_embeddings(self, words: List[str]):
+    def sum_of_word_embeddings(self, words: List[str]) -> np.ndarray:
 
         # Encode words:
-        feature_vector = np.zeros(self.dictionary_words_length, dtype=np.float32)
+        feature_vectors = []
 
         for word in words:
             try:
                 word_embedding = self.embedding_dictionary[word]
-                feature_vector = np.sum((feature_vector, word_embedding), axis=0)
+                feature_vectors.append(word_embedding)
             except KeyError:
                 # Check for resolution:
                 if word in self.missing_words_translation_dictionary:
@@ -181,7 +211,7 @@ class NodeSelfEmbeddingWordRanking:
                         if len(resolved_word) > 1:
                             try:
                                 word_embedding = self.embedding_dictionary[resolved_word]
-                                feature_vector = np.sum((feature_vector, word_embedding), axis=0)
+                                feature_vectors.append(word_embedding)
                             except KeyError:
                                 # should actually not happen
                                 self.missing_words.add(word)
@@ -189,7 +219,16 @@ class NodeSelfEmbeddingWordRanking:
                     # ignore...how to handle unseen words...?
                     self.missing_words.add(word)
 
-        return feature_vector
+        if feature_vectors:
+            if self.average_word_embedding:
+                # Average word embedding:
+                return np.mean(feature_vectors, axis=0)
+            else:
+                # Sum of word embeddings:
+                return np.sum(feature_vectors, axis=0)  # type: ignore
+        else:
+            # "Empty" embedding:
+            return np.zeros(self.dictionary_words_length, dtype=np.float32)
 
     def compute_dictionaries(self) -> Tuple[Dict[str, int], Dict[str, int]]:
 
@@ -275,7 +314,7 @@ class NodeSelfEmbeddingWordRanking:
                 if max_compound_word:
                     compound_words_forward.append(max_compound_word)
                     compound_word_offset_forward = max_compound_word_ends
-                    ranking_forward += self.embedding_dictionary.vocab[max_compound_word].index
+                    ranking_forward += self.embedding_dictionary.vocab[max_compound_word].index  # type: ignore
                 else:
                     break
 
@@ -300,7 +339,7 @@ class NodeSelfEmbeddingWordRanking:
                 if max_compound_word_reversed:
                     compound_words_reversed.append(max_compound_word_reversed)
                     compound_word_offset_reversed = max_compound_word_starts
-                    ranking_reversed += self.embedding_dictionary.vocab[max_compound_word_reversed].index
+                    ranking_reversed += self.embedding_dictionary.vocab[max_compound_word_reversed].index  # type: ignore
                 else:
                     break
 
@@ -338,7 +377,7 @@ class NodeSelfEmbeddingWordRanking:
 
         return resolved_words
 
-    def resolve_missing_compound_word(self, missing_word: str, compound_offset: int = -1, reversed: bool = False) -> Tuple[str, int]:
+    def resolve_missing_compound_word(self, missing_word: str, compound_offset: int = -1, reversed: bool = False) -> Tuple[Union[None, str], int]:
         max_compound_word = None
         max_compound_word_offset = 0
 
@@ -355,7 +394,7 @@ class NodeSelfEmbeddingWordRanking:
 
         return max_compound_word, max_compound_word_offset
 
-    def resolve_missing_compound_word_reversed(self, missing_word: str, compound_offset: int = -1) -> Tuple[str, int]:
+    def resolve_missing_compound_word_reversed(self, missing_word: str, compound_offset: int = -1) -> Tuple[Union[None, str], int]:
         max_compound_word = None
         max_compound_word_offset = 0
 
@@ -372,12 +411,12 @@ class NodeSelfEmbeddingWordRanking:
 
         return max_compound_word, max_compound_word_offset
 
-    def save_file(self, file_name, sample_list):
+    def save_file(self, file_name: str, sample_list: Any):
         open_file = open(file_name, "wb")
         pickle.dump(sample_list, open_file)
         open_file.close()
 
-    def load_file(self, file_name):
+    def load_file(self, file_name: str):
         open_file = open(file_name, "rb")
         loaded_list = pickle.load(open_file)
         open_file.close()

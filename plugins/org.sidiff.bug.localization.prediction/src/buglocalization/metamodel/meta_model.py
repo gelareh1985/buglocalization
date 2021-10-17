@@ -44,6 +44,15 @@ class MetaModel:
             NodeSelfEmbedding: Get the numeric feature vectors for specified nodes.
         """
         raise NotImplementedError()
+    
+    def get_signature(self, node) -> List[str]:
+        """
+        Args:
+            node: A database node.
+
+        Returns:
+            List[str]: A list of additional words describing the node.
+        """
 
     def get_bug_report_node_types(self) -> List[str]:
         """

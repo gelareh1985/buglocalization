@@ -35,7 +35,7 @@ class DiagramRanking:
         self.tbl_info_file: str = tbl_info_file
         self.tbl_info: pd.DataFrame = tbl_info
         self.tbl_predicted_file: str = tbl_predicted_file
-        self.tbl_predicted_aggregation: pd.DataFram = tbl_predicted_aggregation
+        self.tbl_predicted_aggregation: pd.DataFrame = tbl_predicted_aggregation
         self.diagram_ranking: List[List[int]] = diagram_ranking
 
         relevant_locations = eval_util.get_relevant_locations(tbl_predicted_aggregation.reset_index(drop=True))

@@ -181,7 +181,7 @@ class BugLocalizationAIModelBuilder:
     def restore_model(self, model_dir: str) -> keras.Model:
         print('Restoring model from', model_dir)
         # https://stellargraph.readthedocs.io/en/stable/api.html -> stellargraph.custom_keras_layers= {...}
-        return keras.models.load_model(model_dir, custom_objects=sg.custom_keras_layers)
+        return keras.models.load_model(model_dir, custom_objects=sg.custom_keras_layers)  # type: ignore
 
 
 class BugLocalizationAIModelTrainer:
