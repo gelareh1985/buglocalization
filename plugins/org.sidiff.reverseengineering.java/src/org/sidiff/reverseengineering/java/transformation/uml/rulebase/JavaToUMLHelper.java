@@ -1,6 +1,7 @@
 package org.sidiff.reverseengineering.java.transformation.uml.rulebase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -56,6 +57,15 @@ public class JavaToUMLHelper {
 	protected JavaToUMLRules rules;
 
 	protected TransformationSettingsUML settings;
+	
+	private String[] javaKeyWords = { "abstract", "continue", "for", "new", "switch", "assert", "default", "goto",
+			"package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements",
+			"protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
+			"transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void",
+			"class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while" };
+	
+	private String javaKeyWordsRegex = "\\b(" + String.join("|", javaKeyWords) + ")\\b";
+
 	
 	@Inject
 	public JavaToUMLHelper(TransformationSettingsUML settings) {
@@ -311,5 +321,21 @@ public class JavaToUMLHelper {
 			}
 		}
 		return null;
+	}
+	
+	public String[] createBagOfWords(String text) {
+		text = text.replaceAll("[^A-Za-z]", " ");
+		text = text.replaceAll(javaKeyWordsRegex, "");
+		Set<String> words = new HashSet<>();
+		
+		for (String word : text.split(" ")) {
+			words.add(word);
+		}
+		
+		words.remove("");
+		String[] sortedWorts = words.toArray(new String[words.size()]);
+		Arrays.sort(sortedWorts);
+		
+		return sortedWorts;
 	}
 }

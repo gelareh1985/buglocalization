@@ -7,6 +7,7 @@ import org.sidiff.reverseengineering.java.transformation.uml.JavaASTTransformati
 import org.sidiff.reverseengineering.java.transformation.uml.rules.AnnotationTypeMemberToOperation;
 import org.sidiff.reverseengineering.java.transformation.uml.rules.AnnotationTypeToInterface;
 import org.sidiff.reverseengineering.java.transformation.uml.rules.AnnotationTypeToInterfaceInner;
+import org.sidiff.reverseengineering.java.transformation.uml.rules.BodyBlockToComment;
 import org.sidiff.reverseengineering.java.transformation.uml.rules.BodyBlockToFunctionBehavior;
 import org.sidiff.reverseengineering.java.transformation.uml.rules.EnumConstantToEnumerationLiteral;
 import org.sidiff.reverseengineering.java.transformation.uml.rules.EnumToEnumeration;
@@ -29,6 +30,21 @@ public class JavaToUMLRules {
 	
 	public JavaToUMLHelper javaToUMLHelper;
 	
+	/**
+	 * Compute an activity diagram from the method invocations.
+	 */
+	public boolean createActivityDiagram = false;
+	
+	/**
+	 * Create Bag of Words representing the operation body.
+	 */
+	public boolean createOperationBodyComment = true;
+	
+	/**
+	 * Create Bag of Words representing the (non-primitive) property assignments.
+	 */
+	public boolean createPropertyAssignmentComment = true;
+	
 	// Class Diagram:
 	
 	public EnumToEnumeration enumToEnumeration;
@@ -48,6 +64,8 @@ public class JavaToUMLRules {
 	public FieldToProperty fieldToProperty;
 	
 	public MethodToOperation methodToOperation;
+	
+	public BodyBlockToComment bodyBlockToComment;
 	
 	public VariableToParameter variableToParameter;
 	
@@ -80,6 +98,7 @@ public class JavaToUMLRules {
 		this.typeToInterfaceInner = add(new TypeToInterfaceInner());
 		this.fieldToProperty = add(new FieldToProperty());
 		this.methodToOperation = add(new MethodToOperation());
+		this.bodyBlockToComment = add(new BodyBlockToComment());
 		this.variableToParameter = add(new VariableToParameter());
 		this.annotationTypeToInterface = add(new AnnotationTypeToInterface());
 		this.typeToClassWithInteraction = add(new TypeToClassWithInteraction());

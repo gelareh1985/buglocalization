@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FunctionBehavior;
@@ -236,10 +237,28 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 		return true;
 	}
 	
+	private boolean isTopLevelType(TypeDeclaration typeDeclaration) {
+		return typeDeclaration.isPackageMemberTypeDeclaration();
+	}
+	
+	private boolean isInnerType(TypeDeclaration typeDeclaration) {
+		return typeDeclaration.getParent() instanceof TypeDeclaration;
+	}
+	
+	private boolean isConsideredType(Object typeDeclaration) {
+		if (typeDeclaration instanceof TypeDeclaration) {
+			// Ignore anonymous inner classes:
+			if (!(typeDeclaration instanceof AnonymousClassDeclaration)) {
+				return isTopLevelType((TypeDeclaration) typeDeclaration) || isInnerType((TypeDeclaration) typeDeclaration);
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration) {
 		if (!linker) {
-			if (typeDeclaration.isPackageMemberTypeDeclaration()) {
+			if (isTopLevelType(typeDeclaration)) {
 				if (typeDeclaration.isInterface()) {
 					rules.typeToInterface.apply(typeDeclaration);
 				} else {
@@ -250,7 +269,7 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 						rules.typeToClassWithInteraction.apply(typeDeclaration);
 					}
 				}
-			} else if (typeDeclaration.getParent() instanceof TypeDeclaration) {
+			} else if (isInnerType(typeDeclaration)) {
 				if (typeDeclaration.isInterface()) {
 					rules.typeToInterfaceInner.apply(typeDeclaration);
 				} else {
@@ -316,11 +335,22 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 					// method body:
 					if (settingsUML.isIncludeMethodBodies() && (umlClassifier instanceof Class)) {
 						Class umlClass = (Class) umlClassifier; // only classes have method bodies...
-						Behavior classBehavior = umlClass.getClassifierBehavior();
-						FunctionBehavior operationBehavior = getModelElement(method.getBody());
 						
-						if ((operationBehavior != null) && (classBehavior != null)) {
-							rules.blockToFunctionBehavior.apply(classBehavior, operationBehavior);
+						if (rules.createActivityDiagram) {
+							Behavior classBehavior = umlClass.getClassifierBehavior();
+							FunctionBehavior operationBehavior = getModelElement(method.getBody());
+							
+							if ((operationBehavior != null) && (classBehavior != null)) {
+								rules.blockToFunctionBehavior.apply(classBehavior, operationBehavior);
+							}
+						}
+						
+						if (rules.createOperationBodyComment) {
+							Comment body = getModelElement(method.getBody());
+							
+							if (body != null) {
+								rules.bodyBlockToComment.apply(umlOperation, body);
+							}
 						}
 					}
 				}
@@ -360,8 +390,7 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 	@Override
 	public boolean visit(FieldDeclaration fieldDeclaration) {
 		
-		// Ignore anonymous inner classes:
-		if (fieldDeclaration.getParent() instanceof AnonymousClassDeclaration) {
+		if (!isConsideredType(fieldDeclaration.getParent())) {
 			return true;
 		}
 		
@@ -398,8 +427,7 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 	@Override
 	public boolean visit(MethodDeclaration methodDeclaration) {
 		
-		// Ignore anonymous inner classes:
-		if (methodDeclaration.getParent() instanceof AnonymousClassDeclaration) {
+		if (!isConsideredType(methodDeclaration.getParent())) {
 			return true;
 		}
 		
@@ -458,18 +486,44 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 			return false;
 		}
 		
-		if (!linker) {
-			if (block.getParent() instanceof MethodDeclaration) {
-				rules.blockToFunctionBehavior.apply(block);
+		if (!isConsideredType(block.getParent().getParent())) {
+			return true;
+		}
+		
+		// Method body to activity diagram:
+		if (rules.createActivityDiagram) {
+			if (!linker) {
+				if (block.getParent() instanceof MethodDeclaration) {
+					rules.blockToFunctionBehavior.apply(block);
+				}
+			} else {
+				FunctionBehavior operationBehavior = getModelElement(block);
+				
+				if (operationBehavior != null) {
+					try {
+						rules.blockToFunctionBehavior.link(block, operationBehavior);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
 			}
-		} else {
-			FunctionBehavior operationBehavior = getModelElement(block);
-			
-			if (operationBehavior != null) {
-				try {
-					rules.blockToFunctionBehavior.link(block, operationBehavior);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+		}
+		
+		// Method body to operation comment:
+		if (rules.createOperationBodyComment) {
+			if (!linker) {
+				if (block.getParent() instanceof MethodDeclaration) {
+					rules.bodyBlockToComment.apply(block);
+				}
+			} else {
+				Comment operationBody = getModelElement(block);
+
+				if (operationBody != null) {
+					try {
+						rules.bodyBlockToComment.link(block, operationBody);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -479,26 +533,28 @@ public class JavaASTTransformationUML extends JavaASTTransformation {
 	
 	@Override
 	public boolean visit(MethodInvocation methodInvocation) {
-		
+
 		// Skip method invocations!
 		if (!settingsUML.isIncludeMethodBodies()) {
 			return false;
 		}
-		
-		if (isInScope(methodInvocation)) {
-			if (!linker) {
-				rules.methodInvocationToCallOperationAction.apply(methodInvocation);
-			} else {
-				CallOperationAction callOperation = getModelElement(methodInvocation);
-				FunctionBehavior operationBehavior = getParentModelElement(methodInvocation, UMLPackage.eINSTANCE.getFunctionBehavior());
-				
-				if ((operationBehavior != null) && (callOperation != null)) {
-					rules.methodInvocationToCallOperationAction.apply(operationBehavior, callOperation);
-					
-					try {
-						rules.methodInvocationToCallOperationAction.link(methodInvocation, callOperation);
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
+
+		if (rules.createActivityDiagram) {
+			if (isInScope(methodInvocation)) {
+				if (!linker) {
+					rules.methodInvocationToCallOperationAction.apply(methodInvocation);
+				} else {
+					CallOperationAction callOperation = getModelElement(methodInvocation);
+					FunctionBehavior operationBehavior = getParentModelElement(methodInvocation, UMLPackage.eINSTANCE.getFunctionBehavior());
+
+					if ((operationBehavior != null) && (callOperation != null)) {
+						rules.methodInvocationToCallOperationAction.apply(operationBehavior, callOperation);
+
+						try {
+							rules.methodInvocationToCallOperationAction.link(methodInvocation, callOperation);
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}

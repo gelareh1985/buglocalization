@@ -66,8 +66,9 @@ public class TestDriverApplication extends DataSetRetrievalApplication {
 		
 		// System model:
 		{
+			boolean includeMethodBodies = false;
 			SystemModelRetrievalProvider systemModelRetrievalProvider = new SystemModelRetrievalProvider(
-					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter());
+					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter(), includeMethodBodies);
 			{
 				filterProjects(systemModelRetrievalProvider, FILTER_PROJECTS);
 			}

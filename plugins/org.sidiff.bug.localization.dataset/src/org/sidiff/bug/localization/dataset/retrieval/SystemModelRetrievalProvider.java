@@ -33,8 +33,9 @@ public class SystemModelRetrievalProvider extends WorkspaceHistoryRetrievalProvi
 	 */
 	private boolean includeMethodBodies = false;
 	
-	public SystemModelRetrievalProvider(Path codeRepositoryPath, List<String> projectNameFilter, String projectPathFilter) {
+	public SystemModelRetrievalProvider(Path codeRepositoryPath, List<String> projectNameFilter, String projectPathFilter,  boolean includeMethodBodies) {
 		super(codeRepositoryPath);
+		this.includeMethodBodies = includeMethodBodies;
 		
 		if ((projectNameFilter != null) && (projectPathFilter != null)) {
 			this.projectFilter =  () -> new ProjectPathFilter(new ProjectNameFilter(new JavaProjectFilter(), projectNameFilter), projectPathFilter);

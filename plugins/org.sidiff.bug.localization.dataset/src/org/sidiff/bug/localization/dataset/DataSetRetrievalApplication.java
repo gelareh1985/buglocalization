@@ -141,9 +141,10 @@ public class DataSetRetrievalApplication implements IApplication {
 		if (retrieveSystemModelHistory) {
 			String datasetFileName = dataset.getName() + "_dataset_systemmodel_" + LocalDate.now() + ".json";
 			datasetPath = datasetPath.getParent().resolve(datasetFileName);
+			boolean includeMethodBodies = false;
 			
 			SystemModelRetrievalProvider systemModelProvider = new SystemModelRetrievalProvider(
-					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter());
+					codeRepositoryPath, dataset.getProjectNameFilter(), dataset.getProjectPathFilter(), includeMethodBodies);
 			SystemModelRetrieval systemModelRetrieval = new SystemModelRetrieval(systemModelProvider, datasetPath, dataset, dataSetTrace);
 			
 			try {
