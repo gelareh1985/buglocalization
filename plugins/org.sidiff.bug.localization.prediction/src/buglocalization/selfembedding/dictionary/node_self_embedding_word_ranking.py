@@ -22,7 +22,7 @@ from nltk.corpus import stopwords as nltk_stopwords
 def compute_node_self_embedding():
     number_of_words: int = -1  # Limit of words per embedding, or -1 to turn off
     average_word_embedding: bool = False  # True: Average Sum Of Word Embedding, False: Sum Of Word Embedding
-    node_signature: bool = True  # Compute node signature based on type
+    node_signature: bool = False  # Compute node signature based on type
     
     node_self_embedding_dictionary_path: str = 'D:/evaluation/eclipse.pde.ui/node_self_embedding.pkl'
     missing_words_translation_dictionary_path: str = 'D:/evaluation/eclipse.pde.ui/node_self_embedding_resolved_missing_words.pkl'
@@ -154,7 +154,7 @@ class NodeSelfEmbeddingWordRanking:
                 node_self_embedding_vector = self.sum_of_word_embeddings(ranked_words)
                 node_self_embedding_dictionary[nodeID] = node_self_embedding_vector
 
-        print("\n")
+            print("> Progress:", counter)
         return node_self_embedding_dictionary
 
     def get_top_ranked_words(self, words: List[str]):
