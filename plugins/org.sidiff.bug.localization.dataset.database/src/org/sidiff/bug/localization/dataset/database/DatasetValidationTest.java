@@ -1,9 +1,12 @@
 package org.sidiff.bug.localization.dataset.database;
 
+import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.neo4j.driver.Record;
 import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction;
 
 public class DatasetValidationTest {
@@ -11,7 +14,7 @@ public class DatasetValidationTest {
 	private static boolean testLongRunning = true;
 
 	private static boolean applyQuickFixes = true;
-	private static Object[][] applyQuickFixes_createPackages = {}; // {{"org.eclipse.pde.ui/org/eclipse/pde/internal/ui/ant", 22}};
+	private static Object[][] applyQuickFixes_createPackages = {{"org.eclipse.pde.ui/org/eclipse/pde/internal/ui/ant", 22}}; // {{"org.eclipse.pde.ui/org/eclipse/pde/internal/ui/ant", 22}};
 	
 	private static String databaseConnection = "bolt://localhost:7687";
 	private static String databaseUser = "neo4j";
@@ -115,7 +118,22 @@ public class DatasetValidationTest {
     
     @Test
     public void missingContainer() {
-    	Assert.assertEquals(0, transaction.execute("MATCH (o) WHERE NOT (o)<-[{__containment__:TRUE}]-() AND NOT (o)<-[:model]-() AND NOT LAST(LABELS(o)) = 'SystemModel' Return o").list().size());
+    	List<Record> result = transaction.execute("MATCH (o) WHERE NOT (o)<-[{__containment__:TRUE}]-() AND NOT (o)<-[:model]-() AND NOT LAST(LABELS(o)) = 'SystemModel' Return o").list();
+    	
+    	if (result.size() > 0) {
+    		System.out.println("Missing Containers:");
+    		System.out.println("  see applyQuickFixes_createPackages");
+    		
+    		for (Record record : result) {
+    			System.out.println();
+    			System.out.println("__model__element__id__:" + record.get(0).get("__model__element__id__"));
+    			System.out.println("__initial__version__:" + record.get(0).get("__initial__version__"));
+    			System.out.println();
+			}
+    		
+    	}
+    	
+    	Assert.assertEquals(0, result.size());
     }
     
     @Test
