@@ -61,9 +61,9 @@ training_configuration = TrainigConfiguration(
     trainig_batch_size=20,
     dataset_split_fraction=-1,  # 2 -> 50/50 training test data
     dataset_shuffle=True,
-    dataset_generator_workers=1, # tested with: 4
-    dataset_multiprocessing=False, # tested with: True
-    dataset_sample_prefetch_count=8,
+    dataset_generator_workers=8,  # tested with: 4
+    dataset_multiprocessing=False,  # tested with: True, False = Threading
+    dataset_sample_prefetch_count=20,
     graphsage_num_samples=[20, 10],
     graphsage_layer_sizes=[300, 300],
     graphsage_dropout=0.0,

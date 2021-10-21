@@ -59,11 +59,13 @@ prediction_configuration = BugLocalizationPredictionConfiguration(
     num_samples=training_configuration.graphsage_num_samples,  # must be consistent with the trained model!
     batch_size=100,
 
-    prediction_worker=2,
+    # Number of 'evaluation processes' used to process the test data set:
+    prediction_worker=0,  # 0 = off: main process #0 worker #1,...
 
-    sample_generator_workers=4,
+    # Multi-process/Threading setting per 'evaluation process'.
+    sample_generator_workers=8,
     sample_generator_workers_multiprocessing=False,
-    sample_max_queue_size=8,
+    sample_max_queue_size=20,
     
     # For debugging:
     log_level=2  # 0-100
