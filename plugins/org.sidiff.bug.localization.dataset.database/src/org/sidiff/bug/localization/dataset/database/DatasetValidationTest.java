@@ -1,6 +1,9 @@
 package org.sidiff.bug.localization.dataset.database;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -32,6 +35,8 @@ public class DatasetValidationTest {
 		transaction.commit();
 		
 		// Fix: missingContainer -> add reference to package:
+		computeMissingPackages();
+		
 		for (Object[] createPackage : applyQuickFixes_createPackages) {
 			applyQuickFixCreatePackage((String) createPackage[0], (int) createPackage[1]);
 		}
@@ -54,6 +59,42 @@ public class DatasetValidationTest {
 		transaction.commit();
 	}
 	
+	public static void computeMissingPackages() {
+    	String testQuery = "MATCH (o) WHERE NOT (o)<-[{__containment__:TRUE}]-() AND NOT (o)<-[:model]-() AND NOT LAST(LABELS(o)) = 'SystemModel' Return o";
+    	List<Record> result = transaction.execute(testQuery).list();
+    	
+    	if (result.size() > 0) {
+    		Map<String, Integer> missingPackages = new HashMap<>();
+    		
+    		for (Record record : result) {
+    			String modelElement = record.get(0).get("__model__element__id__").asString();
+    			String packageElement = modelElement.substring(0, modelElement.lastIndexOf("/"));
+    			packageElement = packageElement.replaceFirst("/L", "/");
+    			
+    			Integer packageVersion = record.get(0).get("__initial__version__").asInt();
+    			
+    			if (missingPackages.containsKey(packageElement)) {
+    				if (missingPackages.get(packageElement) > packageVersion) {
+    					missingPackages.put(packageElement, packageVersion);
+    				}
+    			} else {
+    				missingPackages.put(packageElement, packageVersion);
+    			}
+    			
+			}
+    		
+    		applyQuickFixes_createPackages = new Object[missingPackages.size()][2];
+    		int index = 0;
+
+    		for (Entry<String, Integer> missingPackage : missingPackages.entrySet()) {
+    			applyQuickFixes_createPackages[index] = new Object[2];
+    			applyQuickFixes_createPackages[index][0] = missingPackage.getKey();
+    			applyQuickFixes_createPackages[index][1] = missingPackage.getValue();
+    			++index;
+    		}
+    	}
+	}
+	
 	public static void applyQuickFixCreatePackage(String modelElementID, int initialVersion) {
 		
 		// Does package already exists?
@@ -68,7 +109,18 @@ public class DatasetValidationTest {
 			transaction.execute(quickfixQuery_createPackage);
 			transaction.commit();
 			
+			System.err.println();
 			System.err.println("Package created: " + modelElementID);
+			System.err.println();
+		} else {
+			String quickfixQuery_setPackageVersion = "MATCH (p:Package {__model__element__id__:'" + modelElementID + "'}) WHERE NOT EXISTS(p.__last__version__) SET p.__initial__version__ = " + initialVersion + " RETURN p";
+			
+			transaction.execute(quickfixQuery_setPackageVersion);
+			transaction.commit();
+			
+			System.err.println();
+			System.err.println("Package version set: " + modelElementID + ", " + initialVersion);
+			System.err.println();
 		}
 	}
 	
@@ -118,19 +170,18 @@ public class DatasetValidationTest {
     
     @Test
     public void missingContainer() {
-    	List<Record> result = transaction.execute("MATCH (o) WHERE NOT (o)<-[{__containment__:TRUE}]-() AND NOT (o)<-[:model]-() AND NOT LAST(LABELS(o)) = 'SystemModel' Return o").list();
+    	String testQuery = "MATCH (o) WHERE NOT (o)<-[{__containment__:TRUE}]-() AND NOT (o)<-[:model]-() AND NOT LAST(LABELS(o)) = 'SystemModel' Return o";
+    	List<Record> result = transaction.execute(testQuery).list();
     	
     	if (result.size() > 0) {
     		System.out.println("Missing Containers:");
-    		System.out.println("  see applyQuickFixes_createPackages");
     		
     		for (Record record : result) {
     			System.out.println();
     			System.out.println("__model__element__id__:" + record.get(0).get("__model__element__id__"));
-    			System.out.println("__initial__version__:" + record.get(0).get("__initial__version__"));
-    			System.out.println();
+				System.out.println("__initial__version__:" + record.get(0).get("__initial__version__"));
+				System.out.println();
 			}
-    		
     	}
     	
     	Assert.assertEquals(0, result.size());
