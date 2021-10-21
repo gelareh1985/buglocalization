@@ -11,10 +11,10 @@ import org.sidiff.bug.localization.dataset.database.transaction.Neo4jTransaction
 
 public class DatasetValidationTest {
 	
-	private static boolean testLongRunning = true;
+	private static boolean testLongRunning = false;
 
 	private static boolean applyQuickFixes = true;
-	private static Object[][] applyQuickFixes_createPackages = {{"org.eclipse.pde.ui/org/eclipse/pde/internal/ui/ant", 22}}; // {{"org.eclipse.pde.ui/org/eclipse/pde/internal/ui/ant", 22}};
+	private static Object[][] applyQuickFixes_createPackages = {}; // {{"org.eclipse.pde.ui/org/eclipse/pde/internal/ui/ant", 22}};
 	
 	private static String databaseConnection = "bolt://localhost:7687";
 	private static String databaseUser = "neo4j";
