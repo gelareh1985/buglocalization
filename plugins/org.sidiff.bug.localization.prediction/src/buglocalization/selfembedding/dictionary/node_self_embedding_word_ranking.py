@@ -24,8 +24,8 @@ def compute_node_self_embedding():
     average_word_embedding: bool = False  # True: Average Sum Of Word Embedding, False: Sum Of Word Embedding
     node_signature: bool = False  # Compute node signature based on type
     
-    node_self_embedding_dictionary_path: str = 'D:/evaluation/eclipse.pde.ui/node_self_embedding.pkl'
-    missing_words_translation_dictionary_path: str = 'D:/evaluation/eclipse.pde.ui/node_self_embedding_resolved_missing_words.pkl'
+    node_self_embedding_dictionary_path: str = 'D:/evaluation/node_self_embedding.pkl'
+    missing_words_translation_dictionary_path: str = 'D:/evaluation/node_self_embedding_resolved_missing_words.pkl'
 
     # Database connection:
     neo4j_configuration = Neo4jConfiguration(
