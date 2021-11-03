@@ -6,6 +6,7 @@ import json
 from typing import List, cast
 
 import tensorflow as tf
+from stellargraph.layer.graphsage import AttentionalAggregator
 from tensorflow.keras.utils import plot_model
 
 from buglocalization.dataset.neo4j_data_set import Neo4jConfiguration
@@ -18,10 +19,10 @@ from buglocalization.predictionmodel.bug_localization_model_training import (
     BugLocalizationAIModelBuilder, BugLocalizationAIModelTrainer,
     DataSetSplitter, TrainigConfiguration)
 from buglocalization.selfembedding.node_self_embedding import NodeSelfEmbedding
-from buglocalization.selfembedding.node_self_embedding_sowe import \
-    NodeSelfEmbeddingSOWE
 from buglocalization.selfembedding.node_self_embedding_dictionary import \
     NodeSelfEmbeddingDictionary
+from buglocalization.selfembedding.node_self_embedding_sowe import \
+    NodeSelfEmbeddingSOWE
 from buglocalization.textembedding.word_to_vector_dictionary import \
     WordToVectorDictionary
 from buglocalization.utils import common_utils as utils
@@ -66,6 +67,7 @@ training_configuration = TrainigConfiguration(
     dataset_sample_prefetch_count=20,
     graphsage_num_samples=[20, 10],
     graphsage_layer_sizes=[300, 300],
+    graphsage_aggregator=AttentionalAggregator,  # MeanAggregator, MaxPoolingAggregator, MeanPoolingAggregator, AttentionalAggregator
     graphsage_dropout=0.0,
     graphsage_normalize="l2",
     log_level=2
@@ -96,7 +98,7 @@ training_configuration.meta_model = meta_model
 # # Dictionary:
 node_self_embedding: NodeSelfEmbedding = NodeSelfEmbeddingDictionary(
     meta_model=training_configuration.meta_model,
-    self_embedding_dictionary_path=r'C:\Users\manue\git\buglocalization\plugins\org.sidiff.bug.localization.prediction\data\data_matrix.pkl',
+    self_embedding_dictionary_path=r'D:\evaluation\org.eclipse.gmf-runtime\org.eclipse.gmf-runtime_uml.class_neo4j_embedding_sowe_2021-07-28\node_self_embedding.pkl',
     dictionary_words_length=300
 )
 meta_model.node_self_embedding = node_self_embedding

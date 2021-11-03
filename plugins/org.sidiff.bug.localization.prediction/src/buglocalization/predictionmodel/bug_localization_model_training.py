@@ -6,6 +6,7 @@ from time import time
 from typing import List, Tuple
 
 import stellargraph as sg
+from stellargraph.layer.graphsage import AttentionalAggregator, GraphSAGEAggregator
 from buglocalization.dataset.data_set import IBugSample, IDataSet
 from buglocalization.dataset.sample_generator import IBugSampleGenerator
 from buglocalization.metamodel.meta_model import MetaModel
@@ -38,6 +39,7 @@ class TrainigConfiguration:
                  dataset_sample_prefetch_count: int = 8,
                  graphsage_num_samples: List[int] = [20, 10],
                  graphsage_layer_sizes: List[int] = [300, 300],
+                 graphsage_aggregator: GraphSAGEAggregator = AttentionalAggregator,
                  graphsage_dropout: float = 0.0,
                  graphsage_normalize: str = "l2",
                  log_level: int = 2) -> None:
@@ -65,6 +67,7 @@ class TrainigConfiguration:
         # GraphSAGE Settings:
         self.graphsage_num_samples = graphsage_num_samples  # List of number of neighbor node samples per GraphSAGE layer (hop) to take.
         self.graphsage_layer_sizes = graphsage_layer_sizes  # Size of GraphSAGE hidden layers
+        self.graphsage_aggregator = graphsage_aggregator  # Aggregator type
 
         assert len(self.graphsage_num_samples) == len(self.graphsage_layer_sizes), "Inconsistent GraphSAGE layer configuration!"
 
@@ -83,6 +86,9 @@ class TrainigConfiguration:
 
         if 'meta_model' in dump_state:
             dump_state['meta_model'] = self.meta_model.dump()
+        
+        if 'graphsage_aggregator' in dump_state:
+            dump_state['graphsage_aggregator'] = self.graphsage_aggregator.__class__.__name__
 
         return dump_state
 
@@ -144,14 +150,32 @@ class BugLocalizationAIModelBuilder:
                      layer_sizes: List[int],
                      feature_size: int,
                      checkpoint_dir: str,
+                     aggregator: GraphSAGEAggregator = AttentionalAggregator,
                      dropout: float = 0.0,
                      normalize="l2",
                      optimizer_learning_rate: float = 1e-3) -> keras.Model:
+        """ 
+        Creates the Keras model.
+
+        Args:
+            aggregator (GraphSAGEAggregator): MeanAggregator, MaxPoolingAggregator, MeanPoolingAggregator, AttentionalAggregator. Default to AttentionalAggregator.
+            num_samples (List[int]): List of number of neighbor node samples per GraphSAGE layer (hop) to take.
+            layer_sizes (List[int]): Size/Dimension of nodes in GraphSAGE hidden layers.
+            feature_size (int): Size of the input vectors.
+            checkpoint_dir (str): Folder for itermediate saves of the trained model.
+            dropout (float, optional): Defaults to 0.0.
+            normalize (str, optional): Defaults to "l2".
+            optimizer_learning_rate (float, optional): Defaults to 1e-3.
+            
+        Returns:
+            keras.Model: The Keras model.
+        """
 
         print('Creating a new model')
         Path(checkpoint_dir).mkdir(parents=True, exist_ok=True)
 
         graphsage = GraphSAGE(
+            aggregator=aggregator,
             n_samples=num_samples,
             layer_sizes=layer_sizes,
             input_dim=feature_size,
