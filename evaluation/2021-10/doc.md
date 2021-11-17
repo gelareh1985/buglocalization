@@ -8,10 +8,18 @@
         * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.jdt.core/sowe-attentional-aggregator-2021-10-26/eclipse.jdt.core_evaluation_diagrams.csv)
 * __Plug-in Development Environment__  (PDE) (eclipse.pde.ui)
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
-    * sowe-attentional-aggregator-2021-10-26-jdt-cross-project
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.pde.ui/sowe-attentional-aggregator-2021-10-26/eclipse.pde.ui_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.pde.ui/sowe-attentional-aggregator-2021-10-26/eclipse.pde.ui_evaluation_diagrams.csv)
+    * [sowe-attentional-aggregator-2021-10-26-jdt-cross-project](#experiment-sowe-attentional-aggregator-2021-10-26-jdt-cross-project)
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.pde.ui/sowe-attentional-aggregator-2021-10-26-jdt-cross-project/eclipse.pde.ui_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.pde.ui/sowe-attentional-aggregator-2021-10-26-jdt-cross-project/eclipse.pde.ui_evaluation_diagrams.csv)
 * __Eclipse Modeling Framework__  (EMF) (org.eclipse.emf)
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
-    * sowe-attentional-aggregator-2021-10-26-jdt-cross-project
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.emf/sowe-attentional-aggregator-2021-10-26/org.eclipse.emf_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.emf/sowe-attentional-aggregator-2021-10-26/org.eclipse.emf_evaluation_diagrams.csv)
+    * [sowe-attentional-aggregator-2021-10-26-jdt-cross-project](#experiment-sowe-attentional-aggregator-2021-10-26-jdt-cross-project)
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.emf/sowe-attentional-aggregator-2021-10-26-jdt-cross-project/org.eclipse.emf_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.emf/sowe-attentional-aggregator-2021-10-26-jdt-cross-project/org.eclipse.emf_evaluation_diagrams.csv)
     * sowe-mean-pooling-aggregator-2021-10-21
     * word-embedding-sowe-experiments
         * similar-words_2021-09-08
@@ -24,7 +32,11 @@
         * word-limit-400_2021-09-27
 * __Graphical Modeling Framework__  (GMF) (org.eclipse.gmf-runtime)
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.gmf-runtime/sowe-attentional-aggregator-2021-10-26/org.eclipse.gmf-runtime_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.gmf-runtime/sowe-attentional-aggregator-2021-10-26/org.eclipse.gmf-runtime_evaluation_diagrams.csv)
     * [sowe-attentional-aggregator-2021-10-26-jdt-cross-project](#experiment-sowe-attentional-aggregator-2021-10-26-jdt-cross-project)
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.gmf-runtime/sowe-attentional-aggregator-2021-10-26-jdt-cross-project/org.eclipse.gmf-runtime_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/org.eclipse.gmf-runtime/sowe-attentional-aggregator-2021-10-26-jdt-cross-project/org.eclipse.gmf-runtime_evaluation_diagrams.csv)
 
 ## Common Experiments
 
