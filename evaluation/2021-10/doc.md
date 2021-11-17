@@ -4,8 +4,8 @@
 
 * __Eclipse Java Development Tools__  (JDT) (eclipse.jdt.core)
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
-        * [Classifier Ranking: MAP, MRR, Top-k](/sowe-attentional-aggregator-2021-10-26/eclipse.jdt.core_evaluation_classifiers.csv)
-        * [Diagram Ranking: MAP, MRR, Top-k](/sowe-attentional-aggregator-2021-10-26/eclipse.jdt.core_evaluation_diagrams.csv)
+        * [Classifier Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.jdt.core/sowe-attentional-aggregator-2021-10-26/eclipse.jdt.core_evaluation_classifiers.csv)
+        * [Diagram Ranking: MAP, MRR, Top-k](/evaluation/2021-10/eclipse.jdt.core/sowe-attentional-aggregator-2021-10-26/eclipse.jdt.core_evaluation_diagrams.csv)
 * __Plug-in Development Environment__  (PDE) (eclipse.pde.ui)
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
     * sowe-attentional-aggregator-2021-10-26-jdt-cross-project
