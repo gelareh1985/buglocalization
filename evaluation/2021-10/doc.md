@@ -119,18 +119,17 @@
 
 ## Experiments by Research Question
 
-* Node self embedding - word embedding experiments:
+* Node Self Embedding (text embedding experiments):
     * Additional Information:
         * [Experiment: similar-words_2021-09-08](#experiment-similar-words_2021-09-08)
         * [Experiment: signature-sowe-word-limit-off_2021-10-16](#experiment-signature-sowe-word-limit-off_2021-10-16)
+        * [Experiment: method-body-as-bag-of-word](#experiment-method-body-as-bag-of-word)
     * Selected Information:
         * [Experiment: word-limit-N](#experiment-word-limit-N)
     * Embedding Method:
         * [Experiment: avg-sowe-word-limit-off_2021-10-18](#experiment-avg-sowe-word-limit-off_2021-10-18)
-* GraphSAGE Aggregator experiments:
+* GraphSAGE Aggregator Experiments:
     * [Experiment: sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
     * [Experiment: sowe-mean-pooling-aggregator-2021-10-21](#experiment-sowe-mean-pooling-aggregator-2021-10-21)
-* Include additionl information about operation calls etc
-    * [Experiment: method-body-as-bag-of-word](#experiment-method-body-as-bag-of-word)
 * Generalization of the DL-Model
     * [Experiment: sowe-attentional-aggregator-2021-10-26-jdt-cross-project](#experiment-sowe-attentional-aggregator-2021-10-26-jdt-cross-project)
