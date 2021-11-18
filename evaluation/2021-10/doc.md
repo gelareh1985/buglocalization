@@ -64,26 +64,24 @@
 ### Experiment: sowe-attentional-aggregator-2021-10-26
 * Node Self Embedding:
     * Text Embedding Method: Summe of word embeddings
-* GraphSAGE Aggregator: Attentional Aggregator
+* _GraphSAGE Aggregator: Attentional Aggregator_
     * Veličković et al. "Graph Attention Networks" ICLR 2018 ([PDF](https://arxiv.org/abs/1710.10903))
     
 ### Experiment: sowe-attentional-aggregator-2021-10-26-jdt-cross-project
-* Cross project evaluation/test with DL-Model trained on the JDT data set
+* _Cross project evaluation/test with DL-Model trained on the JDT data set_
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
 
 ### Experiment: sowe-mean-pooling-aggregator-2021-10-21
 * Node Self Embedding:
     * Text Embedding Method: Summe of word embeddings
-* GraphSAGE Aggregator: Mean Pooling Aggregator
+* _GraphSAGE Aggregator: Mean Pooling Aggregator_
     * Aggregator of Eq. (3) in Hamilton et al. (2017), with max pooling replaced with mean pooling ([PDF](https://proceedings.neurips.cc/paper/2017/file/5dd9db5e033da9c6fb5ba83c7a7ebea9-Paper.pdf))
 
-### Experiment: similar-words_2021-09-08
-* Node Self Embedding:
-    * Text Embedding Method: Summe of word embeddings
-* GraphSAGE Aggregator: Mean Aggregator
-    * Aggregator of Eq. (2) in Hamilton et al. (2017) ([PDF](https://proceedings.neurips.cc/paper/2017/file/5dd9db5e033da9c6fb5ba83c7a7ebea9-Paper.pdf))
-
 ### Experiment: method-body-as-bag-of-word
+* _Reverse Engineering_:
+    * For each method body create a comment node including the words in the method body.
+        * set of words - include each word once
+        * remove Java keywords
 * Node Self Embedding:
     * Text Embedding Method: Summe of word embeddings
 * GraphSAGE Aggregator: Mean Aggregator
@@ -91,20 +89,20 @@
 
 ### Experiment: similar-words_2021-09-08:
 * Node Self Embedding:
-    * Text Embedding Method: Summe of word embeddings, including similar words
+    * _Text Embedding Method: Summe of word embeddings, including similar words_
 * GraphSAGE Aggregator: Mean Aggregator
     * Aggregator of Eq. (2) in Hamilton et al. (2017) ([PDF](https://proceedings.neurips.cc/paper/2017/file/5dd9db5e033da9c6fb5ba83c7a7ebea9-Paper.pdf))
 
 ### Experiment: avg-sowe-word-limit-off_2021-10-18
 * Node Self Embedding:
-    * Text Embedding Method: Mean of word embeddings
+    * _Text Embedding Method: Mean of word embeddings_
         * np.mean(word_vectors, axis=0)
 * GraphSAGE Aggregator: Mean Aggregator
     * Aggregator of Eq. (2) in Hamilton et al. (2017) ([PDF](https://proceedings.neurips.cc/paper/2017/file/5dd9db5e033da9c6fb5ba83c7a7ebea9-Paper.pdf))
 
 ### Experiment: signature-sowe-word-limit-off_2021-10-16
 * Node Self Embedding:
-    * Compute textual node signature
+    * _Compute textual node signature_
         * [meta_model_uml.get_signature(self, node) -> List[str]](/plugins/org.sidiff.bug.localization.prediction/src/buglocalization/metamodel/meta_model_uml.py)
     * Text Embedding Method: Summe of word embeddings
 * GraphSAGE Aggregator: Mean Aggregator
@@ -112,7 +110,7 @@
 
 ### Experiment: word-limit-N
 * Node Self Embedding:
-    * [Word limit N with word ranking](/plugins/org.sidiff.bug.localization.prediction/src/buglocalization/selfembedding/dictionary/node_self_embedding_word_ranking.py)
+    * _[Word limit N with word ranking](/plugins/org.sidiff.bug.localization.prediction/src/buglocalization/selfembedding/dictionary/node_self_embedding_word_ranking.py)_
         * Top M frequent words of model element names
         * Top N - M frequent words of bug reports
     * Text Embedding Method: Summe of word embeddings
@@ -136,4 +134,3 @@
     * [Experiment: method-body-as-bag-of-word](#experiment-method-body-as-bag-of-word)
 * Generalization of the DL-Model
     * [Experiment: sowe-attentional-aggregator-2021-10-26-jdt-cross-project](#experiment-sowe-attentional-aggregator-2021-10-26-jdt-cross-project)
-    
