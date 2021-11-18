@@ -1,6 +1,6 @@
 # Evaluation
 
-## Projects
+## Results by Projects
 
 * __Eclipse Java Development Tools__  (JDT) (eclipse.jdt.core)
     * [sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
@@ -118,3 +118,22 @@
     * Text Embedding Method: Summe of word embeddings
 * GraphSAGE Aggregator: Mean Aggregator
     * Aggregator of Eq. (2) in Hamilton et al. (2017) ([PDF](https://proceedings.neurips.cc/paper/2017/file/5dd9db5e033da9c6fb5ba83c7a7ebea9-Paper.pdf))
+
+## Experiments by Research Question
+
+* Node self embedding - word embedding experiments:
+    * Additional Information:
+        * [Experiment: similar-words_2021-09-08](#experiment-similar-words_2021-09-08)
+        * [Experiment: signature-sowe-word-limit-off_2021-10-16](#experiment-signature-sowe-word-limit-off_2021-10-16)
+    * Selected Information:
+        * [Experiment: word-limit-N](#experiment-word-limit-N)
+    * Embedding Method:
+        * [Experiment: avg-sowe-word-limit-off_2021-10-18](#experiment-avg-sowe-word-limit-off_2021-10-18)
+* GraphSAGE Aggregator experiments:
+    * [Experiment: sowe-attentional-aggregator-2021-10-26](#experiment-sowe-attentional-aggregator-2021-10-26)
+    * [Experiment: sowe-mean-pooling-aggregator-2021-10-21](#experiment-sowe-mean-pooling-aggregator-2021-10-21)
+* Include additionl information about operation calls etc
+    * [Experiment: method-body-as-bag-of-word](#experiment-method-body-as-bag-of-word)
+* Generalization of the DL-Model
+    * [Experiment: sowe-attentional-aggregator-2021-10-26-jdt-cross-project](#experiment-sowe-attentional-aggregator-2021-10-26-jdt-cross-project)
+    
